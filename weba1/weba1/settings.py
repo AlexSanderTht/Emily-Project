@@ -188,7 +188,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'C:/EIA1Project/htdocs/static'
+STATIC_ROOT = 'C:/Users/alex.santos/Desktop/ProjetoEmily/EMProject/htdocs/static'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
