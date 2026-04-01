@@ -1,0 +1,841 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Precificar Cabos</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+<style>
+    tr:nth-child(even) {
+        background-color: #eff3f8;
+        border-radius: 10px 10px 10px 10px;
+    }
+    tr:nth-child(odd) {
+        background-color: #f6f6f6;
+        border-radius: 10px 10px 10px 10px;
+    }
+    .color_gray {
+        background: #bec3c9;
+        /*background: #949ba3;*/
+    }
+
+</style>
+
+<div class="container mt-5">
+    <!------------------ Cabeçalho da ferramenta de gerar tipicos ------------------>
+    <div class="row justify-content-center animate__animated animate__backInRight">
+        <div class="col-lg-12 text-center">
+            <h1>Precificar Cabos</h1>
+        </div>
+        <div class="col-lg-12 text-center">
+            <h5>Ferramenta para atribuição de valores e import/export de calculos.</h5>
+        </div>
+    </div>
+    <!------------------ Fim do cabeçalho ------------------>
+
+    <!------------------ Início container conteúdo ------------------>
+    <div class="container mt-3 py-3 bg-white bordas border shadow animate__animated animate__pulse">
+        {% csrf_token %}
+        <!------------------ Início 1° linha Filtro tabela ------------------>
+        <div class="d-flex inline-group">
+            <!------------------ Início Tipo Isolação ------------------>
+            <div class="input-group bordas">
+                <div class="borda_filtros border border-right-0">
+                    <button class="btn" type="button"><i class="fa-solid fa-up-down text-secondary"></i></button>
+                </div>
+                <select id="secao_cabo" class="border border_left border-left-0 bg-white text-secondary w-75">
+                    <option id="0">Seção do cabo</option>
+                    {% for id_sec, sec in Secao_Cabo.items %}
+                    <option id="{{id_sec}}">{{sec}}</option>
+                    {% endfor %}
+                </select>
+            </div><!------------------ Fim Tipo isolação ------------------>
+
+            <!------------------ Início Tipo cabo ------------------>
+            <div class="input-group bordas">
+                <div class="borda_filtros border border-right-0">
+                    <button class="btn" type="button"><i class="fa-solid fa-arrow-up-right-dots text-secondary"></i></button>
+                </div>
+                <select id="tipo_cabo" class="border border_left border-left-0 bg-white text-secondary w-75">
+                    <option value="0">Tipo do Cabo</option>
+                    {% for tip in Tipo_Cabo %}
+                    <option value="{{tip}}">{{tip}}</option>
+                    {% endfor %}
+                </select>
+            </div><!------------------ Fim Tipo cabo ------------------>
+
+            <!------------------ Início classe isolamento ------------------>
+            <div class="input-group bordas">
+                <div class="borda_filtros border border-right-0">
+                    <button class="btn" type="button"><i class="fa-solid fa-circle-half-stroke text-secondary"></i></button>
+                </div>
+                <select id="classe_isolamento" class="border border_left border-left-0 bg-white text-secondary w-75">
+                    <option id="0">Classe Isolamento</option>
+                    {% for id, voltage in Tensao.items %}
+                    <option id="{{id}}">{{voltage}}</option>
+                    {% endfor %}
+                </select>
+            </div><!------------------ Fim fim classe isolamento ------------------>
+
+            <!------------------ Início Material condutor ------------------>
+            <div class="input-group bordas">
+                <div class="borda_filtros border border-right-0">
+                    <button class="btn" type="button"><i class="fa-solid fa-cubes text-secondary"></i></button>
+                </div>
+                <select id="material_condutor" class="border border_left border-left-0 bg-white text-secondary w-75">
+                    <option id="0">Material condutor</option>
+                    <option id="COBRE">COBRE</option>
+                    <option id="ALUMÍNIO">ALUMÍNIO</option>
+                </select>
+            </div><!------------------ Fim Material condutor ------------------>
+
+            <!------------------ Início Tipo isolação e temperatura condutor ------------------>
+            <div class="input-group bordas">
+                <div class="borda_filtros border border-right-0">
+                    <button class="btn" type="button"><i class="fa-solid fa-temperature-low text-secondary"></i></button>
+                </div>
+                <select id="tipo_isol_temperatura" class="border border_left border-left-0 bg-white text-secondary w-75">
+                    <option value="0">Tipo Isol./Temp.</option>
+                    {% for isol in Tipo_Isolação %}
+                    <option value="{{isol}}">{{isol}}</option>
+                    {% endfor %}
+                </select>
+            </div><!------------------ Fim Tipo isolação e temperatura condutor ------------------>
+        </div><!------------------ Fim 1° linha Filtro tabela ------------------>
+
+        <!------------------ Início 2° linha Filtro tabela ------------------>
+        <div class="mt-3 position-relative">
+            <div class="position-absolute">
+                <div class="d-inline-block ">
+                    <div class="input-group">
+                        <div class="borda_filtros border border-right-0">
+                            <button class="btn" type="button"><i class="fa-solid fa-magnifying-glass text-secondary"></i></button>
+                        </div>
+                        <input type="text" class="border border_left border-left-0" id="inputResponsavel" placeholder="Responsável" onkeyup="FilterPricecable(this.value, 'responsavel', 'texto')">
+                    </div>
+                </div>
+                <div class="d-inline-block">
+                    <div class="input-group ml-2">
+                        <div class="borda_filtros border border-right-0">
+                            <button class="btn" type="button"><i class="fa-solid fa-dollar-sign text-secondary"></i></button>
+                        </div>
+                        <input type="text" class="border border_left border-left-0" id="inputPrice" placeholder="Preço" onkeyup="FilterPricecable(this.value, 'custo_cable', 'number')" >
+                    </div>
+                </div>
+
+                <div class="d-inline-block">
+                    <button type="button" class="mx-2 btn btn-outline-primary rounded-pill" onclick="SendValuesInput()"><i class="fa-solid fa-plus pr-2"></i>Nova Configuração</button>
+                    <button type="button" class="mr-2 btn btn-outline-success rounded-pill" onclick="$('#modal_import_export').modal('show')"><i class="fa-solid fa-upload pr-2"></i>Importar / Exportar</button>
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" onclick="window.location.reload(true)"><i class="fa-solid fa-filter-circle-xmark pr-2"></i></i>Limpar</button>
+                </div>
+            </div>
+
+        </div><!------------------ Início 2° linha Filtro tabela ------------------>
+
+        <table class="text-center table table-sm font_size_0_8" id="TablePriceCalc">
+          <thead>
+            <tr class="d-flex">
+              <th scope="col" class="bg-light text-secondary col-2 borda_filtros">Data de Criação</th>
+              <th scope="col" class="bg-light text-secondary col-2">Responsável</th>
+              <th scope="col" class="bg-light text-secondary col-1">Revisão</th>
+              <th scope="col" class="bg-light text-secondary col-1">Seção nominal mm²</th>
+              <th scope="col" class="bg-light text-secondary col-1">Tipo do cabo</th>
+              <th scope="col" class="bg-light text-secondary col-1">Classe de isolamento</th>
+              <th scope="col" class="bg-light text-secondary col-1">Material do condutor</th>
+              <th scope="col" class="bg-light text-secondary col-1">Tipo isolação e Temperatura</th>
+              <th scope="col" class="bg-light text-secondary col-1 ">Custo por metro (R$)</th>
+              <th scope="col" class="bg-light text-secondary col-1 borda_lateral">Editar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for key, row in dataframe.iterrows %}
+                <tr class="d-flex-without-important mb-1 border rounded-pill" id="table_key_row_{{key}}">
+                    {% for cell in row %}
+                        {%if forloop.counter == 1%}
+                            <td class="col-2 border-right border-white text-muted">{{cell}}</td>
+                        {%endif%}
+                        {%if forloop.counter == 2%}
+                            <td class="col-2 border-right border-white text-truncate responsavel text-muted">{{cell}}</td>
+                        {%endif%}
+                        {%if forloop.counter == 3%}
+                            <td class="col-1 border-right border-white text-muted">{{cell}}</td>
+                        {%endif%}
+                        {%if forloop.counter == 4%}
+                            <td class="col-1 border-right border-white text-muted">{{cell}}</td>
+                        {%endif%}
+                        {%if forloop.counter == 5%}
+                            <td class="col-1 border-right border-white text-muted">{{cell}}</td>
+                        {%endif%}
+                        {%if forloop.counter == 6%}
+                            <td class="col-1 border-right border-white text-muted">{{cell}}</td>
+                        {%endif%}
+                        {%if forloop.counter == 7%}
+                            <td class="col-1 border-right border-white text-muted">{{cell}}</td>
+                        {%endif%}
+                        {%if forloop.counter == 8%}
+                            <td class="col-1 border-right border-white text-muted">{{cell}}</td>
+                        {%endif%}
+                        {%if forloop.counter == 9%}
+                            <td class="col-1 border-right border-white text-muted custo_cable">{{cell}}</td>
+                        {%endif%}
+                    {% endfor %}
+                    <td class="col-1 border-0 text-muted">
+                        <i class="fa-solid fa-pen-to-square muda_cursor_hover text-center text-secondary" onclick="ChangeTextToSelect('{{key}}')"></i>
+                    </td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <input class="form-check-input" type="checkbox" id="transf_datas_proj" hidden>
+    </div><!------------------ Fim container conteúdo ------------------>
+
+    <!------------------ Início Modal Mensagem Submit ------------------>
+    <div class="modal fade" id="modal_import_export" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="titulo" class="modal-title text-center w-100">Cadastrar Cabos</h4>
+                    <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                </div>
+
+                <div class="modal-body text-center" data-backdrop="static" data-keyboard="false">
+                    <!------------------ Inicio Dropzone XLSX ------------------>
+                    <div class="col card_dropzone py-3 mr-0" id="drop-area-xlsx-price">
+                        <div class="text-center w-100" id="xlsx">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte o template (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xlsx" onchange="DropFilePrice('arquivo_xlsx','drop-area-xlsx-price','xlsx',null)"/>
+                                <i class="fa-solid fa-upload"></i> Import xlsx
+                            </label>
+                        </div>
+                    </div><!------------------ Fim Dropzone XLSX ------------------>
+
+                    <div class="pb-3" id="progress-box">
+                        {% include "eletrica/BaseProgressBar.html"%}
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-success shadow rounded-pill" href="/app/calc_cabos/price_cable/drop_excel/">
+                       Download Template
+                    </a>
+                    <a class="btn btn-secondary text-white shadow rounded-pill" onclick="DownloadPrice()">
+                       Download Tabela
+                    </a>
+                    <button type="submit" class="btn btn-warning shadow rounded-pill" onclick="SendValuesToBackEnd()">Cadastrar</button>
+                    <div class="loader" id="loaderUploadArquivo"></div>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim Modal Mensagem Submit ------------------>
+</div>
+<script src="{% static 'js/calc_cabos/a1calccabosjs.js' %}"></script>
+<script>
+    let formFilePrice = new FormData();
+    let id_task_price
+    let id_task_price_download
+    // let controle_envio_price = 0;
+    let controle_envio_price = 0;
+
+    // --------------------- Cria paginação na tabela de preços ---------------------//
+    $(document).ready(function () {
+        let table_price = $('#TablePriceCalc').DataTable({
+            "sDom": "<'row'<'col-sm-12 col-lg-2 offset-lg-10 align-self-end form-inline my-2'l><'d-none'Bf>>" +
+                        "<'row'<'col-sm-12 col-lg-12'tr>>" +
+                        "<'row mt-2'<'col-sm-12 col-lg-5 text-right'i><'col-sm-12 col-lg-7'p>>",
+            "scrollY":    "475px",
+            "scrollCollapse": true,
+            "paging": true,
+            "bFilter": false,
+            "lengthMenu": [[10, 50, 100, 500, 1000], [10, 50, 100, 500, 1000]],
+            "pageLength": 100,
+            "language": {
+                "showing": 'Exibir',
+                "emptyTable": "Nenhuma Precificação encontrada.",
+                "paginate": {
+                    "first":      "Primeiro",
+                    "last":       "Último",
+                    "next":       "Próximo",
+                    "previous":   "Anterior"
+                },
+                "info": "Exibindo de _START_ a _END_ de _TOTAL_ entradas",
+                "lengthMenu": "Exibir: _MENU_",
+            },
+
+        });
+        table_price.column().order().draw()
+        $('div.dataTables_info').addClass('text-secondary')
+        $('div.dataTables_length').addClass('d-flex justify-content-end mb-3')
+        $('div.dataTables_length select').addClass('ml-2 rounded-pill')
+        $('div.dataTables_scrollBody').addClass('overflow_firefox overflow_chrome')
+        $('div.dataTables_scrollHeadInner table').addClass('mb-0')
+    });
+
+    // --------------------- Altert para notificar usuario do erro ---------------------//
+    function DeleteRegisterPriceCabos(id_price_cabos){
+
+        $.ajax({
+                url: "/app/calc_cabos/price_cable/", // Caminho do Ajax
+                type: "DELETE", // http method
+                headers:{'X-CSRFToken':csrf[0].value},
+                dataType: "json",
+                data: {'id_price_cabos': JSON.stringify(id_price_cabos)}, // Envia form pela solicitação do POST
+                success: function (data) {
+                    document.getElementById('table_key_row_'+ `${id_price_cabos}`).innerHTML = ''
+                    swal({
+                        title: data['response'],
+                        icon: "success",
+                        button: 'Fechar'
+                    })
+                    $('div.swal-modal').addClass('bordas')
+                    $('div.swal-title').addClass('h4')
+                    $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                    $('div.swal-text').addClass('text-center')
+                    $('div.swal-footer').addClass('d-flex justify-content-center')
+
+                },
+                failure: function () {
+                    swal({
+                        title: "Atenção!",
+                        text: "Algo deu errado ao Deletar o registro do banco de dados.",
+                        icon: "error",
+                        button: 'Fechar'
+                    })
+                    $('div.swal-modal').addClass('bordas')
+                    $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                    $('div.swal-text').addClass('text-center')
+                    $('div.swal-footer').addClass('d-flex justify-content-center')
+                }
+            })
+    }
+
+    // --------------------- Altera Texto da tabela para select ---------------------//
+    function ChangeTextToSelect(key) {
+        let cell_data =  document.getElementById('table_key_row_' + key).cells[0]
+        let cell_responsavel =  document.getElementById('table_key_row_' + key).cells[1]
+        let cell_revisao =  document.getElementById('table_key_row_' + key).cells[2]
+        let cell_secao =  document.getElementById('table_key_row_' + key).cells[3]
+        let cell_tipo_cabo =  document.getElementById('table_key_row_' + key).cells[4]
+        let cell_cl_isol =  document.getElementById('table_key_row_' + key).cells[5]
+        let cell_material =  document.getElementById('table_key_row_' + key).cells[6]
+        let cell_tipo_isol =  document.getElementById('table_key_row_' + key).cells[7]
+        let cell_custo =  document.getElementById('table_key_row_' + key).cells[8]
+        let cell_icone =  document.getElementById('table_key_row_' + key).cells[9]
+        let value_secao =  document.getElementById('table_key_row_' + key).cells[3].innerHTML
+        let value_tipo_cabo =  document.getElementById('table_key_row_' + key).cells[4].innerHTML
+        let value_cl_isol =  document.getElementById('table_key_row_' + key).cells[5].innerHTML
+        let value_material =  document.getElementById('table_key_row_' + key).cells[6].innerHTML
+        let value_tipo_isol =  document.getElementById('table_key_row_' + key).cells[7].innerHTML
+        let value_custo =  document.getElementById('table_key_row_' + key).cells[8].innerHTML
+        let array_secao_key = {{Secao_Cabo | safe}}
+        let array_tipo_cabo_key = {{Tipo_Cabo | safe}}
+        let array_cl_isol_key = {{Tensao | safe}}
+        let array_tipo_isol_key = {{Tipo_Isolação | safe}}
+        let value_secao_replaced
+
+        // Popula select campo de seção nominal
+        if(cell_secao.classList.contains('text-muted')){
+            cell_secao.innerHTML = `<select id="table_secao_`+ key +`" class="border-0 text-secondary text-center w-100"></select>`
+
+            for (let sec in array_secao_key) {
+                if(array_secao_key[sec] === value_secao){
+                    document.getElementById('table_secao_'+ key).innerHTML += `<option id="`+ sec + `" selected>`+ array_secao_key[sec] +`</option>`;
+                } else {
+                    document.getElementById('table_secao_'+ key).innerHTML += `<option id="`+ sec + `">`+ array_secao_key[sec] +`</option>`;
+                }
+            }
+        }
+
+        // Popula select campo de tipo cabo
+        if (cell_tipo_cabo.classList.contains('text-muted')){
+            cell_tipo_cabo.innerHTML = `<select id="table_tipo_cabo_`+ key +`" class="border-0 text-secondary text-center w-100"></select>`
+
+            for(let i = 0; i< array_tipo_cabo_key.length; i++){
+                let options = array_tipo_cabo_key[i];
+
+                if(options === value_tipo_cabo){
+                    document.getElementById('table_tipo_cabo_'+ key).innerHTML += `<option value="`+ options + `" selected>`+ options +`</option>`;
+                } else {
+                    document.getElementById('table_tipo_cabo_'+ key).innerHTML += `<option value="`+ options + `">`+ options +`</option>`;
+                }
+            }
+        }
+
+        // Popula select campo de classe de isolamento
+        if (cell_cl_isol.classList.contains('text-muted')){
+            cell_cl_isol.innerHTML = `<select id="table_class_isol_`+ key +`" class="border-0 text-secondary text-center w-100"></select>`
+
+            for (let isol in array_cl_isol_key) {
+                if(array_cl_isol_key[isol] === value_cl_isol){
+                    document.getElementById('table_class_isol_'+ key).innerHTML += `<option id="`+ isol + `" selected>`+ array_cl_isol_key[isol] +`</option>`;
+                } else {
+                    document.getElementById('table_class_isol_'+ key).innerHTML += `<option id="`+ isol + `">`+ array_cl_isol_key[isol] +`</option>`;
+                }
+            }
+        }
+
+        // Popula select de material de condutor
+        if(value_material === 'COBRE' && cell_material.childElementCount === 0) {
+            cell_material.innerHTML = `<select id="table_material_` + key + `" class="border-0 text-secondary w-100">
+                                              <option id="COBRE" selected>COBRE</option>
+                                              <option id="ALUMÍNIO">ALUMÍNIO</option>
+                                        </select>`
+        } else if(value_material === 'ALUMÍNIO' && cell_material.childElementCount === 0) {
+            cell_material.innerHTML = `<select id="table_material_` + key + `" class="border-0 text-secondary w-100">
+                                              <option id="COBRE">COBRE</option>
+                                              <option id="ALUMÍNIO" selected>ALUMÍNIO</option>
+                                        </select>`
+        }
+
+        // Popula select campo de tipo isolação e temperatura
+        if (cell_tipo_isol.classList.contains('text-muted')){
+            cell_tipo_isol.innerHTML = `<select id="table_tipo_isol_`+ key +`" class="border-0 text-secondary text-center w-100"></select>`
+
+            for(let i = 0; i< array_tipo_isol_key.length; i++){
+                let options = array_tipo_isol_key[i];
+
+                if(options === value_tipo_isol){
+                    document.getElementById('table_tipo_isol_'+ key).innerHTML += `<option id="`+ options + `" selected>`+ options +`</option>`;
+                } else {
+                    document.getElementById('table_tipo_isol_'+ key).innerHTML += `<option id="`+ options + `">`+ options +`</option>`;
+                }
+            }
+        }
+
+        // Adiciona campo input de custo
+        if (cell_custo.childElementCount === 0) {
+            cell_custo.innerHTML = `<input type="text" class="bg-transparent w-100 text-center text-muted" id="table_input_price_`+ key +`" value="`+ value_custo +`">`
+        }
+
+        // Adiciona icones de edição e cancel
+        if(cell_data.classList.contains('text-muted')) {
+            // Remove classes texto cinza
+            cell_data.classList.remove('text-muted')
+            cell_responsavel.classList.remove('text-muted')
+            cell_revisao.classList.remove('text-muted')
+
+            // Adiciona classes texto azul
+            cell_data.classList.add('text-primary')
+            cell_responsavel.classList.add('text-primary')
+            cell_revisao.classList.add('text-primary')
+            cell_icone.innerHTML = `<i class="fa-solid fa-file-pen muda_cursor_hover text-center text-primary" onclick="SendValuesUpdateTable(`+ key +`)"></i>
+                                    <i class="fa-solid fa-circle-xmark muda_cursor_hover text-center text-danger pl-2" onclick="DeleteRegisterPriceCabos(`+ key +`)"></i>`
+        }
+
+    }
+
+    // --------------------- Função filtra valores table price ---------------------//
+    function FilterPricecable(pesquisa, classe, tipo_dado){
+        let td_table = document.querySelectorAll("." + classe)
+        for(let i = 0; i < td_table.length; i++){
+            if (tipo_dado === 'texto') {
+                let text_content = td_table[i].textContent.toLowerCase()
+                if(text_content.includes(pesquisa.toLowerCase())){
+                    td_table[i].parentElement.hidden = false
+                }
+                else{
+                    td_table[i].parentElement.hidden = true
+                }
+            } else {
+                let number_content
+                if (td_table[i].childElementCount === 0){
+                    number_content = td_table[i].firstChild.textContent
+                } else {
+                    number_content = td_table[i].firstElementChild.defaultValue
+                }
+                if(number_content.includes(pesquisa)){
+                    td_table[i].parentElement.hidden = false
+                }
+                else{
+                    td_table[i].parentElement.hidden = true
+                }
+            }
+        }
+    }
+
+    // --------------------- Função cadastra valores select table ---------------------//
+    function SendValuesUpdateTable(key) {
+        let tb_secao = document.getElementById('table_secao_'+ key).selectedOptions[0].id;
+        let tb_tipo_cabo = document.getElementById('table_tipo_cabo_'+ key).selectedOptions[0].value;
+        let tb_class_isol = document.getElementById('table_class_isol_'+ key).selectedOptions[0].id;
+        let tb_material_cond = document.getElementById('table_material_'+ key).selectedOptions[0].id;
+        let tb_tipo_isol_temp = document.getElementById('table_tipo_isol_'+ key).selectedOptions[0].value;
+        let tb_preco = document.getElementById('table_input_price_'+ key).value
+        let price_replaced = '';
+        if (tb_preco.includes(',')) {
+            price_replaced = tb_preco.replace(',','.')
+        } else {
+            price_replaced = tb_preco
+        }
+
+        let tb_dict_ids = {'secao_cabo':tb_secao,
+                        'tipo_cabo':tb_tipo_cabo,
+                        'classe_isolamento':tb_class_isol,
+                        'material_condutor':tb_material_cond,
+                        'tipo_isol_temperatura':tb_tipo_isol_temp,
+                        'inputPrice':price_replaced};
+
+        // Caso o campo custo esteja preenchido entra neste if
+        if(price_replaced.length !== 0 && isNaN(price_replaced) === false) {
+            $.ajax({
+                url: "/app/calc_cabos/price_cable/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrf[0].value},
+                dataType: "json",
+                data: {'DictPrice': JSON.stringify(tb_dict_ids)}, // Envia form pela solicitação do POST
+                success: function (data) {
+                    swal({
+                        title: data['response'],
+                        icon: "success",
+                        button: 'Fechar'
+                    })
+                    $('div.swal-modal').addClass('bordas')
+                    $('div.swal-title').addClass('h4')
+                    $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                    $('div.swal-text').addClass('text-center')
+                    $('div.swal-footer').addClass('d-flex justify-content-center')
+                },
+                failure: function () {
+                    swal({
+                        title: "Atenção!",
+                        text: "Algo deu errado ao enviar a precificação da tabela! verifique e tente novamente.",
+                        icon: "error",
+                        button: 'Fechar'
+                    })
+                    $('div.swal-modal').addClass('bordas')
+                    $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                    $('div.swal-text').addClass('text-center')
+                    $('div.swal-footer').addClass('d-flex justify-content-center')
+                }
+            })
+        } else {
+            swal({
+                title: "O campo de custo deve ser preenchido com números e não deve ser vazio!",
+                icon: "error",
+                button: 'Fechar'
+            })
+            $('div.swal-modal').addClass('bordas')
+            $('div.swal-title').addClass('h5 mx-5')
+            $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+            $('div.swal-text').addClass('text-center')
+            $('div.swal-footer').addClass('d-flex justify-content-center')
+        }
+    }
+
+    // --------------------- Função cadastra valores formulário ---------------------//
+    function SendValuesInput() {
+        let secao = document.getElementById('secao_cabo').selectedOptions[0].id;
+        let tipo_cabo = document.getElementById('tipo_cabo').selectedOptions[0].value;
+        let class_isol = document.getElementById('classe_isolamento').selectedOptions[0].id;
+        let material_cond = document.getElementById('material_condutor').selectedOptions[0].id;
+        let tipo_isol_temp = document.getElementById('tipo_isol_temperatura').selectedOptions[0].value;
+        let preco = document.getElementById('inputPrice').value
+        let price_replaced = '';
+        if (preco.includes(',')) {
+            price_replaced = preco.replace(',','.')
+        } else {
+            price_replaced = preco
+        }
+        let dict_ids = {'secao_cabo':secao,
+                        'tipo_cabo':tipo_cabo,
+                        'classe_isolamento':class_isol,
+                        'material_condutor':material_cond,
+                        'tipo_isol_temperatura':tipo_isol_temp,
+                        'inputPrice':price_replaced};
+        let result = Object.values(dict_ids).includes('') ? 1 :
+                     Object.values(dict_ids).includes('0') ? 1 : 0; // verifica se contem string vazia ou value 0
+
+        // Adiciona bordas vermelha ao input/select caso não esteja preenchido
+        for (let i in dict_ids){
+            let val_element = document.getElementById(i)
+            if (dict_ids[i] === '0' || dict_ids[i] === ''){
+                val_element.classList.add('border-danger')
+                val_element.parentElement.children[0].classList.add('border-danger')
+            }
+            else {
+                val_element.classList.remove('border-danger')
+                val_element.parentElement.children[0].classList.remove('border-danger')
+            }
+        }
+
+        // Caso todos os campos estejam preenchidos entra neste if
+        if(result === 0) {
+            $.ajax({
+                url: "/app/calc_cabos/price_cable/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrf[0].value},
+                dataType: "json",
+                data: {'DictPrice': JSON.stringify(dict_ids)}, // Envia form pela solicitação do POST
+                success: function (data) {
+                    swal({
+                        title: data['response'],
+                        icon: "success",
+                        button: 'Fechar'
+                    })
+                    $('div.swal-modal').addClass('bordas')
+                    $('div.swal-title').addClass('h4')
+                    $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                    $('div.swal-text').addClass('text-center')
+                    $('div.swal-footer').addClass('d-flex justify-content-center')
+                    setTimeout(()=>{window.location.reload(true)}, 1500)
+                },
+                failure: function () {
+                    swal({
+                        title: "Atenção!",
+                        text: "Algo deu errado ao enviar a precificação da tabela! verifique e tente novamente.",
+                        icon: "error",
+                        button: 'Fechar'
+                    })
+                    $('div.swal-modal').addClass('bordas')
+                    $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                    $('div.swal-text').addClass('text-center')
+                    $('div.swal-footer').addClass('d-flex justify-content-center')
+                }
+            })
+        }
+    }
+
+    // --------------------- Função para adicionar arquivo no front e no FormData ---------------------//
+    function DropFilePrice(id_input,id_drop,campo,arquivo) {
+        let drop_container = document.getElementById(id_drop);
+        let file = document.getElementById(id_input);
+        let form;
+        let name_file;
+        let name_title;
+        let drop = '';
+        let id;
+        let itens = $('#'+id_drop)[0].children
+
+        // Caso não seja dropado o arquivo é recebido via id
+        if (arquivo !== null) {
+            form = arquivo.files;
+        } else {
+            form = file.files;
+        }
+
+        for (let i = 0; i <form.length;i++){
+            name_file = form[i].name
+            name_title = name_file
+            let extension = name_file.split('.').pop();
+            if (extension === campo){
+                // Cria o id com base no nome do arquivo e no tamanho, após reescreve o ponto para JS não compreender como método.
+                id = form[i].size
+
+                if (!document.getElementById(id)){
+                    if (campo === 'xlsx') {
+                        if (itens.length === 1) {
+                            formFilePrice.append('filesPriceXlSX', form[i]);
+                            drop = `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 opaco" id="${id}">
+                                        <div class="input-group-prepend my-auto px-1">
+                                            <img class="" src="{% static 'img/XLS.png' %}" alt="Image XLSX" style="height:20px">
+                                        </div>
+                                        <span type="text" title="${name_title}" class="col border-0 input-group-text bg-white text-truncate">${name_file}</span>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-danger rounded-pill px-2 border-0" type="button" onclick="RemoverArquivoXLS(${id});">
+                                                <i class="fas fa-times-circle fa-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>`
+
+                            drop_container.innerHTML += drop;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (let j = 0; j<itens.length;j++){
+            if (itens[j].id !== campo) {
+                setTimeout(() =>{
+                    document.getElementById(itens[j].id).classList.remove('opaco')
+                    document.getElementById(itens[j].id).classList.add('opaco_hover')
+                },100);
+            }
+        }
+    }
+
+    // --------------------- Função para adicionar arquivo arquivo no front e no FormData ---------------------//
+    function SendValuesToBackEnd() {
+        let drop = document.getElementById('drop-area-xlsx-price').children;
+
+        if (drop.length > 1){
+            $.ajax({
+                url: "/app/calc_cabos/price_cable/drop_excel/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrf[0].value},
+                dataType: "json",
+                data: formFilePrice, // Envia form pela solicitação do POST
+                processData: false,
+                contentType: false,
+                beforeSend: function(){
+                    document.getElementById('progress-box').hidden = false
+                },
+                success: function (data) {
+                    inti_celery_bar({'task_id': data['task_id']})
+                    id_task_price = data['task_id']
+                    controle_envio_price = 1
+                },
+                failure: function () {
+                    swal({
+                        title: "Atenção!",
+                        text: "Algo deu errado ao enviar a precificação da tabela! verifique e tente novamente.",
+                        icon: "error",
+                        button: 'Fechar'
+                    })
+                    $('div.swal-modal').addClass('bordas')
+                    $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                    $('div.swal-text').addClass('text-center')
+                    $('div.swal-footer').addClass('d-flex justify-content-center')
+                }
+            })
+        } else {
+            swal({
+                title: "Faça o upload de um arquivo para continuar!",
+                icon: "error",
+                button: 'Fechar',
+            })
+            $('div.swal-modal').addClass('bordas')
+            $('div.swal-title').addClass('h5 mx-5')
+            $('button.swal-button').addClass('btn btn-danger px-5 rounded-pill')
+            $('div.swal-text').addClass('text-center')
+            $('div.swal-footer').addClass('d-flex justify-content-center')
+        }
+    }
+
+    //----------------- Evento observador de mutação de texto na bar-progress -----------------//
+    $('#progress-bar-message').on('DOMSubtreeModified', function(){
+        if (controle_envio_price === 1) { // Para controle_envio_price === 1 a função irá percorrer a planilha e cadastrar as precificações
+            //----------------- Método obtem result JSON via ajax HTTP -----------------//
+            $.getJSON('/celery-progress/' + id_task_price, (e) => {
+
+                if (e.success) {
+                    //----------------- Caso contenha erros no arquivo entra aqui -----------------//
+                    if (e.result.status === 'erro') {
+                        document.getElementById('progress-bar').style.width = '100%';
+                        document.getElementById('progress-bar').style.backgroundColor = '#dc4f63';
+                        document.getElementById('progress-bar-message').innerHTML = "Erro ao enviar planilha!";
+
+                        setTimeout(() => {
+                        document.getElementById('progress-box').hidden = true
+                        }, 1500)
+                        setTimeout(() => {
+                        swal({
+                            title: e.result.message,
+                            icon: "error",
+                            button: 'Fechar',
+                        })
+                        $('div.swal-modal').addClass('bordas')
+                        $('div.swal-title').addClass('h5 mx-5')
+                        $('button.swal-button').addClass('btn btn-danger px-5 rounded-pill')
+                        $('div.swal-text').addClass('text-center')
+                        $('div.swal-footer').addClass('d-flex justify-content-center')
+                        }, 2000)
+                    }
+                    //----------------- Caso esteja tudo certo oculta a bar-progress -----------------//
+                    else if (e.result.status === 'success') {
+                        setTimeout(() => {
+                            document.getElementById('progress-box').hidden = true
+                            swal({
+                                title: e.result.message,
+                                icon: "success",
+                                button: 'Fechar'
+                            })
+                            $('div.swal-modal').addClass('bordas')
+                            $('div.swal-title').addClass('h4')
+                            $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                            $('div.swal-text').addClass('text-center')
+                            $('div.swal-footer').addClass('d-flex justify-content-center')
+                            }, 500)
+                        setTimeout(() => {
+                            window.location.reload(true)
+                        }, 2000)
+                    }
+                    controle_envio_price = 0 // retorna ao valor padrão
+                }
+            })
+        }
+        else if(controle_envio_price === 2) { // Para controle_envio_price === 2 a função irá gerar o arquivo de download de preços
+
+            //----------------- Método obtem result JSON via ajax HTTP -----------------//
+            $.getJSON('/celery-progress/' + id_task_price_download, (e)=>{
+                if(e.success){
+                    //----------------- Faz o download dos preços após gerar arquivo e concluir a task -----------------//
+                    let url =  "/app/calc_cabos/price_cable/download_price/" + id_task_price_download + '/'
+                    window.open(url, '_self')
+                    setTimeout(()=>{document.getElementById('progress-box').hidden = true}, 1000)
+                    controle_envio_price = 0; // retorna ao valor padrão
+                }
+            })
+        }
+
+    });
+
+    // ---------------------Função para remover elemento ao clicar no X vermelho---------------------//
+    function RemoverArquivoXLS(elemento) {
+        $('#drop-area-xlsx-price').find('#' + elemento).remove()
+    }
+
+    // --------------------- Função para baixar planilha de preços cadastrados ---------------------//
+    function DownloadPrice() {
+        $.ajax({
+            url: "/app/calc_cabos/price_cable/download_price/", // Caminho do Ajax
+            type: "POST", // http method
+            headers:{'X-CSRFToken':csrf[0].value},
+            dataType: "json",
+            beforeSend: function(){
+                document.getElementById('progress-box').hidden = false
+            },
+            success: function (data) {
+                console.log(data['task_id'])
+                inti_celery_bar({'task_id': data['task_id']})
+                id_task_price_download = data['task_id']
+                controle_envio_price = 2
+            },
+            failure: function () {
+                swal({
+                    title: "Atenção!",
+                    text: "Algo deu errado ao fazer download da precificação! verifique e tente novamente.",
+                    icon: "error",
+                    button: 'Fechar'
+                })
+                $('div.swal-modal').addClass('bordas')
+                $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                $('div.swal-text').addClass('text-center')
+                $('div.swal-footer').addClass('d-flex justify-content-center')
+            }
+        })
+    }
+
+    jQuery(document).ready(function($) {
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-area-xlsx-price').on('dragover', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).addClass('upload-hover');
+        })
+
+        // Ao retirar o cursor com arquivo sobre o campo dropzone as bordas diminuem
+        $('#drop-area-xlsx-price').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+        })
+
+        // Ao soltar o arquivo sobre o campo chama a função DropArquivo passando os parâmetros
+        $('#drop-area-xlsx-price').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+          let file_xls = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropFilePrice('arquivo_xlsx','drop-area-xlsx-price','xlsx',file_xls)
+        })
+
+    });
+
+</script>
+{% endblock %}

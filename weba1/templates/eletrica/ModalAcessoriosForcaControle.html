@@ -1,0 +1,125 @@
+{% load static %}
+<div class="modal fade" id="testModal" tabindex="-1" role="dialog" aria-labelledby="testModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="testModalLabel">SETUP DE DIÂMETROS PARA ACESSÓRIOS</h5>
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>-->
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div>
+                        <div class="col-3" style="float: left;">
+                            <div class="form-group mb-5">
+                                <td data-toggle="tooltip" title="Inserir codigo ">Acessórios
+
+                                    <!--<br>-->
+                                    <select id="acessorios_os" required class="form-control " multiple style="height: 180px; width: 150px;" onchange="pesquisa_acessorio()">
+                                    </select>
+                                </td>
+                            </div>
+                        </div>
+
+                        <div class="col-3" style="float: right;">
+                            <div class="form-group mb-5">
+                                <td data-toggle="tooltip">Descrição
+                                    <!--<br>
+                                    <select id="descricao_acessorio" required class="form-control " multiple style="height: 180px; width: 120px;" ondragover="changecolor(event,'gray', 'select-all-acess-os')" ondrop="drop_acess(event)" ondragleave="changecolor(event,'white', 'select-all-acess-os')">
+                                    </select>-->
+                                    <textarea id="descricao_acessorio" required class="form-control Heigth_180" placeholder="Descrição do Acessório" multiple style="height: 180px; width: 150px;"readonly></textarea>
+                                </td>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                        <div class = 'row' style="margin-bottom: 10px; border-top: 1px solid #808080;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                CABO DE ACESSÓRIO
+                            </div>
+                        </div>
+                        <div class = 'row' style="height: 70px;">
+
+                        <div class="col d-flex"> <!--style="margin-left: 20px;"-->
+                            <div class="form-group mb-5">
+                                <td  for="area-type">
+                                    Formação
+                                    <input type="text" id="formacao_cabo_acessorio" class="form-control" style="height: 30px;" readonly>
+                                </td>
+
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group mb-5" style="width: 217px;">
+                                <td  for="area-type" >
+                                    Seção
+                                    <input type="text" id="secao_cabo_acessorio" class="form-control" style="height: 30px;" readonly>
+                                </td>
+
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="row" style="height: 70px;">
+                        <div class="col-12">
+                            <div class="form-group mb-5">
+                                <td  for="area-type" >
+                                    Isolação
+                                    <input type="text" id="classe_cabo_acessorio" class="form-control" style="height: 30px;" readonly>
+                                </td>
+
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-5">
+                                <td  for="area-type" >
+                                    Classe de Isolação
+                                    <input type="text" id="classe_isolacao" class="form-control" style="height: 30px;" readonly>
+                                </td>
+
+                            </div>
+                        </div>
+                        </div>
+
+                <div class = 'row' style="margin-bottom: 10px; border-top: 1px solid #808080;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        DIÂMETROS
+                    </div>
+                </div>
+
+                <!------------------ Início Tipo de componente na extremidade do leito ou eletroduto ------------------>
+                <div class="form-group input-group-sm">
+                    <label>Ø Eletroduto </label>
+                    <div class="input-group-sm rounded-pill d-flex">
+                        <select class="form-control rounded-pill" id="diametro_eletroduto_acessorio">
+                            <!--onchange="fillPopoverSelect('tipo_componente_acessorios');fillCodeTipicoAcessorios();ajaxOptionNextLevel('tipo_rosca_ligacao_acessorios', this.selectedOptions[0].id, '');removeDisabledAtribute('tipo_rosca_ligacao_acessorios')">-->
+                            <option id="--" selected>---</option>
+                        </select>
+                    </div>
+                </div><!------------------ Fim Tipo de componente na extremidade do leito ou eletroduto ------------------>
+
+
+                <!------------------ Início Tipo de componente na extremidade do leito ou eletroduto ------------------>
+                <div class="form-group input-group-sm">
+                    <label>Ø Rosca do motor </label>
+                    <div class="input-group-sm rounded-pill d-flex">
+                        <select class="form-control rounded-pill" id="diametro_rosca_caixa_acessorio">
+                            <!--onchange="fillPopoverSelect('tipo_componente_acessorios');fillCodeTipicoAcessorios();ajaxOptionNextLevel('tipo_rosca_ligacao_acessorios', this.selectedOptions[0].id, '');removeDisabledAtribute('tipo_rosca_ligacao_acessorios')">-->
+                            <option id="--" selected>---</option>
+                        </select>
+                    </div>
+                </div><!------------------ Fim Tipo de componente na extremidade do leito ou eletroduto -----------data-dismiss="modal"------->
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick='SalvarDiametrosAcessorio()'>Salvar</button>
+                <button type="button" class="btn btn-danger" onclick='FecharConfigAcessorios()' data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,411 @@
+<!--############################################# Parte de cima da tela ##############################################-->
+{% load static %}
+{%block info_cabo_list_cabos%}
+<div class="nome_origem">
+    <button class="btn_mais" data-toggle="collapse" href="#DadosCaboListCabos" role="button" aria-expanded="false"
+            aria-controls="DadosCaboListCabos">
+        +
+    </button>
+    Dados do Cabo
+</div>
+
+<div class="collapse" id="DadosCaboListCabos">
+    <div class="card card-body bg-gray" id="CargaInfoTag">
+        <div class="origem">
+            <h6> DADOS DO CABO </h6>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 border-right">
+                <div class="row">
+                   <div class="col-lg-8">
+                       <label for="TagCargaListCabos">Carga:</label>
+                       <input type="text" id="TagCargaListCabos" class="form-control" readonly>
+                   </div>
+
+                   <div class="col-lg-4">
+                       <label for="CubGavCargaListCabos">Cub/Gav:</label>
+                       <input type="text" id="CubGavCargaListCabos" class="form-control" readonly>
+                   </div>
+                </div>
+
+                <div class="row mt-1 border-top">
+                   <div class="col-lg-8">
+                       <label for="TagAliListCabos">Alimentador:</label>
+                       <input type="text" id="TagAliListCabos" class="form-control" readonly>
+                   </div>
+
+                   <div class="col-lg-4">
+                       <label for="CubGavCargaListCabos">Cub/Gav:</label>
+                       <input type="text" id="CubGavAliListCabos" class="form-control" readonly>
+                   </div>
+                </div>
+
+                <div class="row mt-1 mx-1">
+                    <label for="DistCalcListCabos">Dist. utilizada no calculo:</label>
+                    <input type="number" id="DistCalcListCabos" class="form-control" readonly>
+                </div>
+
+                <div class="row mt-1">
+                    <div class="col-lg-5 pr-0">
+                        <label for="DistManualListCabos">Dist. manual(m)</label>
+                        <input type="number" id="DistManualListCabos" class="form-control">
+                    </div>
+
+                    <div class="col-lg-1 d-flex align-items-center">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="" id="CheckBoxDistManualListCabos">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <label for="DistRotaPdms">Dist. Rota:</label>
+                        <input type="number" id="DistRotaPdms" class="form-control" readonly>
+                    </div>
+                </div>
+
+                <div class="row mt-1">
+                    <div class="col-lg-12">
+                        <label for="RotaListCabos">Rota:</label>
+                        <textarea class="form-control" id="RotaListCabos" rows="1"></textarea>
+                    </div>
+                </div>
+
+                <div class="row ml-1 d-flex justify-content-end align-items-end mt-4">
+
+                    <div class="col-lg-4">
+                        <button type="button" class="btn btn-warning w-100" onclick="SendDatasCaboBack()">Alterar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="row">
+                    <div class="col-lg-6">
+                       <label for="ClassIsolListCabos">Classe Isolação:</label>
+                       <input type="text" id="ClassIsolListCabos" class="form-control" readonly>
+                    </div>
+
+                    <div class="col-lg-6">
+                       <label for="IsolListCabos">Isolação:</label>
+                       <input type="text" id="IsolListCabos" class="form-control" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        <label for="FormacaoFTagListCabos">Formação:</label>
+                        <input type="text" id="FormacaoFTagListCabos" class="form-control pl-0" readonly>
+                    </div>
+
+                    <div class="col-lg-4">
+                       <label for="SecListCabos">Seção:</label>
+                       <input type="text" id="SecListCabos" class="form-control" readonly>
+                    </div>
+
+                    <div class="col-lg-4">
+                       <label for="QuantCabosListCabos">Quantidade:</label>
+                       <input type="number" id="QuantCabosListCabos" class="form-control" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg">
+                        <label for="FormacaoListCabos">Tipo Cabo:</label>
+                        <input type="text" id="FormacaoListCabos" class="form-control" readonly>
+                        <label for="bobina">Bobina:</label>
+                        <input type="text" id="bobina" class="form-control" readonly>
+                    </div>
+                </div>
+
+                <div class="row mt-1">
+
+                    <div class="col-lg-5 pr-0 mr-4">
+                        <label for="DistTipoInstalacao">Tipo instalacao</label>
+                        <input readonly type="text" id="DistTipoInstalacao" class="form-control">
+                    </div>
+
+                    <div class="col-lg-5">
+                        <label for="DistCompElet">Comp. Eletroduto</label>
+                        <input type="text" id="DistCompElet" class="form-control" readonly>
+                    </div>
+
+                    <div class="col-lg-5 pr-0">
+                        <label for="DistTipoInstalacaoManual">Tipo Instalacao (Manual)</label>
+                        <input type="text" id="DistTipoInstalacaoManual" class="form-control">
+                    </div>
+
+                    <div class="ml-1 d-flex align-items-center mt-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="CheckBoxTipoInstalacao">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5 pr-0">
+                        <label for="CompoEletManual">Eletroduto (Manual)</label>
+                        <input type="text" id="CompoEletManual" class="form-control" >
+                    </div>
+
+                    <div class="ml-1 d-flex align-items-center mt-4">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="" id="CheckComElet">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let formFileA1proRota = new FormData;
+
+    // --------------------- Função para verificar preenchimento do campo de distancia manual ---------------------//
+
+    // --------------------- Função para enviar os dados para o backend ---------------------//
+    function SendFileImportRota() {
+        let xls = document.getElementById('drop-area-xls-rota');
+        // Caso o campo dropdown esteja com arquivo entra neste if
+        if(xls.childElementCount !== 1) {
+            let list_name_file = ''
+
+            // Adiciona o nome do arquivo a lista de nome
+            for (let i = 0; i <xls.children.length;i++) {
+                if (xls.children[i].id !== 'xlsx'){
+                    list_name_file = xls.children[i].outerText
+                }
+            }
+
+            // Apenda ao formdata o nome do arquivo e dict de distancia
+            formFileA1proRota.append('listNameFile', list_name_file);
+            const csrf = document.getElementsByName("csrfmiddlewaretoken")
+            $.ajax({
+                url: "/app/eletrica/a1pro/ListaCabos/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrf[0].value},
+                dataType: "json",
+                data: formFileA1proRota, // Envia form pela solicitação do POST
+                processData: false,
+                contentType: false,
+                beforeSend: function(){
+                    document.getElementById("progress-box-lista").hidden = false;
+                },
+                success: function (data) {
+                    let progressUrl = `/celery-progress/${data["task_id"]}/`
+                    CeleryProgressBarEletric.initProgressBar(progressUrl, {
+                        onSuccess: customSucess,
+                        onError: customError,
+                        onProgress: onProgressCustom
+                    })
+
+                    function onProgressCustom(progressBarElement, progressBarMessageElement, progress) {
+                        progressBarElement.style.backgroundColor = '#68a9ef';
+                        progressBarMessageElement.innerHTML = progress.description || "";
+                        progressBarElement.style.width = progress.percent + "%";
+                    }
+
+                    function customSucess(progressBarElement, progressBarMessageElement, result) {
+                        if (Object.keys(result)[0] === 'success') {
+                            progressBarElement.style.backgroundColor = '#76ce60';
+                            setTimeout(()=>{AlertSuccess(result.success)}, 1000)
+                        } else {
+                            progressBarElement.style.backgroundColor = '#dc4f63';
+                            setTimeout(()=>{AlertError(result.error)}, 1000)
+                        }
+                        setTimeout(()=>{document.getElementById("progress-box-lista").hidden = true}, 2000)
+                    }
+
+                    function customError(progressBarElement, progressBarMessageElement, excMessage) {
+                        progressBarElement.style.backgroundColor = '#dc4f63';
+                        setTimeout(HideRowLoadElements,100, true)
+                        setTimeout(()=>{AlertError(excMessage.error)}, 1000)
+                        setTimeout(()=>{document.getElementById("progress-box-lista").hidden = true}, 2000)
+                    }
+                },
+                error: function () {
+                    AlertError("Algo deu errado ao enviar a tabela de rotas! \n verifique e tente novamente.")
+                }
+            })
+        } else {
+            AlertError("O campo de Dropdown deve conter algum arquivo para ser cadastrado!")
+        }
+    }
+
+    // --------------------- Função para adicionar visualmente o arquivo no dropdown e no formdata ---------------------//
+    function DropArquivoRotas(id_input,id_drop,campo,arquivo) {
+        let drop_container = document.getElementById(id_drop);
+        let file = document.getElementById(id_input);
+        let form;
+        let name_file;
+        let name_title;
+        let drop = '';
+        let itens = $('#'+id_drop)[0].children
+
+        // Caso não seja dropado o arquivo é recebido via id
+        if (arquivo !== null) {
+            form = arquivo.files;
+        } else {
+            form = file.files;
+        }
+
+        for (let i = 0; i <form.length;i++){
+            name_file = form[i].name
+            name_title = name_file
+            let extension = name_file.split('.').pop();
+            if (extension === campo || extension === 'xlsx'){
+                // Cria o id com base no nome do arquivo e no tamanho, após reescreve o ponto para JS não compreender como método.
+                let id = form[i].size
+
+                if (itens.length === 1) {
+                    formFileA1proRota.append('filesRotaXlSX', form[i]);
+                    drop = `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown" id="${id}">
+                                <div class="input-group-prepend my-auto px-1">
+                                    <img class="" src="{% static 'img/XLS.png' %}" alt="Image XLSX" style="height:20px">
+                                </div>
+                                <span type="text" title="${name_title}" class="col border-0 input-group-text bg-white text-truncate">${name_file}</span>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-danger rounded-pill px-2 border-0" type="button" onclick="RemoverArquivoRotaXLS(${id})">
+                                        <i class="fas fa-times-circle fa-lg"></i>
+                                    </button>
+                                </div>
+                            </div>`
+
+                    drop_container.innerHTML += drop;
+                } else {
+                    AlertError("Somente um arquivo é permitido neste campo!")
+                }
+            } else {
+                AlertError("O arquivo deve ser no seguinte formato (.xlsx)!")
+            }
+        }
+    }
+
+    function AlertSuccess(mensagem) {
+        swal({
+            title: "Atenção!",
+            text: mensagem,
+            icon: "success",
+            button: 'Fechar'
+        })
+        $('div.swal-modal').addClass('bordas')
+        $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+        $('div.swal-text').addClass('text-center')
+        $('div.swal-footer').addClass('d-flex justify-content-center')
+
+    }
+
+    function AlertError(mensagem) {
+        swal({
+            title: "Atenção!",
+            text: mensagem,
+            icon: "error",
+            button: 'Fechar'
+        })
+        $('div.swal-modal').addClass('bordas')
+        $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+        $('div.swal-text').addClass('text-center')
+        $('div.swal-footer').addClass('d-flex justify-content-center')
+
+    }
+
+    // ---------------------Função para remover elemento ao clicar no X vermelho---------------------//
+    function RemoverArquivoRotaXLS(elemento) {
+        $('#drop-area-xls-rota').find('#' + elemento).remove()
+    }
+
+    let CeleryProgressBarEletric = (function () {
+        function onSuccessDefault(progressBarElement, progressBarMessageElement, result) {
+            progressBarElement.style.backgroundColor = '#76ce60';
+            progressBarMessageElement.innerHTML = "Success!";
+        }
+
+        function onResultDefault(resultElement, result) {
+            if (resultElement) {
+                resultElement.innerHTML = result;
+            }
+        }
+
+        function onErrorDefault(progressBarElement, progressBarMessageElement, excMessage) {
+            progressBarElement.style.backgroundColor = '#dc4f63';
+            progressBarMessageElement.innerHTML = "Essa não, algo deu errado! " + excMessage;
+        }
+
+        function onProgressDefault(progressBarElement, progressBarMessageElement, progress) {
+            progressBarElement.style.backgroundColor = '#68a9ef';
+            progressBarElement.style.width = progress.percent + "%";
+            var description = progress.description || "";
+            progressBarMessageElement.innerHTML = progress.current + ' de ' + progress.total + ' processado. ' + description;
+        }
+
+        function updateProgress (progressUrl, options) {
+            options = options || {};
+            var progressBarId = options.progressBarId || 'progress-bar-lista';
+            var progressBarMessage = options.progressBarMessageId || 'progress-bar-message-lista';
+            var progressBarElement = options.progressBarElement || document.getElementById(progressBarId);
+            var progressBarMessageElement = options.progressBarMessageElement || document.getElementById(progressBarMessage);
+            var onProgress = options.onProgress || onProgressDefault;
+            var onSuccess = options.onSuccess || onSuccessDefault;
+            var onError = options.onError || onErrorDefault;
+            var pollInterval = options.pollInterval || 500;
+            var resultElementId = options.resultElementId || 'celery-result';
+            var resultElement = options.resultElement || document.getElementById(resultElementId);
+            var onResult = options.onResult || onResultDefault;
+
+
+            fetch(progressUrl).then(function(response) {
+                response.json().then(function(data) {
+                    if (data.progress) {
+                        onProgress(progressBarElement, progressBarMessageElement, data.progress);
+                    }
+                    if (!data.complete) {
+                        setTimeout(updateProgress, pollInterval, progressUrl, options);
+                    } else {
+                        if (data.success) {
+                            onSuccess(progressBarElement, progressBarMessageElement, data.result);
+                        } else {
+                            onError(progressBarElement, progressBarMessageElement, data.result);
+                        }
+                        if (data.result) {
+                            onResult(resultElement, data.result);
+                        }
+                    }
+                });
+            });
+        }
+        return {
+            onSuccessDefault: onSuccessDefault,
+            onResultDefault: onResultDefault,
+            onErrorDefault: onErrorDefault,
+            onProgressDefault: onProgressDefault,
+            // updateProgress: updateProgress,
+            initProgressBar: updateProgress,  // just for api cleanliness
+        };
+    })();
+
+    jQuery(document).ready(function($) {
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-area-xls-rota').on('dragover', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).addClass('upload-hover');
+        })
+
+        // Ao retirar o cursor com arquivo sobre o campo dropzone as bordas diminuem
+        $('#drop-area-xls-rota').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+        })
+
+        // Ao soltar o arquivo sobre o campo chama a função DropArquivoRotas passando os parâmetros
+        $('#drop-area-xls-rota').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+          let file_xls = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivoRotas('arquivo_xls','drop-area-xls-rota','xls',file_xls)
+        })
+
+    });
+</script>
+{%endblock info_cabo_list_cabos%}

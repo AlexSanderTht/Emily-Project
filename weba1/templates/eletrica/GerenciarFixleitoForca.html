@@ -1,0 +1,186 @@
+{% load static %}
+<div class="container-fluid " id="content_fixleito_forca" hidden>
+    <div class="col-xs-12 col-sm-12  col-md-12 col-lg-12 row ">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 h-90 border-right">
+            <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 px-3 scroll_templates_gt position-relative" id="cardzone_files_talas" style="height: 400px;">
+                <div class="text-center dwgs_insert">
+                    <!------------------ Inicio Message ------------------>
+                    <div class="d-flex flex-column">
+                        <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>TIPICO</b></span>
+                        <span class="font-italic text-primary">click em import para fazer o upload.</span>
+                    </div>
+                    <!------------------ Fim Message ------------------>
+                    <label class="mt-2 btn btn-primary rounded-pill text-white">
+                        <input multiple="multiple" accept=".dwg" class="hidden" type="file" id="arquivo_dwg_fixleito_forca" onchange="DropArquivosForcaControle('FIX LEITO', '{% static 'DWG.png' %}')"/>
+                        Upload
+                    </label>
+                </div>
+                <div class="container-fluid radius_10 animate__animated animate__zoomInDown" id="content_files_fixleito_forca">
+
+                </div>
+                <div class="container-fluid radius_10 animate__animated animate__zoomInDown mb-2" id="forms_files_fixleito_forca" hidden>
+
+                    <div class="row mt-1 d-flex justify-content-around">
+                        <div class="col-3 bg-secondary radius_10 mb-1">
+                            <div class="col-12 text-center">
+                                Medidas Rodapé
+                            </div>
+
+                            <div class="row col-12">
+                                <div class="col-3">
+                                    <label>X:</label>
+                                </div>
+                                <div class="col-9">
+                                    <input class="form-control form-control-sm" type="number" id="fixleito_forca_x_footer" value="25">
+                                </div>
+                            </div>
+
+                            <div class="row col-12 mb-2">
+                                <div class="col-3">
+                                    <label>Y:</label>
+                                </div>
+                                <div class="col-9">
+                                    <input class="form-control form-control-sm" type="number" id="fixleito_forca_y_footer" value="14">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-3 bg-secondary radius_10 mb-1">
+                            <div class="col-12 text-center">
+                                Medidas Tabela
+                            </div>
+                            <div class="row col-12">
+                                <div class="col-3">
+                                    <label>X:</label>
+                                </div>
+                                <div class="col-9">
+                                    <input class="form-control form-control-sm" type="number" id="fixleito_forca_x_table" value="140">
+                                </div>
+                            </div>
+
+                            <div class="row col-12 mb-2">
+                                <div class="col-3">
+                                    <label>Y:</label>
+                                </div>
+                                <div class="col-9">
+                                    <input class="form-control form-control-sm" type="number" id="fixleito_forca_y_table" value="250">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 bg-secondary radius_10 mb-1">
+                            <div class="col-12 text-center">
+                                Medidas Logo
+                            </div>
+                            <div class="row col-12">
+                                <div class="col-3">
+                                    <label>X:</label>
+                                </div>
+                                <div class="col-9">
+                                    <input class="form-control form-control-sm" type="number" id="fixleito_forca_x_logo" value="25">
+                                </div>
+                            </div>
+
+                            <div class="row col-12 mb-2">
+                                <div class="col-3">
+                                    <label>Y:</label>
+                                </div>
+                                <div class="col-9">
+                                    <input class="form-control form-control-sm" type="number" id="fixleito_forca_y_logo" value="269.5">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+                <div class="position-absolute" style="bottom: 10px; right: 10px;">
+                    <button type="button" class="btn btn-outline-success" onclick="SendFilesDwgForca('FIX LEITO')">Salvar</button>
+                    <input class="form-control form-control-sm" type="text" hidden id="fixleito_forca_exists_selected">
+                </div>
+
+            </div>
+
+
+
+
+
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 h-90 border-right">
+          <div class="row">
+
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+        <div class="box-scrollbar overflow_chrome overflow_firefox" style="height: 710px; max-width: 500px; overflow-x: hidden; border: 1px solid #ccc; padding: 10px;">
+            <!-- Barra de Pesquisa -->
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="search-box border border-secondary-subtle w-50 d-flex justify-content-center">
+                    <input type="search" class="search-text form-control" placeholder="Pesquisar..." onkeyup="FilterFilesExistsTalasChumbs('cards_files_talas', this.value)">
+                    <a id="" class="search-btn">
+                        <img class="loupe-white" src="{% static 'scripts/search_FILL0_wght400_GRAD0_opsz48.svg' %}">
+                    </a>
+                </div>
+            </div>
+
+            <!-- Lista de arquivos -->
+            <div class="row justify-content-center" id="cards_files_talas">
+                {% for id_tala, nome_tala in FixleitoForca.items %}
+                    <div class="col-12" style="max-width: 300px;" onclick="ClickForcaMotoresExists({{id_tala}}, '{% static 'DWG.png' %}')" title="{{nome_tala}}">
+                        <div class="list-group-item-hover bg-white border d-flex justify-content-between align-items-center p-2">
+                            <img src="{% static 'DWG.png' %}" alt="Image TXT" width="16" height="16">
+                            <span class="mb-0 text-truncate" style="font-size: 0.875rem;">{{nome_tala}}</span>
+                            <div class="excluir">
+                                <button title="Remover arquivo" class="btn btn-outline-danger px-1 py-0 border-0" type="button" style="width: 24px; height: 24px;">
+                                    <i class="fas fa-times-circle fa-sm" onclick="DeletaTipicoForca({{id_tala}}, '{{nome_tala}}')"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+
+              <div class="container-fluid w-100 h-100 p-0">
+                <img src="" id="img_dwg_fixleito_forca" class="shadow" style="width: 800px; height: 710px; border: 5px solid #333; border-radius: 20px;">
+              </div>
+        </div>
+
+
+  </div>
+</div>
+
+    </div>
+</div>
+
+
+
+<script>
+    jQuery(document).ready(function($) {
+        $('#cardzone_files_talas').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover');
+        })
+
+        $('#cardzone_files_talas').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+        })
+
+        $('#cardzone_files_talas').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+          let file_dwg = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivosTalasChumbs('TALAS', "{% static 'img/DWG.png' %}", file_dwg)
+        })
+    })
+</script>

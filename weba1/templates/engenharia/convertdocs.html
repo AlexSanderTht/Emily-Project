@@ -1,0 +1,83 @@
+{% extends 'geral/base.html' %}
+{% block head %}
+<title>Convertdocs</title>
+{% endblock %}
+{% block help %}
+<h7>Botão "Escolher" Neste botão você irá selecionar doc. desejado a partir dos botões que selecionará a baixo. </h7>
+<br><br>
+<h7>Opção "DXF to DWG" Nesta opção você irá selecionar doc. com extensão .dxf </h7>
+<br><br>
+<h7>Opção "DWG to PDF" Nesta opção você irá selecionar doc. com extensão .dwg </h7>
+<br><br>
+<h7>Opção "PDF merge" Nesta opção você irá selecionar doc. com extensão .pdf </h7>
+<br><br>
+<h7>Botão "Converter" Neste botão ele realizará a conversão entre os doc.  mantendo a extensão desejada.</h7>
+<br><br>
+<h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+<div class="container py-5">
+    <!-- For demo purpose -->
+    <div class="row mb-4">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4"><b>ConvertDoc</b></h1>
+
+      </div>
+    </div>
+    <!-- End -->
+
+
+    <div class="row">
+      <div class="col-lg-7 mx-auto">
+        <div class="bg-white rounded-lg shadow-sm p-5">
+
+
+          <!-- Credit card form content -->
+          <div class="tab-content">
+
+            <!-- credit card info-->
+            <div id="nav-tab-card" class="tab-pane fade show active">
+
+              <div>
+                <form action="{% url 'download' %}" id="auto-download" method="GET" enctype="multipart/form-data">
+                    {% csrf_token %}
+                </form>
+              </div>
+
+              <form role="form" id="form" action="{% url 'convert_docs' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+
+                 <input type="file" id="folder" hidden="hidden"  onchange="selectedFolder(event, 'text-folder')" name="path" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
+                 <span id = "text-folder"  class= "label-style">Selecione a pasta com os documentos:</span> <br><br>
+
+                 <button type="button"  id="bot-folder"  class="btn butof" onclick="clicked('folder')"> Escolher</button><br>
+                <br>
+
+
+                </div>
+
+                <div class="form-group">
+                    <input type="radio" name="options" value="dxf"><span class = "label-style"> DXF to DWG</span><br>
+                    <input type="radio" name="options" value="dwg"><span class = "label-style">  DWG to PDF </span><br>
+                    <input type="radio" name="options" value="pdf"><span class = "label-style"> PDF merge</span><br>
+                </div>
+                <div class="row">
+                </div>
+              </form>
+              <div style="margin-left: 0px; margin-right: 0px" ><!-- barra de progresso -->
+                {% include geral/bar.html' %}
+                {% block bar %}
+                {% endblock %}
+              </div><!-- barra de progresso -->
+            </div>
+            <!-- End -->
+            <!-- End -->
+          </div>
+          <!-- End -->
+
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}

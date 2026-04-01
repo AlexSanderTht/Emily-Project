@@ -1,0 +1,53 @@
+{% load static %}
+{% block crit_tag_terra %}
+<div class="container" id="crit-tag-terra">
+    <div class="row mx-2">
+        <div class="col border-left border-right border-bottom ml-1 mr-2">
+            <h6><b>TAG do Cabo</b></h6>
+            <div class="form-check ml-1">
+                <input class="form-check-input" type="checkbox" name="checkbox-tag-terra" value="CARGA" id="crit-tag-terra-carga-checkbox" onclick="check_only_1_element('crit-tag-terra-carga-checkbox', 'checkbox-tag-terra')">
+                <label class="form-check-label" for="crit-tag-terra-carga-checkbox">
+                  TAG - Carga
+                </label>
+            </div>
+            <br>
+            <div class="form-check ml-1">
+                <input class="form-check-input" type="checkbox" name="checkbox-tag-terra" value="ALIMENTADOR" id="crit-tag-terra-alimentador-checkbox" onclick="check_only_1_element('crit-tag-terra-alimentador-checkbox', 'checkbox-tag-terra')">
+                <label class="form-check-label" for="crit-tag-terra-alimentador-checkbox">
+                  TAG - Alimentador
+                </label>
+            </div>
+            <br>
+        </div>
+
+        <div class="col-sm-5 border-bottom border-left border-right">
+            <h6 class="text-center w-100"><b>1° Caractere</b></h6>
+            <input type="text" class="form-control mb-2" id="crit-tag-terra-first-carac">
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row mx-2">
+        <div class="col border-left border-right border-bottom justify-content-center text-center">
+            <h6 class="text-center w-100"><b>TERRA</b></h6>
+            <br>
+            <button type="button" class="btn btn-warning w-75 mb-1" onclick="ShowAndFillModalCaracteres(df_tipo_cabo_terra, '2', df_tipo_cabo_terra)">2° Caractere</button>
+            <button type="button" class="btn btn-warning w-75 mb-1" onclick="ShowAndFillModalCaracteres(df_tipo_cabo_terra, '3', df_tipo_cabo_terra)">3° Caractere</button>
+            <button type="button" class="btn btn-warning w-75 mb-1" onclick="ShowAndFillModalCaracteres(df_tipo_cabo_terra, '4', df_tipo_cabo_terra)">4° Caractere</button>
+            <button type="button" class="btn btn-warning w-75 mb-1" onclick="ShowAndFillModalCaracteres(df_tipo_cabo_terra, '5', df_tipo_cabo_terra)">5° Caractere</button>
+            <button type="button" class="btn btn-warning w-75 mb-1" onclick="ShowAndFillModalCaracteres(df_tipo_cabo_terra, '6', df_tipo_cabo_terra)">6° Caractere</button>
+            <button type="button" class="btn btn-warning w-75 mb-1" onclick="ShowAndFillModalCaracteres(df_tipo_cabo_terra, '7', df_tipo_cabo_terra)">7° Caractere</button>
+            <button type="button" class="btn btn-warning w-75 mb-1" onclick="ShowAndFillModalCaracteres(df_tipo_cabo_terra, '8', df_tipo_cabo_terra)">8° Caractere</button>
+            <button type="button" class="btn btn-warning w-75 mb-3" onclick="ShowAndFillModalCaracteres(df_tipo_cabo_terra, '9', df_tipo_cabo_terra)">9° Caractere</button>
+        </div>
+    </div>
+
+    <div class="row mx-1 mt-2">
+        <div class="col-lg-12 justify-content-end text-right">
+            <button type="button" class="btn btn-primary" onclick="SendFTagBack('TERRA')">Atualizar</button>
+            <button type="button" class="btn btn-dark" onclick="HideModalFTag()">Fechar</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

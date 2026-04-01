@@ -1,0 +1,582 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.css' %}"/>
+<link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.min.css' %}"/>
+<script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.bundle.js' %}"></script>
+<script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.js' %}"></script>
+</head>
+
+<style>
+    * {
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+    .cardBoard {
+        box-shadow: rgba(203, 203, 203, 0.52) 0 0 27px 7px;
+        border-radius: 20px;
+        background: linear-gradient(to top, rgb(227, 227, 227), white);
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .cardBoard:hover {
+        box-shadow: rgba(183, 183, 183, 0.7) 0 0 30px 10px;
+    }
+
+    .header {
+        background-color: #f8f9fa;
+        text-align: center;
+        border: 0px solid black;
+    }
+    .section-title {
+        background-color: #f5f5f5;
+        font-weight: bold;
+        text-align: center;
+        padding: 8px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    .highlighted-orange {
+        background-color: #FFA500;
+        font-weight: bold;
+    }
+    .highlighted-yellow {
+        background-color: #FFFF00;
+    }
+    .bordered {
+        border: 0px solid #000;
+        padding: 20px;
+    }
+    .table th, .table td {
+        border: 0px solid #000;
+    }
+    .inputs {
+        width: 300px;
+        border: 1px solid rgba(128, 128, 128, 0.47);
+        border-radius: 5px;
+        padding: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .inputs:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    select {
+        border: none;
+        background-color: #dbffee;
+        padding: 8px;
+        border-radius: 5px;
+        margin: 5px;
+        width: 350px;
+        box-shadow: rgba(125, 126, 128, 0.25) 0 0 9px 3px;
+        transition: all 0.2s ease;
+    }
+
+    select:focus {
+        box-shadow: rgba(125, 126, 128, 0.4) 0 0 12px 5px;
+    }
+
+    .selects {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .areaInput {
+        width: 600px;
+        height: 100px;
+        resize: vertical;
+    }
+
+    .add-evidence-button, .add-req-button {
+        background-color: #bfffe1;
+        color: black;
+        padding: 7px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 5px;
+        transition: all 0.3s ease;
+        font-weight: bold;
+    }
+
+    .add-evidence-button:hover, .add-req-button:hover {
+        background-color: #99e6c2;
+        transform: translateY(-2px);
+    }
+
+    .select-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .select-container select {
+        margin-right: 5px;
+    }
+
+    /* Switch styling */
+    .switch-container {
+        display: flex;
+        align-items: center;
+        margin-top: 15px;
+        padding: 10px;
+    }
+
+    .switch-label {
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+
+    .switch-text {
+        margin-left: 10px;
+        font-weight: bold;
+    }
+
+    #sendRel {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    #sendRel:hover {
+        background-color: #45a049;
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-5">
+    {% csrf_token %}
+
+    <div class="card mb-4 cardBoard" style="width: 100rem; padding: 30px;">
+        <div class="card-body col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Relatório B.O.</b></h2>
+        </div>
+        <div id="accordion">
+            <div class="container mt-4">
+                <!-- Header -->
+                <div class="header py-3 cardBoard" style="padding: 20px">
+                    <div class="row">
+                        <div class="col-10 text-left">
+                            <img src="{% static 'img/logo.png' %}" alt="Logo" style="height: 50px;">
+                            <span class="h5 ml-3">B.O. - Relatório de Boletim de Ocorrência</span>
+                        </div>
+                        <div class="col-2 text-right">
+                            <div>B.O. Nº: <span class="font-weight-bold" id="boNumber">{{proximo_numero}}</span></div>
+                            <div><p id="dataAtual" style="letter-spacing: 1px; font-weight: bold"></p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Characterization Section -->
+                <div class="bordered p-3 mt-2 cardBoard">
+                    <div class="section-title"><h3>Caracterização do Problema</h3></div>
+                    <div class="row">
+                        <div class="col-6">Origem:
+                            <select id="origem">
+                                <option value="">Selecione a Origem</option>  {% for id_origem, nome_origem in sugestoesOrigem %}
+                                    <option value="{{ id_origem }}">{{ nome_origem }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-6">Solicitante:
+                            <span class="text-danger">
+                                <select id="solicitante">
+                                  {% for id_sugestoes, nome_sugestoes in sugestoesColaboradores %}
+                                    <option value="{{ id_sugestoes }}">{{ nome_sugestoes }}</option>  {% endfor %}
+                                </select>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row mt-2" style="display: flex;">
+                        <div class="unid/proc selects" style="width: 600px;">
+                            <div class="col-6">Unidade/Processo: </div>
+                            <select id="unid" onchange="filtrarAreasGrupo()">
+                                <option value="">Selecione a Unidade</option>
+                                {% for id_unid, nome_unid in sugestoesUnidades %}
+                                    <option value="{{ id_unid }}">{{ nome_unid }}</option>
+                                {% endfor %}
+                            </select>
+                            <select id="area" onchange="filtrarAreas()">
+                                <option value="">Selecione a Área Grupo</option>
+                            </select>
+                            <select id="subarea">
+                                <option value="">Selecione a Área</option>
+                            </select>
+                            </div>
+
+                        <div class="col-6">Responsável pela análise do RNC: <span class="text-danger">
+                                <select id="resprnc">
+                                  {% for id_sugestoes, nome_sugestoes in sugestoesColaboradores %}
+                                    <option value="{{ id_sugestoes }}">{{ nome_sugestoes }}</option>  {% endfor %}
+                                </select>
+                        </span></div>
+                    </div>
+
+                    <!-- Novo botão switch para OS/OF -->
+                    <div class="switch-container">
+                        <span class="switch-label">Tipo:</span>
+                        <label class="switch">
+                            <input type="checkbox" id="osofSwitch">
+                            <span class="slider"></span>
+                        </label>
+                        <span id="switchText" class="switch-text">OS</span>
+                    </div>
+                </div>
+
+                <!-- Description Section -->
+                <div class="bordered p-3 mt-2 cardBoard">
+                    <p><strong>Fato:</strong></p>
+                    <textarea type="text" id="fatoInput" class="areaInput inputs" list="sugestoes"></textarea>
+                    <p><strong>Evidência:</strong></p>
+                    <input type="text" id="evidInputText" class="inputs" style="width: 500px;">
+                    <button id="addEvidenceButton" class="add-evidence-button">+</button>
+                        <input id="fileEvid" multiple onchange="DropFileImport()" style="display: none" type="file">
+                        <button id="uploadEvidenceButton" class="add-evidence-button">Fazer Upload</button>
+                </div>
+
+                <div class="bordered p-3 mt-2 cardBoard">
+                    <div class="section-title"><h3>Ações Corretivas</h3></div>
+                    <div class="acaoContainer" style="display: flex; flex-direction: column; justify-content: center">
+                        <div class="acao" style="display: flex; flex-direction: column; justify-content: center">
+                            <div class="section-title"><h5>Ação</h5></div>
+                            <textarea id="corrInput" class="areaInput corrInput inputs" style="width: 100%;"></textarea>
+                        </div>
+                        <div class="respacao" style="display: flex; flex-direction: column; justify-content: center">
+                            <div class="section-title"><h5>Responsável</h5></div>
+                            <select id="resCorrInput" class="resCorrInput">
+                                {% for id_sugestoes, nome_sugestoes in sugestoesColaboradores %}
+                                    <option value="{{ id_sugestoes }}">{{ nome_sugestoes }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="prazoacao" style="display: flex; flex-direction: column; justify-content: center">
+                            <div class="section-title"><h5>Prazo</h5></div>
+                            <input type="date" id="dataB" class="dataB" name="data">
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="btnSend" style="display: flex; justify-content: center; padding: 50px">
+                    <button id="sendRel" class="add-req-button" >Enviar Relatório</button>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<script>
+    // Função para atualizar o texto do switch
+    document.addEventListener('DOMContentLoaded', function() {
+        const osofSwitch = document.getElementById('osofSwitch');
+        const switchText = document.getElementById('switchText');
+
+        // Definir texto inicial
+        switchText.textContent = 'OS';
+
+        // Atualizar texto quando o switch mudar
+        osofSwitch.addEventListener('change', function() {
+            if (this.checked) {
+                switchText.textContent = 'OF';
+            } else {
+                switchText.textContent = 'OS';
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const areasGrupoData = JSON.parse('{{ sugestoes_areas_grupo|safe }}');
+        const areasData = JSON.parse('{{ sugestoes_areas|safe }}');
+
+        const unidSelect = document.getElementById('unid');
+        const areaSelect = document.getElementById('area');
+        const subareaSelect = document.getElementById('subarea');
+
+        function filtrarAreasGrupo() {
+            const selectedUnid = unidSelect.value;
+            areaSelect.innerHTML = '<option value="">Selecione a Área Grupo</option>'; // Limpa as opções antigas
+            subareaSelect.innerHTML = '<option value="">Selecione a Área</option>'; // Limpa as subáreas
+
+            if (selectedUnid && areasGrupoData[selectedUnid]) {
+                areasGrupoData[selectedUnid].forEach(areaGrupo => {
+                    const option = document.createElement('option');
+                    option.value = areaGrupo[0];
+                    option.text = areaGrupo[1];
+                    areaSelect.appendChild(option);
+                });
+            }
+        }
+
+        function filtrarAreas() {
+            const selectedArea = areaSelect.value;
+            subareaSelect.innerHTML = '<option value="">Selecione a Área</option>'; // Limpa as opções antigas
+
+            if (selectedArea && areasData[selectedArea]) {
+                areasData[selectedArea].forEach(area => {
+                    const option = document.createElement('option');
+                    option.value = area[0];
+                    option.text = area[1];
+                    subareaSelect.appendChild(option);
+                });
+            }
+        }
+
+        unidSelect.addEventListener('change', filtrarAreasGrupo);
+        areaSelect.addEventListener('change', filtrarAreas);
+
+        // Inicializa as áreas grupo quando a página carrega, caso já tenha uma unidade selecionada
+        if (unidSelect.value) {
+            filtrarAreasGrupo();
+            if (areaSelect.value){
+                filtrarAreas();
+            }
+        }
+
+    });
+
+
+    const uploadEvidenceButton = document.getElementById('uploadEvidenceButton');
+
+// Exibir botão de upload ao selecionar o arquivo
+    addEvidenceButton.addEventListener('click', () => {
+        fileEvid.click();
+    });
+
+    fileEvid.addEventListener('change', () => {
+        if (fileEvid.files.length > 0) {
+            uploadEvidenceButton.style.display = 'inline-block'; // Mostrar o botão de upload
+        }
+    });
+
+    // Função de upload do arquivo
+    uploadEvidenceButton.addEventListener('click', () => {
+        const formData = new FormData();
+        const evidenciaArq = fileEvid.files[0];
+
+
+        formData.append('file', evidenciaArq); // Adiciona o arquivo ao FormData
+
+        // Enviar o arquivo para o servidor
+        fetch('upload_evidencia/', {  // URL para o seu endpoint de upload
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value // Token CSRF
+            },
+            body: formData // Envia o arquivo no corpo da requisição
+        })
+        .then(response => {
+            if (!response.ok) { // Verifica se a resposta está OK (status 2xx)
+                return response.text().then(text => { throw new Error(text) }); // Lança o erro com o texto da resposta
+            }
+            return response.json(); // Tenta parsear a resposta como JSON
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Arquivo enviado com sucesso!');
+            } else {
+                alert('Erro ao enviar o arquivo.');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error); // Exibe o erro no console
+            alert('Erro ao enviar o arquivo: ' + error.message); // Exibe o erro para o usuário
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('sendRel').addEventListener('click', () => {
+            const data = new Date();
+            const ano = data.getFullYear();
+
+            const origemSelect = document.getElementById('origem');
+            const origemId = origemSelect.value;
+            console.log('origemID: '+ origemId)
+
+            const subAreaSelect = document.getElementById('subarea');
+            const subAreaId = subAreaSelect.value;
+            console.log('AreaID: ' + subAreaId)
+
+            const fato = document.getElementById('fatoInput').value;
+            console.log('Fato: ' + fato)
+
+            const evidenciaTexto = document.getElementById('evidInputText').value;
+            console.log('evidenciaTEXTO' + evidenciaTexto)
+
+            const solicitanteSelect = document.getElementById('solicitante');
+            const solicitanteId = solicitanteSelect.value;
+            console.log('SolicitanteID: ' + solicitanteId)
+
+            const responsavelSelect = document.getElementById('resprnc');
+            const responsavelId = responsavelSelect.value;
+            console.log('ResponsavelID: ' + responsavelId)
+
+            const responsavelSelectAcCo = document.getElementById('resCorrInput')
+            const responsavelIdAcCo = responsavelSelectAcCo.value
+            console.log('Responsavel Ação: ' + responsavelIdAcCo)
+
+            const dataCriacao = data.toLocaleDateString('pt-BR');
+            console.log('Data: ' + dataCriacao)// Formato dd/mm/aaaa
+
+            const boNumber = document.getElementById('boNumber').textContent
+            console.log('boNumber: ' + boNumber)
+
+            // Capturar o valor do switch OS/OF
+            const osofSwitch = document.getElementById('osofSwitch');
+            const osofValue = osofSwitch.checked ? "OF" : "OS";
+            console.log('OS/OF: ' + osofValue);
+
+            const fileInputName = document.getElementById('fileEvid');
+
+            const evidFile = ''
+
+            if (fileInputName && fileInputName.files.length > 0) {
+                const evidFile = fileInputName.files[0].name;
+                console.log(evidFile); // Ou faça algo com o nome do arquivo
+            }
+
+
+            const evidencia_arq = `C:/A1Fer/htdocs/sgq_documentos/${evidFile}`
+
+            console.log(evidencia_arq)
+
+            // Dados para ações corretivas (exemplo)
+            const acoesCorretivas = [];
+            const acaoElements = document.querySelectorAll('.acaoContainer'); // Seleciona todos os containers de ações
+
+            acaoElements.forEach(acaoElement => {
+                const acao = acaoElement.querySelector('.corrInput')?.value || "";
+                const responsavelAcao = acaoElement.querySelector('.resCorrInput')?.value || "";
+                const prazoAcao = acaoElement.querySelector('.dataB')?.value || "";
+                const evidenciaAcao = acaoElement.querySelector('.evidInputTextB')?.value || "";
+
+                acoesCorretivas.push({
+                    acao: acao,
+                    responsavel: responsavelAcao,
+                    prazo: prazoAcao,
+                    evidencia: evidenciaAcao
+                });
+            });
+
+            console.log(acoesCorretivas);
+
+            const dados = {
+                origem_id: origemId,
+                sub_area_id: subAreaId,
+                fato: fato,
+                evidencia_texto: evidenciaTexto,
+                evidencia_arq: evidencia_arq,
+                solicitante_id: solicitanteId,
+                responsavel_id: responsavelId,
+                responsavelIdAcCo: responsavelIdAcCo,
+                data_criacao: dataCriacao,
+                ano_criacao: ano,
+                bo_number: boNumber, // Novo nome do campo
+                acoes_corretivas: acoesCorretivas,
+                osof: osofValue // Adicionando o novo campo para o switch OS/OF
+            };
+
+            fetch('salvar_bo/', { // Certifique-se de que a URL está correta
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(dados)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('BO salvo com sucesso!');
+                } else {
+                    alert(`Erro ao salvar BO: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao salvar BO.');
+            });
+        });
+    });
+
+    // Atualizar a data atual
+    document.addEventListener('DOMContentLoaded', function() {
+        const dataAtualElement = document.getElementById('dataAtual');
+        const dataAtual = new Date();
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        dataAtualElement.textContent = dataAtual.toLocaleDateString('pt-BR', options);
+    });
+</script>
+{% endblock %}

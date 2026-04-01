@@ -1,0 +1,29 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Controle de usuário</title>
+{% endblock %}
+{% block main %}
+
+<div class="container row mx-auto">
+    <div class="col-sm-12 col-md-12 col-xl-12 mt-5 bordas bg-white border shadow">
+        <h1 class="display-4 row justify-content-center ">Controle de Acessos</h1>
+        <hr class="my-4">
+
+        <div class="text-center my-3">
+            <img class="bordas mb-3 " style='max-height: 500px; min-height: 500px;' src="{% static random_file %}">
+            <h5>Carregando lista de usuários. Por favor, aguarde!</h5>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+      // Tempo de espera simulado (apenas para demonstração)
+      setTimeout(function() {
+        window.location.href = "/app/eletrica/ControleUser/"; // Redirecionamento para a página desejada
+      }, 1000);
+    });
+  </script>
+
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+    <link href="{% static 'js/bootstrap.min.css' %}">
+</head>
+
+
+<style>
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-5">
+    {% csrf_token %}
+    <div class="card mb-4">
+        <div class="card-body col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Tela de Controle de Projeto</b></h2>
+        </div>
+        <div class="card-body container mx-auto">
+            <div class="tab_cont p-3">
+                <table class="table table-bordered rounded" id="table">
+                    <thead>
+                    <tr>
+                        <th hidden>ID</th>
+                        <th scope="col">Nome do Projeto</th>
+                        <th scope="col">Código do Projeto</th>
+                        <th scope="col">Tipo Da Pesquisa</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for id, projeto_nome, projeto_cod, status, tipo_pesquisa in RegistrosProjeto %}
+                    <tr>
+                        <td hidden>{{id}}</td>
+                        <td>{{projeto_nome}}</td>
+                        <td>{{projeto_cod}}</td>
+                        <td>{{tipo_pesquisa}}</td>
+                        <td>{{status}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class=" tab_cont p-3">
+                <div class="form-row">
+                    <div class="form-group col-md-4" hidden>
+                        <label for="doc_proj_id">ID</label>
+                        <input id="doc_proj_id" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_proj_nome">Projeto Nome</label>
+                        <input id="doc_proj_nome" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_proj_codigo">Código do Projeto</label>
+                        <input id="doc_proj_codigo" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_proj_tipo_pesquisa">Tipo de Pesquisa</label>
+                        <select id="doc_proj_tipo_pesquisa" class="form-control ">
+                            <option>ID</option>
+                            <option>NOME</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_proj_status">Status</label>
+                        <select id="doc_proj_status" class="form-control ">
+                            <option>ATIVO</option>
+                            <option>INATIVO</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <button type="button" class="btn butof" onclick="InsertEditProjeto()">Adicionar\Editar</button>
+                    <button type="button" class="btn btn-primary" onclick="Clear_Projeto()">Limpar</button>
+                    <button type="button" class="btn btn-primary bg-danger" onclick="DeleteProj()">Deletar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+
+<script>
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+    $("#table tbody tr").click(function () {
+        $(this).addClass('selected table-primary').siblings().removeClass('selected table-primary');
+        Fill_Projeto($(this).find('td:nth-child(1)').html(), $(this).find('td:nth-child(2)').html(), $(this).find('td:nth-child(3)').html(),  $(this).find('td:nth-child(4)').html(), $(this).find('td:nth-child(5)').html())
+
+    });
+    function Fill_Projeto(id, nome_projeto, codigo_proj, tipo_pesquisa, status ){
+        document.getElementById('doc_proj_id').value = id
+        document.getElementById('doc_proj_nome').value = nome_projeto
+        document.getElementById('doc_proj_codigo').value = codigo_proj
+        document.getElementById('doc_proj_tipo_pesquisa').value = tipo_pesquisa
+        document.getElementById('doc_proj_status').value = status
+    }
+    function Clear_Projeto(){
+        Fill_Projeto('','','','')
+        $("#table tbody tr").removeClass('selected table-primary')
+    }
+    function InsertEditProjeto(){
+        let id = document.getElementById('doc_proj_id').value
+        let nome_projeto = document.getElementById('doc_proj_nome').value
+        let codigo_proj = document.getElementById('doc_proj_codigo').value
+        let tipo_pesquisa = document.getElementById('doc_proj_tipo_pesquisa').value
+        let status = document.getElementById('doc_proj_status').value
+        $.ajax({
+            url: "", // the endpoint
+            type: "POST", // http method
+            dataType: "json",
+            data: {
+                "id": id,
+                "nome_projeto": nome_projeto,
+                "codigo_proj": codigo_proj,
+                "status": status,
+                "tipo_pesquisa": tipo_pesquisa,
+                'csrfmiddlewaretoken': csrf[0].value
+            } // data sent with the post request
+        }).done(function (data){
+            swalAlert_DOC('Inserir Registro', data['data'],'warning', 'Fechar')
+            Clear_Projeto()
+        });
+    }
+    function DeleteProj(){
+        let id = document.getElementById('doc_proj_id').value
+        if(isNaN(parseInt(id))){
+            swalAlert_DOC('Deletar Registro', 'NÃO foi possivel realizar a deleção, necessário selecionar um registro a ser deletado na tabela!','error', 'Fechar')
+            Clear_Projeto()
+        }else{
+            $.ajax({
+                url: "", // the endpoint
+                type: "DELETE", // http method
+                headers: {'X-CSRFToken': csrf[0].value},
+                dataType: "json",
+                data: {
+                    "id": id,
+                    'csrfmiddlewaretoken': csrf[0].value
+                 } // data sent with the post request
+        }).done(function (data) {
+                swalAlert_DOC('Deletar Registro', data['data'],'warning', 'Fechar')
+                Clear_Projeto()
+        });
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,63 @@
+{%extends 'geral/base.html'%}
+
+{% load static %}
+{%block head %}
+<title>{{TituloPg}}</title>
+{%endblock%}
+{%block main %}
+
+{% load poll_extras %}
+{% verify_tool as user_info %}
+
+<h1 class="d-flex justify-content-center">Carregando Lista de Atividades</h1>
+<h3 class="d-flex justify-content-center">N° da Tarefa:{{task_id}}</h3>
+
+<div class="mx-auto" style="padding-left: 50px; padding-right: 50px">
+           <div class="bg-white rounded-lg shadow-sm p-5" style="width: 100%">
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+
+                        <div class='progress-wrapper'>
+                          <div id='progress-bar' class='progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                        </div>
+                        <div id="progress-bar-message" onclick="after_success()">Aguardando a Inicialização da tarefa ...</div>
+
+                        <div class="col text-center">
+                            <button type="button" onclick="after_success('VOLTAR')" class="btn btn-primary btn-sm ">< Voltar</button>
+                            <button type="button" onclick="after_success('RELATORIO')" class="btn btn-primary btn-sm ">Relatório ></button>
+                        </div>
+
+                        <div class="loader" id="LoaderLeituraExcel" style="height: 50px; width:50px; display: none"></div>
+                        <table id="TabelaDados" class="display" style="padding: 0px; width:100%; font-size:75%; overflow-y: hidden;"></table>
+
+                    </div>
+                </div>
+           </div>
+
+    <script src="{% static 'js/celery_progress/celery_progress.js' %}"></script>
+    <script>
+         ID_ATV = {{ID|safe}}
+         console.log(ID_ATV);
+
+         $(function () {
+         var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
+         CeleryProgressBar.initProgressBar(progressUrl)
+        });
+
+        function after_success(msg){
+            //função para encaminhar a pagina para outro
+            const $mensagem = document.getElementById('progress-bar-message').innerText;//pega mensagem da tarefa
+            console.log($mensagem);
+            if($mensagem === 'Success!'){//se a mensagem for sucesso então entra para encaminhar
+                if(msg === 'RELATORIO'){
+                    window.location.href = window.location.origin + '/app/civil/excel/' + ID_ATV + '/';
+                }else{
+                     window.location.href = window.location.origin + '/app/civil/CadastrarAtividade/';
+                }
+            }
+        }
+
+    </script>
+
+
+{%endblock%}

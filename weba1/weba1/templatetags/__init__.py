@@ -1,0 +1,1 @@
+# Intencionalmente vazio para evitar conflitos com os templatetags nativos do Django.

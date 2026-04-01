@@ -1,0 +1,52 @@
+<div class="modal fade" id="caracteristicas_os" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Característica OS</h5>
+        <button type="button" class="close" onclick="$('#caracteristicas_os').modal('hide'); window.location.reload()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+              <label for="os_carac_tipo_cabo">Tipo de Cabo:</label>
+              <select class="form-control" id="os_carac_tipo_cabo" onchange="ChangeTipoCaboFolga()">
+                <option value="0">---</option>
+                {% for id, value in tipos_cabo.items %}
+                  <option value="{{id}}">{{value}}</option>
+                {% endfor %}
+              </select>
+          </div>
+
+          <div class="col-12 mt-1">
+              <label for="os_carac_folga">Folga(%):</label>
+              <input type="text" class="form-control" id="os_carac_folga">
+          </div>
+        </div>
+
+        <div class="row mt-2">
+          <div class="col-6 border-right">
+              <label for="os_carac_all_fabricantes">Fabricantes:</label>
+              <select class="form-control" id="os_carac_all_fabricantes" multiple>
+              </select>
+          </div>
+
+          <div class="col-6">
+              <label for="os_carac_fabricantes_os">Fabricantes na OS:</label>
+              <select class="form-control" id="os_carac_fabricantes_os" multiple ondragover="DragOverFabOs(event)" ondragleave="DragLeaveFabOs(event)" ondrop="DropFabGeralInFabOs(event)">
+              </select>
+
+              <div class="col-12 d-flex justify-content-end pr-0 mt-1">
+                  <button type="button" class="btn btn-secondary" id="btn_thrash_fab_os" ondragover="ColorButtonTrash(event, 'white')" ondragleave="ColorButtonTrash(event, 'gray')" ondrop="DropFabOsInTrash(event)">🗑️</button>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" onclick="$('#caracteristicas_os').modal('hide'); window.location.reload()">Fechar</button>
+        <button type="button" class="btn btn-warning" onclick="SendTipoCaboFolga()">Adicionar/Alterar</button>
+      </div>
+    </div>
+  </div>
+</div>

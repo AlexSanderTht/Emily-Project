@@ -1,0 +1,112 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <!-- UMA ALMA CARIDOSA ME AJUDE, EXISTE ALGUM BRANCH QUE EU NÃO TENHO ACESSO QUE POSSUI OS ARQUIVOS DO BOOSTRAP
+    POR FAVOR, RETIRE OS LINKS E REDIRECIONE PARA OS ARQUIVOS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+            crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+
+<style>
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+</style>
+
+<div class="row p-3">
+    {% csrf_token %}
+    <div class="card mb-4">
+        <div class="col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Tela de Controle de Os do ListDoc</b></h2>
+        </div>
+        <div class="container mx-auto">
+            <div class="tab_cont p-3">
+                <table class="table table-bordered rounded" id="table">
+                    <thead>
+                    <tr>
+
+                        <th scope="col">Numero Os</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Email</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for  tb_os_listdoc_num_os, tb_os_listdoc_activate, email_os in RegistrosOsTipoItem %}
+                    <tr>
+                        <td>{{tb_os_listdoc_num_os}}</td>
+                        {% if tb_os_listdoc_activate is 1 %}
+                        <td>Ativo</td>
+                        {% else %}
+                        <td>Inativo</td>
+                        {% endif %}
+                        <td>{{email_os}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class=" tab_cont p-3">
+                <div class="form-row">
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_osti_status">Status</label>
+                        <select id="doc_osti_status" class="form-control ">
+                            <option title="1">Ativo</option>
+                            <option title="0">Inativo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_osti_os">Lista Os</label>
+                        <select id="doc_osti_os" class="form-control ">
+                            {% for Os in ListOs %}
+                            <option>{{Os}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="doc_email_os">Email</label>
+                        <input id="doc_email_os" class="form-control ">
+                    </div>
+                </div>
+                <div>
+                    <button type="button" class="btn butof" onclick="InsertEditOs()">Adicionar\Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+
+<script>
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+    function InsertEditOs(){
+        let status = document.getElementById('doc_osti_status').selectedOptions[0].title
+        let Os = document.getElementById('doc_osti_os').value
+        let email = document.getElementById('doc_email_os').value
+        $.ajax({
+            url: "", // the endpoint
+            type: "POST", // http method
+            dataType: "json",
+            data: {
+                "status": status,
+                "os": Os,
+                "email": email,
+                'csrfmiddlewaretoken': csrf[0].value
+            } // data sent with the post request
+        }).done(function (data){
+            alert(data['data'])
+            document.location.reload(true);
+        });
+        }
+</script>
+{% endblock %}

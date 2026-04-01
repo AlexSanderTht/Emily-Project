@@ -1,0 +1,107 @@
+{% extends 'geral/base.html' %}
+
+{% block head %}
+<title>A1Rev</title>
+{% endblock %}
+{% block help %}
+<h7>Botão "Escolher" Neste botão você irá selecionar doc. com extensão .xlsx. </h7>
+<br><br>
+<h7>Opção "Controladoria" Nesta opção você irá revisar somente  listas da controladoria. </h7>
+<br><br>
+<h7>Opção "Outra lista" Nesta opção você irá revisar as demais listas. </h7>
+<br><br>
+<h7>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas. </h7>
+<br><br>
+<h7>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores. </h7>
+<br><br>
+<h7> "Chave 2" Neste campo você irá inserir a coluna  sem repetição de valores(caso a primeira tenha repetição). </h7>
+<br><br>
+<h7>Botão "Revisar" Neste botão ele realizará a revisão entre os doc. marcando em amarelo o que mudou, mantendo a extensão .xlsx.</h7>
+<br><br>
+<h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+<div class="container py-5">
+
+    <!-- For demo purpose -->
+    <div class="row mb-4">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4"><b>A1 REV Excel</b></h1>
+      </div>
+    </div>
+    <!-- End -->
+
+    <div class="row">
+      <div class="col-lg-7 mx-auto">
+        <div class="bg-white rounded-lg shadow-sm p-5">
+
+
+          <!-- Credit card form content -->
+          <div class="tab-content">
+
+            <!-- credit card info-->
+            <div id="nav-tab-card" class="tab-pane fade show active">
+
+              <div>
+                <form action="{% url 'download' %}" id="auto-download" method="GET" enctype="multipart/form-data">
+                    {% csrf_token %}
+                </form>
+              </div>
+
+              <form role="form" action="{% url 'a1rev' %}" method="POST" enctype="multipart/form-data" id="form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <button type="button"  id="bot-anterior"  class=" btn butof " onclick="clicked('anterior')"> Escolher</button>
+                    <input type="file" id="anterior" hidden="hidden"  onchange="selectedFile(event, 'anterior')" name="anterior"/>
+                    <span id = "text-anterior"  class= "label-style"> Selecione o arquivo da revisão anterior (xlsx):</span>
+                    <br>
+                    <br>
+                    <button type="button"  id="bot-atual" class=" btn butof  " onclick="clicked('atual')"> Escolher</button>
+                    <input type="file" id="atual" hidden="hidden"  onchange="selectedFile(event, 'atual')" name="atual" />
+                    <span id = "text-atual"  class= "label-style"> Selecione o arquivo da revisão atual (xlsx):</span>
+
+                </div>
+
+                <div class="form-group">
+                    <input type="radio" name="options" value="controladoria"><span class = "label-style"> Controladoria</span><br>
+                    <input type="radio" name="options" value=""><span class = "label-style">  Outra lista</span><br>
+                    <input type="checkbox" name="sequence" value="True"><span class = "label-style"> Revisar abas por posição</span><br>
+                </div>
+
+                <div class="row">
+
+                  <div class="col-sm-4">
+                    <div class="form-group mb-4">
+                      <label data-toggle="tooltip" title="Primeira coluna">Chave 1
+                                                  <i class="fa fa-question-circle"></i>
+                                              </label>
+                      <input type="text" required class="form-control" name="key1">
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="form-group mb-4">
+                      <label placeholder="Digite aqui" data-toggle="tooltip" title="Segunda coluna">Chave 2
+                                                  <i class="fa fa-question-circle"></i>
+                                              </label>
+                      <input type="text" required class="form-control" name="key2">
+                      <!-- chave 2 não é obrigatória -->
+                    </div>
+                  </div>
+                </div>
+              </form>
+              <!-- barra de progresso -->
+              <div style="margin-left: 0px; margin-right: 0px" >
+                {% include '../bar.html' %}
+                {% block bar %}
+                {% endblock %}
+              </div><!-- barra de progresso -->
+            </div>
+            <!-- End -->
+            <!-- End -->
+          </div>
+          <!-- End -->
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}

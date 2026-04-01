@@ -1,0 +1,25 @@
+<div class="modal fade" id="modal_sim_nao" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Atenção!</h5>
+                <button type="button" class="close" onclick="$('#modal_sim_nao').modal('hide')">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="msg_content_modal_sim_nao"></p>
+                <div id="progress-box-calc-cabos-1" class="text-center mt-3" hidden>
+                    <div class='progress-wrapper'>
+                        <div id='progress-bar-calc-cabos-1' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                    </div><br>
+                    <div id="progress-bar-message-calc-cabos-1" class="text-center">Aguardando a Inicialização da tarefa ...</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btn_nao_modal_sim_nao">Não</button>
+                <button type="button" class="btn btn-success" id="btn_sim_modal_sim_nao">Sim</button>
+            </div>
+        </div>
+    </div>
+</div>

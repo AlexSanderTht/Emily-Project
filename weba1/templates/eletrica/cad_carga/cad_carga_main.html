@@ -1,0 +1,148 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | LIGAÇÕES</title>
+{% endblock %}
+
+{% block main %}
+
+<div class="text-justify border-bottom m-3">
+    <button class="btn btn-primary btn-warning position-absolute" onclick="window.history.go(-1)">Voltar</button>
+    <!--------------- Cabeçalho --------------->
+    <h3 class="text-center" id="cargasLabel">Ligações</h3>
+    <h4 class="text-center" id="OS" title="{{OS}}">Os: {{OS}}</h4>
+    <h4 class="text-center" id="Area" title="{{Area}}">Area: {{Area}}</h4>
+    <!--------------- Fim do Cabeçalho --------------->
+</div>
+
+<div class="container-fluid" data-keyboard="false">
+    <div class="row justify-content-center">
+        <!------------- Botões superiores ------------->
+        <div class="col-lg-12" id="btn_ligacao_select">
+            <button type="button" class="tablinks btn btn-secondary" name="type-eqps-lig" id="btn-mt-lig" onclick="BtnTypeEqpChecked(this.id, 'type-eqps-lig', 'dark', 'secondary');FillSearchFiled('Motores', 'Cargas');countItemsLig()">Motores</button>
+            <button type="button" class="tablinks btn btn-secondary" name="type-eqps-lig" id="btn-tr-lig" onclick="BtnTypeEqpChecked(this.id, 'type-eqps-lig', 'dark', 'secondary');FillSearchFiled('Transformadores', 'Cargas');countItemsLig()">Transformadores</button>
+            <button type="button" class="tablinks btn btn-secondary" name="type-eqps-lig" id="btn-pn-lig" onclick="BtnTypeEqpChecked(this.id, 'type-eqps-lig', 'dark', 'secondary');FillSearchFiled('Paineis', 'Cargas');countItemsLig()">Paineis</button>
+            <button type="button" class="tablinks btn btn-secondary" name="type-eqps-lig" id="btn-ca-lig" onclick="BtnTypeEqpChecked(this.id, 'type-eqps-lig', 'dark', 'secondary');FillSearchFiled('CargasAuxiliares', 'Cargas');countItemsLig()">Cargas Auxiliares</button>
+            <button type="button" class="tablinks btn btn-secondary" name="type-eqps-lig" id="btn-br-lig" onclick="BtnTypeEqpChecked(this.id, 'type-eqps-lig', 'dark', 'secondary');FillSearchFiled('Barramento', 'Cargas');countItemsLig()">Barramento</button>
+        </div><!--------------- Fim Botões superiores --------------->
+
+        <!--------------- Campo de pesquisa --------------->
+        <div class="col-lg-4">
+            <!--------------- Campo text cargas --------------->
+            <div class="w-100">
+                <div id="Cargas" class="tabcontent">
+
+                    <br>
+                    {% with id_select='CargasSearch' %}
+                    {% include "eletrica/cad_carga/pesquisa_e_dados.html"%}
+                    {% endwith %}
+                </div>
+            </div><!--------------- Campo text cargas --------------->
+
+            <div class="label_total" id="total_lig">
+              Total: <label id="itemCountLig"></label>
+            </div>
+
+            <!--------------- Botões inferiores Campo de pesquisa --------------->
+            <button type="button" class="btn btn-success" onclick="SendDatasLig()">Adicionar</button>
+            <button type="button" class="btn btn-primary" onclick="UpdateDatasLig()">Alterar</button>
+            <button type="button" class="btn btn-dark shadow" id="btn-lig-import" data-toggle="modal" data-target="#CadastroDeCargas">Import/Export</button>
+            <button type="button" class="btn btn-warning" onclick="ClearFields(true);BtnTypeEqpChecked('not-id', 'type-eqps-lig', 'dark', 'secondary')">Limpar</button>
+            <button type="button" class="btn btn-danger" id="btn-lig-excluir" onclick="OpenModalExcludeLig()">Excluir</button>
+            <!--------------- Fim Botões inferiores Campo de pesquisa  --------------->
+            <br>
+        </div><!--------------- Fim Campo de pesquisa --------------->
+
+        <!--------------- Início campo text Destino --------------->
+        <div class="col-lg-3">
+            <!--------------- Campo text cargas --------------->
+            <div class="w-100">
+                <div class="tabcontent">
+                    <br>
+                    {% with id_select='DestinoSearch' %}
+                    {% include "eletrica/cad_carga/pesquisa_e_dados.html"%}
+                    {% endwith %}
+                </div>
+
+            </div><!--------------- Campo text cargas --------------->
+
+            <div class="label_total" id="total_lig_dest">
+                Total: <label id="itemCountLigDest"></label>
+            </div>
+
+        </div><!--------------- Fim campo text Destino --------------->
+
+        <!--------------- Início formulários dropdown expansível --------------->
+        <div class="col-lg-5 mt-lg-3">
+            <div class="col-6">
+                <div class="row d-flex justify-content-center radius_10 bg-secondary text-white">
+                    <div class="col-5 text-center">
+                        GERAR CABO
+                    </div>
+
+                    <div class="col-2">
+                        <label class="switch_toggle mb-0 mt-1">
+                            <input type="checkbox" value="NAO" id="ligs_gerar_cabos">
+                            <span class="slider_switch round"></span>
+                        </label>
+                    </div>
+
+                    <div class="col-5 text-center">
+                        NÃO GERAR
+                    </div>
+                </div>
+            </div>
+            {% include "eletrica/cad_carga/tag_cub_gav.html"%}
+            {% include "eletrica/cad_carga/info_alimentador.html"%}
+            <br>
+        </div><!--------------- Fim formulários dropdown expansível --------------->
+        {% include "eletrica/modal_warning.html"%}
+
+    </div>
+    <!------------------ Início Modal Tabela ------------------>
+    <div class="modal" id="Modal_Import_Carga">
+        <div class="modal-dialog mt-5 w-75 mw-100">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div id="tabela_verificacao_carga"></div>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim Modal Tabela ------------------>
+
+    <!------------------ Início Modal Load ------------------>
+    <div class="modal" id="Modal_Load_Import_Carga">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="mx-auto">
+                        <img class="w-100" src="{% static 'img/sheet_graph.gif' %}">
+                    </div>
+                    <p class="pb-3"><b>Carregando Tabela por favor aguarde...</b></p>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim Modal Load ------------------>
+</div>
+
+<script src="{% static 'js/eletrica/A1Pro/a1pro_ctrl.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/cad_carga/eqp_ctrl.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/cad_carga/lig_ctrl.js' %}"></script>
+<script>
+    window.onload = verify_hierarchy_in_screen('lig');load_element_load_wheel();
+</script>
+
+{% with nome_id='CadastroDeCargas' nome_app='eletrica/a1pro' nome_url_download_template='DownloadTemplateCargas' nome_url_enviar_arquivo='TelaCarga/UploadExcelCargas' nome_url_download_arquivo='TelaCarga/DownloadExcelCargas'%}
+{% include "eletrica/ImportExportBase.html"%}
+{% endwith %}
+
+
+{% include "eletrica/LoadWheelModal.html"%}
+{% include "eletrica/SimNaoModal.html"%}
+{% endblock %}
+
+
+
+
+

@@ -1,0 +1,158 @@
+{% load static %}
+{% block isolacao %}
+
+    <div class="modal-header">
+      <h5 class="modal-title" id="gavetasLabel">Classe de isolação</h5>
+    </div>
+    <div class="modal-body">
+        <!-- Cabeçote do modal -->
+        <div class="row mb-2">
+            <div class="col-sm col-md-8 col-xl">
+                <label for="func-class-isol">Função</label>
+                  <select id="func-class-isol" class="form-control" onchange="ChangeFunc()">
+                  </select>
+            </div>
+            <div class="col-sm d-flex align-items-end">
+              <div class="form-check ">
+                <input class="form-check-input" type="checkbox" id="all-funcs-class-isol" onchange="manipuling_all_funcs()">
+                <label class="form-check-label" for="all-funcs-class-isol">
+                  Atribuir à todas funções
+                </label>
+              </div>
+            </div>
+        </div>
+        <!-- Fim do Cabeçote do modal -->
+
+        <!-- Navbar onde seleciona a opção de bt/mt ou neutro/terra -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item" id="container-bt-mt-item">
+                <a class="nav-link" onclick="show_blocks('container-bt-mt', 'container-nt')"><b>BT/MT</b></a>
+              </li>
+              <li class="nav-item" id="container-nt-item">
+                <a class="nav-link" onclick="show_blocks('container-nt', 'container-bt-mt')"><b>Neutro/Terra</b></a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+        <!-- fim do Navbar onde seleciona a opção de bt/mt ou neutro/terra -->
+
+        <br>
+
+        <!-- container onde guarda todo o conteudo de BT/MT -->
+        <div class="container" id="container-bt-mt">
+            <!-- retangulo BT -->
+            <div class="border-bottom border-left border-right">
+                <div class="row mx-4 mb-2">
+                    <h6><b>BT</b></h6>
+                </div>
+
+                <div class="row mx-2 mb-2">
+                    <div class="col-sm-5">
+                        <label for="bt-class-isol">Classe Isol.</label>
+                        <select id="bt-class-isol" class="form-control">
+                        </select>
+                    </div>
+
+                    <div class="col-sm-5">
+                        <label for="bt-isol">Isolação</label>
+                        <select id="bt-isol" class="form-control">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <!-- fim do retangulo BT -->
+
+            <!-- Retangulo MT -->
+            <div class="border-bottom border-left border-right">
+                <div class="row mx-4 mb-2">
+                    <h6><b>MT</b></h6>
+                </div>
+
+                <div class="row mx-2 mb-2">
+                    <div class="col-sm-5">
+                        <label for="mt-class-isol">Classe Isol.</label>
+                        <select id="mt-class-isol" class="form-control">
+                        </select>
+                    </div>
+
+                    <div class="col-sm-5">
+                        <label for="mt-isol">Isolação</label>
+                        <select id="mt-isol" class="form-control">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- Fim do Retangulo MT -->
+        </div>
+        <!-- FIM DO container onde guarda todo o conteudo de BT/MT -->
+
+        <!-- container onda guarda todo o conteudo de NEUTRO/TERRA -->
+        <div class="container" id="container-nt">
+            <!-- retangulo Neutro -->
+            <div class="border-bottom border-left border-right">
+                <div class="row mx-4 mb-2">
+                    <h6><b>NEUTRO</b></h6>
+                </div>
+
+                <div class="row mx-2 mb-2">
+                    <div class="col-sm-5">
+                        <label for="nt-class-isol">Classe Isol.</label>
+                        <select id="nt-class-isol" class="form-control">
+                        </select>
+                    </div>
+
+                    <div class="col-sm-5">
+                        <label for="nt-isol">Isolação</label>
+                        <select id="nt-isol" class="form-control">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <!-- fim do retangulo Neutro -->
+
+            <!-- Retangulo terra -->
+            <div class="border-bottom border-left border-right">
+                <div class="row mx-4 mb-2">
+                    <h6><b>TERRA</b></h6>
+                </div>
+
+                <div class="row mx-2 mb-2">
+                    <div class="col-sm-5">
+                        <label for="tr-class-isol">Classe Isol.</label>
+                        <select id="tr-class-isol" class="form-control">
+                        </select>
+                    </div>
+
+                    <div class="col-sm-5">
+                        <label for="tr-isol">Isolação</label>
+                        <select id="tr-isol" class="form-control">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- fim do Retangulo terra -->
+        </div>
+        <!-- fim do container onda guarda todo o conteudo de NEUTRO/TERRA -->
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="send_morrings()">Atualizar</button>
+        <button type="button" class="btn btn-dark" onclick="$('#isolacao').modal('hide')">Fechar</button>
+    </div>
+
+    <script>
+        window.onload = show_blocks('container-bt-mt', 'container-nt')
+
+        function show_blocks(id_modal_show, id_modal_hide){
+            $('#'+id_modal_show).show()
+            document.getElementById(id_modal_show +'-item').className = 'nav-item active'
+            $('#'+id_modal_hide).hide()
+            document.getElementById(id_modal_hide +'-item').className = 'nav-item'
+        }
+    </script>
+    <script src="{% static 'js/eletrica/A1Pro/ClasseIsol.js' %}"></script>
+{% endblock %}

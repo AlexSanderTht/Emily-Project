@@ -1,0 +1,67 @@
+{% extends 'geral/base.html' %}
+{% block head %}
+    <title>A1RevPDF</title>
+{% endblock %}
+{% block help %}
+    <h7>Botão "Escolher" Neste botão você irá selecionar uma pasta contendo doc. com extensão .pdf. </h7>
+    <br><br>
+    <h7>Botão "Revisar" Neste botão ele realizará a revisão dos doc. transformando em extensão .jpg. </h7>
+    <br><br>
+    <h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+    <br><br>
+    <h7>Certifique-se que os nomes dos arquivos são os mesmos entre as revisões, dessa forma arquivos com nomes não encontrados não serão revisados. </h7>
+{% endblock %}
+{% block main %}
+    <div class="container py-5">
+        <!-- For demo purpose -->
+        <div class="row mb-4">
+          <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4"><b>A1 REV PDF</b></h1>
+
+          </div>
+        </div>
+        <!-- End -->
+        <div class="row">
+          <div class="col-lg-7 mx-auto">
+            <div class="bg-white rounded-lg shadow-sm p-5">
+              <!-- Credit card form content -->
+              <div class="tab-content">
+                <!-- credit card info-->
+                <div id="nav-tab-card" class="tab-pane fade show active">
+                  <div>
+                    <form action="{% url 'download' %}" id="auto-download" method="GET" enctype="multipart/form-data">
+                        {% csrf_token %}
+                    </form>
+                  </div>
+
+                  <form role="form" id="form" action="{% url 'a1revpdf' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <button type="button"  id="bot-anterior"  class=" btn butof " onclick="clicked('anterior')"> Escolher</button>
+                        <input type="file" id="anterior" hidden="hidden"  onchange="selectedFolder(event, 'text-anterior')" name="anterior" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
+                        <span id = "text-anterior"  class= "label-style"> Selecione a pasta da revisão anterior:</span>
+                        <br>
+                        <br>
+                        <button type="button"  id="bot-atual" class="btn butof" onclick="clicked('atual')"> Escolher</button>
+                        <input type="file" id="atual" hidden="hidden"  onchange="selectedFolder(event, 'text-atual')" name="atual" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
+                        <span id = "text-atual"  class= "label-style"> Selecione a pasta da revisão atual:</span>
+                    </div>
+                    <div class="row">
+                    </div>
+                  </form>
+                  <div style="margin-left: 0px; margin-right: 0px" ><!-- barra de progresso -->
+                    {% include 'bar.html' %}
+                    {% block bar %}
+                    {% endblock %}
+                  </div><!-- barra de progresso -->
+                <!-- End -->
+                <!-- End -->
+              </div>
+              <!-- End -->
+
+            </div>
+          </div>
+        </div>
+        </div>
+    </div>
+{% endblock %}

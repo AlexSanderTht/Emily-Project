@@ -1,0 +1,99 @@
+{% load static %}
+<div class="modal fade bd-example-modal-xl" id="modal_de_para_tampas" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">DePara</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="row">
+              <div class="col-10 d-flex align-items-center">
+                  DePara Materias Tampa
+              </div>
+
+              <div class="col-2 d-flex justify-content-center align-items-center">
+                  <i class="fa-solid fa-sort hover_btn_mais_lst_mat_mats_adc" onclick="ClickBtnShowContentAdcMatInFilter(this)"></i>
+              </div>
+          </div>
+
+          <div class="row ml-1 mt-1" hidden>
+
+              <div class="col-4 border-left border-bottom border-top">
+                  <label>Código:</label>
+                  <input class="form-control mb-2" type="text" id="lst_mat_de_para_tampas_cod">
+              </div>
+
+              <div class="col-4 border-bottom border-top">
+                  <label>Código Tampa:</label>
+                  <input class="form-control mb-2" type="text" id="lst_mat_de_para_tampas_cod_tampa">
+              </div>
+
+              <div class="col-4 border-bottom border-top">
+                  <label>Presilhas:</label>
+                  <input class="form-control mb-2" type="text" id="lst_mat_de_para_tampas_presilhas">
+              </div>
+
+              <div class="col-4 border-bottom border-top">
+              <label>Quant Presilhas:</label>
+                  <input class="form-control mb-1" type="text" id="lst_mat_de_para_tampas_quant">
+              </div>
+
+              <div class="col-2 d-flex align-items-end border-bottom border-top border-right">
+                  <i class="fa-solid fa-plus mb-3 hover_btn_mais_lst_mat_mats_adc" onclick="AdcDeParaTampasLstMat()"></i>
+              </div>
+          </div>
+
+          <div class="row mt-1 d-flex justify-content-center depara_mats_tampa_table_body">
+              <div class="col-12">
+                  <table class="mb-1 w-100" title="CTRL + V Para colar sua seleção!!" id="lst_mat_table_de_para">
+                      <thead>
+                          <tr>
+                              <th class="text-center">#</th>
+                              <th class="text-center">Código</th>
+                              <th class="text-center">Código Tampa</th>
+                              <th class="text-center">Código Presilha</th>
+                              <th class="text-center">QTD Presilha</th>
+                              <th class="text-center">Remover</th>
+                          </tr>
+                      </thead>
+                      <tbody id="lst_mat_body_table_de_para" >
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+          <div class="col-4 border-left border-bottom border-top">
+              <label id="lst_mat_cod_lb">Cód:</label>
+                <textarea  class="form-control mb-1" type="text" id="lst_mat_cod" readonly></textarea>
+              </div>
+
+              <div class="col-4 border-bottom border-top">
+                  <label id="lst_mat_cod_tampa_lb">Cód Tampa:</label>
+                  <textarea class="form-control mb-1" type="text" id="lst_mat_cod_tampa" readonly></textarea>
+              </div>
+
+              <div class="col-4 border-bottom border-top">
+                  <label id="lst_mat_tampas_presilhas_lb">Cód Presi:</label>
+                  <textarea class="form-control mb-1" type="text" id="lst_mat_tampas_presilhas" readonly></textarea>
+              </div>
+      </div>
+
+      <div class="modal-footer">
+          <div class="col-3">
+              <button type="button" class="btn btn-danger ml-2" onclick="excluirSelecionados()">Excluir Selecionados</button>
+          </div>
+
+        <div class="col-9 justify-content-end" style="display: flex">
+            <button type="button" class="btn btn-warning mr-2" onclick="SaveDeParaTampasLstMat()">Salvar</button>
+            <button type="button" class="btn btn-warning" data-dismiss="modal">Fechar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

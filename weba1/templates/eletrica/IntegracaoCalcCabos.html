@@ -1,0 +1,87 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | INTEGRAÇÃO CALC CABOS</title>
+{% endblock %}
+
+{% block main %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@6.2.2/dist/handsontable.full.min.css">
+<script src="https://cdn.jsdelivr.net/npm/handsontable@6.2.2/dist/handsontable.full.min.js"></script>
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/IntegracaoCalcCabos.js' %}"></script>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/perfect-scrollbar@1.5.0/dist/css/perfect-scrollbar.min.css">
+<script src="https://cdn.jsdelivr.net/npm/perfect-scrollbar@1.5.0/dist/js/perfect-scrollbar.min.js"></script>
+<style>
+
+#tabela-container {
+  position: relative;
+  overflow: hidden;
+  height: 800px;
+}
+
+.ps {
+  height: 100%;
+}
+
+.handsontable tr:nth-child(n+3) td {
+    white-space: nowrap; /* Impede a quebra de linha */
+    overflow: hidden; /* Oculta o texto que exceder a largura da célula */
+    text-overflow: ellipsis; /* Adiciona reticências ao texto truncado */
+}
+
+.no-wrap {
+  white-space: nowrap; /* Evita quebra de linha */
+  overflow: hidden; /* Oculta o texto excedente */
+  text-overflow: ellipsis; /* Adiciona reticências ao final do texto longo */
+}
+
+
+
+/* O contêiner que envolve a área da rolagem horizontal e vertical */
+.handsontable .wtHolder {
+    overflow: auto !important; /* Adiciona barras de rolagem se necessário */
+}
+
+/* Garante que as linhas congeladas fiquem no topo da tabela */
+.handsontable .ht_clone_top {
+    position: sticky;
+    top: 0;
+    z-index: 3; /* Certifique-se de que fique acima do conteúdo rolável */
+}
+
+/* Evita que as células quebras de linha e ainda mostra a rolagem */
+.handsontable td {
+    white-space: nowrap; /* Impede a quebra de linha */
+    overflow: hidden; /* Oculta o conteúdo que ultrapassar a célula */
+    text-overflow: ellipsis; /* Adiciona reticências ao conteúdo que exceder a largura da célula */
+}
+
+</style>
+
+<div class="container-fluid h-100">
+    <div class="text-justify m-3">
+        <button class="btn btn-primary btn-warning" onclick="window.history.go(-1)">Voltar</button>
+    </div>
+    <div class="row d-flex justify-content-center mt-2">
+        <h3>INTEGRAÇÃO CALCULADORA DE CABOS</h3>
+    </div>
+
+    <div class="container-fluid d-flex justify-content-center">
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 m-3"
+             style="width: 90%;" id="id_container">
+            <div id="tabela-container"></div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+{% include './ModalDadosDocumento.html' %}
+{% include './ModalLoadCelery.html' %}
+
+
+{% endblock %}

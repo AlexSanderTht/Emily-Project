@@ -1,0 +1,153 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+    <link href="{% static 'js/bootstrap.min.css' %}">
+</head>
+
+<style>
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-3">
+    {% csrf_token %}
+    <div class="card mb-4">
+        <div class="card-body col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Tela de Controle de Tipo Item</b></h2>
+        </div>
+        <div class="card-body container mx-auto">
+            <div class="tab_cont p-3">
+                <table class="table table-bordered rounded" id="table">
+                    <thead>
+                    <tr>
+                        <th hidden>ID</th>
+                        <th scope="col">Descrição</th>
+                        <th scope="col">Código</th>
+                        <th scope="col">Projeto</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for id, desc, cod, proj in RegistrosProjeto %}
+                    <tr>
+                        <td hidden>{{id}}</td>
+                        <td>{{desc}}</td>
+                        <td>{{cod}}</td>
+                        <td>{{proj}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class=" tab_cont p-3">
+                <div class="form-row">
+                    <div class="form-group col-md-4" hidden>
+                        <label for="doc_tp_id">ID</label>
+                        <input id="doc_tp_id" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_tp_nome">Descrição</label>
+                        <input id="doc_tp_nome" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_tp_codigo">Código</label>
+                        <input id="doc_tp_codigo" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_tp_projeto">Projeto</label>
+                        <select id="doc_tp_projeto" class="form-control ">
+                            {% for id, nome_proj in Projeto %}
+                            <option title="{{id}}">{{nome_proj}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <button type="button" class="btn butof" onclick="InsertEditTipoItem()">Adicionar\Editar</button>
+                    <button type="button" class="btn btn-primary" onclick="Clear_Tipo_Item()">Limpar</button>
+                    <button type="button" class="btn btn-primary bg-danger" onclick="DeleteTipoItem()">Deletar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+
+<script>
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+    $("#table tbody tr").click(function () {
+        $(this).addClass('selected table-primary').siblings().removeClass('selected table-primary');
+        Fill_Tipo_Item($(this).find('td:nth-child(1)').html(), $(this).find('td:nth-child(2)').html(), $(this).find('td:nth-child(3)').html(), $(this).find('td:nth-child(4)').html())
+
+    });
+
+    function Fill_Tipo_Item(id, descricao, codigo, proj) {
+        document.getElementById('doc_tp_id').value = id
+        document.getElementById('doc_tp_nome').value = descricao
+        document.getElementById('doc_tp_codigo').value = codigo
+        document.getElementById('doc_tp_projeto').value = proj
+    }
+
+    function Clear_Tipo_Item() {
+        Fill_Tipo_Item('', '', '', '')
+        $("#table tbody tr").removeClass('selected table-primary')
+    }
+
+    function InsertEditTipoItem() {
+        let id = document.getElementById('doc_tp_id').value
+        let descricao = document.getElementById('doc_tp_nome').value
+        let codigo = document.getElementById('doc_tp_codigo').value
+        let proj_id = document.getElementById('doc_tp_projeto').selectedOptions[0].title
+        $.ajax({
+            url: "", // the endpoint
+            type: "POST", // http method
+            dataType: "json",
+            data: {
+                "id": id,
+                "descricao": descricao,
+                "codigo": codigo,
+                "proj_id": proj_id,
+                'csrfmiddlewaretoken': csrf[0].value
+            } // data sent with the post request
+        }).done(function (data) {
+            swalAlert_DOC('Inserir Registro', data['data'],'warning', 'Fechar')
+            Clear_Tipo_Item()
+        });
+    }
+
+    function DeleteTipoItem(){
+        let id = document.getElementById('doc_tp_id').value
+        if(isNaN(parseInt(id))){
+            swalAlert_DOC('Deletar Registro', 'NÃO foi possivel realizar a deleção, necessário selecionar um registro a ser deletado na tabela!','error', 'Fechar')
+            Clear_OS_Proj()
+        }else{
+            $.ajax({
+                url: "", // the endpoint
+                type: "DELETE", // http method
+                headers: {'X-CSRFToken': csrf[0].value},
+                dataType: "json",
+                data: {
+                    "id": id,
+                    'csrfmiddlewaretoken': csrf[0].value
+                 } // data sent with the post request
+        }).done(function (data) {
+                swalAlert_DOC('Deletar Registro', data['data'],'warning', 'Fechar')
+                Clear_Tipo_Item()
+        });
+        }
+    }
+</script>
+{% endblock %}

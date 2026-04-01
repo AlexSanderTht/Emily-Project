@@ -1,0 +1,251 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>A1Rev</title>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<meta name="description" content="" />
+	<meta name="author" content="" />
+	<title>A1 Pro</title>
+	<script src="{% static 'js/scripts.js' %}"></script>
+	<link href="{% static 'css/styles.css' %} " rel="stylesheet" />
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script src="{% static 'js/scripts.js' %}"></script>
+	<link href="{% static 'css/styles.css' %} " rel="stylesheet" />
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"  rel="stylesheet" id="bootstrap-css">
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" id="bootstrap-css">
+	<link href="https://code.jquery.com/jquery-3.3.1.slim.min.js" rel="stylesheet" id="bootstrap-css">
+	<script type="text/javascript" src="{% static 'js/bootstrap-filestyle.min.js' %}"> </script>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+	<meta charset="utf-8">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
+
+
+</head>
+<body style="background: #f5f5f5">
+         
+	<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+		<a class="navbar-brand" href="http://localhost:8000/app/"><left><img src="{% static "img/a1teste.png"%}" alt="logo" ></left> </a>
+		<button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+		<!-- Navbar Search-->
+		<form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+		   </form>
+		<!-- Navbar-->
+		<ul class="navbar-nav ml-auto ml-md-0">
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" id="userDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="http://localhost:8000/">Logout</a>
+				</div>
+			</li>
+		</ul> 
+	</nav>
+	<div id="layoutSidenav">
+	<div id="layoutSidenav_nav">
+		<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+			<div class="sb-sidenav-menu">
+				<div class="nav">
+				<div class="sb-sidenav-menu-heading">área</div>
+				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+					
+					<div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+					Geral
+					<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+				</a>
+				<div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+					<nav class="sb-sidenav-menu-nested nav">
+						<a class="nav-link" href="http://localhost:8000/app/a1rev/">A1Rev</a>
+						<a class="nav-link" href="http://localhost:8000/app/a1revpdf/">A1RevPDF</a>
+						
+					</nav>
+				</div>
+				
+				<div class="nav">
+					<div class="sb-sidenav-menu-heading"></div>
+					<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseEngenharia" aria-expanded="false" aria-controls="collapseLayouts">
+						
+						<div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+						Engenharia
+						<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+					</a>
+					<div class="collapse" id="collapseEngenharia" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+						<nav class="sb-sidenav-menu-nested nav">
+							<a class="nav-link" href="http://localhost:8000/app/a1list/">A1Listas</a>
+							<a class="nav-link" href="http://localhost:8000/app/a1mat_list/">A1MatList</a>
+							<a class="nav-link" href="http://localhost:8000/app/a1tip/">A1Tip</a>
+							<a class="nav-link" href="http://localhost:8000/app/a1verify/">A1Verify</a>
+							<a class="nav-link" href="http://localhost:8000/app/convertdocs/">ConvertDoc</a>
+							
+						</nav>
+					<div class="nav">
+                        <div class="sb-sidenav-menu-heading"></div>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDocumentacao" aria-expanded="false" aria-controls="collapseDocumentacao">
+
+                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                            Documentação
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseDocumentacao" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="/app/listdoc/">ListDoc</a>
+                                <a class="nav-link" href="/app/robodoc/">RoboDoc</a>
+                                <a class="nav-link" href="/app/dashboard/">DashBoards</a>
+                                <a class="nav-link" href="/app/templates_up/">Templates</a>
+                             </nav>
+                        </div>
+                    </div>
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading"></div>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsehub" aria-expanded="false" aria-controls="collapsehub">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                            A1Hub
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsehub" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="/app/hub_worload/">Lançar Workload</a>
+                                <a class="nav-link" href="/app/hub_dash/">Dashboard Workload</a>
+                             </nav>
+                        </div>
+                    </div>
+                    <div class="nav">
+                      <div class="sb-sidenav-menu-heading"></div>
+
+                            <a class="nav-link" href="/app/manual/">
+                                <div class="sb-nav-link-icon"><i class="fas fa-file-alt"></i></div>
+                                Manual
+                            </a>
+                    </div>
+					<div class="sb-sidenav-footer">
+						<div class="small"></div>
+						
+					</div>
+						 </nav>
+			</div>
+			<div id="layoutSidenav_content">
+				<main>
+					<!--inicio da interface    -->
+				
+					<div class="container py-5">
+				
+							 
+						<!-- For demo purpose -->
+						<div class="row mb-4">
+						  <div class="col-lg-8 mx-auto text-center">
+							<h1 class="display-4"><b>A1 Verify</b></h1>
+							
+						  </div>
+						</div>
+						<!-- End -->
+					  
+					  
+						<div class="row">
+						  <div class="col-lg-7 mx-auto">
+							<div class="bg-white rounded-lg shadow-sm p-5">
+							 
+					  
+							  <!-- Credit card form content -->
+							  <div class="tab-content">
+					  
+								<!-- credit card info-->
+								<div id="nav-tab-card" class="tab-pane fade show active">
+								  
+								  <form role="form">
+									<div class="form-group">
+									
+								     <input type="file" id="anterior" hidden="hidden"  onchange="selectedFolder(event)" name="anterior" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
+										<span id = "text/ant"  class= "label-style"> Procura por "FAIL" no conteúdo dos isométricos.
+									</span><br><br>
+									 <button type="button" style="background-color:#ffbe47;" id="bot-anterior"  class="subscribe btn btn-warning  rounded-pill shadow-sm" onclick="clicked('anterior')"> FAIL</button><br>
+									<br>
+									<input type="file" id="atual" hidden="hidden"  onchange="selectedFolder(event)" name="atual" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
+
+									<span id = "text/atu"  class= "label-style"> Procura por códigos zerados no conteúdo dos isométricos.
+									</span><br><br>
+									 <button type="button" style="background-color:#ffbe47;" id="bot-atual" class="subscribe btn btn-warning  rounded-pill shadow-sm" onclick="clicked('atual')"> COD</button>
+									
+									
+									</div>
+
+									  </div>
+									</div>
+									<div class="row">
+									  
+					  
+					  
+									</div>
+									<button type="button"  class=" btn butof" > Revisar  </button>
+								  </form>
+								</div>
+								<!-- End -->
+					  
+								<!-- Paypal info -->
+								<div id="nav-tab-paypal" class="tab-pane fade">
+								  <p></p>
+								  <p>
+									
+								  </p>
+								  <p class="text-muted">
+								  </p>
+								</div>
+								
+								<!-- End -->
+							  </div>
+							  <!-- End -->
+					  
+							</div>
+						  </div>
+						</div>
+					  </div>
+
+				</main>
+			
+					  
+			   
+		</div>
+			
+	 </div>
+	 <script type="text/javascript">
+
+		function clicked(name){
+		$(`#${name}`).click();
+		console.log("oi");
+	}
+
+		function selectedFolder(e) {
+		var theFiles = e.target.files;
+		var relativePath = theFiles[0].webkitRelativePath;
+		var folder = relativePath.split("/");
+		console.log(theFiles);
+		console.log("oi");
+		if (1) {
+			$(`#text-docs`).text(folder[0]);
+		  } else {
+			$(`#text-docs`).innerHTML = "Pasta com os arquivos.";
+		}
+	}
+</script>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	<script src="{% static 'js/scripts.js' %}"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+	<script src="assets/demo/chart-area-demo.js"></script>
+	<script src="assets/demo/chart-bar-demo.js"></script>
+	<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+	<script src="{% static 'assets/demo/datatables-demo.js' %}"></script>
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</body>
+</html>

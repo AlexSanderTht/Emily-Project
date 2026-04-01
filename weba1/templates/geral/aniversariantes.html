@@ -1,0 +1,679 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Aniversariantes A1</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<style>
+    .image_user {
+        object-fit: cover;
+        object-position: center center;
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+        transition: transform 0.5s, border-radius 0.5s;
+    }
+    .image_user:hover{
+        z-index: 1;
+        transform:scale(3);
+        border-radius: 10%;
+    }
+    .image_template {
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        padding-top: 15rem;
+    }
+
+    .skeleton_table_loader {
+        background-color: #FFF;
+        color: #666;
+        width: 100%;
+        padding: 0;
+    }
+    .skeleton_table_loader th{
+        background: #F7F9FA;
+        border-top: 1px solid #E5E5E5;
+        border-bottom: 1px solid #E5E5E5;
+        padding: 12px 10px;
+        text-align: left;
+    }
+    .skeleton_table_loader td{
+          border-bottom: 1px solid #E5E5E5;
+          padding: 12px 10px;
+          vertical-align: top;
+    }
+    .skeleton_table_loader span{
+        width: calc(100% - 5px);
+        height: 15px;
+        border-radius: 3px;
+        background-image: linear-gradient(90deg, #ddd 0px, #e8e8e8 40px, #ddd 80px);
+        background-size: 600px;
+        animation: shine-lines-table 1.6s infinite linear;
+        display: inline-block;
+        min-width:15px;
+    }
+
+    .bg_opacity_card_aniv{
+        background-color:rgba(0, 0, 0, 0.7)
+    }
+
+    .text-orange {
+        color:#fc7e10!important
+    }
+
+
+    @keyframes shine-lines-table {
+      0% {
+        opacity:0.4;
+      }
+      40%{
+        opacity:0.8;
+      }
+      100% {
+        opacity:0.4;
+      }
+    }
+</style>
+
+<div class="container mt-5">
+    <!------------------ Cabeçalho da ferramenta de gerar tipicos ------------------>
+    <div class="row justify-content-center animate__animated animate__backInRight">
+        <div class="col-lg-12 text-center">
+            <h1>Aniversariantes A1</h1>
+        </div>
+        <div class="col-lg-12 text-center">
+            <h5>Gerencie os destinatários e datas de aniversários dos colaboradores.</h5>
+        </div>
+    </div>
+    <!------------------ Fim do cabeçalho ------------------>
+
+    <div class="container row justify-content-center animate__animated animate__pulse">
+        <div class="col-sm-12 col-md-10 col-xl-12 bordas py-3 bg-white border shadow">
+
+            {% csrf_token %}
+            <div class="col-lg-12 d-flex bd-highlight btn-group btn-group-toggle">
+                <button id="btn_aniversariantes" onclick="changeFilter(this.id)" class="animate__animated font-weight-bold text-white bg_gradient_orange btn rounded-pill bd-highlight">Aniversariantes</button>
+                <button id="btn_templates" onclick="changeFilter(this.id)" class="animate__animated btn text-secondary rounded-0 rounded-pill bd-highlight">Gerenciar Templates</button>
+                <button id="btn_reload" onclick="window.location.reload()" class="animate__animated font-weight-bold btn btn-primary rounded-pill ml-auto bd-highlight"><i class="fa-solid fa-rotate-right pr-2"></i>Recarregar</button>
+            </div><!------------------ Fim Botões ------------------>
+            
+            <div class="mt-3" id="config_aniversariantes">
+                <table class="skeleton_table_loader" id="table_skeleton">
+                    <tr>
+                        <th class="col-1"><span></span></th>
+                        <th class="col-1"><span></span></th>
+                        <th class="col-2"><span></span></th>
+                        <th class="col-1"><span></span></th>
+                        <th class="col-1"><span></span></th>
+                        <th class="col-1"><span></span></th>
+                        <th class="col-1"><span></span></th>
+                        <th class="col-1"><span></span></th>
+                        <th class="col-1"><span></span></th>
+                    </tr>
+                    {% for i in range %}
+                    <tr>
+                        <td class="col-1 text-center py-1 align-middle" ><span class="rounded-pill d-inline-block" style="width: 30px;height: 30px;"></span></td>
+                        <td class="col-1"><span></span></td>
+                        <td class="col-2">
+                            <span></span>
+                        </td>
+                        <td class="col-1"><span></span></td>
+                        <td class="col-1"><span></span></td>
+                        <td class="col-1"><span></span></td>
+                        <td class="col-1"><span></span></td>
+                        <td class="col-1"><span></span></td>
+                        <td class="col-1"><span></span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div id="div_table_aniver" style="visibility:hidden;">
+                    <table class="text-center table table-bordered table-hover table-sm font_size_0_8" id="table_aniver">
+                        <thead>
+                            <tr>
+                                <th class="text-secondary col-1 align-middle">User</th>
+                                <th class="text-secondary col-1 align-middle">Iniciais</th>
+                                <th class="text-secondary col-2 align-middle">Colaborador</th>
+                                <th class="text-secondary col-1 align-middle">Considerar Aniversário Nascimento</th>
+                                <th class="text-secondary col-1 align-middle">Considerar Aniversário de Trabalho</th>
+                                <th class="text-secondary col-1 align-middle">Considerar Data Alternativa Aniv. de Trabalho</th>
+                                <th class="text-secondary col-1 align-middle">Data Alternativa Aniv. de Trabalho</th>
+                                <th class="text-secondary col-1 align-middle">Salvar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for key, row in users.iterrows %}
+                        <tr class="mb-1 border rounded-pill w-100">
+                            {% for cell in row %}
+                                {% if forloop.counter == 1 %}
+                                    {% if cell != 'not_found' %}
+                                        <td class="col-1 text-muted">
+                                            <img class="image_user" src="{{cell}}">
+                                        </td>
+                                    {% endif %}
+                                    {% if cell == 'not_found' %}
+                                        <td class="col-1 text-muted" title="Imagem não encontrada!"></td>
+                                    {% endif %}
+                                {% endif %}
+                                {% if forloop.counter == 2 %}
+                                    <td class="col-1 text-muted">{{cell}}</td>
+                                {% endif %}
+                                {% if forloop.counter == 3 %}
+                                    <td class="col-2 text-muted">
+                                        <span id="id_colab_{{key}}" title="{{cell}}">{{cell}}</span></td>
+                                {% endif %}
+                                {% if forloop.counter == 4 %}
+                                    <td class="col-1 text-center">
+                                        <label class="switch_toggle mb-0 mt-1">
+                                            <input type="checkbox" id="checkbox_aniv_{{key}}" value="{{ cell }}" {{ cell }}>
+                                            <span class="slider_switch round"></span>
+                                        </label>
+                                    </td>
+                                {% endif %}
+                                {% if forloop.counter == 5 %}
+                                    <td class="col-1 text-center">
+                                        <label class="switch_toggle mb-0 mt-1">
+                                            <input type="checkbox" id="checkbox_aniv_work_{{key}}" value="{{ cell }}" {{ cell }}>
+                                            <span class="slider_switch round"></span>
+                                        </label>
+                                    </td>
+                                {% endif %}
+                                {% if forloop.counter == 6 %}
+                                    <td class="col-1 text-center">
+                                        <label class="switch_toggle mb-0 mt-1">
+                                            <input type="checkbox" id="check_consider_aniv_work_{{key}}" value="{{ cell }}" {{ cell }}>
+                                            <span class="slider_switch round"></span>
+                                        </label>
+                                    </td>
+                                {% endif %}
+                                {% if forloop.counter == 7 %}
+                                    <td class="col-1 text-center">
+                                        <input type="date" id="input_date_consider_{{key}}" class="form-control form-control-sm" value="{{ cell }}">
+                                    </td>
+                                {% endif %}
+                                {% if forloop.counter == 8 %}
+                                    <td class="col-1 text-center">
+                                        <i class="fa-solid fa-floppy-disk muda_cursor_hover text-center text-secondary" onclick="UpdateBirthdayColab('{{key}}', '{{cell}}')"></i>
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="page_templates" hidden="" class="carousel slide mt-3" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#page_templates" data-slide-to="0" class="active"></li>
+                    <li data-target="#page_templates" data-slide-to="1"></li>
+                    <li data-target="#page_templates" data-slide-to="2"></li>
+                </ol>
+                <div class="carousel-inner bordas">
+                    <div class="carousel-item active p-5 bg-dark">
+                        <div class="d-flex justify-content-around animate__animated animate__pulse">
+                        {% for file in file_info %}
+                            {%if forloop.counter <= 2%}
+                                <!---------------- Início card aniversariantes ---------------->
+                                <div class="card col-lg-4 position-relative shadow bordas image_template position-relative" style="background-image: url('{% static file.caminho %}');">
+                                    <div class="position-absolute bg_opacity_card_aniv rounded-pill p-1 px-2" style="right: 5px;top:5px;z-index: 1;">
+                                        <button data-toggle="tooltip" data-html="true" title="<img src='{% static file.caminho %}' alt='{{ file.caminho }}' style='height: 500px; max-width: 500px;'>" class="btn text-white rounded-pill border-0 p-0" type="button">
+                                            <i class="fa-solid fa-eye fa-xl"></i>
+                                        </button>
+                                        <button data-toggle="tooltip" data-html="true" title="<img src='{% static file.config %}' alt='{{ file.nome_extensao }}' style='height: 500px; max-width: 500px;'>" class="btn text-primary rounded-pill border-0 p-0" type="button">
+                                            <i class="fas fa-circle-question fa-xl"></i>
+                                        </button>
+                                        <button onclick="showModalUpload('{{ file.nome_extensao }}')" class="btn text-orange rounded-pill border-0 p-0" type="button">
+                                            <i class="fa-solid fa-circle-up fa-xl"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="card-body bg_opacity_card_aniv text-white bordas p-3 mb-3">
+                                        <div class="d-flex flex-column">
+                                            <span class="card-title text-center font-weight-bold text-truncate" title="{{ file.nome_extensao }}">{{ file.nome_extensao }}</span>
+                                            <span class="card-title text-center font-weight-bold">{{ file.tamanho }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-start py-2 border-top border-bottom">
+                                            <div class="my-auto mr-3">
+                                                <i class="fa-regular fa-clock fa-xl"></i>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <span class="font-weight-bold">Criado em:</span>
+                                                <span>{{ file.criado }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-start py-2">
+                                            <div class="my-auto mr-3">
+                                                <i class="fa-solid fa-pen-to-square fa-xl"></i>
+                                            </div>
+                                            <div>
+                                                <span class="font-weight-bold">Modificado em:</span><br>
+                                                <span>{{ file.modificado }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!---------------- Fim card aniversariantes ---------------->
+                            {%endif%}
+                        {% endfor %}
+                        </div>
+                    </div>
+                    <div class="carousel-item p-5 bg-dark">
+                        <div class="d-flex justify-content-around animate__animated animate__pulse">
+                        {% for file in file_info %}
+                            {%if forloop.counter >= 3 and forloop.counter <= 4 %}
+                                <!---------------- Início card aniversariantes ---------------->
+                                <div class="card col-lg-4 position-relative shadow bordas image_template position-relative" style="background-image: url('{% static file.caminho %}');">
+                                    <div class="position-absolute bg_opacity_card_aniv rounded-pill p-1 px-2" style="right:5px;top:5px;z-index: 1;">
+                                        <button data-toggle="tooltip" data-html="true" title="<img src='{% static file.caminho %}' alt='{{ file.caminho }}' style='height: 500px; max-width: 500px;'>" class="btn text-white rounded-pill border-0 p-0" type="button">
+                                            <i class="fa-solid fa-eye fa-xl"></i>
+                                        </button>
+                                        <button data-toggle="tooltip" data-html="true" title="<img src='{% static file.config %}' alt='{{ file.nome_extensao }}' style='height: 500px; max-width: 500px;'>" class="btn text-primary rounded-pill border-0 p-0" type="button">
+                                            <i class="fas fa-circle-question fa-xl"></i>
+                                        </button>
+                                        <button onclick="showModalUpload('{{ file.nome_extensao }}')" class="btn text-orange rounded-pill border-0 p-0" type="button">
+                                            <i class="fa-solid fa-circle-up fa-xl"></i>
+                                        </button>
+                                    </div>
+                                    <div class="card-body bg_opacity_card_aniv text-white bordas p-3 mb-3">
+                                        <div class="d-flex flex-column">
+                                            <span class="card-title text-center font-weight-bold text-truncate" title="{{ file.nome_extensao }}">{{ file.nome_extensao }}</span>
+                                            <span class="card-title text-center font-weight-bold">{{ file.tamanho }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-start py-2 border-top border-bottom">
+                                            <div class="my-auto mr-3">
+                                                <i class="fa-regular fa-clock fa-xl"></i>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <span class="font-weight-bold">Criado em:</span>
+                                                <span>{{ file.criado }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-start py-2">
+                                            <div class="my-auto mr-3">
+                                                <i class="fa-solid fa-pen-to-square fa-xl"></i>
+                                            </div>
+                                            <div>
+                                                <span class="font-weight-bold">Modificado em:</span><br>
+                                                <span>{{ file.modificado }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!---------------- Fim card aniversariantes ---------------->
+                            {%endif%}
+                        {% endfor %}
+                        </div>
+                    </div>
+                    <div class="carousel-item p-5 bg-dark">
+                        <div class="d-flex justify-content-around animate__animated animate__pulse">
+                        {% for file in file_info %}
+                            {%if forloop.counter >= 5 and forloop.counter <= 6 %}
+                                <!---------------- Início card aniversariantes ---------------->
+                                <div class="card col-lg-4 position-relative shadow bordas image_template position-relative" style="background-image: url('{% static file.caminho %}');">
+                                    <div class="position-absolute bg_opacity_card_aniv rounded-pill p-1 px-2" style="right:5px;top:5px;z-index: 1;">
+                                        <button data-toggle="tooltip" data-html="true" title="<img src='{% static file.caminho %}' alt='{{ file.caminho }}' style='height: 500px; max-width: 500px;'>" class="btn text-white rounded-pill border-0 p-0" type="button">
+                                            <i class="fa-solid fa-eye fa-xl"></i>
+                                        </button>
+                                        <button data-toggle="tooltip" data-html="true" title="<img src='{% static file.config %}' alt='{{ file.nome_extensao }}' style='height: 500px; max-width: 500px;'>" class="btn text-primary rounded-pill border-0 p-0" type="button">
+                                            <i class="fas fa-circle-question fa-xl"></i>
+                                        </button>
+                                        <button onclick="showModalUpload('{{ file.nome_extensao }}')" class="btn text-orange rounded-pill border-0 p-0" type="button">
+                                            <i class="fa-solid fa-circle-up fa-xl"></i>
+                                        </button>
+                                    </div>
+                                    <div class="card-body bg_opacity_card_aniv text-white bordas p-3 mb-3">
+                                        <div class="d-flex flex-column">
+                                            <span class="card-title text-center font-weight-bold text-truncate" title="{{ file.nome_extensao }}">{{ file.nome_extensao }}</span>
+                                            <span class="card-title text-center font-weight-bold">{{ file.tamanho }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-start py-2 border-top border-bottom">
+                                            <div class="my-auto mr-3">
+                                                <i class="fa-regular fa-clock fa-xl"></i>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <span class="font-weight-bold">Criado em:</span>
+                                                <span>{{ file.criado }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-start py-2">
+                                            <div class="my-auto mr-3">
+                                                <i class="fa-solid fa-pen-to-square fa-xl"></i>
+                                            </div>
+                                            <div>
+                                                <span class="font-weight-bold">Modificado em:</span><br>
+                                                <span>{{ file.modificado }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!---------------- Fim card aniversariantes ---------------->
+                            {%endif%}
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <a class="carousel-control-prev border-primary" href="#page_templates" role="button" data-slide="prev" style="width: 5%;">
+                    <span class="bg-white p-2 rounded-circle"><i class="fa-solid fa-angles-left fa-2xl text-dark" aria-hidden="true"></i></span>
+                    <span class="sr-only">Anterior</span>
+                </a>
+                <a class="carousel-control-next border-primary" href="#page_templates" role="button" data-slide="next" style="width: 5%;">
+                    <span class="bg-white p-2 rounded-circle"><i class="fa-solid fa-angles-right fa-2xl text-dark" aria-hidden="true"></i></span>
+                    <span class="sr-only">Próximo</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!------------------ Início Modal Mensagem Submit ------------------>
+<div class="modal fade" id="modal_upload_template_aniv" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bordas">
+            <div class="modal-header">
+                <h5 id="titulo_modal_upload_aniv" class="modal-title text-center w-100"></h5>
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+            </div>
+
+            <div class="modal-body" data-backdrop="static" data-keyboard="false">
+                <!------------------ Inicio Dropzone XLSX ------------------>
+                <div class="col card_dropzone_blue py-3 mr-0 text-center" id="drop-area-template_aniv">
+                    <div class="text-center w-100" id="png-template">
+                        <!------------------ Inicio Message ------------------>
+                        <span class="font-italic text-primary">Arraste e solte o template (*.png,.jpg) ou</span><br>
+                        <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                        <!------------------ Fim Message ------------------>
+                        <label class="mt-2 btn btn-primary rounded-pill text-white">
+                            <input multiple="multiple" accept=".png,.jpg" class="hidden" type="file" id="arquivo_png_aniv" onchange="dropArquivo(this.id,'drop-area-template_aniv','png-template',null)"/>
+                            <i class="fa-solid fa-upload"></i> Upload image
+                        </label>
+                    </div>
+                </div><!------------------ Fim Dropzone XLSX ------------------>
+            </div>
+            <div class="modal-footer">
+                <button onclick="sendUploadImage()" type="submit" class="btn btn-warning shadow rounded-pill">Alterar</button>
+            </div>
+        </div>
+    </div>
+</div><!------------------ Fim Modal Mensagem Submit ------------------>
+
+<script>
+    // Variaveis globais de controle
+    let formFileTemplate = new FormData();
+
+    // --------------------- Cria paginação na tabela de aniversariante ---------------------//
+    $(window).on('load', function() {
+        setTimeout(()=>{
+            // Inicializa o DataTables
+            $('#table_aniver').DataTable({
+                // Configurações do DataTables
+                "order": [[2, "asc"]],
+                "sDom": "<'row pb-2'<'col-sm-12 col-md-6 d-flex justify-content-start'f><'col-sm-12 col-md-6 d-flex justify-content-end form-inline pb-2'l>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row mt-3'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                "scrollY": "475px",
+                "scrollX": true,
+                "scrollCollapse": true,
+                "paging": true,
+                "fixedColumns": true,
+                "destroy": true,
+                "lengthMenu": [[10, 50, 100, 500], [10, 50, 100, 500]],
+                "pageLength": 100,
+                "language": {
+                    "search": "",
+                    "searchPlaceholder": "Filtrar tabela",
+                    "showing": 'Exibir',
+                    "emptyTable": "Nenhum usuário encontrado.",
+                    "paginate": {
+                        "first": "Primeiro",
+                        "last": "Último",
+                        "next": "Próximo",
+                        "previous": "Anterior"
+                    },
+                    "info": "Exibindo de _START_ a _END_ de _TOTAL_ entradas",
+                    "lengthMenu": "Exibir: _MENU_",
+                },
+            });
+
+            $('div.dataTables_info').addClass('text-secondary')
+            $('div.dataTables_length').addClass('d-flex justify-content-end')
+            $('div.dataTables_length select').addClass('ml-2 rounded-pill')
+            $('div.dataTables_filter input').addClass('rounded-pill')
+            $('div.dataTables_scrollBody').addClass('overflow_firefox overflow_chrome')
+            $('div.dataTables_scrollHeadInner table').addClass('mb-0')
+
+            // Oculta a tabela de loading
+            $('#table_skeleton').attr('hidden', true);
+
+            // Exibir a tabela com DataTables
+            $('#div_table_aniver').css('visibility', 'visible');
+        },1500)
+    });
+
+    // --------------------- Altera classe do botão de página ao clica-lo ---------------------//
+    function changeFilter(id) {
+        let by_id = $('#'+ id)
+        let element =  Array.from(by_id[0].parentElement.children).slice(0, 2);
+        for (let i = 0; i < element.length; i++) {
+            if (element[i].id === id) {
+                by_id.removeClass('text-secondary rounded-0')
+                by_id.addClass('font-weight-bold text-white bg_gradient_orange animate__bounceIn')
+            }
+            else {
+                $("#" + element[i].id).removeClass('font-weight-bold text-white bg_gradient_orange animate__bounceIn')
+                $("#" + element[i].id).addClass('text-secondary rounded-0')
+            }
+        }
+
+        // Exibe ou não os itens conforme o botão que clicar
+        if (id !== "btn_aniversariantes"){
+            $("#config_aniversariantes")[0].hidden = true;
+            $("#page_templates")[0].hidden = false;
+        } else {
+            $("#page_templates")[0].hidden = true;
+            $("#config_aniversariantes")[0].hidden = false;
+        }
+    }
+
+    // --------------------- Exibe o modal dropzone para alterar o template ---------------------//
+    function showModalUpload(doc) {
+        // Altera título do modal
+        document.getElementById('titulo_modal_upload_aniv').innerText = 'Alterar template '+ doc;
+        document.getElementById('titulo_modal_upload_aniv').title = doc;
+
+        // Exibir modal de upload
+        $('#modal_upload_template_aniv').modal('show')
+    }
+
+    // --------------------- Função adiciona campo visual nos dropzones ---------------------//
+    function dropArquivo(id_input,id_drop,campo,arquivo) {
+        let drop_container = document.getElementById(campo);
+        let file = document.getElementById(id_input);
+        let form;
+        let name_file;
+        let broken_name_file;
+        let drop = '';
+        let itens = $('#'+id_drop)[0].children
+
+        // Caso não seja dropado o arquivo é recebido via id
+        form = arquivo !== null ? arquivo.files : file.files;
+
+        for (let i = 0; i <form.length;i++){
+            name_file = form[i].name
+            let extension = name_file.split('.').pop();
+            if (extension === 'png' || extension === 'jpg'){
+                if (itens.length === 1) {
+                    let tamanho = FormatNumberToBytes(form[i].size) //Recebe o tamanho para o formato em bytes
+                    if (name_file.split(' ').length <= 1){
+                        broken_name_file = name_file.match(/.{1,18}/g).join(' ') //Caso o nome do arquivo seja maior que 18 caracteres a string é quebrada
+                    }
+                    // Adiciona title ao FormData
+                    formFileTemplate.append('file_name', document.getElementById('titulo_modal_upload_aniv').title)
+
+                    // Adiciona o arquivo ao FormData
+                    formFileTemplate.append('fileImageAniv', form[i]);
+                    drop = `<div class="col-5 bordas mx-auto my-1 input-group border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown position-relative">
+                        <button onclick="window.location.reload(true)" title="Remove arquivo" class="btn btn-outline-danger rounded-pill px-2 border-0 position-absolute" type="button" style="right:0px;top:0px;z-index: 1;">
+                            <i class="fas fa-times-circle fa-xl"></i>
+                        </button>
+                        <img id="image_png_aniv" class="my-2 w-75 mx-auto" src="{% static 'img/type_png.png' %}" alt="Image PNG">
+                        <span type="text" class="py-2 w-100 border-bottom font-weight-bold">${tamanho}</span>
+                        <span type="text" title="${name_file}" class="py-2 mx-2 text-center">${broken_name_file}</span>
+                    </div>`
+
+                    drop_container.innerHTML = drop;
+                }
+            } else {
+                // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                swalAlert(false, 'Extensão do campo diferente de (.png ou .jpg)!', 'warning', false);
+            }
+        }
+    }
+
+    // --------------------- Função verifica preenchimento antes de executar ajax ---------------------//
+    function UpdateBirthdayColab(key, id_cg) {
+        let name_user = document.getElementById('id_colab_' + key)
+        let check_aniv = document.getElementById('checkbox_aniv_' + key)
+        let check_aniv_work = document.getElementById('checkbox_aniv_work_' + key)
+        let check_consider = document.getElementById('check_consider_aniv_work_' + key)
+        let data_considerar = document.getElementById('input_date_consider_' + key)
+        let dict_result = {}
+
+        if (check_consider.checked){
+            if (data_considerar.value === ''){
+                // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                swalAlert(false, 'Preencha a data para continuar!', 'error', false);
+            } else {
+                // Preenche o dicionário
+                dict_result = {'id_cg': id_cg, 'nome': name_user.title, 'check_aniv': check_aniv.checked, 'check_aniv_work': check_aniv_work.checked,
+                            'check_consider': check_consider.checked, 'data_considerar': data_considerar.value}
+                ajaxUpdateBirthday(dict_result)
+            }
+        } else {
+            // Reescreve o valor da data
+            data_considerar.value = '';
+
+            // Preenche o dicionário
+            dict_result = {'id_cg': id_cg, 'nome': name_user.title, 'check_aniv': check_aniv.checked, 'check_aniv_work': check_aniv_work.checked,
+                            'check_consider': check_consider.checked, 'data_considerar': data_considerar.value}
+            ajaxUpdateBirthday(dict_result)
+        }
+    }
+
+    // --------------------- Função envia dados de alteração de aniversário ---------------------//
+    function ajaxUpdateBirthday(dict_result) {
+        // Envia os dados para o backend via AJax
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url: "/app/geral/a1aniversariantes/", // Caminho do Ajax
+            type: "POST", // http method
+            headers:{'X-CSRFToken':csrftoken},
+            dataType: "json",
+            data: {'data': JSON.stringify(dict_result)}, // Envia dados pela solicitação do POST
+            success: function (data) {
+                if ('success' in data) {
+                    // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                    swalAlert(false, data['success'], 'success', false);
+                } else {
+                    // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                    swalAlert(false, data['error'], 'error', false);
+                }
+            },
+            error: function() {
+                // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                swalAlert(false, 'Algo deu errado ao alterar informações de envio de email! verifique e tente novamente.',
+                    'error', false);
+            },
+        });
+    }
+
+    // --------------------- Função envia file image para alteração ---------------------//
+    function sendUploadImage() {
+        const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
+
+        if ($('#png-template').find('#image_png_aniv').length !== 0){
+            $.ajax({
+                url: "/app/geral/a1aniversariantes/upload_image/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrf},
+                dataType: "json",
+                data: formFileTemplate, // Envia form pela solicitação do POST
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if ('success' in data) {
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, data['success'], 'success', false);
+                        setTimeout(()=>{location.reload(true)}, 1500)
+                    } else {
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, data['error'], 'error', false);
+                    }
+                },
+                failure: function () {
+                    // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                    swalAlert(false, 'Algo deu errado ao alterar o template! verifique e tente novamente.',
+                        'error', false);
+                }
+            })
+        } else {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Faça o upload de um arquivo para continuar!', 'error', false);
+        }
+    }
+
+    // --------------------- Altert para notificar usuario do evento ---------------------//
+    function swalAlert(titulo, texto, icone_img, btn){
+        swal({
+            title: titulo,
+            text: texto,
+            icon: icone_img,
+            button: btn,
+        })
+        $('div.swal-modal').addClass('bordas')
+        $('div.swal-title').addClass('h4')
+        $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+        $('div.swal-text').addClass('text-center')
+        $('div.swal-footer').addClass('d-flex justify-content-center')
+    }
+
+    // --------------------- Função para converter o tamanho para bytes ---------------------//
+    function FormatNumberToBytes(bytes, decimal = 2) {
+        if (!+bytes) return '0 Bytes'
+        const k = 1024
+        const dm = decimal < 0 ? 0 : decimal
+        const tamanho = ['Bytes', 'KB', 'MB', 'GB']
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${tamanho[i]}`
+    }
+
+    // --------------------- Função para adicionar classes ao soltar arquivo sobre dropzone ---------------------//
+    jQuery(document).ready(function($) {
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-area-template_aniv').on('dragover', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).addClass('upload-hover-blue');
+        })
+
+        // Ao retirar o cursor com arquivo sobre o campo dropzone as bordas diminuem
+        $('#drop-area-template_aniv').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+        })
+
+        // Ao soltar o arquivo sobre o campo chama a função DropArquivo passando os parâmetros
+        $('#drop-area-template_aniv').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+          let file_xls = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          dropArquivo('arquivo_png_aniv','drop-area-template_aniv','png-template',file_xls)
+        })
+    });
+</script>
+{% endblock %}

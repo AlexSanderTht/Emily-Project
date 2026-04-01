@@ -1,0 +1,572 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+<title>Gerar Lista de Materiais</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+<div class="container mt-5">
+    <!------------------ Cabeçalho da ferramenta de gerar tipicos ------------------>
+    <div class="row justify-content-center animate__animated animate__backInRight">
+        <div class="col-lg-12 text-center">
+            <h1>Gerar Lista de Materiais</h1>
+        </div>
+        <div class="col-lg-12 text-center">
+            <h5>Ferramenta para leitura de arquivo DWG e preenchimento de template.</h5>
+        </div>
+    </div>
+    <!------------------ Fim do cabeçalho ------------------>
+
+    <div class="container mt-3 row justify-content-center position-relative animate__animated animate__pulse d-flex align-items-start">
+        <div class="card_filter_tipicos position-absolute" style="margin-top:130px;margin-left:45px;left: 0;">
+            <div class="fa-rotate-270">
+                <button id="button_drop_file" class="btn butof btn-outline-light rounded-pill rounded-right p-2 font-weight-bold" onclick="ComparaRevTipico(this.id)">
+                <i class="fa-solid fa-folder-open mr-2"></i>Drop Files</button>
+                <button id="button_compare_rev" class="btn btn-outline-secondary p-2 rounded-pill rounded-left font-weight-bold" onclick="ComparaRevTipico(this.id)">
+                <i class="fa-solid fa-code-compare mr-2"></i>Comparar rev.</button>
+            </div>
+        </div>
+
+        <!--------------------- Início campo filtro projeto e tabela -------------------->
+        <div class="col-sm-12 col-md-10 col-xl-8 bordas py-3 bg-white border shadow">
+            <div class="row mx-1">
+                <div class="col-lg-6 animate__animated" id="checkbox_config">
+                    <div class="d-flex align-items-center">
+                        <label class="switch_toggle mb-0 mt-1">
+                            <input type="checkbox" name="cols_config_proj_bt" id="num_cliente">
+                            <span class="slider_switch round"></span>
+                        </label>
+                        <p class="ml-2 mb-0">Número do Cliente</p>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <label class="switch_toggle mb-0 mt-1">
+                            <input type="checkbox" name="cols_config_proj_bt" id="cod_fornece">
+                            <span class="slider_switch round"></span>
+                        </label>
+                        <p class="ml-2 mb-0">Código do Fornecedor</p>
+                    </div>
+                </div>
+                <div class="col-lg-6 animate__animated" id="content_select_rev" hidden>
+                    <!------------------ Início Revisao ------------------>
+                    <div class="input-group bordas">
+                        <div class="borda_filtros border border-success border-right-0">
+                            <button class="btn bg-white rounded-right rounded-pill" type="button"><i class="fa-solid fa-list-ol text-success"></i></button>
+                        </div>
+                        <select id="rev_next" class="border border-success border_left border-left-0 bg-white text-success text-center w-25">
+                            <option value="a">Revisao</option>
+                            {% for rev in Rev_tipicos %}
+                            <option value="{{rev}}">{{rev}}</option>
+                            {% endfor %}
+                        </select>
+                    </div><!------------------ Fim Revisao ------------------>
+                </div>
+                <div class="col-lg-6 my-auto animate__animated" id="button_send_values_tip">
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn butof" onclick="SendValuesToDownload()"><i class="fa-solid fa-paper-plane pr-2"></i>Enviar</button>
+                        <button type="button" class="btn btn-secondary ml-2" onclick="document.location.reload(true)"><i class="fa-solid fa-rotate-right pr-2"></i>Limpar</button>
+                        <button type="button" class="btn btn-success ml-2" onclick="window.open('/app/eletrica/gerar_tipicos/TemplateTipicos', '_self')"><i class="fa-solid fa-download pr-2"></i>Template</button>
+                    </div>
+                </div>
+                <div class="col-lg-6 my-auto animate__animated" id="button_send_values_tip_compare" hidden>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn butof" onclick="SendValuesCompare()"><i class="fa-solid fa-paper-plane pr-2"></i>Enviar</button>
+                        <button type="button" class="btn btn-secondary ml-2" onclick="document.location.reload(true)"><i class="fa-solid fa-rotate-right pr-2"></i>Limpar</button>
+                        <button type="button" class="btn btn-success ml-2" onclick="window.open('/app/eletrica/gerar_tipicos/TemplateTipicos', '_self')"><i class="fa-solid fa-download pr-2"></i>Template</button>
+                    </div>
+                </div>
+            </div>
+            <!------------------ Inicio Dropzone ------------------>
+            <div class="col-lg-12 my-3" id="form">
+                {% csrf_token %}
+                <div class="form-row mt-4" id="form_dropzone">
+                    <!------------------ Inicio Dropzone DWG ------------------>
+                    <div class="col card_dropzone_blue py-5 ml-0 px-0 animate__animated animate__fadeIn" id="drop-area-dwg" style="max-width:50%;">
+                        <div class="text-center w-100" id="dwg">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-primary">Arraste e solte o arquivo (*.dwg) ou</span><br>
+                            <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                <input multiple="multiple" accept=".dwg" class="hidden" type="file" id="arquivo_dwg" onchange="DropArquivo('arquivo_dwg','drop-area-dwg','dwg',null, null)"/>
+                                <i class="fa-solid fa-upload"></i> Import DWG
+                            </label>
+                        </div>
+                    </div><!------------------ Fim Dropzone DWG ------------------>
+                    <div class="col-1"></div>
+                    <!------------------ Inicio Dropzone XLSX template ------------------>
+                    <div class="col card_dropzone py-5 mr-0 animate__animated animate__fadeIn" id="drop-area-xlsx" style="max-width:50%">
+                        <div class="text-center w-100" id="xlsx">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte o template (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xlsx" onchange="DropArquivo('arquivo_xlsx','drop-area-xlsx','xlsx',null,null)"/>
+                                <i class="fa-solid fa-upload"></i> Import xlsx
+                            </label>
+                        </div>
+                    </div><!------------------ Fim Dropzone XLSX template ------------------>
+                </div>
+
+                <div class="form-row mt-4" id="form_dropzone_compare_rev" hidden>
+                    <!------------------ Inicio Dropzone XLSX Rev 0 ------------------>
+                    <div class="col card_dropzone py-5 ml-0 px-0 animate__animated animate__fadeIn" id="drop-area-xlsx-rev-0" style="max-width:50%;">
+                        <div class="text-center w-100" id="xlsx-rev-0">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte a <b>Rev. anterior</b> (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xlsx_rev_0" onchange="DropArquivo('arquivo_xlsx_rev_0','drop-area-xlsx-rev-0','xlsx',null, 'compare')"/>
+                                <i class="fa-solid fa-angles-left fa-xl mr-2"></i> Import Previous Rev.
+                            </label>
+                        </div>
+                    </div><!------------------ Fim Dropzone XLSX Rev 0 ------------------>
+                    <div class="col-1"></div>
+                    <!------------------ Inicio Dropzone XLSX Next Rev ------------------>
+                    <div class="col card_dropzone py-5 mr-0 animate__animated animate__fadeIn" id="drop-area-xlsx-rev-next" style="max-width:50%">
+                        <div class="text-center w-100" id="xlsx-rev-next">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte a <b>Rev. posterior</b> (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xlsx_rev_next" onchange="DropArquivo('arquivo_xlsx_rev_next','drop-area-xlsx-rev-next','xlsx',null, 'compare')"/>
+                                Import Next Rev.<i class="fa-solid fa-angles-right fa-xl ml-2"></i>
+                            </label>
+                        </div>
+                    </div><!------------------ Fim Dropzone XLSX Next Rev ------------------>
+                </div>
+
+            </div><!------------------ Fim Dropzone ------------------>
+        </div>
+    </div>
+
+    <!------------------ Início Modal Mensagem Submit ------------------>
+    <div class="modal fade hidden" id="modal_submit">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="bordas border bg-white">
+                <div class="modal-header">
+                    <h4 id="titulo" class="modal-title text-center text-success w-100">Atenção</h4>
+                    <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p><b id="mensagem_load"></b></p>
+                    <div id="progress-box">
+                        {% include "eletrica/BaseProgressBar.html"%}
+                    </div>
+                    <hr>
+                    <div class="">
+                        <img id="image_load" class="w-100">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim Modal Mensagem Submit ------------------>
+</div>
+<script src="{% static 'js/calc_cabos/a1calccabosjs.js' %}"></script>
+<script>
+    let formFile = new FormData();
+    let formFileCompare = new FormData();
+    let id_task_pdf
+
+    function ComparaRevTipico(id) {
+        if (id === 'button_compare_rev') {
+            document.getElementById('button_drop_file').classList.remove('butof');
+            document.getElementById('button_drop_file').classList.remove('btn-outline-light');
+            document.getElementById('button_compare_rev').classList.remove('btn-outline-secondary');
+            document.getElementById('button_drop_file').classList.add('btn-outline-secondary');
+            document.getElementById('button_compare_rev').classList.add('butof');
+            document.getElementById('button_compare_rev').classList.add('btn-outline-light');
+            document.getElementById('checkbox_config').classList.add('animate__fadeOut');
+            document.getElementById('button_send_values_tip').classList.add('animate__fadeOut');
+            document.getElementById('checkbox_config').classList.remove('animate__fadeIn');
+            document.getElementById('content_select_rev').classList.remove('animate__fadeOut');
+            document.getElementById('button_send_values_tip').classList.remove('animate__fadeIn');
+            document.getElementById('drop-area-dwg').classList.add('animate__fadeOut');
+            document.getElementById('drop-area-xlsx').classList.add('animate__fadeOut');
+            setTimeout(()=>{
+                document.getElementById('form_dropzone').hidden = true
+                document.getElementById('form_dropzone_compare_rev').hidden = false
+                document.getElementById('button_send_values_tip').hidden = true
+                document.getElementById('button_send_values_tip_compare').hidden = false
+                document.getElementById('checkbox_config').hidden = true
+                document.getElementById('content_select_rev').hidden = false
+            },1500);
+
+        } else {
+            document.getElementById('button_drop_file').classList.remove('btn-outline-secondary')
+            document.getElementById('button_compare_rev').classList.remove('butof')
+            document.getElementById('button_compare_rev').classList.remove('btn-outline-light')
+            document.getElementById('button_drop_file').classList.add('butof')
+            document.getElementById('button_drop_file').classList.add('btn-outline-light')
+            document.getElementById('button_compare_rev').classList.add('btn-outline-secondary')
+            document.getElementById('checkbox_config').classList.remove('animate__fadeOut');
+            document.getElementById('content_select_rev').classList.remove('animate__fadeIn');
+            document.getElementById('button_send_values_tip').classList.remove('animate__fadeOut');
+            document.getElementById('checkbox_config').classList.add('animate__fadeIn');
+            document.getElementById('button_send_values_tip').classList.add('animate__fadeIn');
+            document.getElementById('drop-area-dwg').classList.remove('animate__fadeOut');
+            document.getElementById('drop-area-xlsx').classList.remove('animate__fadeOut');
+            setTimeout(()=>{
+                document.getElementById('form_dropzone').hidden = false
+                document.getElementById('form_dropzone_compare_rev').hidden = true
+                document.getElementById('button_send_values_tip').hidden = false
+                document.getElementById('button_send_values_tip_compare').hidden = true
+                document.getElementById('checkbox_config').hidden = false
+                document.getElementById('content_select_rev').hidden = true
+            },1500);
+        }
+    }
+
+    // --------------------- Função trata os dados para fazer o Ajax ---------------------//
+    function SendValuesCompare() {
+        let drop_prev = document.getElementById('drop-area-xlsx-rev-0');
+        let drop_next = document.getElementById('drop-area-xlsx-rev-next');
+        let rev_next = document.getElementById('rev_next').value;
+        let dict_rev = {'rev_next': rev_next}
+        const name_file_previous = drop_prev.children[drop_prev.children.length-1].title;
+        const name_file_next = drop_next.children[drop_next.children.length-1].title;
+
+        if(rev_next !== 'a'){
+            // Verifica se oa campos foram preenchidos
+            if (drop_prev.childElementCount === 2 && drop_next.childElementCount === 2) {
+                formFileCompare.append('Dict_Rev', JSON.stringify(dict_rev));
+                formFileCompare.append('File_rev_0', name_file_previous);
+                formFileCompare.append('File_rev_next', name_file_next);
+                formFileCompare.append('Campo','Compare');
+                // Envia dados para função que executa o Ajax
+                AjaxDocs(formFileCompare)
+            } else {// Caso não seja preenchido, será exibido modal de alerta
+                swal({
+                    text: 'Selecione os arquivos Rev. anterior e posterior para enviar.',
+                    icon: "error",
+                    button: 'Fechar'
+                })
+                $('div.swal-modal').addClass('bordas')
+                $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                $('div.swal-text').addClass('text-center')
+                $('div.swal-footer').addClass('d-flex justify-content-center')
+            }
+        }
+        else{
+            swal({
+                text: 'Selecione o número da revisão!!.',
+                icon: "error",
+                button: 'Fechar'
+            })
+            $('div.swal-modal').addClass('bordas')
+            $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+            $('div.swal-text').addClass('text-center')
+            $('div.swal-footer').addClass('d-flex justify-content-center')
+        }
+
+    }
+
+    // --------------------- Função trata os dados para fazer o Ajax ---------------------//
+    function SendValuesToDownload() {
+        let dwg = document.getElementById('drop-area-dwg');
+        let xlsx = document.getElementById('drop-area-xlsx');
+        let num_cliente = document.getElementById('num_cliente').checked;
+        let cod_fornece = document.getElementById('cod_fornece').checked;
+        let dict_check = {'num_cliente': num_cliente, 'cod_fornecedor': cod_fornece}
+        const name_file_xlsx = xlsx.children[xlsx.children.length-1].title;
+        let list_id_file = []
+
+        for (let i = 0; i <dwg.children.length;i++) {
+            if (dwg.children[i].id !== 'dwg'){
+                list_id_file.push(dwg.children[i].outerText)
+            }
+        }
+
+        // Verifica se oa campos DWG e XLSX foram preenchidos
+        if (dwg.childElementCount !== 1 && xlsx.childElementCount !== 1) {
+            // Apenda os arquivos aos formulários respectivamente
+            formFile.append('Dict_check', JSON.stringify(dict_check));
+            formFile.append('Name_file_xlsx', name_file_xlsx);
+            formFile.append('listID', JSON.stringify(list_id_file));
+            formFile.append('Campo', 'FilesDWG');
+            // Envia dados para função que executa o Ajax
+            AjaxDocs(formFile)
+        } else {// Caso não seja preenchido, será exibido modal de alerta
+            document.getElementById('mensagem_load').innerText=''
+            document.getElementById('mensagem_load').innerText = 'Selecione os arquivos DWG e XLSX para enviar.'
+            document.getElementById('image_load').src = "{% static 'img/alert.gif' %}"
+            document.getElementById('image_load').classList.remove('w-100')
+            document.getElementById('image_load').classList.add('w-50')
+            document.getElementById('titulo').classList.remove('text-success')
+            document.getElementById('titulo').classList.add('text-danger')
+            $('#modal_submit').modal('show')
+        }
+    }
+
+    // --------------------- Função envia os dados para backend e baixa o arquivo ---------------------//
+    function AjaxDocs(formData) {
+        document.getElementById('mensagem_load').innerText = 'Verificando documentos, por favor aguarde!'
+        document.getElementById('image_load').src = "{% static 'img/merge.gif' %}"
+        document.getElementById('image_load').classList.remove('w-50')
+        document.getElementById('image_load').classList.add('w-100')
+        document.getElementById('titulo').classList.remove('text-danger')
+        document.getElementById('titulo').classList.add('text-success')
+        $('#modal_submit').modal('show')
+        $.ajax({
+            url: "/app/eletrica/gerar_tipicos/trata_documento/", // Caminho do Ajax
+            type: "POST", // http method
+            headers:{'X-CSRFToken':csrf[0].value},
+            dataType: "json",
+            data: formData, // Envia form pela solicitação do POST
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                inti_celery_bar({'task_id': data['task_id']})
+                id_task_pdf = data['task_id']
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        })
+    }
+
+    // --------------------- Analisador de evento da barra de tarefas em tempo real ---------------------//
+    $('#progress-bar-message').on('DOMSubtreeModified', function(){
+        if ($('#progress-bar-message')[0].innerText === 'Success!'){
+            console.log($('#progress-bar-message')[0].innerText)
+            let url =  '/app/eletrica/gerar_tipicos/trata_documento{{nome_url_enviar_arquivo}}/' + id_task_pdf + '/'
+            window.open(url, '_self')
+            setTimeout(()=>{document.getElementById('div_bar_taks').hidden = true}, 2000)
+            setTimeout(()=>{$('#modal_submit').modal('hide')}, 3000)
+        }
+    });
+
+    // --------------------- Função para converter o tamanho para bytes ---------------------//
+    function FormatNumberToBytes(bytes, decimal = 2) {
+        if (!+bytes) return '0 Bytes'
+        const k = 1024
+        const dm = decimal < 0 ? 0 : decimal
+        const tamanho = ['Bytes', 'KB', 'MB', 'GB']
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${tamanho[i]}`
+    }
+
+    // --------------------- Função adiciona campo visual nos dropzones ---------------------//
+    function DropArquivo(id_input,id_drop,campo,arquivo, compare) {
+        let drop_container = document.getElementById(id_drop);
+        let file = document.getElementById(id_input);
+        let form;
+        let name_file;
+        let name_title;
+        let drop = '';
+        let id;
+        let itens = $('#'+id_drop)[0].children
+
+        // Caso não seja dropado o arquivo é recebido via id
+        if (arquivo !== null) {
+            form = arquivo.files;
+        } else {
+            form = file.files;
+        }
+
+        for (let i = 0; i <form.length;i++){
+            name_file = form[i].name
+            name_title = name_file
+            let extension = name_file.split('.').pop();
+            if (extension === campo){
+                // Cria o id com base no nome do arquivo e no tamanho, após reescreve o ponto para JS não compreender como método.
+                id = (Math.random() + 1).toString(36).substring(7);
+
+                if (!document.getElementById(id)){
+                    if (campo === 'dwg'){
+                        formFile.append('filesDWG',form[i]);
+                        drop =`<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown" id="${id}">
+                                        <div class="input-group-prepend my-auto px-1">
+                                            <img class="" src="{% static 'img/DWG.png' %}" alt="Image DWG" style="height:20px">
+                                        </div>
+                                        <span type="text" title="${name_title}" class="col border-0 input-group-text bg-white text-truncate">${name_file}</span>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-danger rounded-pill px-2 border-0" type="button" onclick="RemoverArquivoDWG('${id}');">
+                                                <i class="fas fa-times-circle fa-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>`
+
+                        drop_container.innerHTML += drop;
+
+                    } else {
+                        if (itens.length === 1) {
+                            if(compare) {
+                                let tamanho = FormatNumberToBytes(form[i].size) //Recebe o tamanho para o formato em bytes
+                                console.log(name_file.split(' ').length)
+                                if (name_file.split(' ').length <= 1){
+                                    name_file = name_file.split('.')[0].match(/.{1,10}/g).join(' ') + '.xlsx' //Caso o nome do arquivo seja maior que 18 caracteres a string é quebrada
+                                }
+                                if (id_input === 'arquivo_xlsx_rev_0'){
+                                    formFileCompare.append('filesComparePreviousXLSX',form[i]);
+                                } else {
+                                    formFileCompare.append('filesCompareNextXLSX',form[i]);
+                                }
+
+                                drop = `<div class="col-6 bordas mx-auto my-1 input-group border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown position-relative" id="${id}" title="${name_title}">
+                                            <button onclick="RemoverArquivoXLS('${id}','${id_drop}');" title="Remover arquivo" class="btn btn-outline-danger rounded-pill px-2 border-0 position-absolute" type="button" style="right:0px;top:0px;z-index: 1;">
+                                                <i class="fas fa-times-circle fa-xl"></i>
+                                            </button>
+                                            <img class="my-2 w-75 mx-auto" src="{% static 'img/XLS.png' %}" alt="Image TXT">
+                                            <span type="text" title="${name_title}" class="py-2 w-100 border-bottom font-weight-bold text-center">${tamanho}</span>
+                                            <span type="text" title="${name_title}" class="py-2 mx-2 text-center">${name_file}</span>
+                                        </div>`
+                                drop_container.innerHTML += drop;
+
+                            } else {
+                                formFile.append('filesXLSX',form[i]);
+                                drop = `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown" id="${id}" title="${name_title}">
+                                            <div class="input-group-prepend my-auto px-1">
+                                                <img class="" src="{% static 'img/XLS.png' %}" alt="Image XLSX" style="height:20px">
+                                            </div>
+                                            <span type="text" title="${name_title}" class="col border-0 input-group-text bg-white text-truncate">${name_file}</span>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="RemoverArquivoXLS('${id}','${id_drop}');">
+                                                    <i class="fas fa-times-circle fa-lg"></i>
+                                                </button>
+                                            </div>
+                                        </div>`
+                                drop_container.innerHTML += drop;
+
+                            }
+                        } else {
+                            swal({
+                                text: 'Não é permitido adicionar mais de um arquivo, remova o arquivo atual e tente novamente!',
+                                icon: "error",
+                                button: 'Fechar'
+                            })
+                            $('div.swal-modal').addClass('bordas')
+                            $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                            $('div.swal-text').addClass('text-center')
+                            $('div.swal-footer').addClass('d-flex justify-content-center')
+                        }
+                    }
+                }
+            } else {
+                swal({
+                    text: 'Extensão do arquivo ('+ name_file +') diferente do padrão estabelecido!',
+                    icon: "error",
+                    button: 'Fechar'
+                })
+                $('div.swal-modal').addClass('bordas')
+                $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                $('div.swal-text').addClass('text-center')
+                $('div.swal-footer').addClass('d-flex justify-content-center')
+            }
+        }
+    }
+
+    // ---------------------Função para remover elemento ao clicar no X vermelho---------------------//
+    function RemoverArquivoDWG(elemento) {
+        document.getElementById(elemento).classList.remove('animate__zoomInDown')
+        document.getElementById(elemento).style.zIndex = '1';
+        document.getElementById(elemento).classList.add('animate__hinge')
+        setTimeout(()=>{$('#drop-area-dwg').find('#' + elemento).remove()},2500)
+    }
+
+    // ---------------------Função para remover elemento ao clicar no X vermelho---------------------//
+    function RemoverArquivoXLS(id_item, drop) {
+        document.getElementById(id_item).classList.remove('animate__zoomInDown')
+        document.getElementById(id_item).style.zIndex = '1';
+        document.getElementById(id_item).classList.add('animate__hinge')
+        setTimeout(()=>{$('#'+ drop).find('#' + id_item).remove()},2500)
+    }
+
+    jQuery(document).ready(function($) {
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-area-xlsx').on('dragover', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).addClass('upload-hover');
+        })
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-area-dwg').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover-blue');
+        })
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-area-xlsx-rev-0').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover');
+        })
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-area-xlsx-rev-next').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover');
+        })
+
+
+        // Ao retirar o cursor com arquivo sobre o campo dropzone as bordas diminuem
+        $('#drop-area-xlsx').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+        })
+        // Ao retirar o cursor com arquivo sobre o campo dropzone as bordas diminuem
+        $('#drop-area-dwg').on('dragleave', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+        })
+        // Ao retirar o cursor com arquivo sobre o campo dropzone as bordas diminuem
+        $('#drop-area-xlsx-rev-0').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+        })
+        // Ao retirar o cursor com arquivo sobre o campo dropzone as bordas diminuem
+        $('#drop-area-xlsx-rev-next').on('dragleave', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover');
+        })
+
+
+        // Ao soltar o arquivo sobre o campo chama a função DropArquivo passando os parâmetros
+        $('#drop-area-xlsx-rev-0').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+          let file_xls = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivo('arquivo_xlsx_rev_0','drop-area-xlsx-rev-0','xlsx',file_xls, true)
+        })
+
+        // Ao soltar o arquivo sobre o campo chama a função DropArquivo passando os parâmetros
+        $('#drop-area-xlsx-rev-next').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+          let file_xls = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivo('arquivo_xlsx_rev_next','drop-area-xlsx-rev-next','xlsx',file_xls, true)
+        })
+
+        // Ao soltar o arquivo sobre o campo chama a função DropArquivo passando os parâmetros
+        $('#drop-area-xlsx').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+          let file_xls = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivo('arquivo_xlsx','drop-area-xlsx','xlsx',file_xls, null)
+        })
+
+        // Ao soltar o arquivo sobre o campo a função DropArquivo passando os parâmetros
+        $('#drop-area-dwg').on('drop', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+          let file_dwg = event_2.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivo('arquivo_dwg','drop-area-dwg','dwg',file_dwg, null)
+        })
+    });
+</script>
+{% endblock %}

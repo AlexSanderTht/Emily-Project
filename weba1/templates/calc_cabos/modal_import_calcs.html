@@ -1,0 +1,43 @@
+{% load static %}
+<div class="modal fade" id="modal_import_calcs" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Importar Calculos</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="input-group mb-3">
+              <p class="mb-1">Selecione o arquivo excel preenchido</p>
+              <div class="input-group">
+                  <div class="input-group-prepend">
+                      <span class="input-group-text">Arquivo</span>
+                  </div>
+                  <div class="custom-file">
+                      <input type="file" class="custom-file-input" name="ArquivoUpload" id="ArquivoUploadInput" aria-describedby="inputGroupFileAddon01" required onchange="DropFileImport()">
+                      <label class="custom-file-label" id="id_NomeDoArquivolbl">Selecione um arquivo</label>
+                  </div>
+              </div>
+          </div>
+          <div id="progress-box-calc-cabos-2" class="text-center mt-3" hidden>
+              <div class='progress-wrapper'>
+                  <div id='progress-bar-calc-cabos-2' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+              </div><br>
+              <div id="progress-bar-message-calc-cabos-2" class="text-center">Aguardando a Inicialização da tarefa ...</div>
+          </div>
+        </div>
+      <div class="modal-footer">
+          {% if nivel_tensao == 'BT' %}
+            <button type="button" class="btn btn-success" onclick="DownloadTemplateImportCalcsBt()">Download Template</button>
+            <button type="button" class="btn btn-primary" onclick="SendFileImportCalcsBtBack()">Enviar</button>
+          {% else %}
+            <button type="button" class="btn btn-success" onclick="DownloadTemplateImportCalcsMt()">Download Template</button>
+            <button type="button" class="btn btn-primary" onclick="SendFileImportCalcsMtBack()">Enviar</button>
+          {% endif %}
+          <button type="button" class="btn btn-secondary" onclick="$('#modal_import_calcs').modal('hide')">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>

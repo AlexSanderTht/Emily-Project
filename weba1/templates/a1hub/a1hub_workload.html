@@ -1,0 +1,437 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Lançamento de Workloads</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<style type="text/css">
+
+    .sortable li {
+        display: flex;
+        float: left;
+        width: 240px;
+        height: 75px;
+        overflow:hidden;
+        margin:5px;
+        justify-content: left;
+        align-items: center;
+        background: #eeeeee;
+    }
+
+    #container {
+        position: relative;
+        left:0;
+        right:0;
+        bottom:0;
+        top:0;
+        width:250px;
+        height:130px;
+
+    }
+
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dd00dd;
+        text-align: left;
+        padding: 8px;
+        cursor: pointer;
+        background-color: #fff;
+    }
+
+    .highlight {
+        background-color: #0cc !important;
+        border: #0cc;
+    }
+
+    h6 {
+        font-size: 10px;
+        text-align-last: center;
+      }
+
+</style>
+{% endblock %}
+{% block help %}
+<h7>Ao <strong>Clickar nas células</strong>, se você selecionou a os corretamente e o percentual de workload múltiplo de 5,
+    o evento adiciona as horas diárias na os escolhida às semanas selecionadas ou alterar dados da mesma OS, se não, a(s) célula(s) em questão será selecionada.</h7>
+<br><br>
+<h7>Ao <strong>Deixar o mouse sobre células</strong>, as horas lançadas podem ser visualizadas, ao final o total de horas é computado em percentual.</h7>
+<br><br>
+<h7>Botão <strong>"-"</strong>, As células selecionadas (borda em negrito) terão seus dados totalmente apagados, permitindo inserção de novo planejamento.</h7>
+<br><br>
+<h7>Ao <strong>Selecionar data</strong>, as semanas exibidas são alteradas, seguindo as quatro próximas à data da semana inicial selecionada.</h7>
+{% endblock %}
+{% block main %}
+<div class="container" style="max-width: 1540px;padding-right: 70px;padding-left: 70px;">
+
+        <center> <h1 class="display-4"><b>Lançar Workload</b></h1></center>
+            <div style="height: 67vh; overflow-y: scroll;">
+                <div style="padding:10px;">
+                    <center><table class="table table-bordered" id="tb_workload" style=""></table></center>
+                </div>
+            </div>
+            <br>
+              <div class="card mb-4" style="background: #f5f5f5; border: none">
+            <div class="row" style="alignment: center">
+                <div class="col-6 col-sm" style="alignment: center">
+                    <form action="{% url 'a1hub_workload' %}" method="POST" name="data" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label for="dia-inicial">Data Inicial:</label><br>
+                        <input type="date" id="dia-inicial" name="dia_inicial" onchange="muda_semana()" style="width: 120px; margin-left: 1px">
+                    </form>
+                </div>
+                <div class="col-6 col-sm" style="alignment: center">
+                    <label for="description">Percentual Semanal</label><br>
+                    <input type="number" min="0" max="120" step="5" id="week_percent"/>
+                </div>
+                <div class="col-6 col-sm" style="alignment: center">
+                    <label for="description">Ordem de Serviço (OS)</label><br>
+                    <input type="text" list="lista_os" name="list_os" id="tipo_doc" class="form-control" style="width: 250px; margin-left: 1px ">
+                    <datalist id="lista_os">
+                        {% for id_os,os in list_os %}
+                            <option value="{{ os }}"></option>
+                        {% endfor %}
+                    </datalist>
+                </div>
+                <div class="col-6 col-sm" style="alignment: center">
+                    <label for="description"> Limpar Selecionados </label><br>
+                    <button type="button" text="Limpar" name="limpa" onclick="document.getElementById('agua-modal').style.display='block'" style="background-color:#F58C32;height: 40px;width: 50px; Color:#ffff" id="limp" class=" btn ">-</button>
+                </div>
+            </div>
+        </div>
+        </center>
+        <div id="agua"><!-- agua -->
+            <div id="agua-modal" class="w3-modal">
+                <div class="w3-modal-content modal-style" style="position: absolute; margin-left: 890px ; top: 400px; width: 370px ; height: 140px;">
+                    <div class="w3-container modal-value">
+                        <table>
+                            <tr>
+                                <td style="border: unset"><br><h5>Tem certeza que deseja eliminar os dados selecionados?</h5></td>
+                                <td style="border: unset"><label id="agua-percent"></label></td>
+                            </tr>
+                        </table>
+                            <tr>
+                                <center><button type="button"; class=" btn btn-success  " onclick="limpar()"> SIM </button>
+                                <button type="button" class=" btn btn-danger  " onclick="document.getElementById('agua-modal').style.display='none'">NÃO</button></center>
+                                <span onclick="document.getElementById('agua-modal').style.display='none'" class="w3-button w3-display-topright">x</span>
+                            </tr>
+                    </div>
+                </div>
+            </div>
+        </div><!-- agua -->
+</div>
+{% endblock %}
+{% block end %}
+<script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+<script src="https://cdn.jsdelivr.net/momentjs/2.10.6/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/bootstrap.datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+
+    var index = HTMLTableRowElement.rowIndex;
+    var week_init = {{ ini_wk|safe }}; //Semana inicial do workload
+    var var_test = [];
+    var sell_bord = '2px solid black';
+    var def_bord = '1.5px solid #dddddd';
+    var dict_bord = {}; //Dicionário de bool das bordas
+    var dict_wl = {}; // Cria dicionário dos workloads
+    var dict_wl_done = {{ workload|safe }};
+    var keys_wl = Object.keys(dict_wl_done);
+    var ids_colabs = []; //Cria lista de horas diárias por pessoa
+    var table = document.getElementById("tb_workload");
+    //Variáveis dos dados das fichas tempo das pessoas
+    var colab = []; //Lista dos nomes dos colaboradores
+    var h_dia = []; //Cria lista de horas diárias por pessoa
+    var data_fim = []; //Cria lista da data de fim de contrato de cada subordinado
+    var dict_os = {};
+    var dict_os_id = {};
+    var list_dom = []; // Lista de domingos
+
+    {% for pessoa,fim,horas in pessoas %}
+        colab.push("{{ pessoa }}"); //Popula a lista com os dados do back-end
+        data_fim.push("{{ fim }}");//Popula a lista com os dados do back-end
+        h_dia.push("{{ horas }}");//Popula a lista com os dados do back-end
+    {% endfor %}
+
+    {% for id,dt in ids %}
+        ids_colabs.push("{{ id }}");//Popula a lista com os dados de id das pessoas em ordem respectiva em que foram contratadas
+        dict_bord["{{ id }}"] = [false,false,false,false];
+    {% endfor %}
+
+    {% for id_os,num_os in list_os %}
+        dict_os["{{ num_os }}"] = {{ id_os }};
+        dict_os_id[{{ id_os }}] = "{{ num_os }}";
+    {% endfor %}
+
+    {% for dom in domingos %}
+        list_dom.push("{{ dom }}");
+    {% endfor %}
+
+    function prog_cell(id_p,semana, e) {
+        let sel_os = dict_os[document.getElementById('tipo_doc').value];
+        let wk = parseInt(semana.replace('w','').split('_')[0]);
+        if (dict_bord[id_p][wk-week_init]) { // Se for verdadeiro, já foi preenchido
+            $('#'+semana).css('border', def_bord);
+            dict_bord[id_p][wk-week_init] = false;
+        } else {
+            $('#'+semana).css('border', sell_bord);
+            let fill = document.getElementById('week_percent').value;//100 * ((horas_w.split(':')[0] / 8) + (horas_w.split(':')[1] / (60*8))); (Era em horas, percentual é mais fácil
+            if (fill > 0 && !(fill % 5) && sel_os) { // Se as horas forem preenchidas, a OS estiver selecionada e o preenchimento for maior que 0
+                fill_cells(id_p, semana, fill); //Preenche a célula em questão
+                envia_wl(id_p, wk, fill, sel_os); // Depois de mudar a cor no fron-end, envia dados por Ajax
+                mouseover_hour(id_p,semana); //Ativa o evento mouseover após lançamento de hora
+                let total = update_horas_row(id_p);
+                $('#bar_'+id_p).innerHTML = `
+                         <div class="progress" style="width: 150px;vertical-align: center;horiz-align: center;">
+                            <div class="progress-bar progress-bar-striped bg-success active" role="progressbar" style="width: `+total+`%; position: center" aria-valuenow="`+total+`" aria-valuemin="0" aria-valuemax="100">`+total+`%</div>
+                         </div>
+                        `;
+                $('#'+semana).css('border', def_bord); // Muda a borda da célula
+                dict_bord[id_p][wk-week_init] = false; // Seta para falsa a var de controle de seleção da célula
+            } else { // Se não tem OS ou não tem preenchimento selecionado
+                dict_bord[id_p][wk-week_init] = true;
+            }
+        }
+        update_horas_row(id_p); // Atualiza a barra de horas
+    }
+
+    function mouseover_hour(id_sub,cell_id, e) {
+        let this_id = `#${cell_id}`;
+        let total = 0;
+        if (keys_wl.includes(id_sub)) { // Evita erros relacionados a não encontrar objeto, continua se o id do subordinado estiver nas chaves do dicionário
+            var cell_html = ""; //Cria variável onde será armazenado o HTML da célula
+            for (seman in dict_wl_done[id_sub]) { //varre as semanas assoziadas àquele ID
+                if (seman == this_id.replace('#','')) { //Se a semana for igual ao ID da célula em questão
+                    for (os in dict_wl_done[id_sub][seman]) { //Para cada os lançada no workload em qesuestão
+                        if (os % 2 == 0) {
+                            cell_html += "<h6><b> OS "+ dict_os_id[dict_wl_done[id_sub][seman][os][0]] + " : " + dict_wl_done[id_sub][seman][os][1]/2.5 + " Horas</b></h6>";
+                            total += parseInt(dict_wl_done[id_sub][seman][os][1]);
+                        }
+                        else {
+                            cell_html += "<h6> OS "+ dict_os_id[dict_wl_done[id_sub][seman][os][0]] + " : " + dict_wl_done[id_sub][seman][os][1]/2.5 + " Horas</h6>";
+                            total += parseInt(dict_wl_done[id_sub][seman][os][1]);
+                        }
+                    }
+                }
+            }
+            cell_html += "<h6><b> TOTAL : "+ total + " %</b></h6>";
+            $(this_id).html(cell_html); //Exibe no HTML da célula em questão
+        } else {
+            $(this_id).html("<h6><b> TOTAL : "+ total + " %</b></h6>"); //Exibe no HTML da célula em questão
+        }
+    }
+
+    function mouseout_hour(cell_id, e) {
+        let this_id = `#${cell_id}`;
+        $(this_id).html(``);
+    }
+
+    //Variáveis já lançadas nos workloads dos funcionários em questão
+    function envia_wl(id_cg, semana, h_week, os){
+        $.ajax({
+                type: "POST",
+                url: "wl",
+                dataType: 'json',
+                data: {'dict_wl':JSON.stringify({id_cg:[id_cg,semana,h_week,os]}),
+                       'csrfmiddlewaretoken': '{{ csrf_token }}'}
+            });
+    }
+
+    function fill_cells(id_p, semana, perc) {
+        var fill2 = 0; //Cria variável de preenchimento
+        fill2 += parseInt(perc);
+        let ordem = parseInt(dict_os[document.getElementById('tipo_doc').value]);
+        if (keys_wl.length > 0) { // Se há algo nas chaves do workload
+            if (keys_wl.includes(id_p)) { //Se o workload foi lançado para aquele subordinado
+                if (Object.keys(dict_wl_done[id_p]).includes(semana)) { //Se a semana em questão está nos workloads
+                    const all_os_week = []; //Lista com todas as OS daquela semana
+                    for (os in dict_wl_done[id_p][semana]) {
+                        all_os_week.push(parseInt(dict_wl_done[id_p][semana][os][0])); //Preenche a lista das OS daquela semana
+                        if (!ordem) { // Não foi lançada ordem
+                            fill2 += parseInt(dict_wl_done[id_p][semana][os][1]); //Incremente preenchimento
+                            if (fill2 > 0 && !(ordem)) { //Se não tem ordem de serviço (os), mas apresenta preenchimento (ocorre no primeiro preenchimento)
+                                $('#' + semana).css('background-image', `linear-gradient(0deg, #ffbe47 ${fill2}%, white ${fill2}%`); //${def_color(fill)}
+                            }
+                        }
+                    }
+                    if (ordem && all_os_week.includes(ordem)) { //Se a OS está na lista de os daquela semana
+                        if (ordem && fill2 > 0 && !(fill2 % 5)) { //Permite visualização dos dados sem nova requisição com o back-end
+                            if (dict_wl_done[id_p][semana][all_os_week.indexOf(ordem)][1] != parseInt(perc)) { // verifica se a quantidade é diferente
+                                dict_wl_done[id_p][semana][all_os_week.indexOf(ordem)][1] = parseInt(perc); //Atualiza o valor
+                                let total = 0;
+                                for (os in dict_wl_done[id_p][semana]) {
+                                    total += dict_wl_done[id_p][semana][os][1]
+                                } //Computa o preenchimento total da célula
+                                $('#' + semana).css('background-image', `linear-gradient(0deg, #ffbe47 ${total}%, white ${total}%`); //${def_color(fill)}
+                            }
+                        }
+                    } else { // A os ainda não foi cadastrada naquela semana para aquele usuário
+                        if (all_os_week.length == 0) { // Se for vazia a lista de semanas
+                            if (ordem && !(fill2 % 5) && fill2 > 0) { //Se o resto da divisão por 5 for zero e o valor for maior que zero e houver ordem de serviço
+                                dict_wl_done[id_p][semana] = [[ordem, parseInt(perc)]];
+                                $('#' + semana).css('background-image', `linear-gradient(0deg, #ffbe47 ${perc}%, white ${perc}%`); //${def_color(fill)}
+                            }
+                        } else { // Se já foi preenchido, acrescenta
+                            if (ordem && !(fill2 % 5) && fill2 > 0) {
+                                dict_wl_done[id_p][semana].push([ordem, parseInt(perc)]); //Acrescenta aquele registro
+                                let total = 0;
+                                for (os in dict_wl_done[id_p][semana]) {
+                                    total += dict_wl_done[id_p][semana][os][1]
+                                } //Computa o preenchimento total da célula
+                                $('#' + semana).css('background-image', `linear-gradient(0deg, #ffbe47 ${total}%, white ${total}%`); //${def_color(fill)}
+                            }
+                        }
+                    }
+                } else { // Se a semana selecionada não estiver na lista das semanas daquele colaborador
+                    if (jQuery.isEmptyObject(dict_wl_done[id_p][semana])) { //Se não houver registro naquela semana
+                        if (fill2 > 0 && !(fill2 % 5) && ordem) {
+                            $('#' + semana).css('background-image', `linear-gradient(0deg, #ffbe47 ${fill2}%, white ${fill2}%`); //${def_color(fill)}
+                            dict_wl_done[id_p][semana] = [[ordem, parseInt(perc)]];
+                        }
+                    } else {
+                        if (fill2 > 0 && !(fill2 % 5) && ordem) {
+                            $('#' + semana).css('background-image', `linear-gradient(0deg, #ffbe47 ${fill2}%, white ${fill2}%`); //${def_color(fill)}
+                            dict_wl_done[id_p][semana].push([ordem, parseInt(perc)]);
+                        }
+                    }
+                }
+            } else { // Se a semana selecionada não estiver na lista das semanas daquele colaborador
+                if (fill2 > 0 && !(fill2 % 5) && ordem) {
+                    $('#' + semana).css('background-image', `linear-gradient(0deg, #ffbe47 ${fill2}%, white ${fill2}%`); //${def_color(fill)}
+                    dict_wl_done[id_p] = {[semana]: [[ordem, parseInt(perc)]]};
+                    keys_wl = Object.keys(dict_wl_done); // Qualquer caminho faz com que seja criado
+                    console.log(dict_wl_done)
+                }
+            }
+        } else { //O objeto está vazio, não há chave nem valor
+            if (fill2 > 0 && !(fill2 % 5) && ordem) { // Primeira iteração do dict_wl_done
+                $('#' + semana).css('background-image', `linear-gradient(0deg, #ffbe47 ${fill2}%, white ${fill2}%`); //${def_color(fill)}
+                dict_wl_done[id_p] = {[semana]: [[ordem, parseInt(perc)]]}
+                keys_wl = Object.keys(dict_wl_done); // Qualquer caminho faz com que seja criado
+            }
+        }
+    }
+
+    function prog_row(id_row, e) {prog_cell(id_row,`w${week_init}_${id_row}`); prog_cell(id_row,`w${week_init+1}_${id_row}`);
+                                  prog_cell(id_row,`w${week_init+2}_${id_row}`); prog_cell(id_row,`w${week_init+3}_${id_row}`)}
+
+    function mouseover_row(id_row, e) {mouseover_hour(id_row,`w${week_init}_${id_row}`); mouseover_hour(id_row,`w${week_init+1}_${id_row}`);
+                                       mouseover_hour(id_row,`w${week_init+2}_${id_row}`);mouseover_hour(id_row,`w${week_init+3}_${id_row}`);}
+
+    function mouseout_row(id_row, e) {mouseout_hour(`w${week_init}_${id_row}`); mouseout_hour(`w${week_init+1}_${id_row}`);
+                                      mouseout_hour(`w${week_init+2}_${id_row}`);mouseout_hour(`w${week_init+3}_${id_row}`);}
+
+    function update_horas_row(id_row) {
+        var total = 0;
+        if (keys_wl.includes(id_row)) { // Evita erros relacionados a não encontrar objeto, continua se o id do subordinado estiver nas chaves do dicionário
+            for (var i = 0; i < 4; i++) { // para cada uma das 4 semanas
+                const week = `w${week_init+i}_${id_row}`;
+                for (os in dict_wl_done[id_row][week]) { total += parseInt(dict_wl_done[id_row][week][os][1]); }
+            }
+        }
+        return total_percent = total/4;
+    }
+
+    var header = `
+     <thead>
+          <tr>
+                <th style='border: 1.5px solid #dddddd'><center>Carga Lançada</center></th>
+                <th style='border: 1.5px solid #dddddd'><center>Colaborador</center></th>
+                <th style='border: 1.5px solid #dddddd'><center>SEMANA `+week_init+` : `+list_dom[0]+`</center></th>
+                <th style='border: 1.5px solid #dddddd'><center>SEMANA `+(week_init+1)+` : `+list_dom[1]+`</center></th>
+                <th style='border: 1.5px solid #dddddd'><center>SEMANA `+(week_init+2)+` : `+list_dom[2]+`</center></th>
+                <th style='border: 1.5px solid #dddddd'><center>SEMANA `+(week_init+3)+` : `+list_dom[3]+`</center></th>
+          </tr>
+    </thead>
+    `;
+
+    table.insertAdjacentHTML('afterbegin',header);
+    function cria_tabela(percent,pessoa,fim,horas,id_p) {
+        var row = table.insertRow(-1); // Acrescenta ao FINAL da tabela novas linhas
+        row.id = id_p;
+        for (let i = 0; i < 6; i++) {
+            var cell_i = row.insertCell(i);
+            if (i == 0) {
+                cell_i.id = "bar_" + id_p;
+                let total = update_horas_row(id_p);
+                cell_i.innerHTML = `
+                         <div class="progress" style="width: 150px;vertical-align: center;horiz-align: center;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: `+total+`%; position: center" aria-valuenow="`+total+`" aria-valuemin="0" aria-valuemax="100">`+total+`%</div>
+                         </div>
+                        `;
+                cell_i.style.width = '150px';
+                cell_i.addEventListener('click', prog_row.bind(this, id_p), false);
+            } else if (i == 1) {
+                cell_i.innerHTML = "<div> <center><label style='vertical-align: center;horiz-align: center'>" + pessoa + "<br><strong>" + fim + "</strong><br>" + horas + "</label></center></div>";
+                cell_i.id = id_p;
+                cell_i.style.width = '300px';
+                cell_i.addEventListener('click', prog_row.bind(this, id_p), false);
+                cell_i.addEventListener('mouseover', mouseover_row.bind(this, id_p), false);
+                cell_i.addEventListener('mouseout', mouseout_row.bind(this, cell_i.id), false);
+            } else {
+                cell_i.id = `w${i - 2 + week_init}_${id_p}`;
+                cell_i.style.width = '200px';
+                cell_i.addEventListener('click', prog_cell.bind(this, id_p, cell_i.id), false);
+                cell_i.addEventListener('mouseover', mouseover_hour.bind(this, id_p, cell_i.id), false);
+                cell_i.addEventListener('mouseout', mouseout_hour.bind(this, cell_i.id), false);
+                fill_cells(id_p,cell_i.id,0); //Preenche a célula
+            }
+            cell_i.style.verticalAlign = "center";
+            cell_i.style.border = sell_bord;
+            cell_i.style.border = def_bord;
+        }
+    }
+
+    for (var i = 1; i < colab.length+1; i++) {
+        cria_tabela(i*100/colab.length,colab[i-1],data_fim[i-1],h_dia[i-1],ids_colabs[i-1]);
+    }
+
+    function limpar() {
+        let dict_limpa = {}; //Dicionário de semanas para limpar
+        for (let id_col in dict_bord) {
+            // check if the property/key is defined in the object itself, not in parent
+            if (dict_bord.hasOwnProperty(id_col)) {
+                for (semana in dict_bord[id_col]) {
+                    if (dict_bord[id_col][semana] == true && dict_wl_done.hasOwnProperty(id_col)) { //Se o dicionário das bordas aponta a borda como selecionada e foi aontado wl para o colaborador
+                        let wk_nw = `w${parseInt(semana) + week_init}_${id_col}`;
+                        if (dict_wl_done[id_col].hasOwnProperty(wk_nw)) { //Se o usuário tem a propriedade da semana lançada
+                            if (Object.keys(dict_limpa).includes(id_col)) {
+                                dict_limpa[parseInt(id_col)].push(parseInt(semana) + week_init, dict_wl_done[id_col][wk_nw]);
+                            } else {
+                                dict_limpa[parseInt(id_col)] = [parseInt(semana) + week_init, dict_wl_done[id_col][wk_nw]];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        $.ajax({ //Envia os dados por AJAX ao back-end
+            type: "POST",
+            url: "wl",
+            dataType: 'json',
+            data: {'limpar':JSON.stringify({remover:dict_limpa}),
+                   'csrfmiddlewaretoken': '{{ csrf_token }}'},
+            success: window.location.href = '/app/hub_worload/' // Assim que termina a requisição assíncrona, redireciona
+        })
+
+    }
+
+    function muda_semana() {//Envia os dados por AJAX ao back-end
+        console.log('Tentou mudar semana')
+        let data_init = document.getElementById('dia-inicial').value;
+        $.ajax({
+            type: "POST",
+            url: "wl",
+            dataType: 'json',
+            data: {'init':data_init,
+                   'csrfmiddlewaretoken': '{{ csrf_token }}'},
+            success: window.location.href = '/app/hub_worload/' // Assim que termina a requisição assíncrona, redireciona
+        })
+    }
+
+    //table.insertAdjacentHTML('beforeend',header); //Coloca footer na tabela
+
+</script>
+{% endblock %}

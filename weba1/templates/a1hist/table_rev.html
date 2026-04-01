@@ -1,0 +1,82 @@
+<style>
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    .color_header{
+        background-color: #C65911;
+    }
+    .color_new {
+        background: rgba(51,255,51,0.1);
+    }
+    .color_new_sticky {
+        background: rgba(4,191,98);
+    }
+    .color_danger {
+        background: rgba(255,51,51,0.2);
+    }
+    .color_danger_sticky {
+        background: rgba(221,38,36);
+    }
+    .color_updated {
+        background: rgba(0,11,218,0.1);
+    }
+    .color_updated_sticky {
+        background: rgba(35,166,188);
+    }
+</style>
+<h4 class="modal-title text-center w-100">{{title_comp}}</h4>
+<div class="tableFixHead600 overflow_firefox overflow_chrome">
+    <table class="table table-sm table-hover font_size_0_8">
+         <thead class="text-center">
+              {% for key, head_rev in aux_head_rev.iterrows %}
+              <tr>
+                <th class="bg-white border-white"  colspan="12"></th>
+                {% for j in head_rev %}
+                <th class="border border-white text-white bordasimples font-weight-normal color_header" scope="col">{{j}}</th>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+              <tr class="text-nowrap border border-light">
+              {% for head_cell_comp in header_comp %}
+                  <th class="border border-white bordasimples text-white font-weight-normal color_header" scope="col">{{head_cell_comp}}</th>
+              {% endfor %}
+              </tr>
+         </thead>
+         <tbody class="table-bordered text-center" id="body_table_hist">
+             {% for key, row_comp in dataframe_comp.iterrows %}
+              <tr class="text-nowrap border border-light">
+                  {% for i in row_comp %}
+                      {%if forloop.counter == 2%}
+                          {%if i.0 == 'old'%}
+                          <td class="position-sticky fixed-top text-white color_danger_sticky">{{i.1}}</td>
+                          {%endif%}
+                          {%if i.0 == 'new'%}
+                          <td class="position-sticky fixed-top text-white color_new_sticky">{{i.1}}</td>
+                          {%endif%}
+                          {%if i.0 == 'updated'%}
+                          <td class="position-sticky fixed-top text-white color_updated_sticky">{{i.1}}</td>
+                          {%endif%}
+                          {%if i.0 == 'same'%}
+                          <td class="position-sticky fixed-top bg-white">{{i.1}}</td>
+                          {%endif%}
+                      {%endif%}
+                      {%if forloop.counter != 2%}
+                          {%if i.0 == 'old'%}
+                          <td class="text-danger color_danger">{{i.1}}</td>
+                          {%endif%}
+                          {%if i.0 == 'new'%}
+                          <td class="text-success color_new">{{i.1}}</td>
+                          {%endif%}
+                          {%if i.0 == 'updated'%}
+                          <td class="text-info color_updated">{{i.1}}</td>
+                          {%endif%}
+                          {%if i.0 == 'same'%}
+                          <td>{{i.1}}</td>
+                          {%endif%}
+                      {%endif%}
+                  {% endfor %}
+              </tr>
+             {% endfor %}
+         </tbody>
+    </table>
+</div>

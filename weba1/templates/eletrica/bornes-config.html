@@ -1,0 +1,402 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | BORNES</title>
+<style>
+
+
+    
+html,body {
+    background: linear-gradient(rgba(0, 0, 0, 0.225), rgba(0, 0, 0, 0.225)), url("/static/img/Espaço Inovação.jpg") center center/cover no-repeat fixed;
+    -webkit-font-smoothing: antialiased;
+}
+
+
+
+    .os-gl{
+            
+            border-radius: 22px;
+            background: rgba(255,255,255,.32);
+            backdrop-filter: blur(16px) saturate(140%);
+            -webkit-backdrop-filter: blur(16px) saturate(140%);
+            border: 1px solid rgba(255,255,255,.45);
+            box-shadow: 0 10px 30px rgba(0,0,0,.12);
+            color:#0f172a;
+        }
+
+
+        .os-title{font-size:26px;font-weight:800;margin:0 0 12px;}
+        .kv{display:grid;grid-template-columns:110px 1fr;column-gap:12px;row-gap:6px;font-size:14px;}
+        .kv .k{color:#475569;}
+        .kv .v{font-weight:600;color:#111827;}
+        .os-divider{border:0;border-top:1px solid rgba(255,255,255,.6);margin:14px 0;}
+        .os-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+
+
+    .mini-glass{
+        display: inline-flex;
+        align-items: center;
+        height: 31px;            /* altura do btn-sm do Bootstrap */
+        padding: 0 14px;         /* apenas lateral para alinhar com o botão */
+        border-radius: 16px;     /* pílula mais redonda */
+        background: rgba(255,255,255,.32);
+        backdrop-filter: blur(12px) saturate(140%);
+        -webkit-backdrop-filter: blur(12px) saturate(140%);
+        border: 1px solid rgba(255,255,255,.5);
+        box-shadow: 0 6px 16px rgba(0,0,0,.14);
+        font-size: 14px;
+        line-height: 1;
+        color: #111827;
+        white-space: nowrap;
+}
+</style>
+{% endblock %}
+
+{% block main %}
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/GerarTipicosDoc.js' %} "></script>
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/defines-msgs.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/eletrica/defines-modals.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/bornes-config.js' %}"></script>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+<div class="container-fluid h-100">
+    <div class="text-justify m-3">
+        <button class="btn btn-primary btn-warning" onclick="window.history.go(-1)">Voltar</button>
+        <div class="mini-glass" id="anao-info-os">
+
+    </div>
+    <div class="row d-flex justify-content-center mt-2">
+        <h3 class="text-white">CONFIGURAÇÃO BORNES</h3>
+    </div>
+</div>
+
+
+<div class="container-fluid d-flex align-items-start justify-content-center gap-3 mt-4" >
+    
+     <div class="os-gl shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center" style="height: 498px; width: 260px;">
+            
+        </div>
+
+<div class="d-flex flex-column" style="margin-right:30px ; gap:1px;">
+  <div class="d-flex justify-content-center gap-3" style="gap:13px">  <!-------------------- INICIO ABA CONFIGURAÇÕES -------------------->
+       <div class="os-gl shadow content-gerar-tipicos-doc mt-4 py-2 px-3 d-flex justify-content-center align-items-center" style="width: 500px">
+  <div class="form-group row"> 
+    <div class="col-12 text-center">
+      <label class="objte col-lg-12 col-form-label" for="funcao-nome-os-borne">
+        <h5 class="mb-1">Funções</h5>
+      </label>
+
+      <select class="form-select form-select-sm w-75" id="funcao-nome-os-borne"
+              style="width: 500px; text-align:center;"
+              onchange="ajaxIdFuncaoGeral(this.value)">
+                <option value="0">---</option>
+                {% for f_tipo, f_lista in context_functions_os.items %}
+                <option disabled="true" class="bg-info text-dark">{{f_tipo}}</option>
+                {% for f_name, f_pk in f_lista %}
+                    <option value="{{ f_pk }}">{{ f_name }}</option>
+                {% endfor %}
+                {% endfor %}
+            </select>
+            </div>
+
+            <div class="form-row no-gutters ml-3">
+            <div class="col-md-6 px-1 mb-1" style="left:-8px">
+                <div class="text-center">
+                <label class="objte col-form-label" for="sistema-ligacao">Sistema</label>
+                <input type="text" required class="form-control form-control-sm mt-1" id="sistema-ligacao" readonly style="text-align: center;">
+                </div>
+            </div>
+
+            <div class="col-md-6 px-1 mb-1" style="left:-8px">
+                <div class="text-center">
+                <label class="objte col-form-label" for="tipo-funcao">Tipo</label>
+                <input type="text" required class="form-control form-control-sm mt-1" id="tipo-funcao" readonly style="text-align: center;">
+                </div>
+            </div>
+
+            <div class="w-100 d-none d-md-block"></div>
+
+            <div class="col-md-12 px-1 mb-1"style="left:-8px">
+                <div class="text-center">
+                <label class="objte col-form-label" for="formacao-cabo">Finalidade</label>
+                <input type="text" required class="form-control form-control-sm mt-1" id="formacao-cabo" readonly style="text-align: center;">
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+
+
+        <div class="os-gl shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center" style="height: 294px; width: 260px;">
+             <div class="form-group row"> 
+
+            <div class="col-12 text-center" style="bottom:5px;">
+                <label class="objte col-lg-12 col-form-label" for="funcao-tipo-formacao">
+                    <h5 class="mb-1">Formação</h5>
+                </label>
+                <select class="form-select w-75"
+                        id="funcao-tipo-formacao"
+                    disabled
+                        style="width: 200px; text-align:center;"
+                        onchange="carregaCamposViasCores(this.value)">
+                    <option value="">---</option>
+                    <option value="unipolar">Unipolar</option>
+                    <option value="bipolar">Bipolar</option>
+                    <option value="tripolar">Tripolar</option>
+                    <option value="tetrapolar">Tetrapolar</option>
+                    <option value="pentapolar">Pentapolar</option>
+                    <option value="shield">Shield</option>
+                </select>
+            </div>
+        <div class="col-md-12 mb-3 text-center" style="bottom:5px ;">
+            <label class="objte col-form-label" for="formacao-cabo1">Material</label>
+            <input type="text" required class="form-control form-control-sm mt-1" id="formacao-cabo1" readonly style="width: 236px; margin: 6px auto; text-align: center;" >
+        </div>
+         <div class="col-12 text-center mt-3">
+        <button type="button"
+            class="btn btn-success rounded-pill px-4"
+            onclick="ajaxRegistrarReguaBornes()">
+                Salvar
+        </button>
+  
+    </div>
+        </div>
+        </div>
+                                        </div>
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BLOCO INSERÇÃO VALORES BORNE -------------------->
+        <div class="os-gl shadow content-gerar-tipicos-doc mt-2 p-4 d-flex justify-content-center align-items-center" style=" width: 770px;" >
+            <table id="table-borne" class="table table-sm text-center border">
+
+            <thead>
+              <tr class="table-primary">
+                <th colspan="2" class="text-primary border">ORIGEM</th>
+                <th colspan="2" class="text-primary border">DESTINO</th>
+              </tr>
+              <tr class="table-primary">
+                <th colspan="2" class="text-primary border">
+                    RÉGUA: <input type="text" class="form-control" id="regua_fase_orig">
+                </th>
+                <th colspan="2" class="text-primary border">
+                    RÉGUA: <input type="text" class="form-control" id="regua_fase_dest">
+                </th>
+              </tr>
+
+              <tr class="table-secondary">
+                <th class="border">BORNES</th>
+                <th class="border">VEIAS</th>
+                <th class="border">BORNES</th>
+                <th class="border">VEIAS</th>
+              </tr>
+            </thead>
+
+            <tbody>
+            </tbody>
+            </table>
+
+        </div>
+    </div> <!-------------------- FIM BLOCO INSERÇÃO VALORES BORNE -------------------->
+
+
+
+
+   
+
+
+    
+    </div> 
+    
+    <!-------------------- FIM BOTÃO SALVAR -------------------->
+
+    <div class="row" style="transform: translate(131px);">
+        <div class="d-flex flex-column align-items-center w-100" style="gap:5px;">
+            <div class="os-gl shadow content-gerar-tipicos-doc mt-4 d-flex justify-content-center align-items-center" style="height:294px; width:260px;">
+                <div class="row mx-1">
+                    <!------------------ Inicio Dropzone ------------------>
+                    <div class="col-lg-12 my-3" id="form">
+                        {% csrf_token %}
+                        
+                        <div class="form-group" style="margin-left: 45px; margin-top: 40px;">
+                            <select class="form-select w-75"
+                        id="funcao-tipo-formacao"
+                        style="width: 200px; text-align:center;"
+                        onchange="opcaoImagem(this.value)">
+                    <option value="">---</option>
+                    <option value="Borne">Borne</option>
+                    <option value="regua">Régua</option>
+                </select>
+                        </div>
+                           
+                        <div class="form-row mt-4" id="form_dropzone">
+                            <!------------------ Inicio Dropzone DWG ------------------>
+                   <!------------------ Fim Dropzone DWG ------------------>
+                            <!------------------ Inicio Dropzone XLSX template ------------------>
+                    <!------------------ Fim Dropzone XLSX template ------------------>
+
+                            <div class="col card_dropzone py-3 mr-0 animate__animated animate__fadeIn" id="drop-area-bornes-dwg" style="max-width:100%; position:relative;  bottom:1px;height:100px">
+                                <div class="text-center w-100" id="bornes-dwg">
+                                    <!-- Mensagem -->
+                                    <span class="font-italic text-primary">Arraste e solte o DWG ou</span><br>
+                                    <span class="font-italic text-primary">clique em importar.</span>
+
+                                    <div class="d-flex justify-content-center mt-1">
+                                        <label class="btn btn-primary rounded-pill text-white btn-sm mb-0">
+                                            <input accept=".dwg" class="hidden" type="file" id="arquivo_bornes_dwg" onchange="handleBornesDwgUpload(this)"/>
+                                            <i class="fa-solid fa-file-import"></i> Importar DWG
+                                        </label>
+                                    </div>
+
+                                    <!-- botão fixo no canto superior direito do card -->
+                                    <button type="button" id="btn-arquivos-bornes" class="btn btn-secondary btn-sm rounded-circle position-absolute" style="top:-8px; right:-8px; z-index:1050;" data-toggle="popover" data-trigger="hover" data-placement="left">
+                                        <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+                                        <span class="sr-only">Ver arquivos importados</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+
+                      
+                            <div class="d-flex justify-content-center align-items-center px-2" style="height: 10vh; gap: 10px;">
+                                
+                <div class="text-center" style="flex: 1;">
+                    <label>Largura</label>
+                    <input type="number" class="form-control" id="X" step="0.0001" placeholder="" max="9999.9999"/>
+                </div>
+                <div class="text-center" style="flex: 1;">
+                    <label>Altura</label>
+                    <input type="number" class="form-control" id="Y" step="0.0001" placeholder="" max="9999.9999" />
+                </div>
+            </div>
+            
+                        <div class="d-flex justify-content-center mt-2" style="margin-bottom: 40px;">
+                            <button type="button"
+                                    class="btn btn-success rounded-pill px-4"
+                                    onclick="UpdateAndSendDwgAcess()">
+                                Salvar
+                            </button>          
+                        </div>
+
+                        <div class="form-row mt-4" id="form_dropzone_compare_rev" hidden>
+                            <!------------------ Inicio Dropzone XLSX Rev 0 ------------------>
+                            <div class="col card_dropzone py-5 ml-0 px-0 animate__animated animate__fadeIn" id="drop-area-xlsx-rev-0" style="max-width:50%;">
+                                <div class="text-center w-100" id="xlsx-rev-0">
+                                    <!------------------ Inicio Message ------------------>
+                                    <span class="font-italic text-success">Arraste e solte a <b>Rev. anterior</b> (*.xlsx) ou</span><br>
+                                    <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                                    <!------------------ Fim Message ------------------>
+                                    <label class="mt-2 btn btn-success rounded-pill text-white">
+                                        <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xlsx_rev_0" onchange="DropArquivo('arquivo_xlsx_rev_0','drop-area-xlsx-rev-0','xlsx',null, 'compare')"/>
+                                        <i class="fa-solid fa-angles-left fa-xl mr-2"></i> Import Previous Rev.
+                                    </label>
+                                </div>
+                            </div><!------------------ Fim Dropzone XLSX Rev 0 ------------------>
+                            <div class="col-1"></div>
+                            <!------------------ Inicio Dropzone XLSX Next Rev ------------------>
+                            <div class="col card_dropzone py-5 mr-0 animate__animated animate__fadeIn" id="drop-area-xlsx-rev-next" style="max-width:50%">
+                                <div class="text-center w-100" id="xlsx-rev-next">
+                                    <!------------------ Inicio Message ------------------>
+                                    <span class="font-italic text-success">Arraste e solte a <b>Rev. posterior</b> (*.xlsx) ou</span><br>
+                                    <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                                    <!------------------ Fim Message ------------------>
+                                    <label class="mt-2 btn btn-success rounded-pill text-white"></label>
+                                        <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xlsx_rev_next" onchange="DropArquivo('arquivo_xlsx_rev_next','drop-area-xlsx-rev-next','xlsx',null, 'compare')"/>
+                                        Import Next Rev.<i class="fa-solid fa-angles-right fa-xl ml-2"></i>
+                                    </label>
+                                </div>
+                            </div><!------------------ Fim Dropzone XLSX Next Rev ------------------>
+                        </div>
+
+                    </div><!------------------ Fim Dropzone ------------------>
+                </div>
+                
+
+            </div>
+
+               <div class="os-gl shadow content-gerar-tipicos-doc mt-1 p-4 d-flex justify-content-center align-items-center" style="height: 196px; width: 260px;">
+            
+        </div>
+            </div>
+</div>
+
+</div>
+   <!-------------------- FIM CAMPO CONFIGURAÇÕES -------------------->
+
+<!------------------
+    <div class="container-fluid d-flex justify-content-center"> <-------------------- INICIO BLOCO SISTEMA FUNÇÃO FORMAÇÃO BORNE --------------------
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="text-center">
+                        <label class="objte col-form-label" for="sistema-ligacao">Sistema</label>
+                        <input type="text" required class="form-control mt-2" id="sistema-ligacao" readonly style="text-align: center;">
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="text-center">
+                        <label class="objte col-form-label" for="tipo-funcao">Tipo função</label>
+                        <input type="text" required class="form-control mt-2" id="tipo-funcao" readonly style="text-align: center;">
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="text-center">
+                        <label class="objte col-form-label" for="formacao-cabo1">Formação cabo</label>
+                        <input type="text" required class="form-control mt-2" id="formacao-cabo1" readonly style="text-align: center;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <-------------------- FIM BLOCO SISTEMA FUNÇÃO FORMAÇÃO BORNE -------------------->
+
+
+
+ <div class="modal" id="modalLoading" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 500px; border-radius: 20px;">
+        <div class="modal-content" style="border-radius: 20px;">
+            <div class="modal-body text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Salvando...</span>
+                </div>
+                <p id="salvando-text" style="font-size: 24px; margin-top: 15px;">Salvando<span id="dots">...</span></p>
+            </div>
+        </div>
+    </div>
+    </div>
+  
+<script>
+
+    
+ function getCookie(name) {
+        const esc = name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1');
+        const m = document.cookie.match(new RegExp('(?:^|; )' + esc + '=([^;]*)'));
+        return m ? decodeURIComponent(m[1]) : null;
+        }
+
+        // uso
+        console.log('Area =', getCookie('Area') ?? '—');
+
+        (function(){
+            var el = document.getElementById('anao-info-os');
+            if (!el) return;
+
+            var area = getCookie('Area') || getCookie('area') || '';
+            var osCtx = '{{ os_num|default:""|escapejs }}';
+            var os = getCookie('OS') || getCookie('os') || osCtx;
+
+            if (os && area) {
+                el.textContent = 'OS: ' + os + ' | Área: ' + area;
+            } else if (os) {
+                el.textContent = 'OS: ' + os;
+            } else if (area) {
+                el.textContent = 'Área: ' + area;
+            } else {
+                el.textContent = 'OS: —';
+            }
+        })();
+</script>
+
+
+{% include './ModalDadosDocumento.html' %}
+{% include './ModalLoadCelery.html' %}
+{% endblock %}

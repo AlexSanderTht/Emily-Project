@@ -1,0 +1,53 @@
+{% load static %}
+{% block base_search_bar %}
+<!-- para chamar esse bloco é necessário passar um contexto com o nome de id_select-->
+<div class="col-sm-9" >
+    <div class="form-group mb-4">
+        <td  for="tipo_os">
+            Pesquisa
+            <div class="divBuscaAcess">
+                <input type="search" class="txtBuscaAcess" placeholder="Buscar..." id="{{id_select}}-search" title="Pesquise aqui sua Carga" onclick="clean_form_search()"/>
+                <img src="{% static 'img/search3.png' %}" id="btnBuscaAcess" alt="Buscar" onclick="filterBarSearch()" style="width:20px;height:20px;object-fit:contain;cursor:pointer;"/>
+            </div>
+            <br>
+            <select id="{{id_select}}" required class="form-control " multiple>
+            </select>
+            <datalist id="motor-acess-type-list">
+            </datalist>
+        </td>
+    </div>
+</div>
+<script>
+    let id_select = "{{id_select}}"
+
+    function filterBarSearch(){
+        var carga = document.getElementById('{{id_select}}-search').value
+        if (carga.length == 0){
+            return $(`#${id_select}`).html(printAcessorio())
+        }
+        console.log("")
+        var options='';
+        $(`#${id_select}`).html(options)
+        for (keys in dict_all_cargas){
+            var name_caps = dict_all_cargas[keys]['Nome'].toUpperCase()
+            if (name_caps.includes(carga.toUpperCase())){
+                options += `<option value=${keys} onclick="selectCarga(${keys})">${dict_all_cargas[keys]['Nome']}</option>`
+            }
+        }
+        $(`#${id_select}`).html(options)
+    }
+
+    function clean_form_search(){
+        const carga = document.getElementById('{{id_select}}-search')
+        carga.addEventListener('keydown', function(event) {
+        const key = event.key; // const {key} = event; ES6+
+        if (key === "Backspace") {
+            document.getElementById('{{id_select}}-search').value = ""
+            clean_forms_cargas()
+            $(`#${id_select}`).html(printAcessorio())
+        }
+    });
+    }
+</script>
+{% endblock base_search_bar %}
+

@@ -1,0 +1,32 @@
+{% load static %}
+{% block ask_method_calc %}
+<div class="modal fade" id="modal-dist-media" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Distância Média</h5>
+        <button type="button" class="close" onclick="$('#modal-dist-media').modal('hide')" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+
+          <div class="col-lg-3 p-0 text-right">
+            <label for="dist-media-value">Distância Média:</label>
+          </div>
+
+          <div class="col-lg-4">
+            <input type="number" required class="form-control" id="dist-media-value" onkeyup="VerifyFieldsFloat(this.id)">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="RegisterDistMedia()">Salvar</button>
+        <button type="button" class="btn btn-dark" onclick="$('#modal-dist-media').modal('hide')">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{% static 'js/eletrica/A1Pro/DistMedia.js' %}"></script>
+{% endblock %}

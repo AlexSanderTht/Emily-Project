@@ -1,0 +1,236 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+    <link href="{% static 'js/bootstrap.min.css' %}">
+</head>
+
+<style>
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-5">
+
+    {% csrf_token %}
+
+    <div class="card mb-4" style="width: 100rem">
+        <div class="d-flex bd-highlight mb-2" >
+            <button class="mr-auto p-2 bd-highlight btn btn-warning" onclick=" relocate_requests()">
+                Voltar
+            </button>
+        </div>
+        <div class="card-body  col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Lista de documentos enviados pelo usuário</b></h2>
+        </div>
+        <div class="card-body container mx-auto col-auto">
+            <div class="col-12">
+                <table class="table table-bordered" id="table_templates">
+                    <thead>
+                          <tr>
+                              <th scope="col" class="text-center" hidden>Index</th>
+                              <th scope="col" class="text-center">Name File</th>
+                              <th scope="col" class="text-center">Formato</th>
+                              <th scope="col" class="text-center">Ultima Atualização Por</th>
+                              <th scope="col" class="text-center">Data Ultima Atualização</th>
+                              <th scope="col" class="text-center">Status</th>
+                              <th scope="col" class="text-center">Aprovação</th>
+                              <th scope="col" class="text-center">Ações</th>
+                          </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in items %}
+                        <tr>
+                            <th scope="row"  class="text-center" hidden>{{i.pk}}</th>
+                            <td class="text-center">{{i.tb_docs_in_req_name_file}}</td>
+                            <td class="text-center">{{i.tb_docs_in_req_format}}</td>
+                            <td class="text-center">{{i.tb_docs_in_req_last_modified_id_person.tb_per_name}}</td>
+                            <td class="text-center">{{i.tb_docs_in_req_datetime_update}}</td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-toggle"  data-toggle="buttons">
+                                    {% if i.tb_docs_in_req_status == 'NÃO VERIFICADO' %}
+                                    <label class="btn btn-secondary  btn-outline-warning">
+                                        <input type="radio" autocomplete="off" >NÃO VERIFICADO
+                                    </label>
+                                    {% elif i.tb_docs_in_req_status == 'APROVADO' %}
+                                    <label class="btn btn-secondary  btn-outline-light bg-success">
+                                        <input type="radio"  autocomplete="off" >APROVADO
+                                    </label>
+                                    {% else %}
+                                    <label class="btn btn-secondary  btn-outline-light bg-danger" >
+                                        <input type="radio" readonly>REPROVADO
+                                    </label>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td  class="text-center">
+                                <button type="button" class="btn btn-success" title="Aprovar" onclick="AprovaDocumento({{i.pk}})" {% if  i.tb_docs_in_req_status == 'APROVADO' or i.tb_docs_in_req_status == 'REPROVADO' %} disabled {% endif %}><a><i class="fa fa-thumbs-up"></i></a></button>
+                                <button type="button" class="btn btn-danger" title="Reprovar" onclick="ReprovaDocumento({{i.pk}})" {% if  i.tb_docs_in_req_status == 'APROVADO' or i.tb_docs_in_req_status == 'REPROVADO' %} disabled {% endif %}><a><i class="fa fa-thumbs-down"></i></a></button>
+                            </td>
+                            <td  class="text-center">
+                                <button type="button" class="btn btn-warning" title="Verificação Campo a Campo"><a style="color: white" href="{{i.pk}}/"><i class="fas fa-layer-group"></i></a></button>
+                                <button type="button" class="btn btn-warning" title="Visualizar arquivo"><a style="color: white" href="{{i.pk}}/file_view/"><i class="fas fa-glasses"></i></a></button>
+                                <button type="button" class="btn btn-warning" title="Download"><a style="color: white" href="{{i.pk}}/download/"><i class="fas fa-download"></i></a></button>
+                                <button type="button" class="btn btn-warning" title="Observação" onclick="RequestObsFromDoc('{{i.tb_docs_in_req_name_file}}', '{{i.pk}}')"  data-toggle="modal" data-target="#modal_observacao_documento"><i style="color: white" class="far fa-comment"></i></button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if items.has_other_pages %}
+                <nav>
+                    <ul class="pagination">
+                        {% if items.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ items.previous_page_number }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for page_num in page_range %}
+                            {% if page_num == current_page %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">{{ page_num }} <span class="sr-only">(current)</span></a>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if items.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ items.next_page_number }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+
+        </div>
+
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="modal_observacao_documento">
+    <div class="modal-dialog" role="document">
+        <div hidden id="modal_observacao_id_doc">
+
+        </div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="modal_obs_head" class="modal-title">Observação:</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body container mx-auto col-12">
+                <textarea id="modal_obs_text" rows="4"  class="col-12 border"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="SendObsFromDoc()">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</html>
+
+<script>
+
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+    function relocate_requests()
+    {
+         location.href = "/app/documentacao/tela_controle_requested_docs/"
+    }
+    function RequestObsFromDoc(name_doc, id_doc_req){
+        document.getElementById("modal_observacao_id_doc").value = id_doc_req
+        document.getElementById("modal_obs_head").innerHTML = `Observação p/ ${name_doc}`
+        $.ajax({
+                type: 'GET',
+                url: `/app/documentacao/observacao_file/${id_doc_req}/`,
+                enctype: 'multipart/form-data',
+                data: {'data': '', 'csrfmiddlewaretoken': csrf[0].value},
+        }).done(function (data) {
+            document.getElementById('modal_obs_text').innerHTML = ''
+            document.getElementById('modal_obs_text').innerHTML = data['data']
+        })
+    }
+
+    function SendObsFromDoc(){
+        let id_doc_req = document.getElementById("modal_observacao_id_doc").value
+        let obs_req = document.getElementById("modal_obs_text").value
+        $.ajax({
+            type: 'POST',
+            url: `/app/documentacao/observacao_file/${id_doc_req}/`,
+            enctype: 'multipart/form-data',
+            data: {'data': `${obs_req}`, 'csrfmiddlewaretoken': csrf[0].value},
+        }).done(function (data) {
+
+            swal({
+                text: data['data'],
+                icon: "success",
+                button: 'Fechar'
+            })
+
+        })
+    }
+
+    function AprovaDocumento(id_doc_in_req){
+        SendAprovaReprovaDocumento(id_doc_in_req, true)
+    }
+    function ReprovaDocumento(id_doc_in_req){
+        SendAprovaReprovaDocumento(id_doc_in_req, false)
+    }
+
+    function SendAprovaReprovaDocumento(id_doc_in_req, status_send){
+        if (status_send === true){
+            status_send = 1
+        }else {
+            status_send = 0
+        }
+        $.ajax({
+            type: 'POST',
+            url: `/app/documentacao/aprovar_documento/${id_doc_in_req}/${status_send}/`,
+            enctype: 'multipart/form-data',
+            data: {'data': ``, 'csrfmiddlewaretoken': csrf[0].value},
+        }).done(function (data) {
+
+            if(data['status']){
+                swal({
+                    text: data['data'],
+                    icon: "success",
+                    button: 'Fechar'
+                })
+                location.reload()
+            }else{
+                swal({
+                    text: data['data'],
+                    icon: "error",
+                    button: 'Fechar'
+                })
+
+            }
+
+        })
+    }
+
+</script>
+{% endblock %}

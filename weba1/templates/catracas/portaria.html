@@ -1,0 +1,216 @@
+{% extends 'geral/base.html' %}
+{% load poll_extras %}
+{% load static %}
+{% block head %}
+<title>Dashboards</title>
+<link rel="icon" href="{% static 'dashboards\graph_icon.png' %}" type="image/x-icon">
+{% endblock %}
+{% block help %}
+
+{% endblock %}
+{% block main %}
+<script>
+    (function ($) {
+        $(function () {
+            window.fs_test = $('.selection').fSelect();
+        });
+    })(jQuery);
+</script>
+{% csrf_token %}
+
+<!------------------ Início Cartão de conteúdo ------------------>
+{% with id_modal='modal-load-portaria' %}
+    {% include './modal_load.html' %}
+{% endwith %}
+<!-- JavaScript Aplicação Dashboard -->
+<script src="{% static 'js/dashboards/Chart.js' %}"></script><!-- Script de classe de Gráficos -->
+<script src="{% static 'js/dashboards/FunctionSelect.js' %}"></script><!-- Plugin de Função de Múltiplo Selects -->
+<!-- jQuery Aplicação Dashboard -->
+<script src="{% static 'js/dashboards/jquery-3.3.1.min.js' %}"></script>
+
+<div class="px-5 py-5 bordas">
+    <div class="row justify-content-md-center">
+
+        <!------------------ Aba Filtro de conteúdo ------------------>
+        <div class="col-sm-3 col-xl-2 borda_filtros bg-secondary imagem_LateralSup">
+            <div class="row my-4">
+                <a class="col-sm-6 col-6" href="/app/dashboards/a1gateway/">
+                    <img class="ml-3" src="{% static 'dashboards\a1_menu_white.png' %}">
+                </a>
+                <a class="col-sm-6 col-6" href="/app/dashboards/a1gateway/">
+                    <h3 class="h3 float-right text-white font-weight-bold font-italic">Gateway</h3>
+                </a>
+            </div>
+
+            <!------------------ Início Secção de colaborador ------------------>
+            <div class="form-group">
+                <label class="font-weight-bold text-white" for="colaborador">Colaborador</label>
+                <select class="selection" id="colaborador" multiple="multiple">
+                    {% for id, person in persons %}
+                    <option name="colab" value="{{id}}">{{person}}</option>
+                    {% endfor %}
+                </select>
+            </div><!------------------ Fim Secção de colaborador ------------------>
+
+            <!------------------ Início Secção de catracas ------------------>
+            <div class="form-group">
+                <label class="font-weight-bold text-white" for="catraca">Catraca</label>
+                <select class="selection" id="catraca" multiple="multiple">
+                    {% for id, eqp in equips %}
+                    <option name="catr" value="{{id}}">{{eqp}}</option>
+                    {% endfor %}
+                </select>
+            </div><!------------------ Início Secção de catracas ------------------>
+
+            <!------------------ Início Secção de eventos ------------------>
+            <div class="form-group">
+                <label class="font-weight-bold text-white" for="catraca">Eventos</label>
+                <select class="selection" id="eventos" multiple="multiple">
+                    <option value="ENTRADA/SAIDA">Entrada/Saida</option>
+                    <option value="JANTA">Janta</option>
+                    <option value="ALMOÇO">Almoço</option>
+                    <option value="CAFÉ">Café da manhã</option>
+                </select>
+            </div><!------------------ Início Secção de Eventos ------------------>
+
+            <!------------------ Início Secção de Seleção ------------------>
+            <div class="text-white">
+                <br>
+            </div><!------------------ Fim Secção de Seleção ------------------>
+
+            <!------------------ Início Secção de Limpar Filtro ------------------>
+            <div class="mx-1 w-100 btn-group row justify-content-center">
+                <a class=" btn btn-outline-light active" id="ClearFilter" onclick="clean_filters_portaria()">
+                    <i class="fas fa-eraser"></i>
+                </a>
+                <a onclick="PostDataInfo()" class="btn btn-outline-light" role="button" id="ApplyFilters" type="submit">Aplicar
+                    Filtros</a>
+            </div><!------------------ Fim Secção de Limpar Filtro ------------------>
+
+        </div><!------------------ Fim Aba de Filtros ------------------>
+
+        <!------------------ Aba de Gráficos ------------------>
+        <div class="col-sm-9 col-xl-10 border borda_lateral">
+            <div class="row">
+                <div class="col-sm-12 col-md-4 col-xl-5">
+                    <div class="row justify-content-center px-md-2">
+                        <!------------------ Início Cartão Portaria/IP ------------------>
+                        <div class="col-sm-5 col-md-12 col-xl-9 my-2 rounded border border-secondary bg-white">
+
+                            <h5 align="center" class="my-1 " id="catracas-selecteds">Carregando...</h5>
+
+                        </div><!------------------ Início Cartão Portaria/IP ------------------>
+
+                        <!------------------ Início Cartão Atualização ------------------>
+                        <div class="col-sm-5 col-md-12 col-xl-9 mb-2 rounded border bg-secondary align-items-stretch">
+                            <h6 align="center" class="text-white my-1" id="AtualizacaoGateway">Carregando...</h6>
+                        </div><!------------------ Fim Cartão Atualização ------------------>
+                    </div>
+                </div>
+
+                <!------------------ Início Secção Filtros de Data ------------------>
+                <div class="col-md-3 col-xl-2 mt-2 p-1">
+                    <div class="form-group mb-1 mx-4 ">
+                        <label for="DataInicio">Data inicio</label>
+                        <input type='date' class="form-control" id='DataInicio' min="{{min_date}}" max="{{max_date}}"
+                               onclick="change_color_date('form-control')">
+                    </div>
+                </div>
+                <div class="col-md-3 col-xl-2 mt-2 p-1">
+                    <div class="form-group mb-1 mx-4">
+                        <label for="DataFim">Data fim</label>
+                        <input type='date' class="form-control" id='DataFim' min="{{min_date}}" max="{{max_date}}"
+                               onclick="change_color_date('form-control')">
+                    </div>
+                </div>
+            </div><!------------------ Fim Secção Filtros de Data ------------------>
+
+            <!------------------ Início Secção 2 ------------------>
+            <div class="row" align="center">
+                <div class="col-sm-9 col-md-12 col-lg-5 col-xl-5 rounded pr-0 pr-md-3">
+
+                    <!------------------ Início Gráfico de Rosca ------------------>
+                    <div class="row HeigthCard bg-white rounded border shadow container justify-content-center">
+                        <div class="col-sm-12 col-md-6 col-lg-9 col-xl-7" id="daddy-chart">
+                            <canvas class="" id="doughnut-chart" width="" height=""></canvas>
+                        </div>
+                    </div><!------------------ Fim Gráfico de Rosca ------------------>
+
+                    <!------------------ Início Cartões visualização ------------------>
+                    <div class="col-sm-12 col-md-12 col-xl-12 row my-2 justify-content-between px-1">
+                        <div class="col-md-2 col-xl-2 bordas py-3 px-1 fundo_p1">
+                            <div class="" onclick="">
+                                <span class="font-weight-bold h5" id="CardPort1"></span><br>
+                                <span>Portaria 1</span>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-xl-2 bordas py-3 px-1 fundo_p2">
+                            <div class="">
+                                <span class="font-weight-bold h5" id="CardPort2"></span><br>
+                                <span>Portaria 2</span>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-xl-2 bordas py-3 px-1 fundo_p3">
+                            <div class="">
+                                <span class="font-weight-bold h5" id="CardPort3"></span><br>
+                                <span>Portaria 3</span>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-xl-2 bordas py-3 px-1 fundo_p5">
+                            <div class="">
+                                <span class="font-weight-bold h5" id="CardRecep"></span><br>
+                                <span>Recepção</span>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-xl-2 bordas py-3 px-1 fundo_p4">
+                            <div class="">
+                                <span class="font-weight-bold h5" id="CardRef"></span><br>
+                                <span>Refeitório</span>
+                            </div>
+                        </div>
+                    </div><!------------------ Fim Cartões visualização ------------------>
+                </div>
+
+                <!------------------ Início Tabela ------------------>
+                <div class="col container pb-md-2 pl-xl-0">
+                    <div class="justify-content-center rounded border bg-white shadow tableFixHead" id="table">
+                        <table class="table table-hover sortable ">
+                            <thead class="thead-light">
+                            <tr>
+                                <th data-column="DATA_HORA" data-order="desc">Data & Hora</th>
+                                <th data-column="TIPO" data-order="desc">Evento</th>
+                                <th data-column="EQPI_DESCRICAO" data-order="desc">Catraca</th>
+                                <th data-column="PES_NOME" data-order="desc">Nome</th>
+                            </tr>
+                            </thead>
+                            <tbody id="table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div><!------------------ Fim Tabela ------------------>
+
+
+            </div><!------------------ Fim Secção 2 ------------------>
+
+            <!------------------ Início Gráficos de Barras Empilhadas ------------------>
+            <div class="row px-3 pb-3 hidden">
+                <div class="col-12 px-3 bg-white shadow rounded">
+                    <div class="loader">
+                        <img src="{% static 'dashboards\spinner.gif' %}" alt="Loading..."/>
+                    </div>
+                    <div id="graph-daddy">
+                        <canvas id="bar-chart-grouped" width="" height="227px"></canvas>
+                    </div>
+                </div>
+            </div><!------------------ Fim Gráficos de Barras Empilhadas ------------------>
+
+        </div>
+    </div>
+</div>
+<br>
+<br>
+
+<script src="{% static 'js/dashboards/a1gateway.js' %}"></script>
+{% endblock %}
+{% block end %}
+{% endblock %}

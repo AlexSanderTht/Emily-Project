@@ -1,0 +1,105 @@
+{% load static %}
+{% block custom_datalist %}
+<link href="{% static 'css/custom_datalist.css' %} " rel="stylesheet" />
+
+<div id="contentNotSelected">
+    <input class="form-control" onkeyup="changeFormInput()" type="text" id="{{ id_input }}" placeholder="{{ placeholder_input }}">
+    <div class="position-relative">
+        <div class="custom-datalist" id="listCustomDatalist">
+        </div>
+    </div>
+</div>
+
+<div id="contentSelected" hidden>
+
+</div>
+
+<select class="form-select" hidden id="{{ id_select_get_value_selected }}">
+</select>
+
+
+<script>
+
+    const inputFilter = document.getElementById("{{ id_input }}")
+    const contentNotSelected = document.getElementById('contentNotSelected')
+    const contentSelected = document.getElementById('contentSelected')
+
+    async function requestItemsInCustomDataList(){
+        let datasReturn = null
+        await $.ajax({
+            url: "{{ url_get }}",
+            method: 'GET',
+            success: function(response) {
+                datasReturn = response.datasReturn
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching selected OS:", error);
+            }
+        });
+        return datasReturn
+    }
+
+    function funcExec(paramId, paramName){
+        const nameFuncExecSelectItem = "{{ name_func_change }}"
+        const funcao = window[nameFuncExecSelectItem];
+        selectValue(paramId, paramName)
+        // Chama a função se ela existir
+        if (typeof funcao === 'function') {
+            funcao(paramId, paramName);
+        }
+    }
+
+    function changeFormInput() {
+        const elementsDatalist = document.getElementById('listCustomDatalist').children
+        for (let i = 0; i < elementsDatalist.length; i++){
+            let element =  elementsDatalist[i]
+            const valueInElement = element.dataset.valueFill
+            element.hidden = !(valueInElement.toUpperCase().includes(inputFilter.value.toUpperCase()))
+        }
+    }
+
+    function selectValue(paramId, paramName) {
+        inputFilter.value = paramName
+        contentSelected.innerHTML = `<div class="col-12 animate__animated animate__backInLeft">
+                                        <div class="border rounded-3 text-center mt-2 text-truncate">
+                                            ${paramName}
+                                        </div>
+
+                                        <i class="fa-solid fa-circle-xmark muda_cursor_hover" onclick="removeSelection()" title="Remover seleção" style="position: absolute;right: 19px;bottom: 5px;"></i>
+                                    </div>`
+        contentSelected.hidden = false
+        contentNotSelected.hidden = true
+        $("#" + "{{ id_select_get_value_selected }}").val(paramId)
+
+    }
+
+    function removeSelection(){
+        inputFilter.value = ''
+        changeFormInput()
+        contentSelected.innerHTML = ``
+        contentSelected.hidden = true
+        contentNotSelected.hidden = false
+        $("#" + "{{ id_select_get_value_selected }}").val("none")
+    }
+    function fillDataList(arrayDatalist){
+        let contentHtml = ``
+        let contentOptions = `<option value="none">---</option>`
+        for (let i = 0; i < arrayDatalist.length; i++){
+            const objDatalist = arrayDatalist[i]
+            contentHtml += `<div data-value-fill="${objDatalist.name}" data-json-obj='${JSON.stringify(objDatalist)}' class="col-12 border rounded-3 text-center mt-2 custom-option-datalist text-truncate" onclick="funcExec(${objDatalist.id}, '${objDatalist.name}')">
+                                ${objDatalist.name}
+                            </div>`
+            contentOptions += `<option value="${objDatalist.id}">${objDatalist.name}</option>`
+        }
+        document.getElementById('listCustomDatalist').innerHTML = contentHtml
+        document.getElementById("{{ id_select_get_value_selected }}").innerHTML = contentOptions
+    }
+
+    async function createCustomDatalist(){
+        const datasRequest = await requestItemsInCustomDataList()
+        fillDataList(datasRequest)
+    }
+
+    createCustomDatalist()
+</script>
+{% endblock %}

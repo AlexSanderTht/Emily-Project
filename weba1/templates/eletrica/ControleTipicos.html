@@ -1,0 +1,123 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+<title>A1Pro | CONTROLE TÍPICOS</title>
+{% endblock %}
+{% block main %}
+
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+<div class="text-justify m-3">
+    <button type="button" style="z-index: 1000" class="btn btn-primary btn-warning position-absolute" onclick="window.history.go(-1)">Voltar</button>
+</div>
+
+<div class="col-12 text-center mt-3 animate__bounceOut">
+    <div class="col-12 ">
+        <h3>Controle de Tipicos Sup. e Band.</h3>
+    </div>
+    <div class="col-12">
+        <h5>OS: {{os}}</h5>
+    </div>
+</div>
+
+<div class="container-fluid">
+    {% csrf_token %}
+    <div class="row col-10 mt-5" id="meu-div">
+        <div class="col-1 col-sm-2 col-md-1 col-lg-2">
+            <div class="card card-anime border-0 shadow" onclick="ShowModalAreas()">
+                <div class="card-body" >
+                    <div class="d-inline-block rounded card-area">
+                        <img  class="align-self-start mr-3" src="{% static 'img/Design-sem-nome-4--unscreen (1).gif' %}" width="15"/>
+                    </div>
+                    <p class="card-text d-inline-block overflow-hidden ellipsis text-nowrap w-35 text-truncate align-middle mb-0 p-1 py-3">Áreas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-2 col-sm-2 col-md-2 col-lg-2">
+            <div class="card card-anime border-0 shadow" onclick="ShowModalGrupos()">
+                 <div class="card-body">
+                      <div class="d-inline-block rounded card-tipos">
+                         <img class="img-color  align-self-start mr-3" src="{% static 'img/quadrado.gif' %}" width="15"/>
+                      </div>
+                    <p class="card-text  d-inline-block overflow-hidden ellipsis text-nowrap align-middle text-truncate w-75 mb-0 p-1 py-3">Grupos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-2 col-sm-2 col-md-2 col-lg-2">
+            <div class="card card-anime border-0 shadow" onclick="ShowModalGruposBand()">
+                <div class="card-body">
+                    <div class="d-inline-block rounded card-tipos">
+                        <img  class="align-self-start mr-3" src="{% static 'img/quadrado.gif' %}" width="15"/>
+                    </div>
+                    <p class="card-text d-inline-block overflow-hidden ellipsis text-nowrap w-75  align-middle mb-0 p-1 " style="width: 2rem;">Grupo Fixação <br> de Bandeja</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-sm-2 col-md-2 col-lg-2">
+            <div class="card card-anime border-0 shadow" onclick="ShowModalMatGt()">
+                 <div class="card-body">
+                     <div class="d-inline-block rounded card-items">
+                        <img class="img-color" src="{% static 'img/output-onlinegiftools.gif' %}"  width="15"/>
+                     </div>
+                    <p class="card-text  d-inline-block  overflow-hidden ellipsis text-nowrap w-75 align-middle mb-0 p-1 py-3">Descrição Genérica</p>
+                </div>
+            </div>
+       </div>
+        <div class="col-2 col-sm-2 col-md-2 col-lg-2">
+            <div class="card card-anime border-0 shadow" onclick="ShowModalMatsGps()">
+                <div class="card-body">
+                    <div class="d-inline-block rounded card-area">
+                        <img  class="align-self-start mr-3" src="{% static 'img/Design-sem-nome-4--unscreen (1).gif' %}" width="15"/>
+                    </div>
+                    <p class="card-text d-inline-block overflow-hidden ellipsis text-nowrap w-50  align-middle mb-0 p-1 ">Configuração <br> de Grupos</p>
+                </div>
+            </div>
+        </div>
+
+       <div class="col-2 col-sm-2 col-md-2 col-lg-2">
+            <div class=" card card-anime border-0 shadow " onclick="ShowModalMateriasCodGt()">
+                <div class="card-body">
+                    <div class="d-inline-block rounded card-materiais">
+                         <img class="img-color" src="{% static 'img/page-under-construction.gif' %}" width="15"/>
+                    </div>
+                    <p class=" card-text  d-inline-block  overflow-hidden ellipsis text-nowrap w-75 align-middle mb-0 p-1 py-3">Códigos de Materiais</p>
+                </div>
+            </div>
+       </div>
+
+        <div class="col-10 ">
+            <div class="card border-0 card-table" >
+                <div class="container-fluid shadow overflow_firefox overflow_chrome p-0 card-header border-0 contet_table_controle_tipicos " id="tables_controle_tipicos"></div>
+            </div>
+        </div>
+         <div class="col col-sm col-md col-lg ">
+            <div class="card card-anime border-0 shadow">
+                <div class="card-body">
+                    <label class=" d-inline-block overflow-hidden ellipsis text-nowrap  text-truncate">Cópia de OS</label>
+                     <select class="form-control" id="ct_select_copy_os">
+                       <option value="0">-&#45;&#45;</option>
+                       {% for ObjOs in all_os%}
+                          <option value="{{ObjOs.pk}}">{{ObjOs.tb_os_p_num}}</option>
+                       {% endfor %}
+                    </select>
+                    <div class="col-12 p-0 my-2">
+                        <button type="button" class="btn butof w-100" onclick="CopyMateriaisOs()">Copiar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include "eletrica/ModalAreasControleTipicos.html"%}
+{% include "eletrica/ModalMateriaisGt.html"%}
+{% include "eletrica/ModalMateriaisSusFix.html"%}
+{% include "eletrica/ModalGruposGT.html"%}
+{% include "eletrica/ModalTiposGpGT.html"%}
+{% include "eletrica/ModalGruposBandGT.html"%}
+{% include "eletrica/ModalMatsGpsGT.html"%}
+
+<script src="{% static 'js/eletrica/A1Pro/ControleTipicos.js' %}"></script>
+{% endblock %}

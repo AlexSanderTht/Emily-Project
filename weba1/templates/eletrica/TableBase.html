@@ -1,0 +1,40 @@
+
+{% load static %}
+{% block main %}
+
+  <!------------------ Início cabeçalho tabela ------------------>
+  <div class="d-flex justify-content-end mb-2">
+<!--      <a class="btn btn-outline-danger text-danger bordas" id="btn_close_help" onclick="$('#Modal_Import_Carga').modal('hide');">-->
+<!--          <i class="fas fa-times-circle"></i> Fechar-->
+<!--      </a>-->
+  </div><!------------------ Fim cabeçalho tabela ------------------>
+
+  <div class="tableFixHead600 overflow_firefox overflow_chrome position-relative" id="table_result_import">
+      <table id="TabelaDados" class="table table-bordered p-0 w-100 font_size_0_8">
+          <thead>
+              <tr class="thead-dark">
+                {% for column in dataframe %}
+                    {% if not forloop.first %}
+                        <th scope="col" class="px-3">{{column}}</th>
+                    {% endif %}
+                {% endfor %}
+              </tr>
+          </thead>
+
+          {% for i, row in dataframe.iterrows %}
+          <tbody>
+              <tr class="align-middle {{row|first}}" >
+                  {% for value in row%}
+                      {% if not forloop.first and not forloop.last %}
+                          <td class="align-middle px-3">{{value}}</td>
+                      {% endif %}
+                      {% if forloop.last %}
+                          <td class="px-3"><div class="w_500px">{{value}}</div></td>
+                      {% endif %}
+                  {% endfor %}
+              </tr>
+          </tbody>
+          {% endfor %}
+      </table>
+  </div>
+{%endblock%}

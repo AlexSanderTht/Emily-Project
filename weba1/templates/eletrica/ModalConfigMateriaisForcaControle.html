@@ -1,0 +1,400 @@
+{% load static %}
+
+<style>
+    /* CSS personalizado para o segundo backdrop */
+    .second-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Cor de fundo cinza com 50% de opacidade */
+      z-index: 1050; /* Certifique-se de que está abaixo do modal, mas acima do primeiro backdrop */
+    }
+
+
+    /* Custom scrollbar styles */
+        .modal-body::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 10px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+
+  </style>
+
+
+<div class="modal fade bd-example-modal-lg" id="modal_config_mat_fc" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!--<h5 class="modal-title" id="exampleModalLabel">Configurar informações de materiais</h5>-->
+        <h5 class="modal-title" id="exampleModalLabel">CONFIGURAR INFORMAÇÕES DE MATERIAIS</h5>
+        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>-->
+      </div>
+      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+
+
+        <div class="row" style="margin-top: 25px;">
+            <div class="col-3">
+          <!------------------ Início Tipo de componente na extremidade do leito ou eletroduto ------------------>
+                <div class="form-group input-group-sm">
+                    <label>Tipo de Área </label>
+                    <div>
+                        <select class="form-control" id="area_materiais" onchange="CarregaMateriaisArea()">
+                            <!--onchange="fillPopoverSelect('tipo_componente_acessorios');fillCodeTipicoAcessorios();ajaxOptionNextLevel('tipo_rosca_ligacao_acessorios', this.selectedOptions[0].id, '');removeDisabledAtribute('tipo_rosca_ligacao_acessorios')">-->
+                            <option id="--" selected>---</option>
+                        </select>
+                    </div>
+                </div><!------------------ Fim Tipo de componente na extremidade do leito ou eletroduto ------------------>
+            </div>
+        </div>
+            <div class = 'row' style="margin-top: 25px; margin-bottom: 30px; border-top: 1px solid #808080;">MATERIAIS DA INFRAESTRUTURA</div>
+          <div class="row" style="margin-top: 25px;">
+
+              <div class="col-3">
+                  <div class="label"><strong>ELETRODUTO:</strong></div>
+                  <input type="text" class="form-control" id="codigo_eletroduto" maxlength="8" oninput="ConsultaMateriais('codigo_eletroduto', 'descricao_eletroduto', 'unidade_eletroduto', 'quantitativo_eletroduto')" placeholder="8 caracteres">
+              </div>
+              <div class="col">
+                <p class="inline-center" style="margin-top: 25px; font-size: 15px;">
+                    <span id="descricao_eletroduto"></span>
+                </p>
+
+              </div>
+                <div id = 'quantitativo_eletroduto' hidden='true'>
+                  <div class="form-group">
+                    <label for='quantidade_eletroduto' class="col-form-label">QUANTIDADE</label>
+                    <div class="d-flex align-items-center">
+                        <input type="number" class="form-control w-50" id="quantidade_eletroduto" maxlength="8" oninput="ConsultaQuantitativo('quantidade_eletroduto')">
+                        <span id="unidade_eletroduto" class="ml-2"></span>
+                    </div>
+                  </div>
+                </div>
+          </div>
+
+          <div class="row" style="margin-top: 25px;">
+              <div class="col-3">
+                  <div class="label"><strong>LEITO:</strong></div>
+                  <input type="text" class="form-control" id="codigo_abracadeira_perfil" maxlength="8" value="N/A" readonly>
+              </div>
+              <div class="col">
+                <p class="inline-center" style="margin-top: 25px; font-size: 15px;">
+                    <span id="descricao_abracadeira_perfil"></span>
+                </p>
+              </div>
+          </div>
+          <div class = 'row' style="margin-top: 25px; margin-bottom: 30px; border-top: 1px solid #808080;">FIXAÇÃO</div>
+          <div class="row" style="margin-top: 25px;">
+              <div class="col-3">
+                  <div class="label"><strong>PARA ELETRODUTO (ABRAÇADEIRA) :</strong></div>
+                  <input type="text" class="form-control" id="codigo_fixacao_eletroduto" maxlength="8" oninput="ConsultaMateriais('codigo_fixacao_eletroduto', 'descricao_fixacao_eletroduto', 'unidade_fixacao_eletroduto', 'quantitativo_fixacao_eletroduto')" placeholder="8 caracteres">
+              </div>
+              <div class="col">
+                <p class="inline-center" style="margin-top: 25px; font-size: 15px;">
+                    <span id="descricao_fixacao_eletroduto"></span>
+                </p>
+              </div>
+              <div id = 'quantitativo_fixacao_eletroduto' hidden='true'>
+                  <div class="form-group">
+                    <label for='quantidade_fixacao_eletroduto' class="col-form-label">QUANTIDADE</label>
+                    <div class="d-flex align-items-center">
+                        <input type="number" class="form-control w-50" id="quantidade_fixacao_eletroduto" maxlength="8" oninput="ConsultaQuantitativo('quantidade_fixacao_eletroduto')">
+                        <span id="unidade_fixacao_eletroduto" class="ml-2"></span>
+                    </div>
+                  </div>
+                </div>
+          </div>
+          <!--<div class="row">-->
+          <!--<div class="label" style="margin-top: 25px;"><strong>PARA LEITO (PARAFUSO, PORCA, ARRUELAS):</strong></div>
+
+          <div class="form-group mb-5">
+            <td data-toggle="tooltip" title="Inserir codigo ">
+                <select id="materiais_fixacao_leito" required class="form-control " multiple style="height: 80px; width: 1000px;">
+
+                </select>
+
+            </td>
+
+            <button type="button" class="btn btn-primary btn-sm rounded-circle" onclick="$('#modal_add_material').modal('show')">+</button>
+            <button type="button" class="btn btn-primary btn-sm rounded-circle" onclick="DeletarMaterialFixacao()">-</button>
+          </div>
+            <div class = 'row' style="margin-top: 25px; margin-bottom: 30px; border-top: 1px solid #808080;">COMPONENTES TERMINAIS DA INFRAESTRUTURA</div>-->
+          <!-------------------------- BUCHA DE ACABAMENTO --------------------------------------->
+          <div class="row" style="margin-top: 25px;">
+
+              <div class="col-3">
+                  <div class="label"><strong>BUCHA DE ACABAMENTO / FIXAÇÃO:</strong></div>
+                  <input type="text" class="form-control" id="codigo_bucha_acabamento" maxlength="6" oninput="ConsultaMateriais('codigo_bucha_acabamento', 'descricao_bucha_acabamento', 'unidade_bucha_acabamento', 'quantitativo_bucha_acabamento')" placeholder="6 caracteres">
+              </div>
+              <div class="col">
+                <p class="inline-center" style="margin-top: 25px; font-size: 15px;">
+                    <span id="descricao_bucha_acabamento"></span>
+                </p>
+
+              </div>
+                <div id='quantitativo_bucha_acabamento' hidden='true'>
+                    <div class="form-group">
+                        <label for="quantidade_bucha_acabamento" class="col-form-label">QUANTIDADE</label>
+                        <div class="d-flex align-items-center">
+                            <input type="number" class="form-control w-50" id="quantidade_bucha_acabamento" maxlength="8" oninput="ConsultaQuantitativo('quantidade_bucha_acabamento')">
+                            <span id="unidade_bucha_acabamento" class="ml-2"></span>
+                        </div>
+                    </div>
+                </div>
+
+
+          </div>
+
+          <!-------------------------- BUCHA DE REDUÇÃO --------------------------------------->
+          <div class="row" style="margin-top: 25px;">
+
+              <div class="col-3">
+                  <div class="label"><strong>BUCHA DE REDUÇÃO:</strong></div>
+                  <input type="text" class="form-control" id="codigo_bucha_reducao" maxlength="11" oninput="ConsultaMateriais('codigo_bucha_reducao', 'descricao_bucha_reducao', 'unidade_bucha_reducao', 'quantitativo_bucha_reducao')" placeholder="8 caracteres">
+              </div>
+              <div class="col">
+                <p class="inline-center" style="margin-top: 25px; font-size: 15px;">
+                    <span id="descricao_bucha_reducao"></span>
+                </p>
+
+              </div>
+              <div id = 'quantitativo_bucha_reducao' hidden='true'>
+                  <div class="form-group">
+                    <label for='quantidade_bucha_reducao' class="col-form-label">QUANTIDADE</label>
+                    <div class="d-flex align-items-center">
+                        <input type="number" class="form-control w-50" id="quantidade_bucha_reducao" maxlength="8" oninput="ConsultaQuantitativo('quantidade_bucha_reducao')">
+                        <span id="unidade_bucha_reducao" class="ml-2"></span>
+                    </div>
+                  </div>
+                </div>
+          </div>
+
+            <!-------------------------- PRENSA CABO DA INSTALAÇÃO --------------------------------------->
+          <div class="row" style="margin-top: 25px;">
+
+              <div class="col-3">
+                  <div class="label"><strong>PRENSA CABO:</strong></div>
+                  <input type="text" class="form-control" id="codigo_prensa_cabo" maxlength="8" oninput="ConsultaMateriais('codigo_prensa_cabo', 'descricao_prensa_cabo', 'unidade_prensa_cabo', 'quantitativo_prensa_cabo')" placeholder="6 caracteres">
+              </div>
+              <div class="col">
+                <p class="inline-center" style="margin-top: 25px; font-size: 15px;">
+                    <span id="descricao_prensa_cabo"></span>
+                </p>
+
+              </div>
+              <div id = 'quantitativo_prensa_cabo' hidden='true'>
+                  <div class="form-group">
+                    <label for='quantidade_prensa_cabo' class="col-form-label">QUANTIDADE</label>
+                    <div class="d-flex align-items-center">
+                        <input type="number" class="form-control w-50" id="quantidade_prensa_cabo" maxlength="8" oninput="ConsultaQuantitativo('quantidade_prensa_cabo')">
+                        <span id="unidade_prensa_cabo" class="ml-2"></span>
+                    </div>
+                  </div>
+              </div>
+          </div>
+
+            <!-------------------------- PRENSA CABO DA CAIXA --------------------------------------->
+          <div class="row" style="margin-top: 25px;">
+
+              <div class="col-3">
+                  <div class="label"><strong>PRENSA CABO (ROSCAS MÉTRICAS):</strong></div>
+                  <input type="text" class="form-control" id="codigo_prensa_cabo_caixa" maxlength="8" oninput="ConsultaMateriais('codigo_prensa_cabo_caixa', 'descricao_prensa_cabo_caixa', 'unidade_prensa_cabo_caixa', 'quantitativo_prensa_cabo_caixa')" placeholder="6 caracteres">
+              </div>
+              <div class="col">
+                <p class="inline-center" style="margin-top: 25px; font-size: 15px;">
+                    <span id="descricao_prensa_cabo_caixa"></span>
+                </p>
+
+              </div>
+                <div id = 'quantitativo_prensa_cabo_caixa' hidden='true'>
+                  <div class="form-group">
+                    <label for='quantidade_prensa_cabo_caixa' class="col-form-label">QUANTIDADE</label>
+                    <div class="d-flex align-items-center">
+                        <input type="number" class="form-control w-50" id="quantidade_prensa_cabo_caixa" maxlength="8" oninput="ConsultaQuantitativo('quantidade_prensa_cabo_caixa')">
+                        <span id="unidade_prensa_cabo_caixa" class="ml-2"></span>
+                    </div>
+                  </div>
+              </div>
+          </div>
+
+          <!-------------------------- ELETRODUTO FLEXÍVEL --------------------------------------->
+          <div class="row" style="margin-top: 25px;">
+
+              <div class="col-3">
+                  <div class="label"><strong>ELETRODUTO FLEXÍVEL:</strong></div>
+                  <input type="text" class="form-control" id="codigo_eletroduto_flexivel" maxlength="11" oninput="ConsultaMateriais('codigo_eletroduto_flexivel', 'descricao_eletroduto_flexivel', 'unidade_eletroduto_flexivel', 'quantitativo_eletroduto_flexivel')" placeholder="8 caracteres">
+              </div>
+              <div class="col">
+                <p class="inline-center" style="margin-top: 25px; font-size: 15px;">
+                    <span id="descricao_eletroduto_flexivel"></span>
+                </p>
+
+              </div>
+              <div id = 'quantitativo_eletroduto_flexivel' hidden='true'>
+                <div class="form-group">
+                    <label for='quantidade_eletroduto_flexivel' class="col-form-label">QUANTIDADE</label>
+                    <div class="d-flex align-items-center">
+                        <input type="number" class="form-control w-50" id="quantidade_eletroduto_flexivel" maxlength="8" oninput="ConsultaQuantitativo('quantidade_eletroduto_flexivel')">
+                        <span id="unidade_eletroduto_flexivel" class="ml-2"></span>
+                    </div>
+                </div>
+              </div>
+          </div>
+
+          <!-------------------------- CONECTOR ENTRE ELETRODUTOS --------------------------------------->
+          <div class="row" style="margin-top: 25px;">
+
+              <div class="col-3">
+                  <div class="label"><strong>CONECTOR ENTRE ELETRODUTOS:</strong></div>
+                  <input type="text" class="form-control" id="codigo_conector_eletrodutos" maxlength="11" oninput="ConsultaMateriais('codigo_conector_eletrodutos', 'descricao_conector_eletrodutos', 'unidade_conector_eletrodutos', 'quantitativo_conector_eletrodutos')" placeholder="8 caracteres">
+              </div>
+              <div class="col">
+                <p class="inline-center" style="margin-top: 25px; font-size: 15px;">
+                    <span id="descricao_conector_eletrodutos"></span>
+                </p>
+
+              </div>
+                <div id = 'quantitativo_conector_eletrodutos' hidden='true'>
+                <div class="form-group">
+                    <label for='quantidade_conector_eletrodutos' class="col-form-label">QUANTIDADE</label>
+                    <div class="d-flex align-items-center">
+                        <input type="number" class="form-control w-50" id="quantidade_conector_eletrodutos" maxlength="8" oninput="ConsultaQuantitativo('quantidade_conector_eletrodutos')">
+                        <span id="unidade_conector_eletrodutos" class="ml-2"></span>
+                    </div>
+                </div>
+              </div>
+          </div>
+
+          <!-------------------------- CONDULETES --------------------------------------->
+          <div class="row" style="margin-top: 25px;">
+
+              <div class="col-3">
+                  <div class="label"><strong>CONDULETE:</strong></div>
+                  <input type="text" class="form-control" id="codigo_condulete" maxlength="11" oninput="ConsultaMateriais('codigo_condulete', 'descricao_condulete', 'unidade_condulete', 'quantitativo_condulete')" placeholder="6 caracteres">
+              </div>
+              <div class="col">
+                <p class="inline-center" style="margin-top: 25px; font-size: 15px;">
+                    <span id="descricao_condulete"></span>
+                </p>
+
+              </div>
+                <div id = 'quantitativo_condulete' hidden='true'>
+                <div class="form-group">
+                    <label for='quantidade_conector_eletrodutos' class="col-form-label">QUANTIDADE</label>
+                    <div class="d-flex align-items-center">
+                        <input type="text" class="form-control w-50" id="quantidade_conulete" value="N/A" readonly>
+                        <span id="unidade_condulete" class="ml-2"></span>
+                    </div>
+
+                </div>
+              </div>
+          </div>
+
+          <!-------------------------- LUVA --------------------------------------->
+          <div class="row" style="margin-top: 25px;">
+              <div class="col-3">
+                  <div class="label"><strong>LUVA:</strong></div>
+                  <input type="text" class="form-control" id='codigo_luva' maxlength="11" oninput="ConsultaMateriais('codigo_luva', 'descricao_luva', 'unidade_luva', 'quantitativo_luva')" placeholder="8 caracteres">
+              </div>
+              <div class="col">
+                <p class="inline-center" style="margin-top: 25px; font-size: 15px;">
+                    <span id="descricao_luva"></span>
+                </p>
+
+              </div>
+                <div id = 'quantitativo_luva' hidden='true'>
+                <div class="form-group">
+                    <label for='quantidade_luva' class="col-form-label">QUANTIDADE</label>
+                    <div class="d-flex align-items-center">
+                        <input type="text" class="form-control w-50" id="quantidade_luva" value="N/A" readonly>
+                        <span id="unidade_luva" class="ml-2"></span>
+                    </div>
+
+                </div>
+              </div>
+          </div>
+
+
+          <div class="row" style="margin-top: 25px;">
+
+
+
+
+
+            <div class="form-group input-group-sm">
+                <div class="col-12 d-flex align-items-center">
+                    <select class="form-control" id="copiar_materiais_os" style="flex-grow: 1; margin-right: 10px; min-width: 100px;">
+                        <option id="--" value="--" disabled selected>---</option>
+                    </select>
+                    <button type="button" class="btn btn-success" onclick="CopiaMateriaisOS()">Copiar materiais da OS</button>
+                </div>
+            </div>
+
+
+
+
+          </div>
+
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="SalvarMateriais();">Salvar</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade second-backdrop" id="modal_add_material">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <div class="row" style="margin-top: 25px;">
+
+              <div class="col-3">
+                  <div class="label"><strong>MATERIAL:</strong></div>
+                  <input type="text" class="form-control" id="codigo_fixacao_leito" maxlength="11" oninput="ConsultaMateriais('codigo_fixacao_leito', 'descricao_fixacao_leito', 'unidade_fixacao_leito', 'quantitativo_fixacao_leito')" placeholder="11 caracteres">
+              </div>
+              <div class="col">
+                <p class="inline-center" style="margin-top: 25px; font-size: 15px;">
+                    <span id="descricao_fixacao_leito"></span>
+                </p>
+
+              </div>
+                <div id = 'quantitativo_fixacao_leito' hidden='true'>
+                <div class="form-group">
+                    <label for='quantidade_conector_eletrodutos' class="col-form-label">QUANTIDADE</label>
+                    <div class="d-flex align-items-center">
+                        <input type="number" class="form-control w-50" id="quantidade_fixacao_leito" maxlength="8" oninput="ConsultaQuantitativo('quantidade_conector_eletrodutos')" placeholder="11 caracteres">
+                        <span id="unidade_fixacao_leito" class="ml-2"></span>
+                    </div>
+                </div>
+              </div>
+          </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="AddMatFixacaoLeito();">ADICIONAR MATERIAL</button>
+      </div>
+    </div>
+ </div>
+</div>
+
+<script src="{% static 'js/eletrica/A1Pro/ConfigMatFC.js' %}"></script>

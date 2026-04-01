@@ -1,0 +1,276 @@
+{% load static %}
+{% block funcaoOS %}
+<div class="modal-header">
+    <h5 class="modal-title" id="subareaLabel">Função por OS</h5>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div>
+            <div class="col-sm-6" style="float: left;">
+                <div class="form-group mb-5">
+                    <td data-toggle="tooltip" title="Inserir codigo ">Função(Geral)
+                        <div class="divBuscaAcess">
+                            <input type="search" class="txtBuscaAcess" placeholder="Buscar..." id="func-general-search" title="Pesquise aqui sua Função geral" onkeyup="FilterFuncsInOs(this.value, 'select-all-funcs')"/>
+                        </div>
+                        <br>
+                        <select id="select-all-funcs" required class="form-control " multiple style="height: 180px; width: 120px;">
+                        </select>
+                    </td>
+                </div>
+            </div>
+
+            <div class="col-sm-6" style="float: right;">
+                <div class="form-group mb-5">
+                    <td data-toggle="tooltip">Função OS
+                        <div class="divBuscaAcess">
+                            <input type="search" class="txtBuscaAcess" placeholder="Buscar..." id="func-os-search" title="Pesquise aqui sua Função por OS" onkeyup="FilterFuncsInOs(this.value, 'select-all-funcs-os')"/>
+                        </div>
+                      <br>
+                      <select id="select-all-funcs-os" required class="form-control " multiple style="height: 180px; width: 120px;" ondragover="changecolor(event,'gray', 'select-all-funcs-os')" ondrop="drop(event)" ondragleave="changecolor(event,'white', 'select-all-funcs-os')">
+                      </select>
+                    </td>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="col-sm-12" >
+                <div class="form-group mb-5">
+                    <td  for="area-type">
+                        Código
+                        <input type="text" id="funcOS-cdg" class="form-control" readonly>
+                    </td>
+                    <br>
+                    <td  for="area-type">
+                        Descrição
+                        <input type="text" id="funcOS-desc" class="form-control" readonly>
+                    </td>
+                    <br>
+                    <td  for="area-type">
+                        Tensão
+                        <input type="text" id="funcOS-tensao" class="form-control" readonly>
+                    </td>
+                    <br>
+                    <td  for="area-type">
+                        Tipo
+                        <input type="text" id="funcOS-type" class="form-control" readonly>
+                    </td>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-12 mt-2">
+        <button type="button" class="btn btn-secondary" style="margin-left:53%; bottom: 11%; position: absolute" id="btn_del" ondragover="hover_fos(event)" ondragleave="changecolor(event, 'gray', 'btn_del')" ondrop="drop_fos(event)" title="Arraste a função por OS até aqui para exclui-la." onclick="drop_with_2_clicks()">🗑️</button>
+    </div>
+</div>
+<script>
+
+    var funcs_for_os = {}
+    var all_func_for_os = {}
+    var id_func_for_os = ""
+
+    function disable_selects(element) {
+        $(element).val([]);
+    }
+    function drag_fos(event, id) {
+        event.dataTransfer.setData('idzao', id)
+    }
+
+    function hover_fos(event) {
+        if (event.dataTransfer.getData('idzao') === ""){
+            document.getElementById('btn_del').draggable=false
+        }
+        else{
+            changecolor(event, 'white', 'btn_del')
+        }
+    }
+
+    function drop_fos(event) {
+        event.preventDefault()
+        const id_fos = event.dataTransfer.getData('idzao')
+        $.ajax({
+              type: "DELETE",
+              url: "ManipulingFuncsOS/" + id_fos,
+              dataType: 'json',
+              success: function (data){
+                  if (data['sucess']){
+                      print_all_funcs_per_os()
+                      return alert(data['sucess'])
+                  }
+                  else {
+                      return alert(data['erro'])
+                  }
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+        })
+        changecolor(event, 'gray', 'btn_del')
+    }
+    async function OnclickButtonFuncOs(){
+        await print_all_funcs_in_os()
+        print_all_funcs_per_os()
+    }
+    async function print_all_funcs_in_os(){
+        var options_funcs='';
+        await $.ajax({
+              type: "GET",
+              url: "AllFuncs/",
+              dataType: 'json',
+              success: function (data){
+                  FillAllFuncsInOs(data['all_funcs'])
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+        })
+        return options_funcs
+    }
+    function FillAllFuncsInOs(datas_funcs) {
+        var options_func = ``
+        for(let id_func in datas_funcs){
+            options_func += `<option value="${id_func}" onclick="ClickFuncInOs(${id_func})" draggable="true" ondragstart="drag(event, ${id_func})">${datas_funcs[id_func]}</option>`
+        }
+        $('#select-all-funcs').html(options_func)
+    }
+
+    function ClickFuncInOs(id_func){
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+              type: "GET",
+              headers:{'X-CSRFToken':csrftoken},
+              url: "DatasFuncSelected/" + id_func + '/',
+              dataType: 'json',
+              data: {},
+              success: function(data){
+                  FillDatasFuncSelectedInOs(data['datas_func'])
+              },
+              error: function(error){
+                  alert("Houve um erro ao selecionar a função")
+              }
+
+          });
+    }
+
+    function FillDatasFuncSelectedInOs(datas_func){
+        document.getElementById('funcOS-cdg').value = datas_func['nome_func']
+        document.getElementById('funcOS-desc').value = datas_func['desc_func']
+        document.getElementById('funcOS-tensao').value = datas_func['tensao_func']
+        document.getElementById('funcOS-type').value = datas_func['tipo_func']
+    }
+
+
+    function drag(event, id) {
+        event.dataTransfer.setData("id", id)
+    }
+
+    function changecolor(event, color, element) {
+        event.preventDefault()
+        const select = document.getElementById(element)
+        select.style.backgroundColor = color
+    }
+
+    function drop(event) {
+        event.preventDefault()
+        const id = event.dataTransfer.getData("id")
+        var num_os = document.getElementById('pro-os').value
+        $.ajax({
+              type: "POST",
+              url: "AllFuncsOS/" + num_os,
+              dataType: 'json',
+              data: { 'id': id },
+              success: function (data){
+                  if (data['sucess']){
+                      print_all_funcs_per_os()
+                      return alert(data['sucess'])
+                  }
+                  else{
+                      return alert(data['erro'])
+                  }
+              },
+              failure: function(error){
+                  return alert("erro")
+              },
+        })
+        changecolor(event, 'white', 'select-all-funcs-os')
+    }
+
+    function print_all_funcs_per_os(){
+        var num_os = document.getElementById('pro-os').value
+        $.ajax({
+              type: "GET",
+              url: "AllFuncsOS/" + num_os,
+              dataType: 'json',
+              success: function (data){
+                  FillFuncsPerOs(data['all_funcs_os'])
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+        })
+
+    }
+
+    function FillFuncsPerOs(datas_func){
+        var funcs_os = ``
+        for(let i=0; i< datas_func.length ;i++){
+            funcs_os += `<option value="${datas_func[i]['id_func_os']}" onclick="ClickFuncInOs(${datas_func[i]['id_func_geral']}); disable_selects('#select-all-funcs')" draggable="true" ondragstart="drag_fos(event, ${datas_func[i]['id_func_os']})">${datas_func[i]['nome_func_os']}</option>`
+        }
+        $(`#select-all-funcs-os`).html(funcs_os)
+    }
+
+    function FilterFuncsInOs(value, id_element_options) {
+        let options = document.getElementById(id_element_options).options
+        for(let i=0; i< options.length ;i++){
+            if(options[i].innerHTML.toUpperCase().includes(value.toUpperCase())){
+                options[i].hidden = false
+            }
+            else{
+                options[i].hidden = true
+            }
+        }
+    }
+
+    function clean_forms_funcOS_bs(func, id, id_select){
+        const search = document.getElementById(id)
+        search.addEventListener('keydown', function(event) {
+        const key = event.key; // const {key} = event; ES6+
+        if (key === "Backspace") {
+            document.getElementById(id).value = ""
+            $(id_select).html(func())
+        }
+    });
+    }
+
+    function drop_with_2_clicks() {
+        var ids_fos = $('#select-all-funcs-os').val();
+        if ($('#select-all-funcs').val().length > 0 ){
+            return alert("Função geral não pode ser excluida por aqui")
+        }
+        if (ids_fos.length == 0){
+            return alert("Selecione uma função por OS para poder excluir ou arraste a mesma até aqui!!")
+        }
+        ids_fos.forEach(function (id){
+            $.ajax({
+              type: "DELETE",
+              url: "ManipulingFuncsOS/" + id,
+              dataType: 'json',
+              success: function (data){
+                  if (data['sucess']){
+                      print_all_funcs_per_os()
+                      return alert(data['sucess'])
+                  }
+                  else {
+                      return alert(data['erro'])
+                  }
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+            })
+        })
+    }
+</script>
+{% endblock funcaoOS %}

@@ -1,0 +1,168 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="bobinasLabel">Setup Cabos </h5>
+</div>
+<div class="modal-body">
+    <div class="row"> 
+        <div style="border-right: 2px solid white ; float: left ; padding-right:30px;  ">
+            <form >
+                <div>
+                   <center> <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#caracteristicaos">Característica da OS</button></center>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1">Tipo de Cabo</label>
+                    <select class="form-control" id="exampleFormControlSelect1" >
+                        <option></option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1">Tipo de Cabo (Isolação)</label>
+                    <select class="form-control" id="exampleFormControlSelect1" >
+                        <option>ALIMENTAÇÃO DE COMANDO</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>    
+                </div>
+
+
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1">Formação</label>
+                    <select class="form-control" id="exampleFormControlSelect1" >
+                        <option>ALIMENTAÇÃO DE COMANDO</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1">Seção</label>
+                    <select class="form-control" id="exampleFormControlSelect1" >
+                    <option>ALIMENTAÇÃO DE COMANDO</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1">Veias</label>
+                    <select class="form-control" id="exampleFormControlSelect1">
+                    <option>ALIMENTAÇÃO DE COMANDO</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Cód. A1</label>
+                    <input type="email" class="form-control" id="exampleFormControlInput1" >
+                    
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1">Fabricante</label>
+                    <select class="form-control" id="exampleFormControlSelect1" >
+                        <option>ALIMENTAÇÃO DE COMANDO</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="clicked('anterior')">...</button>
+                <input type="file" id="anterior" hidden="hidden"  onchange="selectedFile(event, 'anterior')" name="anterior"/>
+        
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Comprimento</label>
+                    <input type="email" class="form-control" id="exampleFormControlInput1"  >
+                    <small id="passwordHelpInline" class="text-muted">
+                        Metros
+                    </small>
+                </div>    
+            </form>
+        </div>
+
+        <fieldset class="fieldset-border">
+            <legend class="legend-border">Bobinas Cadastradas </legend>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Tipo Isolação</th>
+                        <th scope="col">Classe Isolação</th>
+                        <th scope="col">Formação</th>
+                        <th scope="col">Seção (mm²)</th>
+                        <th scope="col">Veias</th>
+                        <th scope="col">Fabricante</th>
+                        <th scope="col">Comprimento(m)</th>
+                        <th scope="col">Código A1MAT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td >EPR/PVC</td>
+                        <td>0,6/1 kw</td>
+                        <td></td>
+                        <td></td>
+        
+                    </tr>
+                    <tr>
+                        <td >EPR/PVC</td>
+                        <td>ERP</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>EPR/PVC</td>
+                        <td ></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                    <tr>
+                        <td>EPR/PVC</td>
+                        <td ></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </fieldset>   
+    </div> 
+</div>     
+<div class="form-group">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+      <label class="form-check-label" for="invalidCheck2">
+      Adicionar bobinas já existentes, apenas alterando o Tipo do Cabo
+      </label>
+    </div>
+</div>    
+<div class="modal-footer">
+    <button type="button" class="btn btn-warning" >Adicionar</button>
+    <button type="button" class="btn btn-warning" >Alterar</button>
+    <button type="button" class="btn btn-warning" >Excluir</button>
+    <button type="button" class="btn btn-warning">Fechar</button>   
+</div>

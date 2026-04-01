@@ -1,0 +1,149 @@
+{% extends 'geral/base.html' %}
+<!DOCTYPE html>
+<html>
+{% load static %}
+{% block head %}
+<title>Análise de Turbinas</title>
+{% endblock %}
+{% block help %}
+    <h7>Em <strong>"Selecionar OS"</strong> Escolha a OS para visualizar a lista de OS's.</h7>
+    <br><br>
+    <h7>Em <strong>"Selecionar Máquina"</strong> Selecione a máquina/turbina desejada.</h7>
+    <br><br>
+    <h7>Em <strong>"Data de Início"</strong> Selecione a Data de Início para visualizar o calendário e o período a ser analisado.</h7>
+    <br><br>
+    <h7>Em <strong>"Data de Fim"</strong> Selecione a Data final para visualizar o calendário e o período final analisado.</h7>
+    <br><br>
+{% endblock %}
+{% block main %}
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" >
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <style>
+    div.scroll {
+                margin: 4px, 4px;
+                padding: 4px;
+                background-color: #08c708;
+                width: 300px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                white-space: nowrap;
+            }
+    </style>
+
+    <div class="row mb-4">
+      <div class="col-lg-8 mx-auto text-center">
+        <h3 class="display-4"><b>Seleção do Projeto da A1Energia</b></h3>
+      </div>
+    </div>
+
+    <div class="row mb-4" style="align-items: center">
+        <div class="col-lg-8 mx-auto text-center">
+            <div class="bg-white rounded-lg shadow-sm p-5">
+                <form role="form" method="POST" enctype="multipart/form-data" id="form">
+                    {% csrf_token %}
+                    <div class="row col-12">
+                        <div class="col-6">
+                            <div>
+                                <h4 for="item">  Selecione o Projeto (OS): </h4>
+                                <select onchange="storage_os(this.id); this.form.submit();" type="submit" id="num_os" name="os" class="form-control" style="width: 10vw; justify-self: center; margin: auto; font-size: 16px; text-align: center">
+                                        <option value="selecione">Selecione</option>
+                                    {% for num_os in list_os %}
+                                        <option value={{ num_os }}>{{ num_os }}</option>
+                                    {% endfor %}
+                                </select>
+                                <br>
+                                <h4 for="Turbina"> Selecione a Máquina:</h4>
+                                <select class="form-control" id="Turbina" type="submit" style="width: 10vw; justify-self: center; margin: auto; font-size: 16px; text-align: center">
+                                    <option>BB Fcomp</option>
+                                    <option>IM Fcomp</option>
+                                </select>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div>
+                                <h4 for="dia-inicial">Data de Início:</h4>
+                                    <div class="d-flex justify-content-center">
+                                        <input class="form-control w-auto" type="date" id="dia-inicial" name="dia_inicial">
+                                    </div>
+                                <br>
+                                <h4 for="dia-final">Data de Fim:</h4>
+                                    <div class="d-flex justify-content-center">
+                                        <input class="form-control w-auto" type="date" id="dia-final" name="dia_final">
+                                    </div>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <br>
+                      <div id="carousel-legenda" class="carousel slide" data-ride="carousel"><!--Carousel -->
+
+                        <!-- Indicadores -->
+                        <ol class="carousel-indicators">
+
+                          <li class="active" data-target="#carousel-legenda" data-slide-to="0"></li>
+
+                          <li data-target="#carousel-legenda" data-slide-to="1"></li>
+
+                        </ol>
+
+                        <div class="carousel-inner"><!--Inner -->
+
+                          <div class="carousel-item active">
+                            <a href="https://app.powerbi.com/groups/me/reports/61662f9f-89a8-4f69-aea6-57669313ac89/ReportSection">
+                                <img src="{% static 'img\a1_energia_images\Power-BI.jpg' %}" class="img-fluid">
+                            </a>
+                            <div class="carousel-caption">
+                              <div class="p-3 mb-2 bg-dark">
+                                <h3>Dashboard Power BI</h3>
+                                <p>
+                                  Veja o desempenho da máquina plotado graficamente ao longo de seu histórico.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="carousel-item">
+                            <a href="/app/manual/">
+                                <img src="{% static 'img\a1_energia_images\turbina.png' %}" class="img-fluid">
+                            </a>
+
+                            <div class="carousel-caption">
+                              <h3>Relatório de Análise</h3>
+                              <p>
+                                Através deste relatório é possível verificar o funcionamento e operação de todos os componentes monitorados na máquina.
+                              </p>
+                            </div>
+                          </div>
+                        </div><!--/Inner -->
+                        <!-- Controles -->
+                        <a href="#carousel-legenda" class="carousel-control-prev_1" data-slide="prev">
+                          <span class="carousel-control-prev-icon"></span>
+                        </a>
+
+                        <a href="#carousel-legenda" class="carousel-control-next_1" data-slide="next">
+                          <span class="carousel-control-next-icon"></span>
+                        </a>
+                      </div><!--/Carousel -->
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+       function storage_os(id){
+           const num_os = document.getElementById(id).value;
+           sessionStorage.setItem( 'num_os', num_os );
+       }
+    </script>
+    <!-- JavaScript (Opcional) -->
+    <!-- jQuery primeiro, depois Popper.js, depois Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+{% endblock %}

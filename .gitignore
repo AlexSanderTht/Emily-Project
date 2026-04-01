@@ -1,0 +1,27 @@
+#Compilados
+*.pyc
+#Pycharm
+.idea/
+#Verificador de bugs
+.pylint.d
+#ignora o banco
+db.sqlite3
+#celery
+celerybeat*
+#Ignora logs
+*.log
+weba1/media/templates/
+weba1/static/templates/
+/venv/
+/venv2024/
+/weba1/models
+.vs/slnx.sqlite
+.vs/weba1/v17/.suo
+/weba1/.vs/VSWorkspaceState.json
+/weba1/.vs/slnx.sqlite
+/weba1/.vs/weba1/v17/workspaceFileList.bin
+/weba1/.vs/weba1/v17/.suo
+/env
+/.vs
+.vscode
+templates/documentacao

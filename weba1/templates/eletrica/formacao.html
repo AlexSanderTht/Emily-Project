@@ -1,0 +1,237 @@
+{% block formacao %}
+{% load static %}
+  <div class="modal-header">
+      <h5 class="modal-title" id="formacaoLabel">Formação</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+    <div class="modal-body">
+        <div class="row mx-2 mb-2">
+            <div class="col-sm col-md-8 col-xl">
+                <label for="func-formacao">Função</label>
+                  <select id="func-formacao" class="form-control" onchange="get_cabos_formados()">
+                  </select>
+            </div>
+            <div class="col-sm d-flex align-items-end">
+              <div class="form-check ">
+                <input class="form-check-input" type="checkbox" id="all-func-formacao" onchange="manipuling_checkbox_all_funcs()">
+                <label class="form-check-label" for="all-func-formacao">
+                  Atribuir à todas funções
+                </label>
+              </div>
+            </div>
+        </div>
+
+        <div class="row mx-2 mb-2">
+            <div class="col-md">
+                <label for="desc-formacao">Descrição:</label>
+                <textarea class="form-control" id="desc-formacao" rows="3" readonly></textarea>
+            </div>
+        </div>
+
+        <div class="row mx-2 mb-2">
+            <div class="col-sm col-md-8 col-xl">
+                <fieldset class="border">
+                    <legend><h6><b>Neutro e/ou Terra</b></h6></legend>
+                    <div class="row mx-4">
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="radio" name="n-or-t-formacao" id="3f+t-formacao" value="3F + T">
+                            <label class="form-check-label" for="3f+t-formacao">3F + T</label>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="radio" name="n-or-t-formacao" id="3f+n-formacao" value="3F + N">
+                            <label class="form-check-label" for="3f+n-formacao">3F + N</label>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="radio" name="n-or-t-formacao" id="3f+t+n-formacao" value="3F + T + N">
+                            <label class="form-check-label" for="3f+t+n-formacao">3F + T + N</label>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row mx-4">
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="radio" name="n-or-t-formacao" id="3f-formacao" value="3F">
+                            <label class="form-check-label" for="3f-formacao">3F</label>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="radio" name="n-or-t-formacao" id="f+n+t-formacao" value="F + N + T">
+                            <label class="form-check-label" for="f+n+t-formacao">F + N + T</label>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="radio" name="n-or-t-formacao" id="f+f+t-formacao" value="F + F + T">
+                            <label class="form-check-label" for="f+f+t-formacao">F + F + T</label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+        <div class="row mx-2 mb-2">
+            <div class="col-sm col-md-8 col-xl">
+                <fieldset class="border">
+                    <legend>
+                        <h6><b>BT</b></h6>
+                    </legend>
+
+                    <div class="row mx-4">
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="checkbox" name="checkbox-formacao-bt" id="checkbox-pot-bt" value="option1" onchange="block_checkbox('potencia', 'bt')">
+                            <label class="form-check-label" for="checkbox-pot-bt"> Se potência ></label>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="pot-bt-formacao" onkeyup="block_checkbox('potencia', 'bt')">
+                        </div>
+
+                        <div class="col-sm-5">
+                            <label for="inputZip">Cabo Unipolar (1 x 1)</label>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row mx-4">
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="checkbox" name="checkbox-formacao-bt" id="checkbox-sec-bt" value="option1" onchange="block_checkbox('secao', 'bt')">
+                            <label class="form-check-label" for="checkbox-sec-bt"> Se seção ></label>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="sec-bt-formacao" onkeyup="block_checkbox('secao', 'bt')">
+                        </div>
+
+                        <div class="col-sm-5">
+                            <label for="inputZip">Cabo Unipolar (1 x 1)</label>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+        </div>
+        <br>
+
+        <div class="row mx-2 mb-2">
+            <div class="col-sm col-md-8 col-xl">
+                <fieldset class="border">
+                    <legend>
+                        <h6><b>MT</b></h6>
+                    </legend>
+
+                    <div class="row mx-4">
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="checkbox" name="checkbox-formacao-mt" id="checkbox-pot-mt" value="option1" onchange="block_checkbox('potencia', 'mt')">
+                            <label class="form-check-label" for="checkbox-pot-mt"> Se potência ></label>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="pot-mt-formacao" onkeyup="block_checkbox('potencia', 'mt')">
+                        </div>
+
+                        <div class="col-sm-5">
+                            <label for="inputZip">Cabo Unipolar (1 x 1)</label>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row mx-4">
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="checkbox" name="checkbox-formacao-mt" id="checkbox-sec-mt" value="option1" onchange="block_checkbox('secao', 'mt')">
+                            <label class="form-check-label" for="checkbox-sec-mt"> Se seção ></label>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="sec-mt-formacao" onkeyup="block_checkbox('secao', 'mt')">
+                        </div>
+
+                        <div class="col-sm-5">
+                            <label for="inputZip">Cabo Unipolar (1 x 1)</label>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+        </div>
+        <br>
+
+        <div class="row mx-2 mb-2">
+            <div class="col-sm col-md-8 col-xl">
+                <fieldset class="border">
+                    <legend>
+                        <h6><b>Cabos Multipolares</b></h6>
+                    </legend>
+                    <div class="row mx-4">
+
+                        <div class="col sm-2">
+                            <fieldset class="border">
+                                <legend>
+                                    <h6><b>Cabos ímpares</b></h6>
+                                </legend>
+
+                                <div class="row mx-4">
+                                    <div class="col">
+                                        <input class="form-check-input" type="checkbox" id="imp-1x3" value="1X3" name="impar" onchange="document.getElementById('imp-1x4').checked=false">
+                                        <label class="form-check-label" for="imp-1x3">
+                                          1 x 3
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <br>
+
+                                <div class="row mx-4">
+                                    <div class="col">
+                                        <input class="form-check-input" type="checkbox" id="imp-1x4" value="1X4" name="impar" onchange="document.getElementById('imp-1x3').checked=false">
+                                        <label class="form-check-label" for="imp-1x4">
+                                          1 x 4
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                            <br>
+                        </div>
+
+                        <div class="col sm-2">
+                            <fieldset class="border">
+                                <legend>
+                                    <h6><b>Cabos Pares</b></h6>
+                                </legend>
+
+                                <div class="row mx-4">
+                                    <div class="col">
+                                        <input class="form-check-input" type="checkbox" id="par-1x3" value="1X3" name="par" onchange="document.getElementById('par-1x4').checked=false">
+                                        <label class="form-check-label" for="par-1x3">
+                                          1 x 3
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <br>
+
+                                <div class="row mx-4">
+                                    <div class="col">
+                                        <input class="form-check-input" type="checkbox" id="par-1x4" value="1X4" name="par" onchange="document.getElementById('par-1x3').checked=false">
+                                        <label class="form-check-label" for="par-1x4">
+                                          1 x 4
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                            <br>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="send_form_cabos()">Atualizar</button>
+        <button type="button" class="btn btn-dark" onclick="$('#formacao').modal('hide')">Fechar</button>
+    </div>
+
+<script src="{% static 'js/eletrica/A1Pro/FormacaoCabos.js' %}"></script>
+{% endblock %}

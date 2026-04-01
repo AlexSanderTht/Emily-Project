@@ -1,0 +1,191 @@
+{% extends 'geral/base.html' %}
+
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1pro</title>
+{% endblock %}
+
+{% block main %}
+
+{% load static %}
+{% block resumo_tbr %}
+
+
+<script src="{% static 'js/eletrica/ResumoPartida.js' %}"></script>
+
+<style>
+
+.area-upload{
+box-shadow: 0 5px 20px rgba(0,0,0,.2);
+margin: 20px auto;
+padding: 20px;
+box-sizing: border-box;
+
+width: 100%;
+max-width: 700px;
+position: relative;
+}
+
+.area-upload label.label-upload{
+	border: 2px dashed #0d8acd;
+	min-height: 200px;
+	text-align: center;
+	width: 100%;
+
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	color: #0d8acd;
+	position: relative;
+
+	-webkit-transition: .3s all;
+	-moz-transition: .3s all;
+	-o-transition: .3s all;
+	transition: .3s all;
+}
+
+
+
+.area-upload label.label-upload *{
+	pointer-events: none;
+}
+
+.area-upload input{
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	-webkit-appearance: none;
+	opacity: 0;
+}
+
+
+</style>
+
+<dt  class="modal-title" id="resumoTbrLabel">TBE</dt>
+<!-------------------- Início Campo Dropzone -------------------->
+<div class="area-upload">
+    <!------------------ Inicio Dropzone ------------------>
+    <div class="card_dropzone h-100 p-5 d-flex align-items-center justify-content-center" id="drop-area">
+        <div class="text-center">
+            <!------------------ Inicio Message ------------------>
+
+				<div class="texto">Clique ou arraste o arquivo</div>
+            <!------------------ Fim Message ------------------>
+            <label class="label-upload">
+                <input class="upload-file" type="file" id="file_resumo" onchange="DropArquivo()"/>
+                 <i class="fas fa-cloud-upload-alt"></i>
+            </label>
+        </div>
+    </div><!------------------ Fim Dropzone ------------------>
+</div><!-------------------- Fim Campo Dropzone -------------------->
+
+<div class="modal-body">
+    <div class="row " >
+        <div class="col-sm-7 p-0 border-right " >
+            <div class="d-inline-block p-2">
+                <div class="form-group ">
+                    <td> Tensão
+                        <input type="number" required class="form-control" id="tensao_tbr" placeholder="Tensão"  >
+                    </td>
+                </div>
+            </div>
+
+            <div class="d-inline-block p-2" >
+                <div class="form-group">
+                    <td>Tipo de Equipamento
+                         <select class="form-control" >
+                             <option value="motor">Motor</option>
+                             <option value="painel">Painel</option>
+                             <option value="transformador">Transformador</option>
+                             <option value="carga_aux">Carga Auxiliar</option>
+                         </select>
+                    </td>
+                </div>
+            </div>
+
+            <div class="d-inline-block p-2" >
+                <div class="form-group">
+                    <td>Fator de Agrupamento
+                        <input type="text" required class="form-control" id="fator_agrupamento" placeholder="Fator de Agrupamento" >
+                    </td>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4" >
+            <div class="form-group ">
+                <td>
+                    <label for="corrente_continua">Corrente Contínua</label>
+                    <input type="search" required class="form-control"  placeholder="Corrente Continua"  id="corrente_continua">
+                </td>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer border_botao" >
+        {% csrf_token %}
+        <a  class="btn btn-warning"  onclick="InfoBackEnd('enviar')" >Adicionar/Alterar</a>
+    </div>
+</div>
+
+
+<div id="modal_cadastrado" class="modal mt-8">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border border-white"></div>
+      <div class="modal-body">
+        <center><img src="{% static 'img/a1_eletrica_images/7efy.gif'%}" class="tamimg1" ></center>
+        <br>
+        <h2 class= "text-center tamtext"> Atenção! </h2>
+       <center> <p id="cad_str" class="ptext" ></p></center>
+       <div class="modal-footer tammodal " >
+            <button type="button" class="btn btn-primary  d-flex justify-content-center w-25 " onclick="tb_closeRefresh()" data-bs-dismiss="modal" >Ok</button>
+       </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_excluido" class="modal  tam_bores">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border border-white"></div>
+      <div class="modal-body">
+          <img src="{% static 'img/negado.gif'%}" class="tamimg2"><br>
+          <h2 class="text-center tamtext">Atenção!</h2>
+          <p id="cads_excl" class="ptext"></p>
+       <div class="modal-footer tammodal">
+            <button type="button" class="btn btn-primary btn-lg d-flex justify-content-center w-25 " onclick="tb_closeRefresh()" data-bs-dismiss="modal btnest" >Ok</button>
+       </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_novo" class="modal tam_bores">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border border-white" ></div>
+      <div class="modal-body" >
+
+       <center> <img src="{% static 'img/a1_eletrica_images/7efy.gif'%}" class="justify-content-center tamimg3" ></center><br>
+        <h2 class="text-center tamtext" >Atenção!</h2>
+       <center> <p id="cad_novo" class="ptext"></p></center>
+       <div class="modal-footer tammodal" >
+            <button type="button" class="btn btn-primary  d-flex justify-content-center w-25" onclick="tb_closeRefresh ()" data-bs-dismiss="modal btnest" >Ok</button>
+       </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+    
+</script>
+{% endblock %}
+
+{% endblock %}

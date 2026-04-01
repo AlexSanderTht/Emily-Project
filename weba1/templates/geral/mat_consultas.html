@@ -1,0 +1,1042 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Consultas A1mat</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+<style>
+    tr:nth-child(even) {
+        background-color: #eff3f8;
+        border-radius: 10px 10px 10px 10px;
+    }
+    tr:nth-child(odd) {
+        background-color: #f6f6f6;
+        border-radius: 10px 10px 10px 10px;
+    }
+    .wave-container {
+        background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pg0KPHN2ZyB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9IndhdmUiIHN0eWxlPSJ0cmFuc2Zvcm06cm90YXRlKDBkZWcpOyB0cmFuc2l0aW9uOiAwLjNzIiB2aWV3Qm94PSIwIDAgMTQ0MCAxMzAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9InN3LWdyYWRpZW50LTAiIHgxPSIwIiB4Mj0iMCIgeTE9IjEiIHkyPSIwIj48c3RvcCBzdG9wLWNvbG9yPSJyZ2JhKDI0MywgMTA2LCA2MiwgMSkiIG9mZnNldD0iMCUiLz48c3RvcCBzdG9wLWNvbG9yPSJyZ2JhKDI1NSwgMTc5LCAxMSwgMSkiIG9mZnNldD0iMTAwJSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxwYXRoIHN0eWxlPSJ0cmFuc2Zvcm06dHJhbnNsYXRlKDAsIDBweCk7IG9wYWNpdHk6MSIgZmlsbD0idXJsKCNzdy1ncmFkaWVudC0wKSIgZD0iTTAsNzhMMjYuNyw3My43QzUzLjMsNjksMTA3LDYxLDE2MCw2MC43QzIxMy4zLDYxLDI2Nyw2OSwzMjAsNjkuM0MzNzMuMyw2OSw0MjcsNjEsNDgwLDU4LjVDNTMzLjMsNTYsNTg3LDYxLDY0MCw1Ni4zQzY5My4zLDUyLDc0NywzOSw4MDAsMzAuM0M4NTMuMywyMiw5MDcsMTcsOTYwLDIzLjhDMTAxMy4zLDMwLDEwNjcsNDgsMTEyMCw2MC43QzExNzMuMyw3NCwxMjI3LDgyLDEyODAsNzMuN0MxMzMzLjMsNjUsMTM4NywzOSwxNDQwLDM0LjdDMTQ5My4zLDMwLDE1NDcsNDgsMTYwMCw2Mi44QzE2NTMuMyw3OCwxNzA3LDkxLDE3NjAsODIuM0MxODEzLjMsNzQsMTg2Nyw0MywxOTIwLDQxLjJDMTk3My4zLDM5LDIwMjcsNjUsMjA4MCw4MC4yQzIxMzMuMyw5NSwyMTg3LDEwMCwyMjQwLDk1LjNDMjI5My4zLDkxLDIzNDcsNzgsMjQwMCw3My43QzI0NTMuMyw2OSwyNTA3LDc0LDI1NjAsNjIuOEMyNjEzLjMsNTIsMjY2NywyNiwyNzIwLDI2QzI3NzMuMywyNiwyODI3LDUyLDI4ODAsNTQuMkMyOTMzLjMsNTYsMjk4NywzNSwzMDQwLDM0LjdDMzA5My4zLDM1LDMxNDcsNTYsMzIwMCw2OS4zQzMyNTMuMyw4MiwzMzA3LDg3LDMzNjAsODQuNUMzNDEzLjMsODIsMzQ2Nyw3NCwzNTIwLDczLjdDMzU3My4zLDc0LDM2MjcsODIsMzY4MCw3My43QzM3MzMuMyw2NSwzNzg3LDM5LDM4MTMsMjZMMzg0MCwxM0wzODQwLDEzMEwzODEzLjMsMTMwQzM3ODYuNywxMzAsMzczMywxMzAsMzY4MCwxMzBDMzYyNi43LDEzMCwzNTczLDEzMCwzNTIwLDEzMEMzNDY2LjcsMTMwLDM0MTMsMTMwLDMzNjAsMTMwQzMzMDYuNywxMzAsMzI1MywxMzAsMzIwMCwxMzBDMzE0Ni43LDEzMCwzMDkzLDEzMCwzMDQwLDEzMEMyOTg2LjcsMTMwLDI5MzMsMTMwLDI4ODAsMTMwQzI4MjYuNywxMzAsMjc3MywxMzAsMjcyMCwxMzBDMjY2Ni43LDEzMCwyNjEzLDEzMCwyNTYwLDEzMEMyNTA2LjcsMTMwLDI0NTMsMTMwLDI0MDAsMTMwQzIzNDYuNywxMzAsMjI5MywxMzAsMjI0MCwxMzBDMjE4Ni43LDEzMCwyMTMzLDEzMCwyMDgwLDEzMEMyMDI2LjcsMTMwLDE5NzMsMTMwLDE5MjAsMTMwQzE4NjYuNywxMzAsMTgxMywxMzAsMTc2MCwxMzBDMTcwNi43LDEzMCwxNjUzLDEzMCwxNjAwLDEzMEMxNTQ2LjcsMTMwLDE0OTMsMTMwLDE0NDAsMTMwQzEzODYuNywxMzAsMTMzMywxMzAsMTI4MCwxMzBDMTIyNi43LDEzMCwxMTczLDEzMCwxMTIwLDEzMEMxMDY2LjcsMTMwLDEwMTMsMTMwLDk2MCwxMzBDOTA2LjcsMTMwLDg1MywxMzAsODAwLDEzMEM3NDYuNywxMzAsNjkzLDEzMCw2NDAsMTMwQzU4Ni43LDEzMCw1MzMsMTMwLDQ4MCwxMzBDNDI2LjcsMTMwLDM3MywxMzAsMzIwLDEzMEMyNjYuNywxMzAsMjEzLDEzMCwxNjAsMTMwQzEwNi43LDEzMCw1MywxMzAsMjcsMTMwTDAsMTMwWiIvPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0ic3ctZ3JhZGllbnQtMSIgeDE9IjAiIHgyPSIwIiB5MT0iMSIgeTI9IjAiPjxzdG9wIHN0b3AtY29sb3I9InJnYmEoMjQzLCAxMDYsIDYyLCAxKSIgb2Zmc2V0PSIwJSIvPjxzdG9wIHN0b3AtY29sb3I9InJnYmEoMjU1LCAxNzksIDExLCAxKSIgb2Zmc2V0PSIxMDAlIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHBhdGggc3R5bGU9InRyYW5zZm9ybTp0cmFuc2xhdGUoMCwgNTBweCk7IG9wYWNpdHk6MC45IiBmaWxsPSJ1cmwoI3N3LWdyYWRpZW50LTEpIiBkPSJNMCwxM0wyNi43LDEzQzUzLjMsMTMsMTA3LDEzLDE2MCwyOC4yQzIxMy4zLDQzLDI2Nyw3NCwzMjAsNzUuOEMzNzMuMyw3OCw0MjcsNTIsNDgwLDQ1LjVDNTMzLjMsMzksNTg3LDUyLDY0MCw1Ni4zQzY5My4zLDYxLDc0Nyw1Niw4MDAsNjAuN0M4NTMuMyw2NSw5MDcsNzgsOTYwLDg0LjVDMTAxMy4zLDkxLDEwNjcsOTEsMTEyMCw4NC41QzExNzMuMyw3OCwxMjI3LDY1LDEyODAsNDkuOEMxMzMzLjMsMzUsMTM4NywxNywxNDQwLDIxLjdDMTQ5My4zLDI2LDE1NDcsNTIsMTYwMCw1Ni4zQzE2NTMuMyw2MSwxNzA3LDQzLDE3NjAsNDMuM0MxODEzLjMsNDMsMTg2Nyw2MSwxOTIwLDYyLjhDMTk3My4zLDY1LDIwMjcsNTIsMjA4MCw0OS44QzIxMzMuMyw0OCwyMTg3LDU2LDIyNDAsNjAuN0MyMjkzLjMsNjUsMjM0Nyw2NSwyNDAwLDYwLjdDMjQ1My4zLDU2LDI1MDcsNDgsMjU2MCw1NC4yQzI2MTMuMyw2MSwyNjY3LDgyLDI3MjAsODQuNUMyNzczLjMsODcsMjgyNyw2OSwyODgwLDcxLjVDMjkzMy4zLDc0LDI5ODcsOTUsMzA0MCwxMDRDMzA5My4zLDExMywzMTQ3LDEwOCwzMjAwLDg4LjhDMzI1My4zLDY5LDMzMDcsMzUsMzM2MCwyMy44QzM0MTMuMywxMywzNDY3LDI2LDM1MjAsNDMuM0MzNTczLjMsNjEsMzYyNyw4MiwzNjgwLDc4QzM3MzMuMyw3NCwzNzg3LDQzLDM4MTMsMjguMkwzODQwLDEzTDM4NDAsMTMwTDM4MTMuMywxMzBDMzc4Ni43LDEzMCwzNzMzLDEzMCwzNjgwLDEzMEMzNjI2LjcsMTMwLDM1NzMsMTMwLDM1MjAsMTMwQzM0NjYuNywxMzAsMzQxMywxMzAsMzM2MCwxMzBDMzMwNi43LDEzMCwzMjUzLDEzMCwzMjAwLDEzMEMzMTQ2LjcsMTMwLDMwOTMsMTMwLDMwNDAsMTMwQzI5ODYuNywxMzAsMjkzMywxMzAsMjg4MCwxMzBDMjgyNi43LDEzMCwyNzczLDEzMCwyNzIwLDEzMEMyNjY2LjcsMTMwLDI2MTMsMTMwLDI1NjAsMTMwQzI1MDYuNywxMzAsMjQ1MywxMzAsMjQwMCwxMzBDMjM0Ni43LDEzMCwyMjkzLDEzMCwyMjQwLDEzMEMyMTg2LjcsMTMwLDIxMzMsMTMwLDIwODAsMTMwQzIwMjYuNywxMzAsMTk3MywxMzAsMTkyMCwxMzBDMTg2Ni43LDEzMCwxODEzLDEzMCwxNzYwLDEzMEMxNzA2LjcsMTMwLDE2NTMsMTMwLDE2MDAsMTMwQzE1NDYuNywxMzAsMTQ5MywxMzAsMTQ0MCwxMzBDMTM4Ni43LDEzMCwxMzMzLDEzMCwxMjgwLDEzMEMxMjI2LjcsMTMwLDExNzMsMTMwLDExMjAsMTMwQzEwNjYuNywxMzAsMTAxMywxMzAsOTYwLDEzMEM5MDYuNywxMzAsODUzLDEzMCw4MDAsMTMwQzc0Ni43LDEzMCw2OTMsMTMwLDY0MCwxMzBDNTg2LjcsMTMwLDUzMywxMzAsNDgwLDEzMEM0MjYuNywxMzAsMzczLDEzMCwzMjAsMTMwQzI2Ni43LDEzMCwyMTMsMTMwLDE2MCwxMzBDMTA2LjcsMTMwLDUzLDEzMCwyNywxMzBMMCwxMzBaIi8+PC9zdmc+');
+        background-repeat: no-repeat;
+        object-fit: none;
+        width: 100%;
+        height: 100px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+        border-radius: 15px;
+    }
+    .space_row {
+        border-collapse: separate;
+        border-spacing: 0 5px;
+    }
+
+    .height_80px{
+        height: 80px;
+    }
+
+    .color_danger {
+        background: rgba(255,51,51,0.2);
+    }
+</style>
+
+<div class="container mt-5">
+    <!------------------ Cabeçalho da ferramenta de gerar tipicos ------------------>
+    <div class="row justify-content-center animate__animated animate__backInRight">
+        <div class="col-lg-12 text-center">
+            <h1>Consultas A1Mat</h1>
+        </div>
+        <div class="col-lg-12 text-center text-secondary">
+            <h5>Esta ferramenta é dedicada a pesquisa de códigos e descrições de materiais cadastrados no A1mat.</h5>
+        </div>
+    </div>
+    <!------------------ Fim do cabeçalho ------------------>
+
+    <!------------------ Início container conteúdo ------------------>
+    <div class="container position-relative mt-3 p-4 bg-white bordas border shadow animate__animated animate__pulse">
+        {% csrf_token %}
+        <div class="col-lg-12 d-flex justify-content-start btn-group btn-group-toggle">
+            <button onclick="changeFilter(this.id, 'seach_rule')" id="btn_campo" class="flex-grow-0 animate__animated font-weight-bold text-white bg_gradient_orange btn rounded-pill">Pesquisa por Regras</button>
+            <button onclick="changeFilter(this.id, 'seach_field')" id="btn_regra" class="flex-grow-0 animate__animated btn text-secondary rounded-0 rounded-pill">Pesquisa por Campo</button>
+            <button onclick="changeFilter(this.id, 'seach_group_rules')" id="btn_group" class="flex-grow-0 animate__animated btn text-secondary rounded-0 rounded-pill">Pesquisa por Grupo</button>
+        </div><!------------------ Fim Botões ------------------>
+
+        <!------------------ Início 1° linha Filtro tabela ------------------>
+        <div class="col-lg-12 bordas border p-2 mt-3">
+            <div class="d-flex-without-important flex-row">
+                <!------------------ Início Tipo Isolação ------------------>
+                <div class="input-group">
+                    <button class="btn mr-2" type="button"><i class="fa-solid fa-filter-circle-xmark text-secondary"></i></button>
+                    <div class="col-lg-5 d-flex-without-important justify-content-between" id="seach_field" hidden>
+                        <input id="input_letters" oninput="this.value=this.value.toUpperCase()" placeholder="Pesquisar..." type="text" class="h-100 pr-2 bg-white text-secondary">
+                        <select class="custom-select h-100 px-2 bg-white rounded-pill border text-secondary" id="select_field">
+                            <option id="0">Categoria</option>
+                            {% for value in categoria %}
+                                <option id="{{value.tb_hea_a1mat_id}}">{{value.tb_hea_a1mat_desc}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="col-lg-4" id="seach_rule">
+                        <select id="select_material" class="custom-select rounded-pill h-100 w-100 pr-2 bg-white border-0 text-secondary" onclick="newItemSelected();returnNextSelect(this.selectedOptions[0].id, 'Next')">
+                            <option id="0">Pesquisar código</option>
+                            {% for value in first %}
+                            <option id="{{value.0}}" value="{{value.1}}" title="{{value.2}}" >[{{value.1}}] {{value.2}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <div class="col-lg-4" id="seach_group_rules">
+                            <label for="excel-data" class="form-label">Excel Data</label>
+                            <textarea class="form-control" id="excel-data" rows="8" placeholder="Paste your Excel column here...">
+                            </textarea>
+                            <button class="btn btn-primary" id="send-data-btn">Send Data
+                            </button>
+                            <br><br>
+                            <div id="response"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6" id="search_code">
+                        <button type="button" class="btn fundo_azul text-white rounded-pill border-0 font-weight-bold ml-2" onclick="$('#seach_field')[0].hidden ? findCodeFiltered() : newItemFieldSelected()">
+                            <i class="fa-solid fa-magnifying-glass pr-2"></i></i>Pesquisar
+                        </button>
+                        <button type="button" class="btn btn-secondary rounded-pill font-weight-bold mx-2" onclick="window.location.reload(true)">
+                            <i class="fa-solid fa-rotate-right pr-2"></i></i>Limpar
+                        </button>
+                        {% load poll_extras %}
+                        {% verify_tool as user_info %}
+                        {% if user_info.A1MatCadastro %}
+                        <button type="button" class="mr-2 btn btn-outline-success rounded-pill" onclick="$('#modal_import').modal('show')"><i class="fa-solid fa-upload pr-2"></i>Importar</button>
+                        {% endif %}
+                    </div>
+                </div><!------------------ Fim Tipo isolação ------------------>
+                <div id="codigo_material_rule" class="col-lg-3 d-flex-without-important align-items-center">
+                    <span class="pr-2 text-secondary">CÓDIGO:</span>
+                    <span id="material_code" class="w-100 h-100 border rounded-pill d-flex-without-important justify-content-center align-items-center text-secondary font-weight-bold"></span>
+                </div>
+            </div>
+        </div><!------------------ Fim 1° linha Filtro tabela ------------------>
+
+        <div class="max_height_300 mt-2">
+            <div id="items_select_rule" class="d-flex-without-important flex-wrap overflow-auto"></div>
+            <div id="items_select_field" class="d-flex-without-important flex-wrap overflow-auto" hidden></div>
+        </div>
+        <div id="field_desc" class="max_height_300 mt-2 animate__animated" hidden>
+            <label class="text-secondary">Descrição do Material</label>
+            <div id="desc_mat" class="bordas border p-2 text-secondary"></div>
+        </div>
+        <div class="height_80px"></div>
+        <div class="wave-container"></div>
+
+    </div><!------------------ Fim container conteúdo ------------------>
+
+    <!------------------ Início Tabela descrição ------------------>
+    <div id="container_table_a1mat" class="container mt-3 p-4 bg-white bordas border shadow animate__animated animate__pulse" hidden>
+        <table class="table-hover text-center font_size_0_8 space_row" id="TableConsultaA1mat">
+        </table>
+    </div><!------------------ Fim Tabela descrição ------------------>
+
+    <div id="container_loader_table_a1mat" class="container mt-3 p-4 bg-white bordas border shadow animate__animated animate__pulse" hidden>
+        <div class="animate__animated d-flex justify-content-center align-items-center w-100 h-100">
+            <div class="custom-loader-a1"></div>
+             <h6 id="cronometroA1mat" class="position-absolute font-weight-bold text-secondary">00:00:00</h6>
+        </div>
+    </div>
+</div>
+
+<!------------------ Início Modal Mensagem Submit ------------------>
+<div class="modal fade" id="modal_import" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bordas">
+            <div class="modal-header">
+                <h4 id="titulo" class="modal-title text-center w-100">Cadastrar Materiais</h4>
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+            </div>
+
+            <div class="modal-body" data-backdrop="static" data-keyboard="false">
+                <!------------------ Inicio Dropzone XLSX ------------------>
+                <div class="col card_dropzone py-3 mr-0 text-center" id="drop-area-xlsx-a1mat">
+                    <div class="text-center w-100" id="xlsx-a1mat">
+                        <!------------------ Inicio Message ------------------>
+                        <span class="font-italic text-success">Arraste e solte o template (*.xlsx) ou</span><br>
+                        <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                        <!------------------ Fim Message ------------------>
+                        <label class="mt-2 btn btn-success rounded-pill text-white">
+                            <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xlsx_a1mat" onchange="dropArquivo('arquivo_xlsx_a1mat','drop-area-xlsx-a1mat','xlsx-a1mat',null)"/>
+                            <i class="fa-solid fa-upload"></i> Import xlsx
+                        </label>
+                    </div>
+                </div><!------------------ Fim Dropzone XLSX ------------------>
+
+                <div id="progress-box-a1mat" class="text-center mt-3" hidden>
+                    <div class='progress-wrapper'>
+                        <div id='progress-bar-a1mat' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                    </div><br>
+                    <div id="progress-bar-message-a1mat" class="text-center">Aguardando a Inicialização da tarefa ...</div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-success shadow rounded-pill" href="/app/geral/a1matconsulta/TemplateExcel/">Download Template</a>
+                <button type="submit" class="btn btn-warning shadow rounded-pill" onclick="sendCodesA1matToRegister()">Cadastrar</button>
+                <div class="loader" id="loaderUploadArquivo"></div>
+            </div>
+        </div>
+    </div>
+</div><!------------------ Fim Modal Mensagem Submit ------------------>
+<script>
+    // Variaveis globais de controle do cronômetro
+    let tempoConsultaA1mat = 0;
+    let cronometroA1mat;
+    let formFileCodesA1mat = new FormData();
+
+    // --------------------- Busca códigos ao digitar na pesquisa por campo ---------------------//
+    function findCodeFiltered() {
+        const codigo = document.getElementById('material_code').outerText
+        const select = document.getElementById('select_field').selectedOptions[0].id
+        if (codigo.length > 0) {
+            $.ajax({
+                url: "/app/geral/a1matconsulta/fulldesc/", // Caminho do Ajax
+                type: "GET", // http method
+                // headers:{'X-CSRFToken':csrf},
+                dataType: "json",
+                data: {'find_code': JSON.stringify([{'id': '1', 'cod': codigo + '%'}])}, // Envia form pela solicitação do POST
+                beforeSend: function () {
+                    $('#container_table_a1mat')[0].hidden = true
+                    $('#container_loader_table_a1mat')[0].hidden = false
+                    finalizarCronometro()
+                    iniciarCronometro()
+                },
+                success: function (data) {
+                    if (data['json'].length > 0) {
+                        fillTableA1mat(data['header'], data['json'])
+                    } else {
+                        $('#container_loader_table_a1mat')[0].hidden = true
+                        finalizarCronometro()
+
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, 'Nenhum código encontrado!', 'warning', false)
+                    }
+
+                },
+                failure: function () {
+                    $('#container_loader_table_a1mat')[0].hidden = true
+                    finalizarCronometro()
+
+                    // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                    swalAlert(false, 'Algo deu errado ao buscar códigos! verifique e tente novamente.', 'error', false)
+                }
+            })
+        } else if (codigo.length > 11){
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Não é possível pesquisar mais de 11 caracteres!', 'error', false)
+        } else {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Pesquise ao menos 1 caracter para facilitar a busca!', 'error', false)
+        }
+    }
+
+    // --------------------- Busca códigos ao digitar na pesquisa por regra ---------------------//
+    function findCodeFilteredTyped() {
+        let card_items = $('#items_select_field')[0].children
+        const categoria = $.map(card_items, function(element) {return element.id.match(/\d+/g)[0]});
+        const result = $.map(card_items, function(element) {return element.title});
+        const dictArray = [];
+
+        // Preenche a lista com o dicionario categorias e valores
+        for (let i = 0; i < categoria.length; i++) {
+          dictArray.push({['id']: categoria[i], 'cod': result[i]});
+        }
+
+        $.ajax({
+            url: "/app/geral/a1matconsulta/fulldesc/", // Caminho do Ajax
+            type: "GET", // http method
+            dataType: "json",
+            data: {'find_code': JSON.stringify(dictArray)}, // Envia form pela solicitação do POST
+            beforeSend: function(){
+                $('#container_table_a1mat')[0].hidden = true
+                $('#container_loader_table_a1mat')[0].hidden = false
+                finalizarCronometro()
+                iniciarCronometro()
+            },
+            success: function (data) {
+                if (data['json'].length > 0) {
+                    fillTableA1mat(data['header'], data['json'])
+                } else {
+                    $('#container_loader_table_a1mat')[0].hidden = true
+                    finalizarCronometro()
+
+                    // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                    swalAlert(false, 'Nenhum código encontrado!', 'warning', false)
+                }
+            },
+
+            failure: function () {
+                // $('#container_loader_table_a1mat')[0].hidden = false
+                finalizarCronometro()
+
+                // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                swalAlert('Algo deu errado ao buscar códigos! verifique e tente novamente.', false, 'error', false)
+            }
+        })
+    }
+
+    // --------------------- Altera classe do botão de página ao clica-lo ---------------------//
+    function changeFilter(id, id_field) {
+        let element = $("#" + id)[0].parentElement.children
+        for (let i = 0; i < element.length; i++) {
+            if (element[i].id === id) {
+                $("#" + id).removeClass('text-secondary rounded-0')
+                $("#" + id).addClass('font-weight-bold text-white bg_gradient_orange animate__bounceIn')
+            }
+            else {
+                $("#" + element[i].id).removeClass('font-weight-bold text-white bg_gradient_orange animate__bounceIn')
+                $("#" + element[i].id).addClass('text-secondary rounded-0')
+            }
+
+        }
+
+        // Exibe ou não os itens conforme o botão que clicar
+        if (id_field === "seach_field"){
+            $("#seach_rule")[0].hidden = true;
+            $("#seach_field")[0].hidden = false;
+            $("#items_select_rule")[0].hidden = true;
+            $("#items_select_field")[0].hidden = false;
+            $("#field_desc")[0].hidden = true;
+            $("#codigo_material_rule")[0].hidden = true;
+            $("#search_code")[0].hidden = false;
+            $("#seach_group_rules")[0].hidden = true;
+        } else if(id_field === "seach_group_rules"){
+            $("#seach_rule")[0].hidden = true;
+            $("#seach_field")[0].hidden = true;
+            $("#items_select_rule")[0].hidden = true;
+            $("#items_select_field")[0].hidden = true;
+            $("#codigo_material_rule")[0].hidden = true;
+            $("#field_desc")[0].hidden = true;
+            $("#search_code")[0].hidden = true;
+            $("#seach_group_rules")[0].hidden = false;
+            $("#codigo_material_rule")[0].hidden = true;
+
+        }else {
+            $("#search_code")[0].hidden = false;
+            $("#seach_rule")[0].hidden = false;
+            $("#seach_field")[0].hidden = true;
+            $("#items_select_rule")[0].hidden = false;
+            $("#seach_group_rules")[0].hidden = true;
+            $("#items_select_field")[0].hidden = true;
+            $("#codigo_material_rule")[0].hidden = false;
+        }
+
+        // Verifica preenchimento da tabela limpa e destroi
+        if ($.fn.DataTable.isDataTable('#TableConsultaA1mat')) {
+            $('#container_table_a1mat')[0].hidden = true
+            $('#TableConsultaA1mat').DataTable().destroy();
+            $('#TableConsultaA1mat').empty();
+        }
+
+    }
+
+    // --------------------- Atualiza a contagem do cronômetro ---------------------//
+    function atualizarCronometro() {
+        const minutos = Math.floor(tempoConsultaA1mat / 60000);
+        const segundos = Math.floor((tempoConsultaA1mat % 60000) / 1000);
+        const milissegundos = tempoConsultaA1mat % 1000;
+        const minutosStr = minutos.toString().padStart(2, '0');
+        const segundosStr = segundos.toString().padStart(2, '0');
+        const milissegundosStr = milissegundos.toString().padStart(3, '0').slice(0, 2);
+        const tempoStr = `${minutosStr}:${segundosStr}:${milissegundosStr}`;
+        document.getElementById('cronometroA1mat').textContent = tempoStr;
+    }
+
+    // --------------------- Inicia a contagem do cronômetro ---------------------//
+    function iniciarCronometro() {
+        cronometroA1mat = setInterval(() => {
+            tempoConsultaA1mat += 10;
+            atualizarCronometro();
+        }, 10);
+    }
+
+    // --------------------- Zera a contagem do cronômetro ---------------------//
+    function finalizarCronometro() {
+        clearInterval(cronometroA1mat);
+        tempoConsultaA1mat = 0;
+        atualizarCronometro();
+    }
+
+    // --------------------- Cria paginação na tabela de códigos ---------------------//
+    function fillTableA1mat(headers, jsonData) {
+        // Destrói a tabela antes de recriá-la
+        if ($.fn.DataTable.isDataTable('#TableConsultaA1mat')) {
+          $('#TableConsultaA1mat').DataTable().destroy();
+          $('#TableConsultaA1mat').empty();
+        }
+
+        // Cria estrutura da tabela HTML
+        let table = document.getElementById('TableConsultaA1mat');
+        let tbody = table.createTBody();
+        let thead = table.createTHead();
+        let row = thead.insertRow();
+
+        // Adiciona itens da lista no cabeçalho da tabela
+        for (let i = 0; i < headers.length; i++) {
+            let header = document.createElement("th")
+            header.innerHTML = headers[i].toUpperCase();
+            header.classList.add('bg-white','text-secondary','py-1','px-2','mb-1')
+            row.appendChild(header);
+        }
+
+        // Percorre Json para preencher o corpo da tabela
+        for (let key in jsonData) {
+            if (jsonData.hasOwnProperty(key)) {
+                let row = tbody.insertRow();
+                let obj = jsonData[key];
+
+                let isFirstCellV = obj.hasOwnProperty(Object.keys(obj)[0]) && obj[Object.keys(obj)[0]].startsWith('V');
+                console.log(isFirstCellV)
+                // Cria uma nova célula para o ícone e adiciona a classe 'px-2'
+                let iconCell = row.insertCell();
+
+                // Verifica se não é cliente e adiciona o icone de clipboard
+                if (!isFirstCellV) {
+                    iconCell.classList.add('px-2');
+
+                    // Cria o ícone e adiciona a classe 'bi-clipboard' do Bootstrap Icons
+                    let icon = document.createElement('i');
+                    icon.classList.add('fa-regular', 'fa-clipboard', 'text-secondary');
+                    iconCell.appendChild(icon);
+
+                    // Adiciona a função 'copyToClipboard' ao ícone
+                    iconCell.addEventListener('click', function() {
+                        const jsonString = Object.values(obj).join('\t')
+                        copyToClipboard(jsonString);
+                        let tooltip = new bootstrap.Tooltip(iconCell);
+                        tooltip.show();
+                        setTimeout(() => {
+                            tooltip.hide();
+                        }, 1500);
+                    });
+                    iconCell.setAttribute('data-bs-toggle', 'tooltip');
+                    iconCell.setAttribute('data-bs-placement', 'top');
+                    iconCell.setAttribute('title', 'Copiado!');
+                } else {
+                    iconCell.classList.add('px-2', 'color_danger');
+                }
+
+                for (let prop in obj) {
+                    if (obj.hasOwnProperty(prop)) {
+                        let cell = row.insertCell();
+                        cell.classList.add('px-2', 'text-secondary');
+                        cell.style.userSelect = 'none';
+                        cell.innerHTML = obj[prop];
+                        if (isFirstCellV) {
+                            cell.classList.add('color_danger');
+                            cell.setAttribute('data-bs-toggle', 'tooltip');
+                            cell.setAttribute('data-bs-placement', 'top');
+                            cell.setAttribute('title', 'Código de cliente (Não utilizar)');
+                            new bootstrap.Tooltip(cell); // Initialize the tooltip
+                        }
+                    }
+                }
+            }
+        }
+
+        // Pausa o cronômetro
+        clearInterval(cronometroA1mat);
+
+        // Esconde e finaliza o cronômetro
+        setTimeout(() => {
+            $('#container_loader_table_a1mat')[0].hidden = true
+            $('#container_table_a1mat')[0].hidden = false
+            finalizarCronometro();
+
+            // Formata a tabela pela API do DataTable
+            let table_price = $('#TableConsultaA1mat').DataTable({
+                "sDom": "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6 d-flex justify-content-end form-inline pb-2'l>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row mt-3'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                "scrollY": "475px",
+                "scrollX": true,
+                "scrollCollapse": true,
+                "paging": true,
+                "fixedColumns": true,
+                "destroy": true,
+                "bFilter": true,
+                "font-size": "0.8em",
+                "lengthMenu": [[10, 50, 100, 500, 1000], [10, 50, 100, 500, 1000]],
+                "pageLength": 100,
+                "order": [[1, 'asc']],
+                "columnDefs": [
+                  { "width": "50px", "targets": 0},
+                  { "width": "100px", "targets": [1,4,5,6,7,8,9,10,11,12]},
+                  { "width": "450px", "targets": 2 },
+                  { "width": "350px", "targets": 3 },
+                ],
+                "language": {
+                    "search": "",
+                    "searchPlaceholder": "Filtrar tabela",
+                    "showing": 'Exibir ',
+                    "emptyTable": "Nenhuma código encontrado",
+                    "paginate": {
+                        "first":      "Primeiro",
+                        "last":       "Último",
+                        "next":       "Próximo",
+                        "previous":   "Anterior"
+                    },
+                    "info": "Exibindo de _START_ a _END_ de _TOTAL_ entradas",
+                    "lengthMenu": "Exibir: _MENU_",
+                },
+
+            });
+            $('.dataTables_scrollBody thead tr').css({visibility:'collapse'});
+            $('div.dataTables_info').addClass('text-secondary')
+            $('div.dataTables_length select').addClass('rounded-pill form-control-md ml-2')
+            $('div.dataTables_length label').addClass('text-secondary')
+            $('div.dataTables_filter input').addClass('rounded-pill')
+            $('div.dataTables_scrollBody').addClass('overflow_firefox overflow_chrome')
+        }, 1000);
+    }
+
+    // --------------------- Copia texto passado como parâmetro para área de transferência ---------------------//
+    function copyToClipboard(text) {
+        // Cria um elemento temporário para colocar o texto
+        const tempElement = document.createElement('textarea');
+        tempElement.value = text;
+
+        // Coloca o elemento temporário fora do viewport para evitar
+        // interações indesejadas com o usuário
+        tempElement.style.position = 'absolute';
+        tempElement.style.left = '-9999px';
+        tempElement.setAttribute('readonly', '');
+
+        // Adiciona o elemento temporário ao documento
+        document.body.appendChild(tempElement);
+
+        // Seleciona o texto do elemento temporário
+        tempElement.select();
+
+        // Copia o texto selecionado para a área de transferência
+        document.execCommand('copy');
+
+        // Remove o elemento temporário do documento
+        document.body.removeChild(tempElement);
+    }
+
+    // --------------------- Altert para notificar usuario do erro ---------------------//
+    function swalAlert(titulo, texto, icone_img, btn){
+        swal({
+            title: titulo,
+            text: texto,
+            icon: icone_img,
+            button: btn,
+        })
+        $('div.swal-modal').addClass('bordas')
+        $('div.swal-title').addClass('h4')
+        $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+        $('div.swal-text').addClass('text-center')
+        $('div.swal-footer').addClass('d-flex justify-content-center')
+    }
+
+    // --------------------- Função cria cartao com o filtro na página de regra ---------------------//
+    function newItemSelected() {
+        const spanContainer = document.querySelector('#items_select_rule');
+        const select = document.querySelector('#select_material option:checked');
+        const idElement = `card${select.id}`;
+        const elementosFilhos = spanContainer.children;
+        let elementoFilhoNaoEncontrado = true;
+        const descMat = select.title.trim() + ' ';
+
+        for (const elementoFilho of elementosFilhos) {
+            if (elementoFilho.id === idElement) {
+                elementoFilhoNaoEncontrado = false;
+                break;
+            }
+        }
+
+        if (select.id !== '0' && elementoFilhoNaoEncontrado) {
+            const fieldDesc = document.querySelector('#field_desc');
+            if (elementosFilhos.length >= 2){
+                fieldDesc.hidden = false;
+                fieldDesc.classList.toggle('animate__zoomOut', false);
+                fieldDesc.classList.toggle('animate__zoomIn', true);
+                document.querySelector('#desc_mat').innerHTML += descMat;
+            }
+            document.querySelector('#material_code').innerHTML += select.value;
+
+            const span = `
+              <div class="animate__animated animate__jackInTheBox text-truncate" id="${idElement}" title="${select.value}">
+                <div class="input-group bordas mr-2 mb-2 flex-nowrap">
+                  <span title="${descMat}" style="font-size: 0.8rem;" class="d-inline-block d-flex align-items-center text-truncate fundo_grad_1 input-group-text border border-left-0 rounded-pill rounded-right text-secondary pr-0 font_size_0_8">${select.textContent}</span>
+                  <div class="input-group-append border border-left-0 rounded-pill rounded-left fundo_grad_1 align-self-start">
+                    <button class="btn" type="button" onclick="removerElemento('${idElement}')"><i class="fa-sharp fa-solid fa-circle-xmark text-secondary"></i></button>
+                  </div>
+                </div>
+              </div>
+            `;
+
+            spanContainer.insertAdjacentHTML('beforeend', span);
+            setTimeout(() => {
+              document.querySelector(`#${idElement}`).classList.remove('animate__jackInTheBox');
+            }, 600);
+        }
+    }
+
+    // --------------------- Função cria cartao com o filtro na página de campo ---------------------//
+    function newItemFieldSelected() {
+        const spanContainer = document.querySelector('#items_select_field');
+        const select = document.querySelector('#select_field option:checked');
+        const input = document.getElementById('input_letters').value;
+        const idElement = `cardField${select.id}`;
+        const elementosFilhos = spanContainer.children;
+        let elementoFilhoNaoEncontrado = true;
+
+        for (const elementoFilho of elementosFilhos) {
+            if (elementoFilho.id === idElement) {
+                elementoFilhoNaoEncontrado = false;
+                break;
+            }
+        }
+        if (elementoFilhoNaoEncontrado === false){
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Clique no X da pesquisa anterior para pesquisar novamente!', 'warning', false)
+        } else if (select.id === '0') {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Selecione a categoria para continuar!', 'warning', false)
+        }
+        else if (select.id !== '0' && elementoFilhoNaoEncontrado) {
+            const span = `
+              <div class="animate__animated animate__jackInTheBox" id="${idElement}" title="${input}">
+                <div class="input-group bordas mr-2 mb-2">
+                  <span style="font-size: 0.8rem" class="fundo_grad_1 input-group-text border border-left-0 rounded-pill rounded-right text-secondary pr-0 font_size_0_8">${select.textContent} = ${input}</span>
+                  <div class="input-group-append border border-left-0 rounded-pill rounded-left fundo_grad_1">
+                    <button class="btn" type="button" onclick="removerElementoField('${idElement}')"><i class="fa-sharp fa-solid fa-circle-xmark text-secondary"></i></button>
+                  </div>
+                </div>
+              </div>`;
+
+            spanContainer.insertAdjacentHTML('beforeend', span);
+            setTimeout(() => {
+                document.querySelector(`#${idElement}`).classList.remove('animate__jackInTheBox');
+            }, 600);
+
+            findCodeFilteredTyped()  // Busca dados no banco
+        }
+    }
+
+    // --------------------- Função envia id do item para preencher select ---------------------//
+    function returnNextSelect(id_select, direction) {
+        const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        const lenght_code = document.getElementById('material_code').innerText.length
+        if (id_select !== '0' && lenght_code <= 11){
+            $.ajax({
+                url: "/app/geral/a1matconsulta/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrf},
+                dataType: "json",
+                data: {'id_select': JSON.stringify({'id': id_select, 'dir': direction})}, // Envia form pela solicitação do POST
+                success: function (data) {
+                    fillSelectCodeA1mat(data['result'])
+                },
+                failure: function () {
+                    swal({
+                        title: "Atenção!",
+                        text: "Algo deu errado ao buscar códigos! verifique e tente novamente.",
+                        icon: "error",
+                        button: 'Fechar'
+                    })
+                    $('div.swal-modal').addClass('bordas')
+                    $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                    $('div.swal-text').addClass('text-center')
+                    $('div.swal-footer').addClass('d-flex justify-content-center')
+                }
+            })
+        } else if (lenght_code > 11){
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert('Não é possível pesquisar mais de 11 caracteres!', false, 'error', false)
+        }
+    }
+
+    // --------------------- Função preenche select de pesquisa ---------------------//
+    function fillSelectCodeA1mat(data) {
+        // Pega o elemento select pelo id
+        let selectElement = document.getElementById("select_material");
+        let id_item = 0;
+        let codigo = 1;
+        let descricao = 2;
+
+        // Obtém a option com id=0
+        let option0 = selectElement.querySelector("option[id='0']");
+
+        // Remove todas as options, exceto a option com id=0
+        Array.from(selectElement.options).forEach(option => {
+          if (option !== option0) {
+            selectElement.removeChild(option);
+          }
+        });
+
+        // Substitui as opções existentes com as novas options
+        for (const key in data) {
+            let newOption = document.createElement("option");
+            newOption.title = data[key][descricao];
+            newOption.value = data[key][codigo];
+            newOption.id = data[key][id_item];
+            newOption.text = '[' + data[key][codigo] + '] ' + data[key][descricao];
+            selectElement.appendChild(newOption);
+        }
+    }
+
+    // --------------------- Função para remover elemento ao clicar no X do campo rule ---------------------//
+    function removerElemento(elemento) {
+        let id_elemento = elemento.match(/\d+/g);
+        let code = document.getElementById('material_code')
+        let descricao_material = document.getElementById('desc_mat')
+        let index_card = 0;
+        let card_items = $('#items_select_rule')[0].children
+        let titles_card_items = $.map(card_items, function(element) {return element.title;});
+        let ids_card_items = $.map(card_items, function(element) {return element.id;});
+        let span_desc_material = document.getElementById('items_select_rule').querySelectorAll('span')
+        let array_material = $.map(span_desc_material, function(element) {return element.title;});
+        const descricaoMaterial = $('#desc_mat');
+        const fieldDesc = $('#field_desc');
+
+
+        // Preenche novamente o select
+        returnNextSelect(id_elemento[0], 'Prev')
+
+        // Verifica a posição do cartão
+        for (var i = 0; i < card_items.length; i++) {
+          if (card_items[i].id === elemento) {
+            index_card = Array.prototype.indexOf.call(card_items, card_items[i]);
+          }
+        }
+
+        // Remove caracteres do campo de código
+        code.innerHTML = titles_card_items.slice(0, index_card).join('');
+
+        if (index_card > 2) {
+            descricao_material.innerHTML = array_material.slice(2, index_card).join('');
+        } else {
+            if (fieldDesc.hasClass('animate__zoomIn')) {
+              fieldDesc.removeClass('animate__zoomIn');
+            }
+            fieldDesc.addClass('animate__zoomOut');
+            setTimeout(() => {
+              fieldDesc.attr('hidden', true);
+              descricaoMaterial.html('');
+            }, 500);
+        }
+
+
+        // Pega os ids a partir da posiçãoremovida do campo de filtros e inverte a array
+        let card_items_remove = ids_card_items.slice(index_card).reverse();
+
+        // Percorre todos as ids e a cada meio segundo remove do campo
+        for (let i = 0; i <card_items_remove.length; i++){
+            setTimeout(()=>{
+                document.getElementById(card_items_remove[i]).style.zIndex = '1';
+                document.getElementById(card_items_remove[i]).classList.add('animate__fadeOutRight')
+                setTimeout(()=>{
+                    $('#items_select_rule').find('#' + card_items_remove[i]).remove();
+                },250)
+            },250 * i)
+        }
+    }
+
+    // --------------------- Função para remover elemento ao clicar no X do campo field ---------------------//
+    function removerElementoField(elemento) {
+        let fiterFieldDesc = $('#'+ elemento)
+
+        if (fiterFieldDesc.hasClass('animate__zoomIn')) {
+          fiterFieldDesc.removeClass('animate__zoomIn');
+        }
+        fiterFieldDesc.addClass('animate__zoomOut');
+
+        document.getElementById(elemento).style.zIndex = '1';
+        document.getElementById(elemento).classList.add('animate__fadeOutRight')
+        setTimeout(()=>{
+            $('#items_select_field').find('#' + elemento).remove();
+        }, 250)
+    }
+
+    // --------------------- Função para converter o tamanho para bytes ---------------------//
+    function FormatNumberToBytes(bytes, decimal = 2) {
+        if (!+bytes) return '0 Bytes'
+        const k = 1024
+        const dm = decimal < 0 ? 0 : decimal
+        const tamanho = ['Bytes', 'KB', 'MB', 'GB']
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${tamanho[i]}`
+    }
+
+    // --------------------- Função envia form excel para cadastro ---------------------//
+    function sendCodesA1matToRegister() {
+        const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
+
+        if ($('#xlsx-a1mat').find('#image_xls_a1mat').length !== 0){
+            $.ajax({
+                url: "/app/geral/a1matconsulta/TemplateExcel/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrf},
+                dataType: "json",
+                data: formFileCodesA1mat, // Envia form pela solicitação do POST
+                processData: false,
+                contentType: false,
+                beforeSend: function(){
+                    document.getElementById("progress-box-a1mat").hidden = false;
+                },
+                success: function (data) {
+                    const progressUrl = `/celery-progress/${data["task_id"]}/`
+                    CeleryProgressBarA1mat.initProgressBar(progressUrl, {
+                        onSuccess: customSucess,
+                        onError: customError,
+                        onProgress: onProgressCustom
+                    })
+
+                    function onProgressCustom(progressBarElement, progressBarMessageElement, progress) {
+                        progressBarElement.style.backgroundColor = '#68a9ef';
+                        progressBarMessageElement.innerHTML = progress.description || "";
+                        progressBarElement.style.width = progress.percent + "%";
+                    }
+
+                    function customSucess(progressBarElement, progressBarMessageElement, result) {
+                        if (Object.keys(result)[0] === 'error') {
+                            progressBarElement.style.backgroundColor = '#dc4f63';
+
+                            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                            swalAlert(false, Object.values(result).join(), 'error', false)
+                            if (Number($('div.swal-text').height()) > 200) {
+                                $('div.swal-text').addClass('h6 text-secondary content_calcs_in_proj')
+                            } else {
+                                $('div.swal-text').addClass('h6 text-secondary')
+                            }
+                            setTimeout(()=>{document.getElementById("progress-box-a1mat").hidden = true},3000)
+                        } else {
+                            progressBarElement.style.backgroundColor = '#76ce60';
+
+                            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                            swalAlert(false, Object.values(result)[0], 'success', false)
+                            $('div.swal-text').addClass('h6 text-secondary')
+                            setTimeout(()=>{
+                                document.getElementById("progress-box-a1mat").hidden = true;
+                                swal.close()},3000)
+                        }
+
+                    }
+
+                    function customError(progressBarElement, progressBarMessageElement, excMessage) {
+                        progressBarMessageElement.innerHTML = "Houve um erro inesperado: " + excMessage;
+                        progressBarElement.style.backgroundColor = '#dc4f63';
+                        setTimeout(HideRowLoadElements,10000, true)
+                    }
+                },
+                failure: function () {
+                    // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                    swalAlert(false, 'Algo deu errado ao enviar a precificação da tabela! verifique e tente novamente.', 'error', false)
+                }
+            })
+        } else {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Faça o upload de um arquivo para continuar!', 'error', false)
+        }
+    }
+
+    // --------------------- Função adiciona campo visual nos dropzones ---------------------//
+    function dropArquivo(id_input,id_drop,campo,arquivo) {
+        let drop_container = document.getElementById(campo);
+        let file = document.getElementById(id_input);
+        let form;
+        let name_file;
+        let broken_name_file;
+        let drop = '';
+        let itens = $('#'+id_drop)[0].children
+
+        // Caso não seja dropado o arquivo é recebido via id
+        form = arquivo !== null ? arquivo.files : file.files;
+
+        for (let i = 0; i <form.length;i++){
+            name_file = form[i].name
+            let extension = name_file.split('.').pop();
+            if (extension === 'xls' || extension === 'xlsx'){
+                if (itens.length === 1) {
+                    let tamanho = FormatNumberToBytes(form[i].size) //Recebe o tamanho para o formato em bytes
+                    if (name_file.split(' ').length <= 1){
+                        broken_name_file = name_file.match(/.{1,18}/g).join(' ') //Caso o nome do arquivo seja maior que 18 caracteres a string é quebrada
+                    }
+
+                    formFileCodesA1mat.append('fileCodeMat', form[i]);
+                    drop = `<div class="col-5 bordas mx-auto my-1 input-group border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown position-relative">
+                        <button onclick="window.location.reload(true)" title="Remove arquivo" class="btn btn-outline-danger rounded-pill px-2 border-0 position-absolute" type="button" style="right:0px;top:0px;z-index: 1;">
+                            <i class="fas fa-times-circle fa-xl"></i>
+                        </button>
+                        <img id="image_xls_a1mat" class="my-2 w-75 mx-auto" src="{% static 'img/XLS.png' %}" alt="Image XLSX">
+                        <span type="text" class="py-2 w-100 border-bottom font-weight-bold">${tamanho}</span>
+                        <span type="text" title="${name_file}" class="py-2 mx-2 text-center">${broken_name_file}</span>
+                    </div>`
+
+                    drop_container.innerHTML = drop;
+                }
+            } else {
+                // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                swalAlert(false, 'Extensão do campo diferente de (.xlsx)!', 'warning', false)
+            }
+        }
+    }
+
+    // --------------------- Clase para receber respostas do celery ---------------------//
+    let CeleryProgressBarA1mat = (function () {
+        function onSuccessDefault(progressBarElement, progressBarMessageElement, result) {
+            progressBarElement.style.backgroundColor = '#76ce60';
+            progressBarMessageElement.innerHTML = "Success!";
+        }
+
+        function onResultDefault(resultElement, result) {
+            if (resultElement) {
+                resultElement.innerHTML = result;
+            }
+        }
+
+        function onErrorDefault(progressBarElement, progressBarMessageElement, excMessage) {
+            progressBarElement.style.backgroundColor = '#dc4f63';
+            progressBarMessageElement.innerHTML = "Uh-Oh, something went wrong! " + excMessage;
+        }
+
+        function onProgressDefault(progressBarElement, progressBarMessageElement, progress) {
+            progressBarElement.style.backgroundColor = '#68a9ef';
+            progressBarElement.style.width = progress.percent + "%";
+            var description = progress.description || "";
+            progressBarMessageElement.innerHTML = progress.current + ' de ' + progress.total + ' processado. ' + description;
+        }
+
+        function updateProgress (progressUrl, options) {
+            options = options || {};
+            var progressBarId = options.progressBarId || 'progress-bar-a1mat';
+            var progressBarMessage = options.progressBarMessageId || 'progress-bar-message-a1mat';
+            var progressBarElement = options.progressBarElement || document.getElementById(progressBarId);
+            var progressBarMessageElement = options.progressBarMessageElement || document.getElementById(progressBarMessage);
+            var onProgress = options.onProgress || onProgressDefault;
+            var onSuccess = options.onSuccess || onSuccessDefault;
+            var onError = options.onError || onErrorDefault;
+            var pollInterval = options.pollInterval || 500;
+            var resultElementId = options.resultElementId || 'celery-result';
+            var resultElement = options.resultElement || document.getElementById(resultElementId);
+            var onResult = options.onResult || onResultDefault;
+
+
+            fetch(progressUrl).then(function(response) {
+                response.json().then(function(data) {
+                    if (data.progress) {
+                        onProgress(progressBarElement, progressBarMessageElement, data.progress);
+                    }
+                    if (!data.complete) {
+                        setTimeout(updateProgress, pollInterval, progressUrl, options);
+                    } else {
+                        if (data.success) {
+                            onSuccess(progressBarElement, progressBarMessageElement, data.result);
+                        } else {
+                            onError(progressBarElement, progressBarMessageElement, data.result);
+                        }
+                        if (data.result) {
+                            onResult(resultElement, data.result);
+                        }
+                    }
+                });
+            });
+        }
+        return {
+            onSuccessDefault: onSuccessDefault,
+            onResultDefault: onResultDefault,
+            onErrorDefault: onErrorDefault,
+            onProgressDefault: onProgressDefault,
+            // updateProgress: updateProgress,
+            initProgressBar: updateProgress,  // just for api cleanliness
+        };
+    })();
+
+    // --------------------- Função para adicionar classes ao soltar arquivo sobre dropzone ---------------------//
+    jQuery(document).ready(function($) {
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-area-xlsx-a1mat').on('dragover', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).addClass('upload-hover');
+        })
+
+        // Ao retirar o cursor com arquivo sobre o campo dropzone as bordas diminuem
+        $('#drop-area-xlsx-a1mat').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+        })
+
+        // Ao soltar o arquivo sobre o campo chama a função DropArquivo passando os parâmetros
+        $('#drop-area-xlsx-a1mat').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+          let file_xls = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          dropArquivo('arquivo_xlsx_a1mat','drop-area-xlsx-a1mat','xlsx-a1mat',file_xls)
+        })
+    });
+
+    document.getElementById("send-data-btn").addEventListener("click", () => {
+        const excelData = document.getElementById("excel-data").value;
+        const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        // Make an HTTP POST request to Django
+        fetch("/app/geral/a1matconsulta_group/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf // only if CSRF is enabled in your Django app
+        },
+        body: JSON.stringify({ data: excelData })
+        })
+        .then(response => response.json())
+        .then(jsonResponse => {
+            console.log(jsonResponse)
+            if(jsonResponse){
+                displayTable(jsonResponse.lines_received);
+            }
+            console.log(jsonResponse)
+          // Update the page with the server's response
+          // const responseDiv = document.getElementById("response");
+          // responseDiv.innerText = JSON.stringify(jsonResponse, null, 2);
+        })
+        .catch(error => console.error(error));
+    });
+
+    function displayTable(dataRows) {
+        let tableHtml = `
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Descrição</th>
+            </tr>
+          </thead>
+          <tbody>
+        `;
+
+        dataRows.forEach(row => {
+        const col1 = row[0];
+        const col2 = row[1];
+        tableHtml += `
+          <tr>
+            <td>${col1}</td>
+            <td>${col2}</td>
+          </tr>
+        `;
+        });
+
+        tableHtml += `
+          </tbody>
+        </table>
+        `;
+
+        document.getElementById("response").innerHTML = tableHtml;
+    }
+    function changefilterinitial(){
+        changeFilter('btn_campo', 'seach_rule')
+    }
+    window.onload = changefilterinitial
+</script>
+{% endblock %}

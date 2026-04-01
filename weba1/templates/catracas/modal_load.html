@@ -1,0 +1,30 @@
+<!-- Este bloco é um modal de load, caso queira utiliza-lo em outra ferramenta so precisa definir o with com o id_modal -->
+{% load static %}
+{% block modal_load %}
+<div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" id="{{id_modal}}" data-backdrop="static">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+       <div class="modal-header">
+          <h5 class="modal-title text-center w-100 font-weight-bold" id="{{id_modal}}-header"></h5>
+       </div>
+       <div class="modal-body" id="{{id_modal}}-body">
+           <div class="col-12">
+               <img id ="{{id_modal}}-skate" alt="" src="{% static 'dashboards/lesma_skate.gif' %}" class="hidden">
+           </div>
+           <div class="col-12">
+               <div class="hidden" id="{{id_modal}}-content">Nada encontrado</div>
+           </div>
+           <div class="col-12 text-center" id="{{id_modal}}-content-celery" hidden>
+               <div class='progress-wrapper'>
+                   <div id='progress-bar-modal-load' class='progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+               </div>
+               <div id="progress-bar-message-modal-load">aaa</div>
+           </div>
+       </div>
+       <div class="modal-footer" id="{{id_modal}}-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+       </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

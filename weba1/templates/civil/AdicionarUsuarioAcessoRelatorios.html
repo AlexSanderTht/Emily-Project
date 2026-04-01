@@ -1,0 +1,72 @@
+
+{%extends 'geral/base.html'%}
+
+{% load static %}
+
+{%block 'titulo'%}Gerenciamento de Acessos {%endblock%}
+
+{%block 'conteudo' %}
+<style>
+
+
+        label
+        {
+            margin-bottom: 0px;
+        }
+
+</style>
+ {% if Admin %}
+<h1> <center>Gerenciar Acessos - Relatórios</center> </h1>
+
+
+ <div class="col-lg-7 mx-auto">
+           <div class="bg-white rounded-lg shadow-sm p-5" style="width: 100%">
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+                         <form method="post">
+                             {% csrf_token %}
+                                   <div class="input-group mb-3" >
+                                      <div class="input-group-prepend" >
+                                        <span style="height:34px" class="input-group-text" id="{{ form.Nome.id_for_label }}" >{{form.Nome.label_tag}}</span>
+                                      </div>
+                                      <input type="text" name="{{ form.Nome.html_name }}" class="form-control" {% if form.Nome.value %} value="{{form.Nome.value }}" {%endif%} aria-describedby="{{ form.Nome.id_for_label }}">
+                                    </div>
+                                 {% if form.Nome.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.Nome.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+
+                                     <div class="input-group mb-3" >
+                                      <div class="input-group-prepend" >
+                                        <span style="height:34px" class="input-group-text" id="{{ form.Usuario.id_for_label }}" >{{form.Usuario.label_tag}}</span>
+                                      </div>
+                                      <input type="text" name="{{ form.Usuario.html_name }}" class="form-control" {% if form.Usuario.value %} value="{{form.Usuario.value }}" {%endif%} aria-describedby="{{ form.Usuario.id_for_label }}">
+                                    </div>
+                                  {%if form.Usuario.errors %}
+                                  <div class="alert alert-danger" role="alert">
+                                        {{ form.Usuario.errors }}
+                                  </div>
+                                  {%endif%}
+                             <input  type="submit" class="subscribe btn btn-warning  rounded-pill shadow-sm" value="Salvar">
+                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+{% else %}
+    <h1> Acesso não permitido </h1>
+{% endif %}
+
+
+
+
+
+
+
+{%endblock%}

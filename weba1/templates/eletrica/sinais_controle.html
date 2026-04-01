@@ -1,0 +1,82 @@
+{% load static %}
+{% block sinais_controle %}
+
+<div class="modal-header">
+  <h5 class="modal-title" id="sinaiscontroleLabel">Sinais de controle do Motor </h5>
+</div>
+<br>
+<div class="row"  >
+  <!--Inicio barra vertical -->
+  <div style="border-right: 2px solid rgb(161, 158, 158); float: left ; padding-right:30px; height: 200px;  ">
+    <!--Inicio do campo Sinais(Geral) -->
+    <div >
+      <div class="col-sm-12" >
+        <div class="form-group mb-4">Sinais(Geral)
+          <td><select multiple  required class="form-control">
+            <option>2121</option>
+            <option>2120</option>
+            <option>2132</option>
+            <option>2323</option>
+            </select>
+          </td>
+        </div>
+      </div>
+    </div>
+    <!--Fim do campo Sinais(Geral) --> 
+  </div>
+  <!--Fim barra vertical -->                  
+  <!--Inicio do campo Sinais(Motor) -->
+ <div>
+    <div class="col-sm-4" >
+      <div class="form-group mb-4">
+        <div >Sinais(Motor)
+          <td >
+            <textarea required class="form-control"> </textarea>
+          </td>
+        </div>
+      </div>
+    </div>
+    <!--Fim do campo Sinais(Motor) -->
+    <!--Inicio do campo TAG -->
+    <div class="col-sm-2" >
+      <div class="form-group mb-4">
+        <td placeholder="Digite aqui"  data-toggle="tooltip"  title="Inserir o cliente">TAG
+          <input type="text"  required class="form-control" name="key4"  >
+        </td> 
+      </div>
+    </div>
+    <!--Fim do campo TAG -->
+    <!--Inicio do campo Alterar TAG para -->
+    <div class="col-sm-4" >
+      <div class="form-group mb-4">
+        <td placeholder="Digite aqui"  data-toggle="tooltip"  title="Inserir o cliente">Alterar TAG para:
+          <input type="text"  required class="form-control" name="key4"  >
+        </td>
+        <br>
+        <!--Botão Inserir TAG -->
+        <button type="button" class="tablinks btn btn-secondary" onclick="openTool(event, 'Motores')">Inserir TAG </button>
+      </div>
+    </div>
+    <!--Fim do campo Alterar TAG para -->
+    <!--Inicio do campo Bandeja-->
+    <div class="col-sm-3">
+      <div class="form-group mb-4">
+        <td placeholder="Digite aqui"  data-toggle="tooltip"  title="Inserir a bandeja">Bandeja
+          <input type="text"  required class="form-control" name="key4"  >
+        </td>
+        <br>
+        <!--Botão Atualizar-->
+        <button type="button"class="tablinks btn btn-secondary" onclick="openTool(event, 'Motores')">Atualizar </button>
+      </div>
+    </div> 
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-warning" >Adicionar/Alterar</button>
+  <button type="button" class="btn btn-warning" style="margin-left:70px;">Excluir</button>
+  <button type="button" class="btn btn-warning">Limpar</button> 
+</div>
+  
+{% endblock %}
+    
+    

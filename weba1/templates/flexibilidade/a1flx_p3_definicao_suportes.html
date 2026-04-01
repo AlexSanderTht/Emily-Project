@@ -1,0 +1,112 @@
+
+{%extends 'geral/base.html'%}
+
+{% load static %}
+
+
+{%block head %}
+<title>Definição Tipo Suporte Primário</title>
+<script type="text/javascript" src="{% static 'js/a1flx/jq_3.6.0.min.js' %}"></script>
+<style>
+      #TabelaSuportes {
+
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.9);
+  }
+
+  #TabelaSuportes td, #TableUsuarios th {
+    border: 0px solid #ddd;
+    padding: 4px;
+     text-align: center;
+  }
+.table-hover thead tr:hover th, .table-hover tbody tr:hover td {
+    background-color: #ffc107;
+}}
+
+
+  #TabelaSuportes tr:nth-child(odd){background-color: #f2f2f2;}
+
+  #TabelaSuportes td:hover {
+    background-color: #ddd;
+
+  }
+
+  #TabelaSuportes th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #343a40;
+    color: white;
+  }
+</style>
+{%endblock%}
+
+{%block main %}
+
+
+<div class="mx-auto">
+    <div class="bg-white rounded-lg shadow-sm p-5" style="margin-left:50px; margin-right:50px; margin-top: 50px">
+        <div class="tab-content">
+                <div id="nav-tab-card" class="tab-pane fade show active">
+                    {% csrf_token %}
+                    <h1 style="margin-bottom: 20px"><center>Definição Suporte Primário </center></h1>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="SelectOS">Selecione a OS:</label>
+                        </div>
+                        <select class="custom-select" id="SelectOS"></select>
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" style="margin-left: 5px" for="SelectSistema">Selecione o Sistema:</label>
+                        </div>
+                        <select class="custom-select" id="SelectSistema"></select>
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="SelectRev" style="margin-left: 5px">Selecione a Revisão:</label>
+                        </div>
+                        <select class="custom-select" id="SelectRev"></select>
+                        <button type="button" id="BotaoCarregar" disabled class="btn btn-outline-secondary" onclick="CarregarTabela()" style="margin-left: 5px">Carregar</button>
+
+                    </div>
+                    <div class="loader" id="loader" style="display: none">
+
+                    </div>
+                    <div id="spreadsheet"></div>
+                    <table id="TabelaSuportes" class="table-hover" style="overflow: visible !important; padding: 0px; width:99%; font-size:75%; margin-left: 10px; ">
+                        <thead>
+                        <tr>
+                            <th onmouseover="ChangeBackgroundColor(this)" onmouseout="RestoreBackgroundColor(this)">ID CII</th>
+                            <th onmouseover="ChangeBackgroundColor(this)" onmouseout="RestoreBackgroundColor(this)">TAG</th>
+                            <th style="width: 100px" onmouseover="ChangeBackgroundColor(this)" onmouseout="RestoreBackgroundColor(this)">Diâm.(mm.)</th>
+                            <th onmouseover="ChangeBackgroundColor(this)" onmouseout="RestoreBackgroundColor(this)">Imagem</th>
+                            <th style="width: 150px" onmouseover="ChangeBackgroundColor(this)" onmouseout="RestoreBackgroundColor(this)">Área</th>
+                            <th style="width: 250px" onmouseover="ChangeBackgroundColor(this)" onmouseout="RestoreBackgroundColor(this)">Comentário</th>
+                            <th onmouseover="ChangeBackgroundColor(this)" onmouseout="RestoreBackgroundColor(this)">Típico Sugerido</th>
+                            <th onmouseover="ChangeBackgroundColor(this)" onmouseout="RestoreBackgroundColor(this)">Prioridade</th>
+                            <th style="width: 250px" onmouseover="ChangeBackgroundColor(this)" onmouseout="RestoreBackgroundColor(this)">Observação</th>
+                            <th onmouseover="ChangeBackgroundColor(this)" onmouseout="RestoreBackgroundColor(this)">Responsável</th>
+                            <th onmouseover="ChangeBackgroundColor(this)" onmouseout="RestoreBackgroundColor(this)">Atendido</th>
+                            <!--                                <th colspan="2">Telephone</th>-->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td colspan="9"><center>Sem dados</center></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+        </div>
+    </div>
+</div>
+</div>
+  <script src="{% static 'js/a1flx/excel-bootstrap-table-filter-bundle.js' %}"></script>
+  <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
+  <script src="https://jsuites.net/v4/jsuites.js"></script>
+  <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+  <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
+  <script src="{% static 'js/a1flx/definicao_suportes.js' %}"></script>
+  <link rel="stylesheet" href="{% static "css/a1flx.css" %}"/>
+  
+{%endblock%}

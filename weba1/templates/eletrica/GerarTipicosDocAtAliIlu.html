@@ -1,0 +1,248 @@
+{% load static %}
+{% csrf_token %}
+<div class="container-fluid h-100" id="content_drop_tipicos" hidden>
+    <div class="col-12 text-center mt-2">
+        <h5>Tipicos referentes ao documento!</h5>
+    </div>
+    <div class="row card_dropzone_blue px-0 mx-1 animate__animated animate__fadeIn mt-2 scroll_tipicos_doc" id="drop-area-dwg">
+        <div class="text-center w-100" id="dwg">
+            <!------------------ Inicio Message ------------------>
+            <span class="font-italic text-primary">Arraste e solte o arquivo (*.dwg) ou</span><br>
+            <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+            <!------------------ Fim Message ------------------>
+            <label class="mt-2 btn btn-primary rounded-pill text-white">
+                <input multiple="multiple" accept=".dwg" class="hidden" type="file" id="arquivo_dwg" onchange="DropArquivoDwg('arquivo_dwg','drop-area-dwg','dwg',null, null)"/>
+                <i class="fa-solid fa-upload"></i> Import DWG
+            </label>
+        </div>
+    </div><!------------------ Fim Dropzone DWG ------------------>
+    <div class="row text-center mt-2 mb-2">
+        <div class="col-4 d-flex align-items-end">
+            <button type="button" class="btn btn-warning" onclick="SendValuesDwg()">Enviar</button>
+            <button type="button" class="btn btn-warning ml-2" onclick="ClearContentDwgs()">Limpar</button>
+        </div>
+        <div class="col-8">
+            <div class="row d-flex justify-content-center">
+                <b>Salvar arquivos:</b>
+            </div>
+            <div class="row">
+                <div class="col">
+                      <input class="form-check-input" type="radio" name="save_files_tipicos" id="save_file_num_doc" value="num_doc">
+                      <label class="form-check-label" for="save_file_num_doc">
+                        Número Doc
+                      </label>
+                </div>
+
+                <div class="col">
+                      <input class="form-check-input" type="radio" name="save_files_tipicos" id="save_file_num_cliente" value="num_cliente">
+                      <label class="form-check-label" for="save_file_num_cliente">
+                        Número Cliente
+                      </label>
+                </div>
+
+                <div class="col">
+                      <input class="form-check-input" type="radio" name="save_files_tipicos" id="save_file_tipico" value="tipico">
+                      <label class="form-check-label" for="save_file_tipico">
+                        Típico
+                      </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let formFile = new FormData();
+
+    function DropArquivoDwg(id_input,id_drop,campo,arquivo, compare) {
+        let drop_container = document.getElementById(id_drop);
+        let file = document.getElementById(id_input);
+        let form;
+        let name_file;
+        let name_title;
+        let drop = '';
+        let id;
+        let itens = $('#'+id_drop)[0].children
+
+        // Caso não seja dropado o arquivo é recebido via id
+        if (arquivo !== null) {
+            form = arquivo.files;
+        } else {
+            form = file.files;
+        }
+        for (let i = 0; i <form.length;i++){
+            name_file = form[i].name
+            name_title = name_file
+            let extension = name_file.split('.').pop();
+            if (extension === campo){
+                // Cria o id com base no nome do arquivo e no tamanho, após reescreve o ponto para JS não compreender como método.
+                id = (Math.random() + 1).toString(36).substring(7);
+
+                if (!document.getElementById(id)){
+                    if (campo === 'dwg'){
+                        formFile.append('filesDWG',form[i]);
+                        drop =`<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown new_file_dwg" id="${id}">
+                                    <div class="input-group-prepend my-auto px-1">
+                                        <img class="" src="{% static 'img/DWG.png' %}" alt="Image DWG" style="height:20px">
+                                    </div>
+                                    <span type="text" title="${name_title}" class="col border-0 input-group-text bg-white text-truncate">${name_file}</span>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-danger rounded-pill px-2 border-0" type="button" onclick="RemoverArquivoDWG('${id}');">
+                                            <i class="fas fa-times-circle fa-lg"></i>
+                                        </button>
+                                    </div>
+                              </div>`
+
+                        drop_container.innerHTML += drop;
+
+                    } else {
+                        if (itens.length === 1) {
+                            if(compare) {
+                                let tamanho = FormatNumberToBytes(form[i].size) //Recebe o tamanho para o formato em bytes
+                                console.log(name_file.split(' ').length)
+                                if (name_file.split(' ').length <= 1){
+                                    name_file = name_file.split('.')[0].match(/.{1,10}/g).join(' ') + '.xlsx' //Caso o nome do arquivo seja maior que 18 caracteres a string é quebrada
+                                }
+                                if (id_input === 'arquivo_xlsx_rev_0'){
+                                    formFileCompare.append('filesComparePreviousXLSX',form[i]);
+                                } else {
+                                    formFileCompare.append('filesCompareNextXLSX',form[i]);
+                                }
+
+                                drop = `<div class="col-6 bordas mx-auto my-1 input-group border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown position-relative" id="${id}" title="${name_title}">
+                                            <button onclick="RemoverArquivoXLS('${id}','${id_drop}');" title="Remover arquivo" class="btn btn-outline-danger rounded-pill px-2 border-0 position-absolute" type="button" style="right:0px;top:0px;z-index: 1;">
+                                                <i class="fas fa-times-circle fa-xl"></i>
+                                            </button>
+                                            <img class="my-2 w-75 mx-auto" src="{% static 'img/XLS.png' %}" alt="Image TXT">
+                                            <span type="text" title="${name_title}" class="py-2 w-100 border-bottom font-weight-bold text-center">${tamanho}</span>
+                                            <span type="text" title="${name_title}" class="py-2 mx-2 text-center">${name_file}</span>
+                                        </div>`
+                                drop_container.innerHTML += drop;
+
+                            } else {
+                                formFile.append('filesXLSX',form[i]);
+                                drop = `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown" id="${id}" title="${name_title}">
+                                            <div class="input-group-prepend my-auto px-1">
+                                                <img class="" src="{% static 'img/XLS.png' %}" alt="Image XLSX" style="height:20px">
+                                            </div>
+                                            <span type="text" title="${name_title}" class="col border-0 input-group-text bg-white text-truncate">${name_file}</span>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="RemoverArquivoXLS('${id}','${id_drop}');">
+                                                    <i class="fas fa-times-circle fa-lg"></i>
+                                                </button>
+                                            </div>
+                                        </div>`
+                                drop_container.innerHTML += drop;
+
+                            }
+                        } else {
+                            swal({
+                                text: 'Não é permitido adicionar mais de um arquivo, remova o arquivo atual e tente novamente!',
+                                icon: "error",
+                                button: 'Fechar'
+                            })
+                            $('div.swal-modal').addClass('bordas')
+                            $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                            $('div.swal-text').addClass('text-center')
+                            $('div.swal-footer').addClass('d-flex justify-content-center')
+                        }
+                    }
+                }
+            } else {
+                swal({
+                    text: 'Extensão do arquivo ('+ name_file +') diferente do padrão estabelecido!',
+                    icon: "error",
+                    button: 'Fechar'
+                })
+                $('div.swal-modal').addClass('bordas')
+                $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                $('div.swal-text').addClass('text-center')
+                $('div.swal-footer').addClass('d-flex justify-content-center')
+            }
+        }
+    }
+
+    function RemoverArquivoDWG(elemento) {
+        document.getElementById(elemento).classList.remove('animate__zoomInDown')
+        document.getElementById(elemento).style.zIndex = '1';
+        document.getElementById(elemento).classList.add('animate__hinge')
+        setTimeout(()=>{$('#drop-area-dwg').find('#' + elemento).remove()},2500)
+    }
+
+    function PostAjaxDocsDwg(formData){
+        $.ajax({
+            url: "/app/eletrica/a1pro/GerarTipicosDoc/DwgsInDoc/", // Caminho do Ajax
+            type: "POST", // http method
+            headers:{'X-CSRFToken':csrftoken},
+            dataType: "json",
+            data: formData, // Envia form pela solicitação do POST
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                $('#modal_load_celery').modal('show')
+                InitProgressGerarTipicos(data['task_id'])
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        })
+    }
+    function SendValuesDwg() {
+        let dwg = document.getElementById('drop-area-dwg');
+        let num_doc = $('#num_doc').val()
+        let list_id_file = []
+        let checkbox_save = Array.from(document.getElementsByName('save_files_tipicos')).filter(checkbox_save => checkbox_save.checked)[0]
+        var errors_msgs = []
+
+        for (let i = 0; i <dwg.children.length;i++) {
+            if (dwg.children[i].id !== 'dwg'){
+                list_id_file.push(dwg.children[i].outerText)
+            }
+        }
+
+        if(dwg.childElementCount === 1){
+            errors_msgs.push('Dropfiles DWG')
+        }
+
+        if(checkbox_save === undefined){
+            errors_msgs.push('Método de salvar')
+        }
+
+        if (errors_msgs.length === 0) {
+            // Apenda os arquivos aos formulários respectivamente
+            formFile.append('listID', JSON.stringify(list_id_file));
+            formFile.append('id_doc', num_doc)
+            formFile.append('save_method', checkbox_save.value)
+            // Envia dados para função que executa o Ajax
+            PostAjaxDocsDwg(formFile)
+        } else {// Caso não seja preenchido, será exibido modal de alerta
+            swal({
+                text: 'Verifique os seguintes campos: ' + errors_msgs.join(' e '),
+                icon: "error",
+                button: 'Fechar'
+            })
+        }
+    }
+
+    jQuery(document).ready(function($) {
+        $('#drop-area-dwg').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover-blue');
+        })
+
+        $('#drop-area-dwg').on('drop', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+          let file_dwg = event_2.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivo('arquivo_dwg','drop-area-dwg','dwg',file_dwg, null)
+        })
+
+        $('#drop-area-dwg').on('dragleave', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+        })
+    });
+</script>

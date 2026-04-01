@@ -1,0 +1,353 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Típicos Sup. e Band.</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<div class="text-justify border-bottom m-3">
+    <button class="btn btn-primary btn-warning position-absolute" onclick="window.history.go(-1)">Voltar</button>
+</div>
+<style>
+    .image_tip_tag{
+        object-fit: cover;
+        object-position: center center;
+        transition: transform 0.5s, border-radius 0.5s;
+    }
+    .image_tip_tag:hover{
+        z-index: 1000;
+        transform:scale(1.3);
+        border-radius: 10%;
+    }
+
+    .form{
+        position: relative;
+    }
+
+    .form .fa-search{
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        color: #9ca3af;
+    }
+
+    .form button:nth-of-type(1){
+        position: absolute;
+        right: 65px;
+        top: 5px;
+        padding: 2px;
+    }
+
+    .form button:nth-of-type(2){
+        position: absolute;
+        right: 17px;
+        top: 5px;
+        padding: 2px;
+        border-left: 1px solid #d1d5db;
+    }
+
+    .left-pan{
+        padding-left: 7px;
+    }
+
+    .left-pan i{
+       padding-left: 10px;
+    }
+
+    .form-input{
+        text-indent: 25px;
+    }
+
+    .paginationjs .paginationjs-pages li.active {
+        background-color: #007bff !important;
+        color: #FFFFFF !important;
+    }
+
+</style>
+<div class="container mt-5">
+    <button hidden class="btn btn-primary btn-secondary position-absolute rounded-pill" style="z-index: 1000" onclick="window.history.go(-1)">
+        <i class="fa-solid fa-circle-arrow-left pr-2"></i>Voltar</button>
+
+    <!------------------ Cabeçalho da ferramenta de Típicos Força e controle ------------------>
+    <div class="row justify-content-center animate__animated animate__backInRight">
+        <div class="col-lg-12 text-center">
+            <h1>Gerenciar TAG's</h1>
+        </div>
+        <div class="col-lg-12 text-center text-secondary">
+            <h5>Esta ferramenta é necessária para gerenciar o uso de blocos nos típicos.</h5>
+        </div>
+    </div><!------------------ Fim do cabeçalho ------------------>
+
+    <!------------------ Início container conteúdo ------------------>
+    <div class="container position-relative mt-3 p-4 bg-white bordas border shadow animate__animated animate__pulse">
+        {% csrf_token %}
+        <div class="card mb-0">
+            <div class="card-header border-bottom-0">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true"><i class="fa-solid fa-folder-open pr-3"></i>Configurações de Documento</a>
+                    </div>
+                </nav>
+                <div class="tab-content border border-top-0 p-3 bg-white shadow">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <form>
+                            <div class="row">
+                                <div class="form-group text-left col-md-12 col-lg-6 d-flex">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body" id="container-list-tag-blocos">
+                                            <div class="d-flex justify-content-between">
+                                                <h5>Lista de Blocos</h5>
+                                                <button type="button" class="btn btn-outline-primary rounded-pill py-0 mb-2 btn-sm">
+                                                    Total: <span class="badge badge-primary ml-2">{{ LenghtItens }}</span>
+                                                </button>
+                                            </div>
+                                            <p>Clique sobre o nome dos típicos para visualizar os blocos relacionados e selecione a checkbox conforme desejado.</p>
+                                            <div class="form mb-3 rounded">
+                                                <i class="fa fa-search position-absolute"></i>
+                                                <input id="search_tag" type="text" class="form-control form-input" onkeyup="showItensTag(this.value)" placeholder="Pesquisar...">
+                                                <button type="button" data-toggle="tooltip" data-placement="top" title="Clique para expadir todos os itens." class="position-absolute" onclick="$('#accordion .collapse').addClass('show');">
+                                                    <i class="fa-solid fa-arrows-up-down text-secondary"></i>
+                                                </button>
+                                                <button type="button" data-toggle="tooltip" data-placement="top" title="Clique para limpar o filtro." class="left-pan position-absolute" onclick="$('#search_tag')[0].value = ''">
+                                                    <i class="fa-regular fa-circle-xmark fa-lg text-danger"></i>
+                                                </button>
+                                            </div>
+                                            <!---------------- Início Lista de Tags ---------------->
+                                            <div id="accordion" class="list-tags-tipico-container"></div>
+
+                                            <!---------------- Início Barra de Navegação ---------------->
+                                            <div id="pagination-tags-container"></div>
+
+                                            <!---------------- Início Conteiner para salvar ---------------->
+                                            <div class="d-flex">
+                                                <small class="form-text text-muted mr-auto">Árvore de visualização de blocos.</small>
+                                                <button type="button" class="btn btn-warning rounded-pill mr-2" onclick="saveTagsChanged('find')"  data-toggle="tooltip" data-placement="top" title="Caso a checkbox de alguma TAG não esteja preenchida, clique aqui!">
+                                                    <i class="fa-solid fa-circle-info"></i> Buscar TAG's
+                                                </button>
+                                                <button type="button" class="btn btn-primary rounded-pill" onclick="saveTagsChanged('save')">
+                                                    <i class="fa-solid fa-circle-check"></i> Salvar
+                                                </button>
+                                            </div><!---------------- Fim Conteiner para salvar ---------------->
+                                        </div>
+                                    </div>
+                                </div>
+                                <!------------------ Início exibição de imagem ------------------>
+                                <div class="form-group text-left col-md-12 col-lg-6 d-flex">
+                                    <div class="bd-callout bd-callout-default my-0 bg-light w-100 d-flex flex-column">
+                                        <h6>Visualizar Arquivo</h6>
+                                        <div class="flex-grow-1 d-flex justify-content-center align-items-center">
+                                            <img hidden id="img_dwg_template" class="shadow h-100 image_tip_tag animate__animated">
+                                            <div class="text-center animate__animated animate__flipInX" id="text_notify_image">
+                                                <i class="fa-solid fa-eye-slash text-secondary fa-2xl mb-4"></i>
+                                                <p>Nenhuma visualização disponível.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!------------------ Fim exibição de imagem ------------------>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<script src="{% static 'js/pagination.js' %}"></script>-->
+<script>
+    // Cria paginação nas TAG's'
+    var originalObject = {};
+    paginationTagsTipicos()
+
+    // --------------------- Aplica paginação as TAG's ---------------------//
+    function paginationTagsTipicos() {
+        let lista_tags = {{ ListGtTemplates | safe }}
+        $('#pagination-tags-container').pagination({
+            dataSource: lista_tags, // Substitua por sua fonte de dados real
+            pageSize: 7, // Quantidade de cards exibidos por página
+            autoHidePrevious: true,
+            autoHideNext: true,
+            showSizeChanger: true,
+            callback: function (data, pagination) {
+                var container = $('#accordion');
+
+                // Limpa o campo dos cartões primeiramente
+                container.empty();
+
+                // Preenche todos os cartões
+                let html = templateCardsTag(data);
+                container.html(html);
+            },
+            afterRender: function () {
+                $('#container-list-tag-blocos li.paginationjs-prev').find('a').addClass('px-2  font_size_0_8 bg-transparent');
+                $('#container-list-tag-blocos li.paginationjs-page').find('a').addClass(' font_size_0_8 bg-transparent');
+                $('#container-list-tag-blocos li.paginationjs-next').find('a').addClass('px-2  font_size_0_8 bg-transparent');
+                $('#container-list-tag-blocos div.paginationjs').addClass('d-flex justify-content-between my-2 ');
+                $('#container-list-tag-blocos div.paginationjs').find('ul').addClass('pagination pagination-sm justify-content-start');
+            }
+        });
+    }
+
+    // --------------------- Função para atualizar a página ---------------------//
+    function templateCardsTag(data) {
+        // Cria template HTML
+        let template_html = '';
+
+        // Percorre cada array do objeto
+        data.forEach(function (row) {
+            var cardHTML = `
+                <div class="card mb-1">
+                    <div class="card-header p-1" id="heading_${row.header_code.replace(/ /g, '_')}">
+                        <h5 class="mb-0">
+                            <a class="btn btn-link w-100 text-left" data-toggle="collapse" data-target="#collapse_${row.header_code.replace(/ /g, '_')}" aria-expanded="true" aria-controls="collapse_${row.header_code.replace(/ /g, '_')}">
+                                <i class="fa-solid fa-folder-closed text-secondary pr-2"></i>${row.header_code}
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="collapse_${row.header_code.replace(/ /g, '_')}" class="collapse" aria-labelledby="heading_${row.header_code.replace(/ /g, '_')}" data-parent="#accordion">
+                        <div class="card-body">
+            `;
+
+            // Adicionar checkboxes
+            for (var i = 0; i < row.checkbox.length; i++) {
+                var checkbox = row.checkbox[i];
+                var checkedAttribute = checkbox[1] === 'True' ? "checked" : "";
+                if (checkedAttribute === 'checked') {
+                    originalObject[row.header_code.replace(/ /g, '_')]=checkbox[2]
+                }
+
+                cardHTML += `
+                    <input type="radio" name="radio_${row.header_code.replace(/ /g, '_')}" id="checkbox_${checkbox[0]}" onclick="ClickTemplatesSaveGt('${checkbox[0]}')" ${checkedAttribute}>
+                    <label for="checkbox_${checkbox[0]}">${checkbox[2]}</label><br>
+                `;
+            }
+
+            cardHTML += `
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Adiciona o elemento ao HTML
+            template_html += cardHTML;
+        });
+
+        return template_html;
+    }
+
+    // --------------------- Função para buscar imagem referente ao arquivo ---------------------//
+    async function ClickTemplatesSaveGt(id_template){
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        if (document.getElementById('img_dwg_template').classList.contains('animate__pulse')) {
+            document.getElementById('img_dwg_template').classList.remove('animate__pulse');
+        }
+        await $.ajax({
+            type: "GET",
+            headers: {'X-CSRFToken': csrftoken},
+            url: "/app/eletrica/GerenciarTipicos/TemplateDwgImage/" + id_template + "/",
+            dataType: 'json',
+            data: {},
+            success: function (data) {
+                var prefixoInesperado = 'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAAXNS';
+                if (data['dwg'].startsWith(prefixoInesperado)) {
+                    document.getElementById('img_dwg_template').hidden = true;
+                    document.getElementById('text_notify_image').hidden = false;
+                    if (document.getElementById('img_dwg_template').classList.contains('animate__pulse')) {
+                        document.getElementById('img_dwg_template').classList.remove('animate__pulse');
+                    }
+                } else {
+                    document.getElementById('text_notify_image').hidden = true;
+                    document.getElementById('img_dwg_template').src = `data:image/png;base64,${data['dwg']}`
+                    document.getElementById('img_dwg_template').hidden = false;
+                    document.getElementById('img_dwg_template').classList.add('animate__pulse');
+                    document.getElementById('img_dwg_template').addEventListener('animationend', function () {
+                        document.getElementById('img_dwg_template').classList.remove('animate__pulse');
+                    });
+                }
+            },
+            failure: function (error) {
+            },
+        });
+    }
+
+    // --------------------- Função para exibir/esconder TAG's ---------------------//
+    function showItensTag(search){
+        var allNames = document.querySelectorAll("#accordion .collapse");
+
+        for (let i = 0; i < allNames.length; i++) {
+            let projet_name = allNames[i].id.toUpperCase();
+            let shouldShow = projet_name.includes(search.toUpperCase());
+            allNames[i].hidden = !shouldShow;
+            allNames[i].parentElement.hidden = !shouldShow;
+        }
+    }
+
+    // --------------------- Função para atualizar a lista quando ocorrer uma mudança nos inputs ---------------------//
+    function saveTagsChanged(action) {
+        var input = document.querySelectorAll("#accordion .collapse input[type='radio']");
+        var labels = document.querySelectorAll("#accordion .collapse label");
+        var dict_changed = {}
+        var dict_result = {}
+        // Percorre todos os inputs e armazena os novos valores
+        for (var i = 0; i < input.length; i++) {
+            if (input[i].checked) {
+                var headerText = input[i].name.split('radio_')[1];
+                var labelText = labels[i].textContent;
+                dict_changed[headerText] = labelText;
+            }
+        }
+
+        // Comparar os objetos e adicionar ao novo objeto somente quando os valores forem diferentes
+        for (var chave in originalObject) {
+            if (originalObject.hasOwnProperty(chave) && dict_changed.hasOwnProperty(chave)
+                && originalObject[chave] !== dict_changed[chave]) {
+                dict_result[chave] = dict_changed[chave];
+            }
+        }
+        if (Object.keys(dict_result).length !== 0 || action === 'find') {
+            const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+            $.ajax({
+                type: "POST",
+                headers: {'X-CSRFToken': csrftoken},
+                url: "/app/eletrica/a1pro/GerenciarTagsTipicos/",
+                dataType: 'json',
+                data: {'dictResult': JSON.stringify(dict_result), 'action': action},
+                success: function (data) {
+                    if ('success' in data) {
+                    // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                    swalAlert(false, data['success'], 'success', false)
+                    setTimeout(()=>{swal.close();window.location.reload(true);}, 3000)
+                } else {
+                    // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                    swalAlert(false, data['error'], 'error', false)
+                }
+
+                },
+                failure: function (error) {
+                    // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                    swalAlert(false, 'Ops! Algo deu errado,\n Erro : '+ error +'.', 'error', false)
+                },
+            });
+        } else {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Nenhuma alteração encontrada!', 'info', false)
+        }
+    }
+
+    // --------------------- Alert para notificar usuario ---------------------//
+    function swalAlert(titulo, texto, icone_img, btn){
+        swal({
+            title: titulo,
+            text: texto,
+            icon: icone_img,
+            button: btn,
+        })
+        $('div.swal-modal').addClass('bordas')
+        $('div.swal-title').addClass('h4')
+        $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+        $('div.swal-text').addClass('text-center')
+        $('div.swal-footer').addClass('d-flex justify-content-center')
+    }
+
+</script>
+{% endblock %}

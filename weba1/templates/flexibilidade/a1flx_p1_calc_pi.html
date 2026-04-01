@@ -1,0 +1,2386 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>A1 PMTA Pressão Interna</title>
+{% endblock %}
+{% block help %}
+    <h7>Calculadora de tubo sujeito a pressão interna</h7>
+    <br><br>
+    <h7><strong>Temperatura máxima</strong>: geralmente a temperatura de projeto. É a temperatura máxima na qual a tubulação vai trabalhar.</h7>
+    <br><br>
+    <h7><strong>Pressão máxima</strong>: geralmente a pressão de projeto. É a pressão máxima na qual a tubulação vai trabalhar.</h7>
+    <br><br>
+    <h7><strong>Espessura de corrosão</strong>: sobreespessura adicional para corrosão nas condições de trabalho informada.</h7>
+    <br><br>
+    <h7><strong>Faixa de diâmetro</strong>: escolha da faixa de diâmetro do tubo ou flange, o diâmetro do campo da direita deve ser igual ou maior que o do compo da esquerda. Clicando no ponto de interrogação uma tabela auxiliar com a relação dos DN e SCH irá aparecer.</h7>
+    <br><br>
+    <h7><strong>Norma / Norma dimensional</strong>: escolha das normas para tubos e flanges.</h7>
+    <br><br>
+    <h7><strong>SCH / Classe</strong>: escolha do schedule para o tubo e classe de pressão dp flange. Clicando no ponto de interrogação (ao lado da Faixa de diâmetro) uma tabela auxiliar com a relação dos DN e SCH irá aparecer.</h7>
+    <br><br>
+    <h7><strong>PMTA</strong>: resultado da calculadora. Se esses valores forem maiores que a Pressão máxima informada a configuração escolhida suportará a condição de trabalho.</h7>
+    <br><br>
+    <h7><strong>+ / -</strong>: botão para dicionar ou remover linha de dados do tubo ou flange.</h7>
+{% endblock %}
+{% block main %}
+<!-- Criação do estilo CSS -->
+<style>
+    .descricao {
+        text-align: left;
+        width: 30%;
+        padding: 0px;
+        margin: 1px;
+        font-size: 0.8em;
+        font-style: italic;
+    }
+    label{
+        font-weight: bold;
+    }
+    .input-faixa {
+        text-align: center;
+        margin: 0px;
+        max-width:50px;
+        font-size: 0.85em;
+    }
+    .input-caixa-alta{
+        text-transform: uppercase;
+        text-align: center;
+        padding: 5px;
+        margin: 0px;
+        width: 100%;
+        font-size: 1.5em;
+        font-weight: normal;
+    }
+    .img-faixadn{
+        width: 1em;
+        height: 1em;
+        padding: 0px;
+        margin: 0px;
+    }
+    .img-faixadn:hover{
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.425);
+    }
+    .img-faixadn:active{
+        width: 0.9em;
+        height: 0.9em;
+    }
+    abbr[title] {
+        cursor: pointer !important;
+    }
+    .texto-vertical{
+        transform: translate(-50%, -50%) rotate(270deg);
+        margin: 0px;
+        padding: 0px;
+        left: 15px;
+        top: 50%;
+    }
+    .tabela{
+        overflow-x: auto;
+        font-size: 0.8em;
+        padding: 0px;
+        margin: 0px;
+    }
+    th, td {
+        padding: 0px 1px 0px 1px !important;
+        cursor: default;
+    }
+    th, th:hover{
+        background-color: #f5f5f5;
+    }
+    tr:hover, td:hover{
+        background-color: #ffc1073f;
+    }
+    .posicao-botao{
+        right: 3px;
+        top: 50%;
+        transform: translateY(-50%, -50%);
+    }
+    .botao-pequeno{
+        width: 15px;
+        margin: 2px;
+    }
+    input.form-control:not([size]):not([multiple]), select.form-control:not([size]):not([multiple]) {
+        height: calc(2.25rem + 2px);
+    }
+    select.form-control{
+        text-align: center;
+    }
+    .altura-caixa{
+        height: calc(2.25rem + 2px);
+    }
+    .cor-botao{
+        background-color: #ffbe47;
+    }
+    div > h3, div > h1, div > p{
+        cursor: default;
+    }
+    .alinhamento-img{
+        transform: translate(-50%, -50%);
+        margin: 0px;
+        padding: 0px;
+        left: 50%;
+        top: 50%;
+    }
+    #tela{
+        min-width: 750px;
+    }
+    .sugestao {
+        animation: border-animation 5s;
+    }
+    @keyframes border-animation {
+        from {box-shadow: 0 0 0 .2rem rgba(40,167,69,.25);}
+        to {box-shadow: 0 0 0 .2rem rgba(40, 167, 70, 0)}
+    }
+    .invalido {
+        border-color: #dc3545;
+    }
+    .invalido:focus{
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+
+</style>
+    <div class="container py-3">
+        <div class="row mb-2">
+            <div class="col-8 mx-auto text-center">
+                <h1 class="display-4"><b>A1 PMTA - Pressão Interna</b></h1>
+            </div>
+        </div>
+        <div id="tela"  class="container">
+            <div class="col rounded bg-white shadow py-3">
+                <div class="mx-2 my-1 px-5 py-3 border border-dark">
+                    <div class="row mx-2">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col border border-right-0 border-dark">
+                                    <p class="descricao">DESCRIÇÃO</p>
+                                    <input type="text" class="input-caixa-alta">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col border border-top-0 border-right-0 border-dark">
+                                    <p class="descricao">PROJETO</p>
+                                    <input type="text" class="input-caixa-alta">
+                                </div>
+                                <div class="col border border-top-0 border-right-0 border-dark">
+                                    <p class="descricao">CLIENTE</p>
+                                    <input type="text" class="input-caixa-alta">
+                                </div>
+                                <div class="col border border-top-0 border-right-0 border-dark">
+                                    <p class="descricao">DATA</p>
+                                    <input type="date" class="input-caixa-alta" timezone="pt_BR" required>
+                                </div>
+                                <div class="col border border-top-0 border-right-0 border-dark">
+                                    <p class="descricao">REVISÃO</p>
+                                    <input type="text" class="input-caixa-alta">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2 border border-dark">
+                            <img class="position-relative alinhamento-img" src="/static/img/logo.png" alt="Logo A1 Engenharia">
+                        </div>
+                    </div>
+                </div>
+                <!-- Início campo temp, pressão, faixa aplicação-->
+                <div class="mx-2 my-1 px-5 py-3 border border-dark">
+                    <div class="row">
+                        <div class="col-3">
+                            <form class="needs-validation">
+                                {% csrf_token %}
+                                <div class="form-group my-1">
+                                    <label for="tempmax">Temperatura máxima (°C)</label>
+                                    <input type="text" class="form-control" id="tempmax" placeholder="Temperatura em °C" onchange="trocaVirg(this)" onclick="limpaerro(this)" onselect="limpaerro(this)" required>
+                                    <div id="errotempmax"></div>
+                                </div>
+                                <div class="form-group my-1">
+                                    <label for="pressaomax">Pressão máxima (Bar)</label>
+                                    <input type="text" class="form-control" step="1" id="pressaomax"  placeholder="Pressão em Bar" onchange="trocaVirg(this)" onclick="limpaerro(this)" onselect="limpaerro(this)" required>
+                                    <div id="erropressaomax"></div>
+                                </div>
+                                <div class="form-group my-1">
+                                    <label for="especorrosao">Espessura de corrosão (mm)</label>
+                                    <input type="text" class="form-control" id="especorrosao" placeholder="Espessura em mm" onchange="trocaVirg(this)">
+                                    <div id="erroespecorrosao"></div>
+                                </div>         
+                            </form>
+                        </div>
+                        <div class="col-9">
+                            <div class="row m-0">
+                                <div class="col-3">
+                                </div>
+                                <div class="col">
+                                    <h1 class="text-center font-weight-bold mb-4">Faixa de aplicação</h1>
+                                </div>
+                            </div>
+                            <div class="row m-0 pb-1">
+                                <div class="col-3 text-right align-self-center">
+                                    <label class="m-0" for="tempfaixa">Temperatura (°C)</label>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="t0" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="t1" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="t2" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="t3" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="t4" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="t5" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="t6" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="t7" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="t8" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="t9" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                            </div>
+                            <div class="row m-0">
+                                <div class="col-3 text-right align-self-center">
+                                    <label class="m-0" for="tempfaix">Pressão (Bar)</label>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="p0" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="p1" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="p2" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="p3" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="p4" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="p5" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="p6" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="p7" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="p8" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                                <div class="col px-1">
+                                    <input id="p9" class="form-control font-weight-bold input-faixa p-0" type="text" tabindex="-1" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Final campo temp, pressão, faixa aplicação-->
+                <!-- Início campo tubo-->
+                <div class="position-relative mx-2 my-1 px-5 py-3 border border-dark">
+                    <h3 class="position-absolute texto-vertical font-weight-bold m-0 p-0">TUBO</h3>
+                    <form>
+                        <div class="form-row d-flex">
+                            <div id="dntubo" class="col-2 text-center pr-1">                    
+                                <label>Faixa de diâmetro 
+                                    <a class="rounded-circle" tabindex="-1" data-tool-tip="Tooltip with custom CSS" href="#tabelaDiametros" data-toggle="collapse" aria-expanded="false" aria-controls="tabelaDiametros" >
+                                        <abbr title="Tabela auxiliar de diâmetro e schedule."><img class="img-faixadn rounded-circle" src="/static/img/pergunta.png" alt="tab. axuiliar"></abbr>
+                                    </a>
+                                </label>
+                                <div id="dntubo1" class="row mb-1 mx-0 altura-caixa">
+                                    <div class="col px-1">
+                                        <select id="dnt1_1" class="form-control my-1" onchange="mostraDn2(this)">
+                                            <option disabled selected>----</option>
+                                            {%for diameter in list_diameter%}
+                                            <option>{{diameter}}</option>                          
+                                            {%endfor%}
+                                        </select>
+                                    </div>
+                                    <div class="col px-1">
+                                        <select id="dnt1_2" class="form-control my-1" onchange="limparPmta(this.parentNode.parentNode, true)">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="dntubo2" class="row my-1 mx-0 altura-caixa">
+                                    <div class="col px-1">
+                                        <select id="dnt2_1" class="form-control my-1" onchange="mostraDn2(this)">
+                                            <option disabled selected>----</option>
+                                            {%for diameter in list_diameter%}
+                                            <option>{{diameter}}</option>                          
+                                            {%endfor%}
+                                        </select>
+                                    </div>
+                                    <div class="col px-1">
+                                        <select id="dnt2_2" class="form-control my-1" onchange="limparPmta(this.parentNode.parentNode, true)">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="dntubo3" class="row my-1 mx-0 altura-caixa">
+                                    <div class="col px-1">
+                                        <select id="dnt3_1" class="form-control my-1" onchange="mostraDn2(this)">
+                                            <option disabled selected>----</option>
+                                            {%for diameter in list_diameter%}
+                                            <option>{{diameter}}</option>                          
+                                            {%endfor%}
+                                        </select>
+                                    </div>
+                                    <div class="col px-1">
+                                        <select id="dnt3_2" class="form-control my-1" onchange="limparPmta(this.parentNode.parentNode, true)">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="normatubo" class="col text-center px-1">
+                                <label>Norma dimensional</label>
+                                <select id="normatubo1" class="form-control my-1" onchange="mostraListaSch(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for normatubo in lista_norma_sch.keys%}
+                                    <option>{{normatubo}}</option>
+                                    {%endfor%}
+                                </select>
+                                <select id="normatubo2" class="form-control my-1" onchange="mostraListaSch(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for normatubo in lista_norma_sch.keys%}
+                                    <option>{{normatubo}}</option>
+                                    {%endfor%}
+                                </select>
+                                <select id="normatubo3" class="form-control my-1" onchange="mostraListaSch(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for normatubo in lista_norma_sch.keys%}
+                                    <option>{{normatubo}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div id="sch" class="col-2 text-center px-1">
+                                <label>SCH</label>
+                                <select id="sch1" class="form-control my-1" onchange="limpaValidacao(this)">    
+                                </select>
+                                <select id="sch2" class="form-control my-1" onchange="limpaValidacao(this)"> 
+                                </select>
+                                <select id="sch3" class="form-control my-1" onchange="limpaValidacao(this)">
+                                </select>
+                            </div>
+                            <div id="materialtubo" class="col text-center px-1">
+                                <label>Material</label>
+                                <select id="materialtubo1" class="form-control my-1" onchange="limpaValidacao(this)">  
+                                    <option disabled selected>--Selecione--</option>      
+                                    {%for material, fabric in list_mat_tubo %}                                 
+                                    <option value="{{forloop.counter0}}">{{material}} - {{fabric}}</option>
+                                    {%endfor%}
+                                </select>
+                                <select id="materialtubo2" class="form-control my-1" onchange="limpaValidacao(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for material, fabric in list_mat_tubo %}                                 
+                                    <option value="{{forloop.counter0}}">{{material}} - {{fabric}}</option>
+                                    {%endfor%}
+                                </select>
+                                <select id="materialtubo3" class="form-control my-1" onchange="limpaValidacao(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for material, fabric in list_mat_tubo %}                                 
+                                    <option value="{{forloop.counter0}}">{{material}} - {{fabric}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div id="pmtatubo" class="col-2 text-center pl-1">
+                                <label>PMTA (Bar)</label>
+                                <input id="pmtatubo1" class="form-control my-1 text-center font-weight-bold" type="text"  readonly>
+                                <input id="pmtatubo2" class="form-control my-1 text-center font-weight-bold" type="text"  readonly>
+                                <input id="pmtatubo3" class="form-control my-1 text-center font-weight-bold" type="text"  readonly>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="btn-group position-absolute posicao-botao m-0 p-0" role="group" aria-label="Basic example">
+                        <button id="add_linha_tubo" type="button" class="btn btn-warning cor-botao font-weight-bold botao-pequeno p-0 h-25">+</button>
+                        <button id="remove_linha_tubo" type="button" class="btn btn-warning cor-botao font-weight-bold botao-pequeno p-0 h-25">-</button>
+                    </div>
+                </div>
+                <div class="collapse " id="tabelaDiametros">
+                    <div class="card card-body position-relative mx-2 my-1 px-2 tabela text-center">
+                        <div class="my-2 text-center">
+                            <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#tabelaDiametros" aria-expanded="true" aria-controls="tabelaDiametros">
+                                Esconder tabelas
+                            </button>
+                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                <label class="btn btn-outline-secondary btn-sm active" data-toggle="collapse" data-target="#tabela19_10" aria-expanded="true" aria-controls="tabela19_10">
+                                    <input type="radio" name="options" id="option1" autocomplete="off" checked> B36.19 e B36.10
+                                </label>
+                                <label class="btn btn-outline-secondary btn-sm" data-toggle="collapse" data-target="#tabelamm" aria-expanded="false" aria-controls="tabelamm">
+                                  <input type="radio" name="options" id="option2" autocomplete="off"> B36.10 e MM
+                                </label>
+                            </div>   
+                            <a class="btn btn-outline-secondary btn-sm" href="a1flx_p1_calc_vaso_tab_aux.html" rel="next" target="_blank" role="button" data-toggle="collapse" data-target="#tabelaDiametros" aria-expanded="true" aria-controls="tabelaDiametros" onclick="abrirTabela()">Tabela completa em outra aba</a>
+                        </div>
+                        <table id="tabela19_10" class="table table-bordered collapse show" aria-labelledby="tabelaDiametros" data-parent="#tabelaDiametros">
+                            <thead>
+                            <tbody>
+                            <tr>
+                                <th>#</th>
+                                <th colspan="4">ASME B36.19</th>
+                                <th colspan="14">ASME B36.10</th>
+                            </tr>
+                            <tr>
+                                <th><sub>DN</sub>\<sup>SCH</sup></th>
+                                <th>5S</th>
+                                <th>10S</th>
+                                <th>40S</th>
+                                <th>80S</th>
+                                <th>5</th>
+                                <th>10</th>
+                                <th>20</th>
+                                <th>30</th>
+                                <th>40</th>
+                                <th>60</th>
+                                <th>80</th>
+                                <th>100</th>
+                                <th>120</th>
+                                <th>140</th>
+                                <th>160</th>
+                                <th>STD</th>
+                                <th>XS</th>
+                                <th>XXS</th>
+                            </tr>
+                            <tr>
+                                <th>1/2</th>
+                                <td>1,65</td>
+                                <td>2,11</td>
+                                <td>2,77</td>
+                                <td>3,73</td>
+                                <td>1,65</td>
+                                <td>2,11</td>
+                                <td></td>
+                                <td>2,41</td>
+                                <td>2,77</td>
+                                <td></td>
+                                <td>3,73</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>4,78</td>
+                                <td>2,77</td>
+                                <td>3,73</td>
+                                <td>7,47</td>
+                            </tr>
+                            <tr>
+                                <th>3/4</th>
+                                <td>1,65</td>
+                                <td>2,11</td>
+                                <td>2,87</td>
+                                <td>3,91</td>
+                                <td>1,65</td>
+                                <td>2,11</td>
+                                <td></td>
+                                <td>2,41</td>
+                                <td>2,87</td>
+                                <td></td>
+                                <td>3,91</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>5,56</td>
+                                <td>2,87</td>
+                                <td>3,91</td>
+                                <td>7,82</td>
+                            </tr>
+                            <tr>
+                                <th>1</th>
+                                <td>1,65</td>
+                                <td>2,77</td>
+                                <td>3,38</td>
+                                <td>4,55</td>
+                                <td>1,65</td>
+                                <td>2,77</td>
+                                <td></td>
+                                <td>2,9</td>
+                                <td>3,38</td>
+                                <td></td>
+                                <td>4,55</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>6,35</td>
+                                <td>3,38</td>
+                                <td>4,55</td>
+                                <td>9,09</td>
+                            </tr>
+                            <tr>
+                                <th>1 1/4</th>
+                                <td>1,65</td>
+                                <td>2,77</td>
+                                <td>3,56</td>
+                                <td>4,85</td>
+                                <td>1,65</td>
+                                <td>2,77</td>
+                                <td></td>
+                                <td>2,97</td>
+                                <td>3,56</td>
+                                <td></td>
+                                <td>4,85</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>6,35</td>
+                                <td>3,56</td>
+                                <td>4,85</td>
+                                <td>9,7</td>
+                            </tr>
+                            <tr>
+                                <th>1 1/2</th>
+                                <td>1,65</td>
+                                <td>2,77</td>
+                                <td>3,68</td>
+                                <td>5,08</td>
+                                <td>1,65</td>
+                                <td>2,77</td>
+                                <td></td>
+                                <td>3,18</td>
+                                <td>3,68</td>
+                                <td></td>
+                                <td>5,08</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>7,14</td>
+                                <td>3,68</td>
+                                <td>5,08</td>
+                                <td>10,15</td>
+                            </tr>
+                            <tr>
+                                <th>2</th>
+                                <td>1,65</td>
+                                <td>2,77</td>
+                                <td>3,91</td>
+                                <td>5,54</td>
+                                <td>1,65</td>
+                                <td>2,77</td>
+                                <td></td>
+                                <td>3,18</td>
+                                <td>3,91</td>
+                                <td></td>
+                                <td>5,54</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>8,74</td>
+                                <td>3,91</td>
+                                <td>5,54</td>
+                                <td>11,07</td>
+                            </tr>
+                            <tr>
+                                <th>2 1/2</th>
+                                <td>2,11</td>
+                                <td>3,05</td>
+                                <td>5,16</td>
+                                <td>7,01</td>
+                                <td>2,11</td>
+                                <td>3,05</td>
+                                <td></td>
+                                <td>4,78</td>
+                                <td>5,16</td>
+                                <td></td>
+                                <td>7,01</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>5,16</td>
+                                <td>7,01</td>
+                                <td>14,02</td>
+                            </tr>
+                            <tr>
+                                <th>3</th>
+                                <td>2,11</td>
+                                <td>3,05</td>
+                                <td>5,49</td>
+                                <td>7,62</td>
+                                <td>2,11</td>
+                                <td>3,05</td>
+                                <td></td>
+                                <td>4,78</td>
+                                <td>5,49</td>
+                                <td></td>
+                                <td>7,62</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>11,13</td>
+                                <td>5,49</td>
+                                <td>7,62</td>
+                                <td>15,24</td>
+                            </tr>
+                            <tr>
+                                <th>3 1/2</th>
+                                <td>2,11</td>
+                                <td>3,05</td>
+                                <td>5,74</td>
+                                <td>8,08</td>
+                                <td>2,11</td>
+                                <td>3,05</td>
+                                <td></td>
+                                <td>4,78</td>
+                                <td>5,74</td>
+                                <td></td>
+                                <td>8,08</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>5,74</td>
+                                <td>8,08</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>4</th>
+                                <td>2,11</td>
+                                <td>3,05</td>
+                                <td>6,02</td>
+                                <td>8,56</td>
+                                <td>2,11</td>
+                                <td>3,05</td>
+                                <td></td>
+                                <td>4,78</td>
+                                <td>6,02</td>
+                                <td></td>
+                                <td>8,56</td>
+                                <td></td>
+                                <td>11,13</td>
+                                <td></td>
+                                <td>13,49</td>
+                                <td>6,02</td>
+                                <td>8,56</td>
+                                <td>17,12</td>
+                            </tr>
+                            <tr>
+                                <th>5</th>
+                                <td>2,77</td>
+                                <td>3,40</td>
+                                <td>6,55</td>
+                                <td>9,53</td>
+                                <td>2,77</td>
+                                <td>3,4</td>
+                                <td></td>
+                                <td></td>
+                                <td>6,55</td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td></td>
+                                <td>12,5</td>
+                                <td></td>
+                                <td>15,88</td>
+                                <td>6,55</td>
+                                <td>9,53</td>
+                                <td>19,05</td>
+                            </tr>
+                            <tr>
+                                <th>6</th>
+                                <td>2,77</td>
+                                <td>3,40</td>
+                                <td>7,11</td>
+                                <td>10,97</td>
+                                <td>2,77</td>
+                                <td>3,4</td>
+                                <td></td>
+                                <td></td>
+                                <td>7,11</td>
+                                <td></td>
+                                <td>10,97</td>
+                                <td></td>
+                                <td>14,27</td>
+                                <td></td>
+                                <td>18,26</td>
+                                <td>7,11</td>
+                                <td>10,97</td>
+                                <td>21,95</td>
+                            </tr>
+                            <tr>
+                                <th>8</th>
+                                <td>2,77</td>
+                                <td>3,76</td>
+                                <td>8,18</td>
+                                <td>12,70</td>
+                                <td>2,77</td>
+                                <td>3,76</td>
+                                <td>6,35</td>
+                                <td>7,04</td>
+                                <td>8,18</td>
+                                <td>10,31</td>
+                                <td>12,7</td>
+                                <td>15,09</td>
+                                <td>18,26</td>
+                                <td>20,62</td>
+                                <td>23,01</td>
+                                <td>8,18</td>
+                                <td>12,7</td>
+                                <td>22,23</td>
+                            </tr>
+                            <tr>
+                                <th>10</th>
+                                <td>3,40</td>
+                                <td>4,19</td>
+                                <td>9,27</td>
+                                <td>12,70</td>
+                                <td>3,40</td>
+                                <td>4,19</td>
+                                <td>6,35</td>
+                                <td>7,80</td>
+                                <td>9,27</td>
+                                <td>12,7</td>
+                                <td>15,09</td>
+                                <td>18,26</td>
+                                <td>21,44</td>
+                                <td>25,4</td>
+                                <td>28,58</td>
+                                <td>9,27</td>
+                                <td>12,7</td>
+                                <td>25,4</td>
+                            </tr>
+                            <tr>
+                                <th>12</th>
+                                <td>3,96</td>
+                                <td>4,57</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>3,96</td>
+                                <td>4,57</td>
+                                <td>6,35</td>
+                                <td>8,38</td>
+                                <td>10,31</td>
+                                <td>14,27</td>
+                                <td>17,48</td>
+                                <td>21,44</td>
+                                <td>25,4</td>
+                                <td>28,58</td>
+                                <td>33,32</td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td>25,4</td>
+                            </tr>
+                            <tr>
+                                <th>14</th>
+                                <td>3,96</td>
+                                <td>4,78</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>3,96</td>
+                                <td>6,35</td>
+                                <td>7,92</td>
+                                <td>9,53</td>
+                                <td>11,13</td>
+                                <td>15,09</td>
+                                <td>19,05</td>
+                                <td>23,83</td>
+                                <td>27,79</td>
+                                <td>31,75</td>
+                                <td>35,71</td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>16</th>
+                                <td>4,19</td>
+                                <td>4,78</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>4,19</td>
+                                <td>6,35</td>
+                                <td>7,92</td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td>16,66</td>
+                                <td>21,44</td>
+                                <td>26,19</td>
+                                <td>30,96</td>
+                                <td>36,53</td>
+                                <td>40,49</td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>18</th>
+                                <td>4,19</td>
+                                <td>4,78</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>4,19</td>
+                                <td>6,35</td>
+                                <td>7,92</td>
+                                <td>11,13</td>
+                                <td>14,27</td>
+                                <td>19,05</td>
+                                <td>23,83</td>
+                                <td>29,36</td>
+                                <td>34,93</td>
+                                <td>39,67</td>
+                                <td>45,24</td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>20</th>
+                                <td>4,78</td>
+                                <td>5,54</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>4,78</td>
+                                <td>6,35</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,09</td>
+                                <td>20,62</td>
+                                <td>26,19</td>
+                                <td>32,54</td>
+                                <td>38,1</td>
+                                <td>44,45</td>
+                                <td>50,01</td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>22</th>
+                                <td>4,78</td>
+                                <td>5,54</td>
+                                <td></td>
+                                <td></td>
+                                <td>4,78</td>
+                                <td>6,35</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td></td>
+                                <td>22,23</td>
+                                <td>28,58</td>
+                                <td>34,93</td>
+                                <td>41,28</td>
+                                <td>47,63</td>
+                                <td>53,98</td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>24</th>
+                                <td>5,54</td>
+                                <td>6,35</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>5,54</td>
+                                <td>6,35</td>
+                                <td>9,53</td>
+                                <td>14,27</td>
+                                <td>17,48</td>
+                                <td>24,61</td>
+                                <td>30,96</td>
+                                <td>38,89</td>
+                                <td>46,02</td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>26</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>7,92</td>
+                                <td>12,7</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>28</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>7,92</td>
+                                <td>12,7</td>
+                                <td>15,88</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>30</th>
+                                <td>6,35</td>
+                                <td>7,92</td>
+                                <td></td>
+                                <td></td>
+                                <td>6,35</td>
+                                <td>7,92</td>
+                                <td>12,7</td>
+                                <td>15,88</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>32</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>7,92</td>
+                                <td>12,7</td>
+                                <td>15,88</td>
+                                <td>17,48</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>34</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>7,92</td>
+                                <td>12,7</td>
+                                <td>15,88</td>
+                                <td>17,48</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>36</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>7,92</td>
+                                <td>12,7</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>38</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>40</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>42</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>44</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>46</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>48</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td>12,7</td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+                            </thead>
+                        </table>
+                        <table  id="tabelamm" class="table table-bordered collapse" aria-labelledby="tabelaDiametros" data-parent="#tabelaDiametros">
+                            <tbody>
+                            <tr>
+                                <th>#</th>
+                                <th colspan="16">ASME B36.10</th>
+                                <th colspan="12">MM</th>
+                                <th>#</th>
+                            </tr>
+                            <tr>
+                                <th><sub style="font-size: 0.8em;">DN</sub>\<sup style="font-size: 0.8em;">SCH</sup></th>
+                                <th>6,35mm</th>
+                                <th>7,14mm</th>
+                                <th>7,92mm</th>
+                                <th>8,74mm</th>
+                                <th>9,53mm</th>
+                                <th>12,7mm</th>
+                                <th>15,88mm</th>
+                                <th>19,05mm</th>
+                                <th>20,62mm</th>
+                                <th>22,23mm</th>
+                                <th>23,83mm</th>
+                                <th>25,4mm</th>
+                                <th>26,97mm</th>
+                                <th>28,58mm</th>
+                                <th>30,18mm</th>
+                                <th>31,75mm</th>
+                                <th>2mm</th>
+                                <th>2,5mm</th>
+                                <th>3mm</th>
+                                <th>4mm</th>
+                                <th>5mm</th>
+                                <th>6mm</th>
+                                <th>7mm</th>
+                                <th>8mm</th>
+                                <th>9mm</th>
+                                <th>10mm</th>
+                                <th>11mm</th>
+                                <th>12mm</th>
+                                <th><sup style="font-size: 0.8em;">SCH</sup>/<sub style="font-size: 0.8em;">DN</sub></th>
+                            </tr>
+                            <tr>
+                                <th>1/2</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2</td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <th>1/2</th>
+                            </tr>
+                            <tr>
+                                <th>3/4</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2</td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <th>3/4</th>
+                            </tr>
+                            <tr>
+                                <th>1</th>
+                                <td>6,35</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2</td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <th>1</th>
+                            </tr>
+                            <tr>
+                                <th>1 1/4</th>
+                                <td>6,35</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2</td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <th>1 1/4</th>
+                                
+                            </tr>
+                            <tr>
+                                <th>1 1/2</th>
+                                <td></td>
+                                <td>7,14</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2</td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <th>1 1/2</th>
+                            </tr>
+                            <tr>
+                                <th>2</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td></td>
+                                <td>8,74</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2</td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td></td>
+                                <td></td>
+                                <th>2</th>
+                            </tr>
+                            <tr>
+                                <th>2 1/2</th>
+                                <td>6,35</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9,53</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2</td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td></td>
+                                <th>2 1/2</th>
+                            </tr>
+                            <tr>
+                                <th>3</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2</td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>3</th>
+                            </tr>
+                            <tr>
+                                <th>3 1/2</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2</td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>3 1/2</th>
+                            </tr>
+                            <tr>
+                                <th>4</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2</td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>4</th>
+                            </tr>
+                            <tr>
+                                <th>5</th>
+                                <td></td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2</td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>5</th>
+                            </tr>
+                            <tr>
+                                <th>6</th>
+                                <td>6,35</td>
+                                <td></td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td></td>
+                                <td>22,23</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2</td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>6</th>
+                            </tr>
+                            <tr>
+                                <th>8</th>
+                                <td>6,35</td>
+                                <td></td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td></td>
+                                <td>25,40</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>2,5</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>8</th>
+                            </tr>
+                            <tr>
+                                <th>10</th>
+                                <td>6,35</td>
+                                <td></td>
+                                <td></td>
+                                <td>8,74</td>
+                                <td></td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td></td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td></td>
+                                <td>28,58</td>
+                                <td></td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>10</th>
+                            </tr>
+                            <tr>
+                                <th>12</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td></td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>12</th>
+                            </tr>
+                            <tr>
+                                <th>14</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td></td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>4</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>14</th>
+                            </tr>
+                            <tr>
+                                <th>16</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>16</th>
+                            </tr>
+                            <tr>
+                                <th>18</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>18</th>
+                            </tr>
+                            <tr>
+                                <th>20</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>20</th>
+                            </tr>
+                            <tr>
+                                <th>22</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>6</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>22</th>
+                            </tr>
+                            <tr>
+                                <th>24</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>24</th>
+                            </tr>
+                            <tr>
+                                <th>26</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>26</th>
+                            </tr>
+                            <tr>
+                                <th>28</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>28</th>
+                            </tr>
+                            <tr>
+                                <th>30</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>30</th>
+                            </tr>
+                            <tr>
+                                <th>32</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>30</th>
+                            </tr>
+                            <tr>
+                                <th>34</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>34</th>
+                            </tr>
+                            <tr>
+                                <th>36</th>
+                                <td>6,35</td>
+                                <td>7,14</td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>36</th>
+                            </tr>
+                            <tr>
+                                <th>38</th>
+                                <td></td>
+                                <td></td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>10</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>38</th>
+                            </tr>
+                            <tr>
+                                <th>40</th>
+                                <td></td>
+                                <td></td>
+                                <td>7,92</td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>40</th>
+                            </tr>
+                            <tr>
+                                <th>42</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>11</td>
+                                <td>12</td>
+                                <th>42</th>
+                            </tr>
+                            <tr>
+                                <th>44</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>12</td>
+                                <th>44</th>
+                            </tr>
+                            <tr>
+                                <th>46</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>12</td>
+                                <th>46</th>
+                            </tr>
+                            <tr>
+                                <th>48</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>8,74</td>
+                                <td>9,53</td>
+                                <td>12,70</td>
+                                <td>15,88</td>
+                                <td>19,05</td>
+                                <td>20,62</td>
+                                <td>22,23</td>
+                                <td>23,83</td>
+                                <td>25,40</td>
+                                <td>26,97</td>
+                                <td>28,58</td>
+                                <td>30,18</td>
+                                <td>31,75</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>12</td>
+                                <th>48</th>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Final campo tubo-->
+                <!-- Início campo flange-->
+                <div class="position-relative mx-2 my-1 px-5 py-3 border border-dark">
+                    <h3 class="position-absolute texto-vertical font-weight-bold m-0 p-0 large">FLANGE</h3>
+                    <form id="teste1">
+                        <div class="form-row">
+                            <div id="dnflange" class="col-2 text-center pr-1">
+                                <label>Faixa de diâmetro</label>
+                                <div id="dnflange1" class="row mb-1 mx-0 altura-caixa">
+                                    <div class="col px-1">
+                                        <select id="dnf1_1" class="form-control my-1" onchange="mostraDn2(this)">
+                                            <option disabled selected>----</option>
+                                            {%for diameter in list_diameter%}
+                                            <option>{{diameter}}</option>  
+                                            {%endfor%} 
+                                        </select>
+                                    </div>
+                                    <div class="col px-1">
+                                        <select id="dnf1_2" class="form-control my-1" onchange="limparPmta(this.parentNode.parentNode, true)">                            
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="dnflange2" class="row my-1 mx-0 altura-caixa">
+                                    <div class="col px-1">
+                                        <select id="dnf2_1" class="form-control my-1" onchange="mostraDn2(this)">
+                                            <option disabled selected>----</option>
+                                            {%for diameter in list_diameter%}
+                                            <option>{{diameter}}</option>  
+                                            {%endfor%} 
+                                        </select>
+                                    </div>
+                                    <div class="col px-1">
+                                        <select id="dnf2_2" class="form-control my-1" onchange="limparPmta(this.parentNode.parentNode, true)">                            
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="dnflange3" class="row my-1 mx-0 altura-caixa">
+                                    <div class="col px-1">
+                                        <select id="dnf3_1" class="form-control my-1" onchange="mostraDn2(this)">
+                                            <option disabled selected>----</option>
+                                            {%for diameter in list_diameter%}
+                                            <option id="dnflange2_2">{{diameter}}</option>  
+                                            {%endfor%} 
+                                        </select>
+                                    </div>
+                                    <div class="col px-1">
+                                        <select id="dnf3_2" class="form-control my-1" onchange="limparPmta(this.parentNode.parentNode, true)">                            
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="normaflange" class="col text-center px-1">
+                                <label>Norma</label>
+                                <select id="normaflange1" class="form-control my-1" onchange="limpaValidacao(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for norma in lista_norma_flange%}
+                                    <option id="normaflange_1">{{norma}}</option>
+                                    {%endfor%}
+                                </select>
+                                <select id="normaflange2"class="form-control my-1" onchange="limpaValidacao(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for norma in lista_norma_flange%}
+                                    <option id="normaflange_2">{{norma}}</option>
+                                    {%endfor%}
+                                </select>
+                                <select id="normaflange3" class="form-control my-1" onchange="limpaValidacao(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for norma in lista_norma_flange%}
+                                    <option id="normaflange_3">{{norma}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div id="classepressao" class="col-2 text-center px-1">
+                                <label>Classe</label>
+                                <select id="classepressao1" class="form-control my-1" onchange="limpaValidacao(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for classe in lista_classe_pressao%}
+                                    <option id="classepressao_1">{{classe}}</option>
+                                    {%endfor%}
+                                </select>
+                                <select id="classepressao2" class="form-control my-1" onchange="limpaValidacao(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for classe in lista_classe_pressao%}
+                                    <option id="classepressao_2">{{classe}}</option>
+                                    {%endfor%}
+                                </select>
+                                <select id="classepressao3" class="form-control my-1" onchange="limpaValidacao(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for classe in lista_classe_pressao%}
+                                    <option id="classepressao_3">{{classe}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div id="materialflange" class="col text-center px-1">
+                                <label>Material</label>
+                                <select id="materialflange1" class="form-control my-1" onchange="limpaValidacao(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for materialflange in list_mat_flange%}
+                                    <option id="materialflange_1">{{materialflange}}</option>
+                                    {%endfor%}
+                                </select>
+                                <select id="materialflange2" class="form-control my-1" onchange="limpaValidacao(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for materialflange in list_mat_flange%}
+                                    <option id="materialflange_2">{{materialflange}}</option>
+                                    {%endfor%}
+                                </select>
+                                <select id="materialflange3" class="form-control my-1" onchange="limpaValidacao(this)">
+                                    <option disabled selected>--Selecione--</option>
+                                    {%for materialflange in list_mat_flange%}
+                                    <option id="materialflange_3">{{materialflange}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div id="pmtaflange" class="col-2 text-center pl-1">
+                                <label>PMTA (Bar)</label>
+                                <input id="pmtaflange1" class="form-control my-1 text-center font-weight-bold" type="text"  readonly>
+                                <input id="pmtaflange2" class="form-control my-1 text-center font-weight-bold" type="text"  readonly>
+                                <input id="pmtaflange3" class="form-control my-1 text-center font-weight-bold" type="text"  readonly>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="btn-group position-absolute posicao-botao m-0 p-0" role="group" aria-label="Basic example">
+                        <button id="add_linha_flange" type="button" class="btn btn-warning cor-botao font-weight-bold botao-pequeno p-0 h-25">+</button>
+                        <button id="remove_linha_flange" type="button" class="btn btn-warning cor-botao font-weight-bold botao-pequeno p-0 h-25">-</button>
+                    </div>
+                </div>
+                <!-- Final campo tubo-->
+                <!-- End -->
+                <div class="col text-center mt-3">
+                    <button type="submit" class="btn font-weight-bold" style="background-color: #12192C; color: #ffff" onclick="calcular()">Calcular</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="{% static 'js/a1flx/a1flex_p1_calc_pi.js' %}"></script>
+
+{% endblock %}

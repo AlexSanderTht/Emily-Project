@@ -1,0 +1,36 @@
+{% load static %}
+{% block tensao %}
+<div class="modal modal-sm hidden" id="modal-fases" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel">FASES</h6>
+        <button type="button" class="close" onclick="$('#modal-fases').modal('hide')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row m-3 p-3 border">
+          <div class="col-lg-6 pl-0 pr-2 text-center">
+              <h6><b>SEQ</b></h6>
+              <input type="text" class="form-control form-control-sm" value="A" disabled>
+              <input type="text" class="form-control form-control-sm" value="B" disabled>
+              <input type="text" class="form-control form-control-sm" value="C" disabled>
+          </div>
+
+          <div class="col-lg-6 pl-0 pr-2 text-center">
+              <h6><b>FASES</b></h6>
+              <input type="text" class="form-control form-control-sm" name="forms-fases-ftag" title="A" id="fases-ftag-a" onkeyup="VerifyFormsSizeOne(this.id)">
+              <input type="text" class="form-control form-control-sm" name="forms-fases-ftag" title="B" id="fases-ftag-b" onkeyup="VerifyFormsSizeOne(this.id)">
+              <input type="text" class="form-control form-control-sm" name="forms-fases-ftag" title="C" id="fases-ftag-c" onkeyup="VerifyFormsSizeOne(this.id)">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="SendFasesBack()">Atualizar</button>
+        <button type="button" class="btn btn-dark" onclick="$('#modal-fases').modal('hide')">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

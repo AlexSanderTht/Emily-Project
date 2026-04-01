@@ -1,0 +1,294 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <title>Relatório de Não Conformidade</title>
+    <link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.min.css' %}"/>
+    <script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.bundle.js' %}"></script>
+    <script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.js' %}"></script>
+</head>
+
+<style>
+    * {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+    .cardBoard {
+        box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+        border-radius: 16px;
+        background: linear-gradient(to top, #f8f9fa, white);
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+    .cardBoard:hover {
+        box-shadow: rgba(0, 0, 0, 0.15) 0 8px 24px;
+    }
+
+    .header {
+        background-color: #f8f9fa;
+        text-align: center;
+        padding: 1.5rem;
+        border-radius: 16px 16px 0 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .section-title {
+        background-color: #f0f2f5;
+        font-weight: bold;
+        text-align: center;
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+    }
+
+    .section-title h3 {
+        margin: 0;
+        color: #343a40;
+    }
+
+    .highlighted-orange {
+        background-color: #ff9800;
+        font-weight: bold;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        color: white;
+    }
+
+    .highlighted-yellow {
+        background-color: #ffd600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+
+    .bordered {
+        padding: 1.5rem;
+        border-radius: 12px;
+    }
+
+    .table th, .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+    }
+
+    .inputs {
+        width: 100%;
+        max-width: 300px;
+        border: 1px solid rgba(128, 128, 128, 0.3);
+        border-radius: 8px;
+        padding: 0.625rem;
+        font-size: 1rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .inputs:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    select {
+        border: none;
+        background-color: #e8f5f0;
+        padding: 0.625rem;
+        border-radius: 8px;
+        margin: 0.375rem 0;
+        width: 100%;
+        max-width: 350px;
+        box-shadow: rgba(99, 99, 99, 0.1) 0 2px 8px 0;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    select:focus {
+        outline: none;
+        box-shadow: rgba(99, 99, 99, 0.2) 0 4px 12px 0;
+    }
+
+    .selects {
+        display: flex;
+        flex-direction: column;
+        padding: 0.625rem 0;
+    }
+
+    .areaInput {
+        width: 100%;
+        max-width: 600px;
+        height: 100px;
+        border-radius: 8px;
+        padding: 0.625rem;
+        border: 1px solid rgba(128, 128, 128, 0.3);
+        resize: vertical;
+    }
+
+    .add-evidence-button,
+    .add-req-button {
+        background-color: #2ecc71;
+        color: white;
+        padding: 0.5rem 0.875rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-left: 0.5rem;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+    }
+
+    .add-evidence-button:hover,
+    .add-req-button:hover {
+        background-color: #27ae60;
+    }
+
+    .select-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.625rem;
+    }
+
+    .select-container select {
+        margin-right: 0.625rem;
+    }
+
+    /* Melhorias para textos e elementos */
+    h5 {
+        color: #495057;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+    }
+
+    p {
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+
+    strong {
+        font-weight: 600;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .cardBoard {
+            padding: 15px;
+        }
+
+        .row {
+            flex-direction: column;
+        }
+
+        .col-6 {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+    }
+
+    /* Estilo para o container principal */
+    .d-flex.justify-content-center.row.p-5 {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 1200px;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-5">
+    {% csrf_token %}
+
+    <div class="card mb-4 cardBoard" style="width: 100%; max-width: 1200px; padding: 30px;">
+        <div class="card-body col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Relatório de não conformidade</b></h2>
+        </div>
+        <div id="accordion">
+            <div class="container mt-4">
+                <!-- Header -->
+                <div class="header py-3 cardBoard" style="padding: 20px">
+                    <div class="row">
+                        <div class="col-md-10 text-start">
+                            <img src="{% static 'img/logo.png' %}" alt="Logo" style="height: 50px;">
+                            <span class="h5 ms-3">RNC - Relatório de Não Conformidade</span>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <div>RNC Nº: <span class="fw-bold" id="rncNumber">{{rnc}}</span></div>
+                            <div><p id="dataAtual" style="letter-spacing: 1px; font-weight: bold"></p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Characterization Section -->
+                <div class="bordered p-4 mt-3 cardBoard">
+                    <div class="section-title mb-4"><h3>Caracterização do Problema</h3></div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="fw-bold mb-2">Origem:</div>
+                            <h5 class="ms-2">{{origem_nome}}</h5>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="fw-bold mb-2">Solicitante:</div>
+                            <h5 class="text-danger ms-2">{{solicitante_nome}}</h5>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6 mb-3">
+                            <div class="fw-bold mb-2">Unidade/Processo:</div>
+                            <h5 class="ms-2">{{unidade_negocio_cod}}</h5>
+                            <h5 class="ms-2">{{area_cod}}</h5>
+                            <h5 class="ms-2">{{sub_area_nome}}</h5>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="fw-bold mb-2">Responsável pela análise do RNC:</div>
+                            <h5 class="text-danger ms-2">{{responsavel_nome}}</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description Section -->
+                <div class="bordered p-4 mt-3 cardBoard">
+                    <div class="section-title mb-4"><h3>Descrição</h3></div>
+
+                    <div class="mb-4">
+                        <p class="fw-bold mb-2">Fato:</p>
+                        <p class="ms-2">{{fato}}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="fw-bold mb-2">Evidência:</p>
+                        <p class="ms-2">{{evid_text}}</p>
+                    </div>
+
+                    <div>
+                        <p class="fw-bold mb-2">Requisito não atendido:</p>
+                        <h5 class="ms-2">{{requisitos}}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script para exibir a data atual
+    document.addEventListener('DOMContentLoaded', function() {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const dataAtual = new Date().toLocaleDateString('pt-BR', options);
+        document.getElementById('dataAtual').innerText = dataAtual;
+    });
+</script>
+{% endblock %}

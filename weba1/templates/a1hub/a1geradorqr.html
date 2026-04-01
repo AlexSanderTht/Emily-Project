@@ -1,0 +1,76 @@
+{% extends 'geral/base.html'%}
+{% load static %}
+{% block head %}
+<title>A1 QR</title>
+{% endblock %}
+{% block help %}
+<h7> Gerar automatico de qr code , favor colocar o link no campo disponivel </h7>
+
+{% endblock %}
+{% block main %}
+
+
+ <div class="row mb-5 p-3 justify-content-center" >
+    <div class="col-lg-8 max-auto text-center">
+        <h1 class="display-4"><b> Gerador de QR Code</b></h1>
+    </div>
+ </div>
+<form action="" method="post">
+    {% csrf_token %}
+    <div class="container rounded-4 bg-white p-4" >
+         <div class="form-group">
+            <label for="nome_qr">Nome do QR CODE</label>
+            <input type="text" class="form-control" name="nome_qr" id="nome_qr" placeholder="Nome">
+        </div>
+
+        <div class="form-group">
+            <label for="link">URL</label>
+            <input type="text" class="form-control" name="link" id="link"  placeholder="http://...">
+        </div><br>
+
+        <div class="row text-center justify-content-center">
+            <button type="submit" class="btn btn-warning align-items-center w-25" onclick="PostDatafuncao_qr()"> Gerar QRCode </button>
+        </div>
+
+    </div>
+</form>
+
+<script>
+
+
+function PostDatafuncao_qr(){
+    let nome = document.getElementById('nome_qr').value
+    let qr = document.getElementById('link').value
+
+    let data_qr = {'nome_qr': nome, 'link': qr}
+    const csrftoken  = document.getElementsByName('csrfmiddlewaretoken')
+    $.ajax({
+        url:"/app/a1hub/postDataQrcode",
+        type: "POST",
+        headers: {'X-CSRFToken': csrftoken},
+        dataType:"json",
+        data:{'envia': JSON.stringify(data_qr)},
+        success: function (data){
+            let key_men = Object.keys(data['mensagem'])
+            let value_men = Object.values(data['mensagem'])
+
+            if(key_men[0] == 1){
+                document.getElementById('cadatr').innerText = value_men[0]
+                $('#modal_cadastrado').modal('show');
+            }
+            else{
+                document.getElementById('error').innerText = value_men[0]
+                $('#modal_cadastrado').modal('show');
+            }
+
+        },
+        failure: function (){
+            alert('Algo deu errado')
+        }
+    });
+
+}
+
+</script>
+
+{% endblock %}

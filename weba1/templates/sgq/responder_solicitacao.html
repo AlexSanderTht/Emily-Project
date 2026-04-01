@@ -1,0 +1,284 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.min.css' %}"/>
+    <script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.bundle.js' %}"></script>
+    <script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.js' %}"></script>
+</head>
+<style>
+    * {
+        font-family: -apple-system, system-ui, BlinkMacSystemFont;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 30px;
+    }
+
+    .card {
+        border-radius: 15px;
+        box-shadow: rgba(128, 128, 128, 0.2) 0 0 20px 1px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .solicitacao-info {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .item-label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    .item-value {
+        background-color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        box-shadow: rgba(0, 0, 0, 0.05) 0 2px 5px;
+    }
+
+    .fato-text {
+        min-height: 100px;
+    }
+
+    .btn-custom {
+        background-color: #98fcc7;
+        color: black;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: rgba(128, 128, 128, 0.2) 0 0 15px 1px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .btn-voltar {
+        background-color: #f8f9fa;
+    }
+
+    .btn-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: rgba(128, 128, 128, 0.3) 0 0 20px 2px;
+    }
+
+    textarea {
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: rgba(0, 0, 0, 0.05) 0 2px 5px;
+        border: 1px solid #eee;
+        transition: all 0.3s ease;
+    }
+
+    textarea:focus {
+        outline: none;
+        box-shadow: rgba(128, 128, 128, 0.2) 0 0 15px 1px;
+        border-color: #98fcc7;
+    }
+
+    .page-title {
+        color: #333;
+        margin-bottom: 30px;
+        font-weight: 600;
+    }
+
+    .card-title {
+        margin: 0;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+{% block main %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h4 class="my-2">Visualizar Solicitação #{{ solicitacao.tb_sol_id }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p><strong>Solicitante:</strong> {{ solicitacao.tb_sol_solicitante_id_per.tb_per_name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Responsável:</strong> {{ solicitacao.tb_sol_responsavel_id_per.tb_per_name }}</p>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p><strong>Requisito:</strong> {{ solicitacao.tb_sol_id_req.tb_req_nome }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Status:</strong>
+                        <span id="status-badge"
+                              class="badge {% if solicitacao.tb_sol_status == 'ABERTO' %}bg-warning{% elif solicitacao.tb_sol_status == 'FECHADO' %}bg-success{% elif solicitacao.tb_sol_status == 'NEGADO' %}bg-danger{% endif %}">
+                            {{ solicitacao.tb_sol_status }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h5>Fato:</h5>
+                <div class="p-3 bg-light rounded">
+                    {{ solicitacao.tb_sol_fato }}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <a href="{% url 'menuSgqSol' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Voltar
+                </a>
+
+                {% if solicitacao.tb_sol_status == 'ABERTO' %}
+                <button type="button" onclick="atualizarStatus({{ solicitacao.tb_sol_id }}, 'negar')"
+                        class="btn btn-danger">
+                    <i class="fas fa-times-circle me-1"></i> Negar
+                </button>
+
+                <button type="button" onclick="atualizarStatus({{ solicitacao.tb_sol_id }}, 'fechar')"
+                        class="btn btn-success">
+                    <i class="fas fa-check-circle me-1"></i> Fechar
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmação -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmar Ação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="confirmModalBody">
+                Tem certeza que deseja continuar?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="confirmButton" class="btn btn-primary">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de sucesso -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Sucesso!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="successModalBody">
+                Operação realizada com sucesso!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="window.location.href='{% url 'menuSgqSol' %}'">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function atualizarStatus(solicitacaoId, acao) {
+        // Configurar o modal de confirmação
+        let mensagem = acao === 'fechar' ?
+            'Tem certeza que deseja FECHAR esta solicitação?' :
+            'Tem certeza que deseja NEGAR esta solicitação?';
+
+        document.getElementById('confirmModalBody').textContent = mensagem;
+
+        // Configurar o botão de confirmação
+        const confirmButton = document.getElementById('confirmButton');
+        const confirmModalElement = document.getElementById('confirmModal');
+        const confirmModal = new bootstrap.Modal(confirmModalElement);
+
+        // Define the original onclick to avoid duplication
+        confirmButton.onclick = function () {
+            // Fechar o modal de confirmação
+            confirmModal.hide();
+
+            // Obter o token CSRF
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            // Preparar os dados
+            const formData = new FormData();
+            formData.append('acao', acao);
+
+            // Fazer a requisição fetch
+            fetch(`/app/sgq/responder_solicitacao/${solicitacaoId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Atualizar a interface
+                        const statusBadge = document.getElementById('status-badge');
+
+                        if (acao === 'fechar') {
+                            statusBadge.textContent = 'FECHADO';
+                            statusBadge.className = 'badge bg-success';
+                        } else {
+                            statusBadge.textContent = 'NEGADO';
+                            statusBadge.className = 'badge bg-danger';
+                        }
+
+                        // Remover os botões de ação
+                        const actionButtons = document.querySelectorAll('button[onclick^="atualizarStatus"]');
+                        actionButtons.forEach(button => button.remove());
+
+                        // Mostrar o modal de sucesso
+                        const mensagemSucesso = acao === 'fechar' ?
+                            'Solicitação FECHADA com sucesso!' :
+                            'Solicitação NEGADA com sucesso!';
+
+                        document.getElementById('successModalBody').textContent = mensagemSucesso;
+
+                        // Create a new success modal instance
+                        const successModalElement = document.getElementById('successModal');
+                        const successModal = new bootstrap.Modal(successModalElement);
+                        successModal.show();
+                    } else {
+                        alert('Erro ao atualizar status da solicitação');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao processar a requisição');
+                });
+        };
+
+        // Mostrar o modal de confirmação
+        confirmModal.show();
+    }
+</script>
+
+{% endblock %}

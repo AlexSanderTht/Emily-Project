@@ -1,0 +1,190 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Calculadora de Dilatação - Proposta 01</title>
+{% endblock %}
+{% block help %}
+    <h7>Drop List <strong>"Liberar sistema"</strong>> Droplist: Liberar / revisar sistema Finalizar comentários</h7>
+    <br><br>
+    <h7>Opção "Controladoria" Nesta opção você irá revisar somente  listas da controladoria. </h7>
+    <br><br>
+    <h7>Opção "Outra lista" Nesta opção você irá revisar as demais listas. </h7>
+    <br><br>
+    <h7>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas. </h7>
+    <br><br>
+    <h7>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores. </h7>
+    <br><br>
+    <h7> "Chave 2" Neste campo você irá inserir a coluna  sem repetição de valores(caso a primeira tenha repetição). </h7>
+    <br><br>
+    <h7>Botão "Revisar" Neste botão ele realizará a revisão entre os doc. marcando em amarelo o que mudou, mantendo a extensão .xlsx.</h7>
+    <br><br>
+    <h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+<style>
+
+  .calculado {
+    animation: border-animation 5s;
+  }
+  @keyframes border-animation {
+        from {box-shadow: 0 0 0 .2rem rgba(40,167,69,.25); background-color: 0 0 0 .2rem rgba(40,167,69,.25)}
+        to {box-shadow: 0 0 0 .2rem rgba(40, 167, 70, 0); background-color: 0 0 0 .2rem rgba(40, 167, 70, 0)}
+    }
+  .container {
+    position: relative;
+  }
+
+  .text-block_ΔL {
+  position: absolute;
+  bottom: 21px;
+  right: 19px;
+  padding-left: 60px;
+  padding-right: 60px; 
+  }
+</style>
+
+<div class="container py-5">
+<!-- For demo purpose -->
+  <div class="row mb-4">
+    <div class="col-lg-10 mx-auto text-center">
+      <h1 class="display-4"><b>A1 Dilatação - Expansão Térmica</b></h1>
+    </div>
+  </div>
+  <!-- End -->
+
+  <div class="row">
+    <div class="col-lg-12 mx-auto">
+      <div class="bg-white rounded-lg shadow-sm p-5">
+        
+        <!-- Credit card form content -->
+        <div class="tab-content row">
+
+          <!-- credit card info-->
+          <div id="nav-tab-card" class="tab-pane fade show active col-12">
+
+            <div>
+              <form action="{% url 'download' %}" id="auto-download" method="GET" enctype="multipart/form-data">
+                  {% csrf_token %}
+              </form>
+            </div>
+
+            <form role="form" action="{% url 'a1rev' %}" method="POST" enctype="multipart/form-data" id="form">
+              {% csrf_token %}
+              <div class="row">
+                  <div class="col-lg-3  border border-dark" style="padding-top: 15px;border-bottom-width: 0px;border-bottom-style: solid;margin-bottom: 0px;padding-bottom: 0px;">
+                    <div>
+                      <label><h5><b>Dados de Entrada</b></h5></label>
+                    </div>
+                    <div class="form-group col-12 p-0" style="margin-top: 30px;">
+                        <label for="emperaturaProj">Temperatura (°C)</label>
+                        <input class="form-control" type="number" name="temp_design" id="temperaturaProj" min="21" max="300" placeholder="21°C - 300°C" required onchange="clear_result()">
+                        <div class="invalid-feedback">
+                          Caracteres invalidos
+                        </div>
+                      </div>
+                    <div class="form-group col-12 p-0">
+                        <label for="material">Material</label>
+                        <select class="form-control bg-gray" id="material" name="material" onchange="clear_result()">
+                            {%for mat in dados_input%}
+                                <option>{{mat}}</option>
+                            {%endfor%}
+                        </select>
+                      </div>
+                    <div class="form-group col-12 p-0">
+                        <label for="comprimentoX">Comprimento L (mm)</label>
+                        <input class="form-control" type="number" id="comprimentoX" name="x" min="0" max="1000000" placeholder="Trecho estudado" required onchange="clear_result()">
+                        <div class="invalid-feedback">
+                          Caracteres invalidos
+                        </div>
+                    </div>
+                    <div class="form-group col-12 p-0">
+                      <button type="button" onclick="env_dil_ajax()" class="btn " style="background-color: #F58C32; color:#ffff;margin-top: 90px;"><b style="padding-left: 41px;padding-right: 41px;">Calcular Dilatação</b> </button>
+                    </div>
+                  </div>
+                  <div class="col-9 border border-dark" style="padding-top: 15px;padding-bottom: 15px; left: 5px; padding-left: 5px;"> 
+                    <div class="col-sm">
+                      <label style="margin-left: 0px;margin-top: 0px;"><h5><b>Resultados</b></h5></label>
+                    </div>  
+                    <div class="d-inline position-relative">
+                      <img style= "width: 800px;padding-top: 20px;"src="{% static 'img\a1_flex_images\a1_dilata_img.png' %}" alt="Dilatação" >
+                      <input class="form-control text-block_ΔL col-lg-3 m-0" type="text" id="x" placeholder="mm" readonly>
+                    </div>
+                  </div>  
+              </div>
+              </div>
+            </form>
+            <!-- barra de progresso -->
+          </div>
+          <!-- End -->
+          <!-- End -->
+        </div>
+        <!-- End -->
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+  function verify_value_num(item_id, lim) {
+    let item_val = parseFloat(document.getElementById(item_id).value);
+    let inf_lim = lim[0];
+    let sup_lim = lim[1];
+
+    if(!(isNaN(item_val))){  // Caso não seja nulo
+      if(typeof(item_val) == 'number'){  //Se o tipo for número
+        if (item_val >= inf_lim && item_val <= sup_lim) {//Só é válido se estiver nesse range
+            document.getElementById(item_id).classList.remove('is-invalid');
+            return true
+        }
+      }  
+    }
+    return false
+  } 
+
+  function env_dil_ajax() 
+    {
+      //let temp_ambiente = parseFloat(document.getElementById('temperaturaAmb').value);
+      let temp_design = parseFloat(document.getElementById('temperaturaProj').value);
+      //let temp_ope = parseFloat(document.getElementById('temperaturaOpe').value);
+      let material = document.getElementById('material').value;
+      let lx = parseFloat(document.getElementById('comprimentoX').value);
+      //let ly = parseFloat(document.getElementById('comprimentoY').value);
+      //let lz = parseFloat(document.getElementById('comprimentoZ').value);
+      let list_ids = ['temperaturaProj', 'comprimentoX'];
+      let list_range = [[21,300], [0, 1000000]];
+      var list_err = [];
+      $('#x').removeClass('calculado');
+      
+      for (idd in list_ids) { if (!(verify_value_num(list_ids[idd], list_range[idd]))) { list_err.push(list_ids[idd]) } }
+
+      if(list_err.length == 0) { // Se passou pelos erros,
+          $.ajax({
+              type: "GET",
+              url: "report",
+              dataType: 'json',
+              data: {'temp_amb':21, 'temp_design':temp_design, 'temp_ope':21, 
+                     'material':material, 'lx':lx, 'ly':0, 'lz':0},
+          }).done(function (data) {
+              document.getElementById('x').value = data["dil_design_x"];
+              $('#x').addClass('calculado');
+              //document.getElementById('y').value = data["dil_design_y"];
+              //document.getElementById('z').value = data["dil_design_z"];
+              // document.getElementById('Op1').value = data["dil_op_x"];
+              // document.getElementById('Op2').value = data["dil_op_y"];
+              // document.getElementById('Op3').value = data["dil_op_z"]; 
+          })
+      } else {
+          for(err in list_err){ document.getElementById(list_err[err]).classList.add('is-invalid') }
+      }
+    }
+
+  window.onload = function(){
+    $("#x").val("")
+    }
+
+  function clear_result() {
+    $("#x").val("")
+    }
+
+</script>
+{% endblock %}

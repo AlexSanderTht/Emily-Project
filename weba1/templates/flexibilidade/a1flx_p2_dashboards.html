@@ -1,0 +1,908 @@
+{% extends 'geral/base.html' %}
+{% load poll_extras %}
+{% load static %}
+{% block head %}
+<title>Dashboards</title>
+{% endblock %}
+{% block help %}
+<h7>Drop List <strong>"Liberar sistema"</strong>> Droplist: Liberar / revisar sistema Finalizar comentários</h7>
+<br><br>
+<h7>Opção "Controladoria" Nesta opção você irá revisar somente  listas da controladoria. </h7>
+<br><br>
+<h7>Opção "Outra lista" Nesta opção você irá revisar as demais listas. </h7>
+<br><br>
+<h7>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas. </h7>
+<br><br>
+<h7>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores. </h7>
+<br><br>
+<h7> "Chave 2" Neste campo você irá inserir a coluna  sem repetição de valores(caso a primeira tenha repetição). </h7>
+<br><br>
+<h7>Botão "Revisar" Neste botão ele realizará a revisão entre os doc. marcando em amarelo o que mudou, mantendo a extensão .xlsx.</h7>
+<br><br>
+<h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+<p hidden id="OS">{{os}}</p>
+<!-- Insere a header dos dashboards de fexibilidade -->
+<div class="row"  style="margin-top: 1rem; margin-right: 0rem; height:fit-content">
+    <div class="text-center col-4" >
+        <h3 class="display-8"><b>OS{{ os }}</b></h3>
+    </div>
+    <div class="col" style="margin-bottom: -25px">
+        <center>
+            <div id="accordion" style="width: 100%">
+                <div class="card" >
+                    <div class="card-header CursPointer" id="headingOne" style="padding: .05rem 1.25rem !important" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <h5 class="mb-0">
+                            <button class="btn">
+                                <b>Filtrar Área</b>
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body" id="AreasList">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="loadergb" id="loaderFiltros" style="height: 50px; width:50px;display: none"></div>
+        </center>
+        
+
+
+    </div>
+</div>
+<!-- End -->
+
+<style>
+    .CursPointer { cursor: pointer; }
+        .tooltip {
+          position: relative;
+          display: inline-block;
+          border-bottom: 1px dotted black;
+        }
+    .mousechange:hover {
+        cursor: pointer;
+    }
+        .tooltip .tooltiptext {
+          visibility: hidden;
+          width: 120px;
+          background-color: black;
+          color: #fff;
+          text-align: center;
+          border-radius: 6px;
+          padding: 5px 0;
+
+          /* Position the tooltip */
+          position: absolute;
+          z-index: 1;
+        }
+
+        .tooltip:hover .tooltiptext {
+          visibility: visible;
+        }
+
+
+        .ellipsis {
+              white-space: nowrap;
+              overflow: hidden;
+              display: block;
+        }
+
+        .ellipsis.multiline {
+              white-space: normal;
+        }
+        .loadergb {
+          border: 8px solid #A1A1A1;
+          border-top: 8px solid #f6801e;
+          border-radius: 50%;
+          width: 50px;
+          height: 50px;
+          animation: spin 2s linear infinite;
+           display: block;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+            #TabelaSuportes {
+
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.9);
+  }
+
+      .TabelaFlex td, .TabelaFlex th {
+        border: 0px solid #ddd;
+        padding: 4px;
+         text-align: center;
+      }
+    .table-hover thead tr:hover th, .table-hover tbody tr:hover td {
+        background-color: #ffc107;
+    }
+
+    .TabelaFlex tr:nth-child(odd) {
+        /* background-color: #f2f2f2; */
+    }
+
+      .TabelaFlex td:hover {
+        background-color: #ddd;
+
+      }
+
+      .TabelaFlex th {
+        font-size: 80%;
+        text-align: center;
+        background-color: #343a40;
+        color: white;
+        font-size: 80%;
+      }
+      .dropdown-filter-item {
+    color: black !important;
+    text-align: left;
+    }
+.table-container {
+    height: 10em;
+}
+table {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width: 100%;
+}
+table thead {
+    flex: 0 0 auto;
+    width: calc(100% - 0.01em);
+}
+.tbodyTab {
+    flex: 1 1 auto;
+    display: block;
+    overflow-y: scroll;
+    font-size: 80%;
+}
+table tbody tr {
+    width: 100%;
+}
+
+
+.legendColorBox{
+    width: 14px;
+}
+.displayContentsImportant{
+    display: block !important;
+}
+.InputDisponibilidade3DNAO {
+        background-color: rgba(212, 32, 0, 0.12) !important;
+        color: #d42000;
+        border-color: #d42000;
+    }
+.InputDisponibilidade3DNAO:focus {
+    box-shadow: 0 0 0 0.2rem rgba(212, 32, 0, 0.25);
+    color: #d42000;
+    border-color: #d42000;
+}
+.InputDisponibilidade3DSIM {
+    background-color: rgba(51, 212, 0, 0.12) !important;
+    color: #1d7401;
+    border-color: #33d400;
+}
+    .InputDisponibilidade3DSIM:focus {
+        color: #1d7401;
+        border-color: #33d400;
+        box-shadow: 0 0 0 0.2rem rgba(51, 212, 0, 0.25);
+    }
+.btnReports {
+    max-height: 18px;
+    padding: 0;
+    font-size: 85%;
+}
+.filtrado {
+    color: #343a40 !important;
+    background-color: yellow !important;
+}
+.btn-light-mod {
+  color: #212529;
+  background-color: white;
+  /* border-color: white; */
+}
+
+.btn-light-mod:hover {
+  color: #212529;
+  background-color: #e2e6ea;
+  /* border-color: #dae0e5; */
+}
+
+.btn-light-mod:focus, .btn-light-mod.focus {
+  color: #212529;
+  background-color: #e2e6ea;
+  /* border-color: #dae0e5; */
+  box-shadow: 0 0 0 0.0rem rgba(216, 217, 219, 0.5);
+}
+.btn-light-mod-clicado {
+  color: #212529;
+  background-color: #e2e6ea;
+  /* border-color: #dae0e5; */
+  box-shadow: 0 0 0 0.0rem rgba(216, 217, 219, 0.5);
+}
+
+.btn-light-mod.disabled, .btn-light-mod:disabled {
+  color: #212529;
+  background-color: #f8f9fa;
+  /* border-color: #f8f9fa; */
+}
+
+.btn-light-mod:not(:disabled):not(.disabled):active, .btn-light-mod:not(:disabled):not(.disabled).active,
+.show > .btn-light-mod.dropdown-toggle {
+  color: #212529;
+  background-color: #dae0e5;
+  /* border-color: #d3d9df; */
+}
+
+.btn-light-mod:not(:disabled):not(.disabled):active:focus, .btn-light-mod:not(:disabled):not(.disabled).active:focus,
+.show > .btn-light-mod.dropdown-toggle:focus {
+  box-shadow: 0 0 0 0.2rem rgba(216, 217, 219, 0.5);
+}
+</style>
+
+<div class="loadergb" id="loaderGERAL" style="height: 200px; width:200px; border: 16px solid #A1A1A1; border-top: 16px solid #f6801e;"></div>
+<div class="row">
+    <div class="" style="margin-left: 15px; margin-right: 15px">
+        <div id="nav-tab-card" class="tab-pane fade show active col-12" >
+
+            <div class="recent-report3" style="padding: 0%; padding-top: 5px; padding-bottom: 5px;">
+
+                <div id="PaginaToda" style="display: none">
+                    <center>
+
+
+                        <div class="row" id="LinhaLarg">
+                            <!--Início do gráfico linhas-->
+                            <div class="col" style="max-width: 30%">
+                                <div>
+                                    <h3 class="title-3">Status e Avanços</h3>
+                                    <div class="row m-0 d-flex flex-nowrap">
+                                        <div class="col-auto border-right d-flex align-items-center" style="height: 200px; margin-left: 15px; padding-left: 0px; padding-top: 15px; padding-bottom: 15px; padding-right: 0px;">
+                                            <div>
+                                                <div class="row p-0 mx-0"><button id="btn-criterios" type="button" class="btn btn-light-mod py-0 border-0" style="width: 30px;" title="Critérios" onclick="AtualizarGraficos(this)">C</button></div>
+                                                <div class="row p-0 mx-0"><button id="btn-estudos" type="button" class="btn btn-light-mod py-0 border-0" style="width: 30px;" title="Estudos" onclick="AtualizarGraficos(this)">E</button></div>
+                                                <div class="row p-0 mx-0"><button id="btn-mola" type="button" class="btn btn-light-mod py-0 border-0" style="width: 30px;" title="Lista de Suporte de Mola" onclick="AtualizarGraficos(this)">H</button></div>
+                                                <div class="row p-0 mx-0"><button id="btn-lista-linhas" type="button" class="btn btn-light-mod py-0 border-0" style="width: 30px;" title="Índice de Linhas para Análise de Flexibilidade" onclick="AtualizarGraficos(this)">I</button></div>
+                                                <div class="row p-0 mx-0"><button id="btn-juntas" type="button" class="btn btn-light-mod py-0 border-0" style="width: 30px;" title="Lista de Juntas de Expansão" onclick="AtualizarGraficos(this)">J</button></div>
+                                                <div class="row p-0 mx-0"><button id="btn-memorial" type="button" class="btn btn-light-mod py-0 border-0" style="width: 30px;" title="Memorial de Cálculo" onclick="AtualizarGraficos(this)">M</button></div>
+                                                <div class="row p-0 mx-0"><button id="btn-sistemas" type="button" class="btn btn-light-mod py-0 border-0" style="width: 30px;" title="Análise de Flexibilidade" onclick="AtualizarGraficos(this)">S</button></div>
+                                            </div>
+                                        </div>
+                                        <div class="col" id="StatusEavancos" style="height: 200px; padding-left: 0px;">
+                                    </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col" style="max-width: 10%; padding-left: 0px; padding-right: 0px;">
+                                <div class="row">
+                                    <div class="card" style="width: 18rem; border: 0; margin-top: 35px; margin-bottom: 5px">
+                                        <h1 id="AtividadeRealizada">*</h1>
+                                        <div class="card-body px-0" style="padding-top: 0">
+                                            <p id="AtividadeRealizadaTexto" class="card-text px-0" style="line-height: 1; font-size: 0.75rem">Linhas Calculadas</p>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="card" style="width: 18rem; border: 0">
+                                        <h1 id="TotalAtividades">*</h1>
+                                        <div class="card-body px-0" style="padding-top: 0">
+                                            <p id="TotalAtividadesTexto" class="card-text px-0" style="line-height: 1; font-size: 0.75rem">Total de Linhas</p>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Fim do gráfico linhas-->
+                            <!--Início do gráfico de progresso-->
+                            <div class="col" style="max-width: 20%">
+                                <div>
+                                    <div class="">
+                                        <h3 class="title-2" id="graficoProgressoTexto" >Análise de Flexibilidade</h3>
+                                        <div id="graficoProgresso" style="height: 200px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col" style="max-width: 40%; margin-bottom: auto">
+                                <div class="row"><h3 class="title-2" style="width: 100%" title="Indicadores que incluem as horas de todas as atividades desenvolvidas">Indicadores Globais</h3></div>
+                                <div class="row">
+                                    <div class="col" style="max-width: 70%;">
+                                        <div class="row"><h3 class="title-2 " style="width: 100%">Produtividade</h3></div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="card" style="border: 0; margin-bottom: 5px; padding:0">
+                                                    <h2 id="HorasLinhaGeralTotalCard" style="font-weight: bold">*</h2>
+                                                    <div class="card-body" style="padding: 0">
+                                                        <p class="card-text" style="line-height: 1; font-size: 0.85rem">Índice Global de Horas/Linhas</p>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col" style="max-width: 30%">
+                                        <div class="row"><h3 class="title-2 " style="width: 100%">Qualidade</h3></div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="card" style="border: 0; margin-bottom: 5px; padding:0">
+                                                    <h2 id="IndiceQualidadeCard" class="mousechange" style="font-weight: bold" onclick="MostrarModalGraficoIndiceQualidade()">*</h2>
+                                                    <div class="card-body" style="padding: 0">
+                                                        <p class="card-text" style="line-height: 1; font-size: 0.85rem">Índice Global de Qualidade</p>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row"><h3 class="title-2" style="width: 100%; margin-top: 1.5rem" title="Indicadores que incluem somente as horas da atividade de Análise de Flexibilidade">Indicadores Específicos</h3></div>
+                                <div class="row">
+                                    <div class="col" style="max-width: 70%">
+                                        <div class="row mousechange" data-toggle="collapse" data-target="#indicadoresEspecificos" aria-expanded="false" aria-controls="indicadoresEspecificos">
+                                            <div class="col">
+                                                <div class="card" style="border: 0;  padding:0; margin-bottom: 1rem;">
+                                                    <h4 id="HorasLinhaSistemasFiltro">*</h4>
+                                                    <div class="card-body" style="padding: 0">
+                                                        <p class="card-text" style="line-height: 1; font-size: 0.70rem;" title="Total de horas dos sistemas por total de linhas do projeto">Horas Sistemas/Linhas</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- TODO:
+                                             [X] Três pontos aqui para abrir os indicadores detalhados, deixar dashboard menos poluído -> OK. Feito com collapse --> 
+                                            <div class="col collapse" id="indicadoresEspecificos">
+                                                <div class="card" style="border: 0;  padding:0; margin-bottom: 1rem;">
+                                                    <h4 id="HorasLinhaGeralCard">*</h4> 
+                                                    <div class="card-body" style="padding: 0">
+                                                        <p class="card-text" style="line-height: 1; font-size: 0.70rem;" title="Total de horas dos sistemas por total de linhas calculadas">Horas Sistemas/Total Linhas Calculadas</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col collapse" id="indicadoresEspecificos">
+                                                <div class="card" style="border: 0;  padding: 0; margin-bottom: 1rem;">
+                                                    <h4 id="HorasLinhaR0R1Card">*</h4>
+                                                    <div class="card-body" style="padding: 0">
+                                                        <p class="card-text" style="line-height: 1; font-size: 0.70rem;" title="Horas dos sistemas por linhas calculadas pela primeira vez (R0 e/ou R1)">Horas Sistemas/Linhas Calculadas (R0 + R1)</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col collapse" id="indicadoresEspecificos">
+                                                <div class="card" style="border: 0;  padding: 0;  margin-bottom: 1rem;" title="Horas por linha de R2 em diante">
+                                                    <h4 id="HorasLinhaRS">*</h4>
+                                                    <div class="card-body" style="padding: 0">
+                                                        <p class="card-text" style="line-height: 1; font-size: 0.70rem;" title="Horas de revisão dos sistemas por linhas revisadas">Horas Sistemas/Linhas Calculadas (R2+)</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col" style="max-width: 30%">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="card" style="border: 0; margin-bottom: 5px; padding:0">
+                                                    <h4 id="IndiceQualidadeCardFiltro" class="mousechange" onclick="MostrarModalGraficoIndiceQualidadeFiltro()">*</h4>
+                                                    <div class="card-body" style="padding: 0">
+                                                        <p class="card-text" style="line-height: 1; font-size: 0.75rem">Índice de Qualidade</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                                            <!--Fim do gráfico de progresso-->
+                                                            <!--Início do gráfico pizza-->
+                                                            <!--<div class="col" style="max-width: 25%" id="graficoHorasLinhaPAI">
+                                    <div>
+                                        <div class="" style="">
+                                            <h3 class="title-3 m-b-16" style="font-size: 18px">Horas / Linha por revisão</h3>
+                                            <div id="graficoHorasLinha" style="height: 200px;">
+
+                                            </div>
+
+                                        </div>
+
+
+                        </div>
+
+
+                                    </div>
+
+                                </div>-->
+                                                            <!--Fim do gráfico pizza-->
+                            </div>
+
+                    </center>
+
+                    <center><div class="loadergb" id="loaderTabelaSistema" style="height: 100px; width:100px;display: none"></div></center>
+                    <center>
+                        <div id="TabelaSistemas" style="margin-left: auto; margin-right: auto; font-size:75%;"></div>
+                        <div id="RodapeSistemas" style="margin-left: auto; margin-right: auto; font-size:75%;"></div>
+                    </center>
+
+                  
+                    <div class="row">
+
+                        <!--Início tabela 2-->
+                        <div class="col mx-auto" style="font-size:12px; max-width: 45%">
+
+                            <center><div class="loadergb" id="loaderTabelaLinhas" style="height: 100px; width:100px;display: none"></div></center>
+                            <br />
+                            <center>
+                                <div id="TabelaLinhas" style="margin-left: auto; margin-right: auto;"></div>
+                            </center>
+
+                        </div>
+                        <!--Início do gráfico status X semana-->
+                        <div class="col mx-auto" style="max-width: 50%;">
+                            <div id="GraficoStatusSemana" class="chart-container" style="position: relative; height:250px">
+
+                            </div>
+                            <div style="display: flex;" class="justify-content-center">
+                                <label for="DataInicial" style="padding-right: 10px; line-height: 25px; font-size: 80%">Data Inicial</label>
+                                <input type="date" class="form-control" id="DataInicial" style="width: 200px; font-size: 80%; height: 25px; line-height: 12.5px ">
+                                <label for="DataFinal" style="padding-right: 10px; line-height: 25px; padding-left: 10px; font-size: 80%">Data Final</label>
+                                <input type="date" class="form-control" id="DataFinal" style="width: 200px; font-size: 80%; height: 25px; line-height: 12.5px ">
+                                <button type="button" class="btn btn-warning" style="margin-left: 5px; height: 25px; font-size: 80%; line-height: 12.5px" onclick="FiltrarStatusXSemana()"><b>Filtrar</b></button>
+                            </div>
+                            <div id="ErrosData"></div>
+
+
+                        </div>
+
+                        <!--Fim do gráfico status X semana-->
+                    </div>
+                    <!--Fim tabela 2-->
+                    <div style="margin-top: 5px;">
+                        <button type="button" class="btn btn-info" style="margin-left: auto; margin-right: auto; display: flex;" onclick="location.href='/app/flexibilidade/flxdashExcel/{{ os }}/'">Exportar Relatório</button>
+                        <!-- <a href="/app/flexibilidade/flxdashExcel/{{ os }}/" style="margin-left: auto; margin-right: auto; display: flex; ">
+                        </a> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalReportsSistema" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document" style="max-width: 1000px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="TituloModalReportSistema" style="margin-left: 20px">Reports do Sistema</h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+
+                <div class="input-group mb-3">
+                    <div class="input-group" style="margin-bottom: 15px" id="SistemaCancelado">
+                        <div class="input-group">
+                            <h1 class='mx-auto my-4'>Esse sistema foi cancelado</h1>                          
+                        </div>                        
+                    </div>
+                    <div id="ModalReport3DSistema" style="margin-bottom: 10px">
+                        <div class="input-group mb-3" style="padding: 15px; margin-bottom: 0px !important">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1" style="height: 34px"><b>Status do Report 3D</b></span>
+                            </div>
+                            <input readonly type="text" id="StatusReport3D" min="0" class="form-control" aria-describedby="basic-addon1" style="max-width: 200px; text-align: center">
+                            <button type="button" class="subscribe btn btn-secondary shadow-sm" id="BotaoAcessarReport3D"
+                                    style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; height: 34px; padding-top: 0px; padding-bottom: 0px; width: 150px; margin-left: 20px">
+                                Acessar
+                            </button>
+                        </div>
+                        <div class="loadergb" id="loaderTabelaReports" style="height: 50px; width:50px; display: none"></div>
+                        <div id="nav-tab-card" class="LarguraHead tab-pane fade show active col-12">
+                            <div style="color: #343a40; max-width: 950px; max-height: 82vh; overflow: visible; font-size: 24px; background-color: #c2c8c6; text-align: center; border-left: 2px solid gray; border-right: 2px solid gray; border-top: 2px solid gray; margin-left: 2px; margin-right: 2px"><b>Arquivos</b></div>
+                        </div>
+                        <div id="nav-tab-card" class="tab-pane fade show active col-12">
+                            <div id="ModalReportsSistemaTabela" style="max-width: 950px; max-height: 82vh; overflow: visible; padding: 2px; margin-bottom: 20px; padding-top: 0px"></div>
+                        </div>
+                        <div id="ErrorReportsSistemas"></div>
+                    </div>
+                    <div class="modal-footer" style="width: 100%">
+                        <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                data-dismiss="modal">
+                            Fechar
+                        </button>
+                        <div class="loadergb" id="loaderStatus" style="height: 50px; width:50px; display: none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalGraficosQualidade" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document" style="max-width: 1000px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="TituloModalReportSistema">Gráficos de Avanço dos Indicadores</h5>
+                <!-- TODO:
+                 [X] Indicar área filtradas -> Gráficos de Avanço dos Indicadores das áreas ETAC, TG etc -> Não aplicado. Optou-se por deixar um texto mais genérico "Evolução do Índice de Qualidade das Áreas Filtradas" -->
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+
+                <div class="input-group mb-3">
+                    <div class="loadergb" id="loaderGraficosIndicadores" style="height: 50px; width:50px; display: none"></div>
+                        <div id="nav-tab-card" class="tab-pane fade show active col-12">
+                            <div class="" style="margin-left: 20px; margin-right: 20px">
+                                <div id="GraficoIndicadoresQualidade" class="chart-container mx-auto" style="position: relative; height:250px"></div>
+                                <div style="display: flex;" class="justify-content-center">
+                                    <label for="DataInicialQualidade" style="padding-right: 10px; line-height: 25px; font-size: 80%">Data Inicial</label>
+                                    <input type="date" class="form-control" id="DataInicialQualidade" style="width: 200px; font-size: 80%; height: 25px; line-height: 12.5px ">
+                                    <label for="DataFinalQualidade" style="padding-right: 10px; line-height: 25px; padding-left: 10px; font-size: 80%">Data Final</label>
+                                    <input type="date" class="form-control" id="DataFinalQualidade" style="width: 200px; font-size: 80%; height: 25px; line-height: 12.5px ">
+                                    <button type="button" class="btn btn-warning" style="margin-left: 5px; height: 25px; font-size: 80%; line-height: 12.5px" onclick="CriarGraficoIndiceQualidade()"><b>Filtrar</b></button>
+                                </div>
+                                <div id="ErrosDataQualidade"></div>
+
+
+                            </div>
+                        </div>
+                        <div id="ErrorGraficosIndicadores"></div>
+
+                    <!-- <div class="modal-footer" style="width: 100%">
+                        <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                data-dismiss="modal">
+                            Fechar
+                        </button>
+
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="{% static 'css/flexibilidade/excel-bootstrap-table-filter-style.css' %}" type="text/css" />
+
+<script src="https://jsuites.net/v4/jsuites.js"></script>
+<link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+
+<script src="{% static 'js/flexibilidade/chart/chart.js' %}"></script>
+<script src="{% static 'js/flexibilidade/chart/moment@2.27.0.js' %}"></script>
+<script src="{% static 'js/flexibilidade/chart/chartjs-adapter-moment@0.1.1.js' %}"></script>
+
+<!--<script src="{% static 'js/flexibilidade/flot/jquery.flot.symbol.js' %}"></script>-->
+<!--<script src="{% static 'js/flexibilidade/flot/jquery.flot.axislabels.js' %}"></script>-->
+<script src="{% static 'js/a1flx/excel-bootstrap-table-filter-bundle.js' %}"></script>
+<script src="{% static 'js/flexibilidade/a1flx_p2_dashboards.js' %}"></script>
+
+<!--<script>  // JS do gráfico de progresso de flexibilidade recebendo dados por jinjas conectados ao back-end
+
+        var ctx = document.getElementById("graph_progress");
+        if (ctx) {
+            ctx.height = 500;
+            let progresso = {{ prog_percent|safe }};
+            var myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: {{ prog|safe }},
+                        backgroundColor: [
+                            "rgba(248, 148, 6, 1)",
+                            "rgba(0,0,0,0.07)"
+                        ],
+                        hoverBackgroundColor: [
+                            "rgba(248, 148, 6, 1)",
+                            "rgba(0,0,0,0.07)"
+                        ]
+                    }],
+                    labels: [`Linhas Calculadas (${progresso[0]}%)`, `Linhas não calculadas: (${progresso[1]}%)`]
+                },
+                options: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            fontFamily: 'tahoma'
+                        }
+
+                    },
+                    responsive: true
+                }
+            });
+        }
+
+    </script>-->
+
+<!--<script>  // JS do gráfico de revisões por linhas
+
+    var rev = document.getElementById("rev_graph");
+    var h_rev = {{ horas_rev|safe }};
+
+    rev.height = 370;
+    var graph_rev = new Chart(rev, {
+        type: 'pie',
+        data: {
+          datasets: [{
+            data: h_rev['mean'],
+            backgroundColor: [
+              "rgba(0, 123, 255,0.9)",
+              "rgba(0, 0, 181, 1)",
+              "rgba(200, 230, 30, 1)",
+              "rgba(200, 30, 30, 1)",
+              "rgba(248, 148, 6, 1)",
+              "rgba(102, 148, 6, 1)",
+              "rgba(128, 148, 206, 1)",
+              "rgba(20, 148, 60, 1)",
+              "rgba(148, 0, 20, 1)",
+              "rgba(148, 80, 165, 1)"
+            ],
+            hoverBackgroundColor: [
+              "rgba(0, 123, 255,0.9)",
+              "rgba(0, 0, 181, 1)",
+              "rgba(200, 230, 30, 1)",
+              "rgba(200, 30, 30, 1)",
+              "rgba(248, 148, 6, 1)",
+              "rgba(102, 148, 6, 1)",
+              "rgba(128, 148, 206, 1)",
+              "rgba(20, 148, 60, 1)",
+              "rgba(148, 0, 20, 1)",
+              "rgba(148, 80, 165, 1)",
+              "rgba(0, 200, 165, 1)"
+            ]
+          }],
+          labels: h_rev['rev']
+        },
+        options: {
+          legend: {
+            position: 'top',
+            labels: {
+              fontFamily: 'Poppins'
+            }
+
+          },
+          responsive: true
+        }
+    });
+
+
+    </script>-->
+
+<!--<script>
+
+    const bd_brandProduct3 = 'red';
+    const bd_brandService3 = 'blue';
+    const brandProduct3 = 'transparent';
+    const brandService3 = 'transparent';
+
+    let semanas = {{ semanas|safe }};
+    let dict_dt = {{ dict_status|safe }};
+    var avanco = document.getElementById("graph_av");
+    avanco.height = 440;
+    var graph_avanco = new Chart(avanco, {
+        type: 'line',
+        data: {
+          labels: semanas,
+          datasets: [
+            {
+              label: 'F0',
+              backgroundColor: "#FFFF00",
+              borderColor: "#FFFF00",
+              pointHoverBackgroundColor: '#fff',
+              borderWidth: 3,
+              pointBorderWidth: 1,
+              pointHitRadius: 5,
+              pointRadius: 0,
+              pointBackgroundColor: 'white',
+              showLine: true,
+              data: dict_dt['F0'],
+              pointBackgroundColor: "#FFFF00"
+            },
+            {
+              label: 'F1',
+              backgroundColor: "#FFC000",
+              borderColor: "#FFC000",
+              pointHoverBackgroundColor: '#fff',
+              borderWidth: 3,
+              pointBorderWidth: 1,
+              pointHitRadius: 5,
+              pointRadius: 0,
+              pointBackgroundColor: 'white',
+              showLine: true,
+              data: dict_dt['F1'],
+              pointBackgroundColor: "#FFC000"
+            },
+            {
+              label: 'F2',
+              backgroundColor: '#FF0000',
+              borderColor: '#FF0000',
+              pointHoverBackgroundColor: '#fff',
+               borderWidth: 3,
+              pointBorderWidth: 1,
+              pointHitRadius: 5,
+              pointRadius: 0,
+              pointBackgroundColor: 'white',
+              showLine: true,
+              data: dict_dt['F2'],
+              pointBackgroundColor: '#FF0000'
+            },
+            {
+              label: 'F3',
+              backgroundColor: '#92D000',
+              borderColor: '#92D000',
+              pointHoverBackgroundColor: '#fff',
+               borderWidth: 3,
+              pointBorderWidth: 1,
+              pointHitRadius: 5,
+              pointRadius: 0,
+              pointBackgroundColor: 'white',
+              showLine: true,
+              data: dict_dt['F3'],
+              pointBackgroundColor: '#92D000'
+            },
+            {
+              label: 'F4',
+              backgroundColor: '#00B0F0',
+              borderColor: '#00B0F0',
+              pointHoverBackgroundColor: '#fff',
+              borderWidth: 3,
+              pointBorderWidth: 1,
+              pointHitRadius: 5,
+              pointRadius: 0,
+              pointBackgroundColor: 'white',
+              showLine: true,
+              data: dict_dt['F4'],
+              pointBackgroundColor: '#00B0F0'
+            },
+          ]
+        },
+        options: {
+          maintainAspectRatio: false,
+          legend: {
+            display: false
+          },
+          responsive: true,
+          scales: {
+            xAxes: [{
+              gridLines: {
+                drawOnChartArea: true,
+                color: '#f2f2f2'
+              },
+              ticks: {
+                fontFamily: "tahoma",
+                fontSize: 12
+              }
+            }],
+            yAxes: [{
+              ticks: {
+                beginAtZero: true,
+                maxTicksLimit: 5,
+                stepSize: 50,
+                max: 150,
+                fontFamily: "tahoma",
+                fontSize: 12
+              },
+              gridLines: {
+                display: false,
+                color: '#f2f2f2'
+              }
+            }]
+          },
+          elements: {
+            point: {
+              radius: 3,
+              hoverRadius: 4,
+              hoverBorderWidth: 3,
+              backgroundColor: '#333'
+            }
+          }
+        }
+    });
+
+
+
+    </script>-->
+
+<script> //JS de configuração dos filtros das tabelas
+
+        var table_sis = $('#tb_sis').DataTable({
+            "language": {
+                    "lengthMenu": " Apresetar  _MENU_ linhas por página.",
+                    "zeroRecords": "Não há registros",
+                    "info": "Mostrando a página _PAGE_ de _PAGES_",
+                    "infoEmpty": "Mostrado 0 para 0 de 0 entradas",
+                    "search": "Pesquisar:",
+                    "paginate":{
+                    "next": "Próximo",
+                    "previous":"Anterior",
+                    },
+                    "infoFiltered": "(Filtrando de   _MAX_ registros)",
+                }
+        });
+
+        $('.sis_datatable thead th').each( function (){
+            var title_sis = $(this).text();
+            var input_sis = document.querySelectorAll('input');
+                for(i=0; i<input_sis.length; i++){
+                    if((input_sis[i].getAttribute('placeholder').length-3)<=0)
+                        input_sis[i].setAttribute('size',(input_sis[i].getAttribute('placeholder').length-1));
+                    else
+                        input_sis[i].setAttribute('size',(input_sis[i].getAttribute('placeholder').length-3));
+
+                }
+            $(this).html('<input class="form-control" type="text" placeholder="'+title_sis+'"/>');
+        });
+
+        table_sis.columns().every( function () {
+            var that_sis = this;
+            $('input', this.header() ).on( 'keyup change', function () {
+                if ( that_sis.search() !== this.value ) {
+                    that_sis.search( this.value ).draw();
+                }
+            });
+        });
+
+        // Arruma os filtros da tabela de pipes
+
+        var table_pipe = $('#tb_pipe').DataTable(
+            {
+            "language": {
+                    "lengthMenu": " Apresetar  _MENU_ linhas por página.",
+                    "zeroRecords": "Não há registros",
+                    "info": "Mostrando a página _PAGE_ de _PAGES_",
+                    "infoEmpty": "Mostrado 0 para 0 de 0 entradas",
+                    "search": "Pesquisar:",
+                    "paginate":{
+                    "next": "Próximo",
+                    "previous":"Anterior",
+                    },
+                    "infoFiltered": "(Filtrando de   _MAX_ registros)",
+                }
+            }
+        );
+
+        table_pipe.columns().every( function () {
+            var that = this;
+            $('input', this.header() ).on( 'keyup change', function () {
+                if ( that.search() !== this.value ) {
+                    that.search( this.value ).draw();
+                }
+            });
+        });
+
+
+        $('.pipe_datatable thead th').each( function (){
+            var title = $(this).text();
+            var input = document.querySelectorAll('input');
+                for(i=0; i<input.length; i++){
+                    if((input[i].getAttribute('placeholder').length-3)<=0)
+                        input[i].setAttribute('size',(input[i].getAttribute('placeholder').length-1));
+                    else
+                        input[i].setAttribute('size',(input[i].getAttribute('placeholder').length-3));
+
+                }
+            $(this).html('<input class="form-control" type="text" placeholder="'+title+'"/>');
+        });
+
+
+    </script>
+
+
+
+{% endblock %}
+
+{% block end %}
+
+{% endblock %}

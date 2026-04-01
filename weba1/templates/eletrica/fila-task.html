@@ -1,0 +1,54 @@
+<div class="kv" style="width:100%; height:100%; display:flex; flex-direction:row; align-items:stretch; justify-content:flex-start; gap:20px; padding:0;">
+   <div class="os-glass historico-left" style="flex:1; padding:0; align-self:stretch; margin:0; display:flex; flex-direction:column; min-height:100%; overflow:hidden;">
+      <div class="minhas-tasks-container" style="flex:1; min-height:0; margin:0; display:flex; flex-direction:column; overflow:hidden;">
+         <!-- Cabeçalho fixo (fora do scroll) -->
+         <table class="table table-sm" style="margin:0; table-layout:fixed; width:100%; flex-shrink:0;">
+            <colgroup>
+               <col style="width:22%">
+               <col style="width:36%">
+               <col style="width:24%">
+               <col style="width:18%">
+            </colgroup>
+            <thead>
+               <tr>
+                  <th style="text-align:center; vertical-align:middle;">Status</th>
+                  <th style="text-align:center; vertical-align:middle;">Tarefa</th>
+                  <th style="text-align:center; vertical-align:middle;">Usuário</th>
+                  <th style="text-align:center; vertical-align:middle;">Baixar</th>
+               </tr>
+            </thead>
+         </table>
+         <!-- Corpo rolável (scrollbar começa aqui) -->
+         <div class="tasks-body-scroll" style="flex:1; min-height:0; overflow-y:auto; overflow-x:hidden;">
+            <table id="minhas-tasks-table" class="display table table-sm" style="table-layout:fixed; width:100%; margin:0; word-break:break-word; white-space:normal;">
+               <colgroup>
+                  <col style="width:22%">
+                  <col style="width:36%">
+                  <col style="width:24%">
+                  <col style="width:18%">
+               </colgroup>
+               <tbody>
+                  <!-- linhas preenchidas dinamicamente -->
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+   <div class="os-glass historico-right" style="flex:1; padding:0; display:flex; flex-direction:column; min-height:100%; overflow:hidden;">
+      <!-- Cabeçalho -->
+      <div class="task-detail-header">
+         <i class="fa-solid fa-circle-info" style="margin-right:6px;"></i>Detalhes da Tarefa
+      </div>
+      <!-- Corpo rolável -->
+      <div class="task-detail-body">
+         <table id="outras-tasks-table" class="task-detail-table">
+            <tbody></tbody>
+         </table>
+      </div>
+      <!-- Legenda -->
+      <div class="task-detail-legend">
+         <div><span class="legend-badge legend-heavy">Heavy</span> Processamento AutoCAD/Excel — serializado (uma por vez).</div>
+         <div style="margin-top:4px;"><span class="legend-badge legend-light">Light</span> Tarefas padrão — baixo consumo, podem ser paralelas.</div>
+      </div>
+   </div>
+</div>

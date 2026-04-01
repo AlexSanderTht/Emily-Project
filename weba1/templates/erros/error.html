@@ -1,0 +1,20 @@
+{% extends 'geral/base.html %}
+{%load static%}
+{% block head %}
+<title>Autorização</title>
+{% endblock %}
+{% block help %}
+<h7>Verifique com o seu gestor a autorização para o acesso à essa ferramenta!</h7>
+<br><br>
+{% endblock %}
+{% block main %}
+<div class="container py-5">
+  <div class="row">
+    <div class="col-lg-10 mx-auto">
+      <div class="bg-white rounded-lg p-5">
+        <img src="{% static 'img/error_401_b_teste.png' %}" alt="Sem permissão para utilizar essa ferramenta!">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

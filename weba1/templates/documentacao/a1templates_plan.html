@@ -1,0 +1,354 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+{% block head %}
+    <title>Cadastra Templates Plan</title>
+
+    <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
+    <script src="https://jsuites.net/v4/jsuites.js"></script>
+    <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+    <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
+
+    <style type="text/css">
+
+        .reset-this {
+        all: initial;
+        }
+
+        .label-style {
+            font-size: 15px;
+            font-family: Tahoma;
+            color: black;
+        }
+
+        .custom-button {
+            padding: 2px;
+            color: black;
+            background-color: white;
+            border: 1px solid #000;
+            border-radius: 5px;
+            cursor: pointer;
+            height: 45px;
+            font-size: 15px;
+            font-family: Tahoma;
+        }
+
+        .custom-button:hover {
+            background: #f58c32;
+            color: black
+        }
+
+        #container {
+          overflow: hidden;
+          background: #f5f5f5;
+          height: 50px;
+          width: 250px;
+        }
+
+        .button {
+          width: 100px;
+          height: 30px;
+          background: #ffbe47;
+          color: black;
+        }
+
+         /* Slideshow container */
+        .slideshow-container {
+          position: relative;
+          background: #f1f1f1f1;
+        }
+
+        /* Slides */
+        .mySlides {
+          display: none;
+          padding: 10px;
+          text-align: center;
+        }
+
+        /* Next & previous buttons */
+        .prev, .next {
+          cursor: pointer;
+          position: absolute;
+          top: 50%;
+          width: auto;
+          margin-top: -30px;
+          padding: 16px;
+          color: #888;
+          font-weight: bold;
+          font-size: 20px;
+          border-radius: 0 3px 3px 0;
+          user-select: none;
+        }
+
+        /* Position the "next button" to the right */
+        .next {
+          position: absolute;
+          right: 0;
+          border-radius: 3px 0 0 3px;
+        }
+
+        /* On hover, add a black background color with a little bit see-through */
+        .prev:hover, .next:hover {
+          background-color: rgba(0,0,0,0.8);
+          color: white;
+        }
+
+        /* The dot/bullet/indicator container */
+
+
+        /* The dots/bullets/indicators */
+        .dot {
+          cursor: pointer;
+          height: 15px;
+          width: 15px;
+          margin: 0 2px;
+          background-color: #bbb;
+          border-radius: 50%;
+          display: inline-block;
+          transition: background-color 0.6s ease;
+        }
+
+        /* Add a background color to the active dot/circle */
+        .active, .dot:hover {
+          background-color: #717171;
+        }
+
+        /* Add an italic font style to all quotes */
+        q {font-style: italic;}
+
+        /* Add a blue color to the author */
+        .author {color: cornflowerblue;}
+
+    </style>
+{% endblock %}
+{% block help %}
+   <b> <P>CENTRAL DE AJUDA <img src="{% static 'img/atencao.png'%}"   style="margin-left: 10px;margin-right: 10px;" width="20px" height="20px" ></P></b>
+   <h7>Botão "Zoom Out" aumenta o detalhamento da imagem na tela</h7>
+   <br><br>
+   <h7>Botão "Zoom Out" diminui o detalhamento da imagem na tela </h7>
+   <br><br>
+   <h7>Opção "Selecione O tipo de documento" Nesta opção você irá selecionar o tipo de documento. </h7>
+   <br><br>
+{% endblock %}
+{% block main %}
+
+    <!--inicio da interface -->
+    <br>
+    <center> <h1 class="display-4"><b>A1 Templates Plan</b></h1></center>
+    <br>
+
+     <!-- Slideshow container -->
+    <div class="slideshow-container" style="margin-left: 35px;" id="show_tables">
+
+      <!-- Inserir HTML Adjacente pelo js com as tabelas-->
+
+
+    </div>
+    <br>
+    <table id="cell_table" class="table" data-toggle="table" data-mobile-responsive="true" data-pagination="true" data-height="460" style="margin-left: 40px;"></table>
+    <br>
+    <center><button type="button" style="background-color:#ffbe47;" class="subscribe btn btn-warning  rounded-pill shadow-sm"onclick="document.getElementById('agua-modal').style.display='block'">Finalizar Cadastro</button></center>
+    <br>
+    <div id="agua"><!-- agua -->
+
+        <div id="agua-modal" class="w3-modal">
+            <div class="w3-modal-content modal-style"
+                 style="position: absolute; margin-left: 890px ; top: 400px; width: 370px ; height: 140px;">
+                <div class="w3-container modal-value">
+                    <br>
+                    <table>
+                        <tr>
+                            <td><br><h6>Tem certeza que deseja enviar os cortes realizados?</h6></td>
+                            <td><label id="agua-percent"></label></td>
+                        </tr>
+                    </table>
+                        <tr>
+                            <center><button type="button"; class="subscribe btn btn-success  rounded-pill shadow-sm" onclick="envia_temp('{{ csrf_token }}')"> SIM </button>
+                            <span onclick="document.getElementById('agua-modal').style.display='none'" class="w3-button w3-display-topright">x</span>
+                            <button type="button" class="subscribe btn btn-danger  rounded-pill shadow-sm" onclick="document.getElementById('agua-modal').style.display='none'">NÃO</button></center>
+                            <span onclick="document.getElementById('agua-modal').style.display='none'" class="w3-button w3-display-topright">x</span>
+                        </tr>
+                </div>
+            </div>
+        </div>
+    </div><!-- agua -->
+
+    <script>
+        var campos = {{ campos|safe }};
+        var num_campo = [];
+        var dict_plan = {}; // Dicionário com as coordenadas
+        var prev_crop = 0;  //Variável com o índice da última linha do crop
+        var aux_crop = 0;
+        let table = document.getElementById('cell_table');
+        var options = '';
+        let nan = '';
+        let dict_plans = {{ dict_plan|safe }};
+        let plans = Object.keys(dict_plans);
+        var html_plans = [];
+
+        table.insertAdjacentHTML('afterbegin',`<thead>
+                                                  <tr>
+                                                    <th style="text-align: left">Atributo</th>
+                                                    <th style="text-align: left">Planilha selecionada</th>
+                                                    <th style="text-align: left">Célula</th>
+                                                    <th style="text-align: left">Adicionar/Remover Atributo</th>
+                                                  </tr>
+                                               </thead>`);
+
+        for (p in plans){
+            slideIndex = p;
+            document.getElementById('show_tables').insertAdjacentHTML('afterbegin', ` <div id = "${plans[p]}" style="text-align: center; alignment: center"></div>
+                                                                                      `);
+            
+            let widths = [];
+            for (col in dict_plans[plans[p]][0]){  //Cria vetor com as larguras das colunas
+                if (dict_plans[plans[p]][0][col] > 0){
+                    widths.push(dict_plans[plans[p]][0][col].length*12);  // Largura varia conforme header
+                } else {
+                    widths.push(120);  // Largura varia conforme header
+                }
+
+            }
+
+            var selectionActive = function(instance, x1, y1) {  // Recebe a célula que o usuário escolheu
+                let cellName = jexcel.getColumnNameFromId([x1, y1]);
+                document.getElementById(`cell_${prev_crop}`).value = cellName;
+            };
+
+            var focus = function(instance) {
+                document.getElementById(`plans_${prev_crop}`).value = $(instance).prop('id');
+            };
+
+            $(`#${plans[p]}`).jexcel({
+                data: dict_plans[plans[p]],
+                csvHeaders:true,
+                tableOverflow:true,
+                colWidths: widths,
+                tableHeight:'74vh',
+                tableWidth: '84.5vw',
+                onselection: selectionActive,
+                onfocus: focus,
+                tableHeight:'50vh'
+            });
+        }
+
+        $('#show_tables').interval = false;
+
+        // Cria opções dos comboboxes
+        for(campo in campos) { options += `<option value=${campos[campo]}>${campos[campo]}</option>`; }
+        for(plan in plans) { html_plans += `<option value=${plans[plan]}>${plans[plan]}</option>`; }
+
+        function make_cell(btn_id){
+            if ($(`#plans_${prev_crop}`).val() != '') {
+                if (Object.keys(dict_plan).includes($(`#campos_${btn_id.split('_')[1]}`).val())) {
+                    let confirme = confirm("Esse campo já foi associado a uma área, deseja adicionar à lista?");
+                    if (confirme) {
+                        dict_plan[$(`#campos_${btn_id.split('_')[1]}`).val()].push([$(`#plans_${prev_crop}`).val(), $(`#cell_${prev_crop}`).val()]); //Acrescenta novas coordenadas à chave
+                        console.log(dict_plan);
+                        aux_crop = prev_crop;
+                        prev_crop = btn_id.split('_')[1];
+                        prev_crop = aux_crop; // Equaçaõ de dupla troca, se funciona na química, aqui também vale
+                        nova_linha(); // Cria uma linha após acrescentar os dados à lista
+                        $(`#cell_btn_${prev_crop-1}`).html(`<button id="btn_del_${prev_crop-1}" class="btn btn-outline-danger" onclick="rmv_crop('btn_del_${prev_crop-1}')" style="width: 70px; font-size: 12px">Remover</button>`);
+                    }
+                } else { // Incrementa e cria mais uma linha
+                    dict_plan[$(`#campos_${prev_crop}`).val()] = [[$(`#plans_${prev_crop}`).val(), $(`#cell_${prev_crop}`).val()]]; //Recria chave com a planilha e célula em questão
+                    prev_crop += 1;
+                    $(`#cell_btn_${prev_crop-1}`).html(`<button id="btn_del_${prev_crop-1}" class="btn btn-outline-danger" onclick="rmv_crop('btn_del_${prev_crop-1}')" style="width: 70px; font-size: 12px">Remover</button>`);
+                    nova_linha(); // Cria uma linha após acrescentar os dados à lista
+                }
+            }
+        }
+
+        function rmv_cell(btn_id) {  // Função que remove o crop
+            let atrb = $(`#campos_${btn_id.split('_')[2]}`).val();
+            if (Object.keys(dict_plan).includes(atrb)) { // Se o campo já contém algum valor
+                if (confirm("Deseja mesmo excluir essa linha?")) {
+                    delete dict_plan[atrb]; //Remove aquelas coordenadas pela chave
+                    $(`#row_view_${btn_id.split('_')[2]}`).remove() // Remove a linha d botão selecionado
+                }
+            } else {
+                alert(`O atributo ${atrb} ainda não tem um corte assiciado!`);
+            }
+        }
+
+        function nova_linha() {
+            var row = table.insertRow(1); // Acrescenta ao FINAL da tabela novas linhas
+            row.id = `row_view_${prev_crop}`;
+            for (let i = 0; i < 4; i++) {
+                var cell_i = row.insertCell(i);
+                if (i === 0) { // Combobox com os atributos
+                    cell_i.id = `cell_sel_${prev_crop}`;
+                    cell_i.innerHTML = `<select id="campos_${prev_crop}" name="campos" class="form-control" style="width: 200px; height: 45px; alignment: center" required>${options}</select>`;
+                    cell_i.style.width = '10vw';
+                } else if (i === 1) { // Planilha selecionada
+                    //cell_i.innerHTML = `<select id="plans_${prev_crop}" name="campos" class="form-control" style="width: 200px; height: 45px; alignment: center" required>${html_plans}</select>`;
+                    cell_i.innerHTML = `<input type="text" class="form-control" id="plans_${prev_crop}" name="Linha" required minlength="1" maxlength="4" style="width: 70px" readonly>`;
+                    cell_i.id = `cell_plan_${prev_crop}`;
+                    cell_i.style.width = '15vw';
+                    cell_i.className = "centered";
+                } else if (i === 2) { // Preview da imagem em questão
+                    cell_i.innerHTML = `<input type="text" class="form-control" id="cell_${prev_crop}" name="Linha" required minlength="1" maxlength="4" style="width: 70px" readonly>`;
+                    cell_i.id = `cell_prev_${prev_crop}`;
+                    cell_i.style.width = '15vw';
+                    cell_i.className = "centered";
+                } else { // Botão de acrescentar linha
+                    cell_i.id = `cell_btn_${prev_crop}`;
+                    cell_i.style.width = '10vw';
+                    let btn_id = `btn_${prev_crop}`;
+                    cell_i.innerHTML = `<button id="${btn_id}" class="btn btn-outline-success" onclick="make_cell('${btn_id}')" style="width: 70px; font-size: 12px"> Adiciona </button>`
+                }
+                cell_i.style.verticalAlign = "center"; // Alinha todas as células ao centro
+            }
+        }
+
+        function envia_temp(token){
+            document.getElementById('agua-modal').style.display='none';
+            $.ajax({
+                type: "POST",
+                url: "env",
+                dataType: 'json',
+                data: {'dict_plans':JSON.stringify({'dict_plan':dict_plan}),
+                       'csrfmiddlewaretoken': token},
+                onsuccess: alert('Template cadastrado com sucesso!')
+            });
+            window.location.href = '/app/documentacao/templates_up/'
+        }
+
+        nova_linha(); // Cria a primeira linha ao iniciar a tela
+
+        /*  Permite que várias abas de planilhas sejam cadastradas
+        var slideIndex = 1;
+        showSlides(slideIndex);
+
+        function plusSlides(n) {
+          showSlides(slideIndex += n);
+        }
+
+        function currentSlide(n) {
+          showSlides(slideIndex = n);
+        }
+
+        function showSlides(n) {
+          var i;
+          var slides = document.getElementsByClassName("mySlides");
+          var dots = document.getElementsByClassName("dot");
+          if (n > slides.length) {slideIndex = 1}
+            if (n < 1) {slideIndex = slides.length}
+            for (i = 0; i < slides.length; i++) {
+              slides[i].style.display = "none";
+            }
+            for (i = 0; i < dots.length; i++) {
+              dots[i].className = dots[i].className.replace(" active", "");
+            }
+          slides[slideIndex-1].style.display = "block";
+          dots[slideIndex-1].className += " active";
+        }
+         */
+
+    </script>
+
+{% endblock %}
+
+

@@ -1,0 +1,4 @@
+{% block buttons %}
+<br>
+<button type="button" style="background-color:#ffbe47;" class="subscribe btn btn-warning  rounded-pill shadow-sm" onclick="exclude_selected_data('{{ csrf_token }}', this.parentElement.id)"> Excluir</button>
+{% endblock %}

@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="pt-br">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EIA1Ferramentas — Login</title>
+  <link href="{% static 'vendor/bootstrap-4.1/bootstrap.min.css' %}" rel="stylesheet" media="all" />
+  <link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+
+  <style>
+    /* ─── CSS VARS ───────────────────────────────────────── */
+    :root {
+      --accent:        #f3b768;
+      --accent-hover:  #f6c783;
+      --accent-active: #e7a64f;
+      --accent-dark:   #c8862a;
+      --glass-bg:      linear-gradient(145deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%);
+      --glass-border:  rgba(255,255,255,.32);
+      --glass-radius:  22px;
+      --text-invert:   #ffffff;
+      --text-strong:   #1f1f1f;
+      --text-soft:     #404040;
+      --focus-ring:    0 0 0 3px rgba(243,183,104,.45);
+    }
+
+    /* ─── FUNDO FOSCO / FROSTED BACKGROUND ──────────────── */
+    body {
+      background: #0d0d0d;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(16px, 2vw, 48px);
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: url("{% static 'img/Espaço Inovação.jpg' %}") center center / cover no-repeat;
+      filter: blur(14px) brightness(0.280) saturate(0.55);
+      transform: scale(1.06);
+      z-index: 0;
+    }
+
+
+    
+    /* ─── LAYOUT ─────────────────────────────────────────── */
+    .login-layout {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* ─── WRAPPER CENTRAL ────────────────────────────────── */
+    .login-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+    }
+
+
+
+    /* ─── ESCALA DE TELA (equivalente a zoom 110%) ───────── */
+      .login-layout {
+        zoom: 1.1;
+      }
+      @supports not (zoom: 1) {
+        .login-layout {
+            transform: scale(1.1);
+            transform-origin: top left;
+            width: 90.9091%;
+        }
+      }
+    /* ─── PANEL DE LOGIN ─────────────────────────────────── */
+    .panel-login {
+      width: clamp(320px, 36vw, 460px);
+      background: linear-gradient(145deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.09) 100%) !important;
+      border: 1px solid rgba(255,255,255,.32) !important;
+      border-radius: var(--glass-radius) !important;
+      backdrop-filter: blur(18px) saturate(145%) !important;
+      -webkit-backdrop-filter: blur(18px) saturate(145%) !important;
+      box-shadow: 0 16px 56px -14px rgba(0,0,0,.75), 0 4px 20px -4px rgba(0,0,0,.50) !important;
+      padding: clamp(22px, 2.6vw, 40px) clamp(26px, 3vw, 44px) 30px !important;
+      position: relative !important;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow: hidden !important;
+    }
+    /* reflexo interno */
+    .panel-login::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 16% 8%, rgba(255,255,255,.40), transparent 55%);
+      pointer-events: none;
+      border-radius: var(--glass-radius);
+      z-index: 0;
+    }
+    .panel-login > * { position: relative; z-index: 1; }
+
+    /* ─── BRAND / LOGO ───────────────────────────────────── */
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+    }
+    .brand-logo {
+      width: clamp(160px, 56%, 240px);
+      height: auto;
+      display: block;
+      margin: 0 auto 4px;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,.50));
+    }
+    .brand-title {
+      font-size: clamp(1.1rem, 1.5vw, 1.55rem);
+      font-weight: 700;
+      letter-spacing: .4px;
+      margin: 0;
+      color: var(--text-invert);
+      text-shadow: 0 2px 8px rgba(0,0,0,.60);
+    }
+
+    /* ─── BADGE "EM DESENVOLVIMENTO" ────────────────────── */
+    .dev-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 4px;
+      padding: 5px 13px;
+      border-radius: 999px;
+      background: rgba(243,183,104,.16);
+      border: 1px solid rgba(243,183,104,.40);
+      color: var(--accent);
+      font-size: .70rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .dev-badge i { color: var(--accent-dark); font-size: .75rem; }
+
+    /* ─── FORMULÁRIO ─────────────────────────────────────── */
+    .form-login { display: flex; flex-direction: column; gap: 16px; }
+    .form-group-custom { display: flex; flex-direction: column; gap: 5px; }
+    .field-label {
+      font-size: .74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      color: rgba(255,255,255,.85);
+    }
+    .field-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,.22);
+      border: 1px solid rgba(255,255,255,.42);
+      border-radius: 13px;
+      transition: background .22s, border-color .22s, box-shadow .22s;
+    }
+    .field-wrapper:focus-within {
+      background: rgba(255,255,255,.38);
+      border-color: rgba(255,255,255,.78);
+      box-shadow: var(--focus-ring);
+    }
+    .field-icon {
+      padding: 0 13px;
+      color: #222;
+      opacity: .75;
+      font-size: .88rem;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .field-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 13px 12px 13px 2px;
+      font-size: .93rem;
+      font-weight: 500;
+      color: var(--text-strong);
+      min-width: 0;
+    }
+    .field-input::placeholder { color: rgba(0,0,0,.50); font-weight: 400; }
+    .toggle-pass {
+      position: absolute;
+      right: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,.46);
+      border: 1px solid rgba(255,255,255,.60);
+      border-radius: 8px;
+      width: 36px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      transition: background .15s;
+    }
+    .toggle-pass:hover { background: rgba(255,255,255,.68); }
+
+    /* ─── REMEMBER / AÇÕES ───────────────────────────────── */
+    .row-actions { display: flex; justify-content: space-between; align-items: center; }
+    .remember {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .78rem;
+      color: var(--text-invert);
+      cursor: pointer;
+    }
+    .remember input { accent-color: var(--accent); width: 15px; height: 15px; }
+
+    /* ─── BOTÃO CONECTAR ─────────────────────────────────── */
+    .btn-login {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      padding: 13px 20px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: #2d210c;
+      font-weight: 700;
+      font-size: .93rem;
+      letter-spacing: .03em;
+      box-shadow: 0 6px 22px -6px rgba(200,134,42,.50);
+      transition: filter .16s ease, transform .16s ease, box-shadow .16s ease;
+    }
+    .btn-login:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 28px -8px rgba(200,134,42,.60);
+    }
+    .btn-login:active { transform: translateY(1px); }
+    .btn-login:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+    /* ─── MENSAGENS DE ERRO ──────────────────────────────── */
+    .msg-list {
+      list-style: none;
+      margin: 2px 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .msg-item {
+      font-size: .77rem;
+      padding: 8px 12px;
+      border-radius: 9px;
+      background: rgba(255,255,255,.50);
+      border: 1px solid rgba(255,255,255,.70);
+      color: #111;
+      backdrop-filter: blur(6px);
+    }
+
+    /* ─── RODAPÉ ─────────────────────────────────────────── */
+    .login-foot {
+      font-size: .63rem;
+      text-align: center;
+      color: rgba(255,255,255,.65);
+      margin-top: 2px;
+    }
+
+    /* ─── BANNER "FIREFOX" ───────────────────────────────── */
+    .browser-notice {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 18px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%);
+      border: 1px solid rgba(255,255,255,.26);
+      backdrop-filter: blur(14px) saturate(130%);
+      -webkit-backdrop-filter: blur(14px) saturate(130%);
+      box-shadow: 0 6px 24px rgba(0,0,0,.28), 0 1px 4px rgba(0,0,0,.18);
+      width: clamp(320px, 36vw, 460px);
+    }
+    .browser-notice-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(243,183,104,.18);
+      border: 1px solid rgba(243,183,104,.40);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .browser-notice-text { display: flex; flex-direction: column; gap: 1px; }
+    .browser-notice-text strong {
+      font-size: .74rem;
+      font-weight: 700;
+      color: var(--text-invert);
+    }
+    .browser-notice-text span {
+      font-size: .68rem;
+      color: rgba(255,255,255,.70);
+    }
+    .browser-notice-text b { color: var(--accent); }
+
+    /* ─── RESPONSIVO ─────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .panel-login, .browser-notice { width: 100%; }
+      body { padding: 20px 14px; }
+    }
+    @media (max-width: 420px) {
+      .brand-logo { width: 68%; }
+      .row-actions { flex-direction: column; gap: 10px; align-items: flex-start; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .btn-login, .panel-login, .field-wrapper, .toggle-pass { transition: none !important; }
+    }
+
+    /* ─── OVERLAY DE SAÍDA ───────────────────────────────── */
+    #page-exit-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0d0d0d;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .42s cubic-bezier(.4,0,.2,1);
+    }
+    #page-exit-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    /* sutil encolhimento do painel ao sair */
+    .login-center.exiting .panel-login,
+    .login-center.exiting .browser-notice {
+      transition: opacity .38s ease, transform .38s ease !important;
+      opacity: 0;
+      transform: scale(0.97) translateY(-6px);
+    }
+  </style>
+</head>
+<body>
+
+  <main class="login-layout" aria-labelledby="titulo-login">
+    <div class="login-center">
+
+      <!-- ── PAINEL DE LOGIN ── -->
+      <section class="panel-login" role="form">
+
+        <div class="brand-block">
+          <img src="{% static 'img/logo1.png' %}" alt="Logo EIA1" class="brand-logo" style="width: 320px; max-width: 100%;" decoding="async" fetchpriority="high">
+          <h1 id="titulo-login" class="brand-title">Acesso ao sistema</h1>
+          <span class="dev-badge">
+            <i class="fa-solid fa-screwdriver-wrench fa-xs"></i>
+            Sistema em desenvolvimento
+          </span>
+        </div>
+
+        <form class="form-login" method="post" autocomplete="on" novalidate>
+          {% csrf_token %}
+
+          <div class="form-group-custom">
+            <label for="id_username" class="field-label">Usuário</label>
+            <div class="field-wrapper">
+              <span class="field-icon"><i class="fas fa-user"></i></span>
+              <input id="id_username" name="username" type="text" class="field-input"
+                     placeholder="nome.ultimosobrenome" autofocus required>
+            </div>
+          </div>
+
+          <div class="form-group-custom">
+            <label for="id_password" class="field-label">Senha</label>
+            <div class="field-wrapper">
+              <span class="field-icon"><i class="fas fa-key"></i></span>
+              <input id="id_password" name="password" type="password" class="field-input"
+                     placeholder="••••••••" required minlength="3">
+              <button type="button" class="toggle-pass" aria-label="Mostrar senha" title="Mostrar senha">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="row-actions">
+            <label class="remember">
+              <input type="checkbox" name="remember"> <span>Lembrar</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-login">
+            <i class="fa-solid fa-arrow-right-to-bracket fa-sm" style="margin-right:6px;"></i>
+            Conecte-se
+          </button>
+
+          {% if messages %}
+            <ul class="msg-list" role="alert">
+              {% for message in messages %}
+                <li class="msg-item">
+                  <i class="fa-solid fa-circle-exclamation fa-xs" style="margin-right:5px; color:#c0392b;"></i>
+                  {{ message }}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </form>
+
+        <footer class="login-foot">© {{ now|default:2026 }} EIA1Ferramentas</footer>
+      </section>
+
+      <!-- ── BANNER FIREFOX ── -->
+      <div class="browser-notice" role="note" aria-live="polite">
+        <span class="browser-notice-icon" aria-hidden="true">
+          <i class="fas fa-exclamation-triangle"></i>
+        </span>
+        <div class="browser-notice-text">
+          <strong>Para MELHOR compatibilidade e desempenho,</strong>
+          <span>recomendamos utilizar o <b>Mozilla Firefox</b>.</span>
+        </div>
+      </div>
+
+    </div><!-- /login-center -->
+  </main>
+
+  <!-- overlay de transição de saída -->
+  <div id="page-exit-overlay" aria-hidden="true"></div>
+
+  <script>
+    /* ── toggle senha ── */
+    (function(){
+      const btn   = document.querySelector('.toggle-pass');
+      const input = document.getElementById('id_password');
+      if(btn && input){
+        btn.addEventListener('click', () => {
+          const show = input.type === 'password';
+          input.type = show ? 'text' : 'password';
+          btn.firstElementChild.classList.toggle('fa-eye');
+          btn.firstElementChild.classList.toggle('fa-eye-slash');
+          btn.setAttribute('aria-label', show ? 'Ocultar senha' : 'Mostrar senha');
+        });
+      }
+    })();
+
+    /* ── transição de saída ao fazer login ── */
+    (function(){
+      const form    = document.querySelector('.form-login');
+      const overlay = document.getElementById('page-exit-overlay');
+      const center  = document.querySelector('.login-center');
+      if(!form || !overlay) return;
+
+      let submitting = false;
+      form.addEventListener('submit', function(e){
+        if(submitting) return; // segunda chamada (do .submit()) — deixa passar
+        e.preventDefault();
+        submitting = true;
+        const self = this;
+        // inicia animação de saída
+        if(center) center.classList.add('exiting');
+        requestAnimationFrame(() => {
+          overlay.classList.add('active');
+          setTimeout(() => self.submit(), 440);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

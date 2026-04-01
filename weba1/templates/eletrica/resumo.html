@@ -1,0 +1,112 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="tipocaboLabel">Setup Memorial de Cálculos</h5>
+</div>
+<div class="modal-body">
+    <div class="row"  ><!-- dentro do area-->
+        
+        <fieldset class="fieldset-border">
+            <legend class="legend-border">Caminhos templates - Motor </legend>
+            <div class="col" >
+                <div class="col-sm-12">
+                    <div class="form-group mb-4">Memorial de cálculo de cabos de força - Partida Direta
+                        <td><select multiple  required class="form-control " id="acessos-list" style="width:850px; height: 50px;" onclick="select_path(this.value)"></select></td> 
+                        <br>
+                        <div style="float: right;">
+                            <button type="button" class="btn btn-secondary"  >Excluir</button>
+                            <button type="button" class="btn btn-secondary" >...</button>
+                        </div>  
+                    </div>
+                </div>
+            </div>
+
+            <div class="col" >
+                <div class="col-sm-12">
+                    <div class="form-group mb-4">Memorial de cálculo de cabos de força - Partida com inversor
+                        <td><select multiple  required class="form-control " id="acessos-list" style="width:850px ; height: 50px;"onclick="select_path(this.value)"></select></td>
+                        <br>
+                        <div style="float: right;">
+                            <button type="button" class="btn btn-secondary"  >Excluir</button>
+                            <button type="button" class="btn btn-secondary" >...</button>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+
+            <div class="col" >
+                <div class="col-sm-12">
+                    <div class="form-group mb-4">Memorial de cálculo de cabos de força - Partida com soft starter
+                        <td><select multiple  required class="form-control " id="acessos-list" style="width:850px ; height: 50px;"onclick="select_path(this.value)"></select></td>
+                        <br>
+                        <div style="float: right;">
+                            <button type="button" class="btn btn-secondary"  >Excluir</button>
+                            <button type="button" class="btn btn-secondary" >...</button>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+            <br>
+
+            <fieldset class="fieldset-border">
+                <legend class="legend-border">Caminhos templates - Painel </legend>
+                <div class="col" >
+                    <div class="col-sm-12">
+                        <div class="form-group mb-4">Memorial de cálculo de cabos de força 
+                            <td><select multiple  required class="form-control " id="acessos-list" style="width:800px; height: 50px;" onclick="select_path(this.value)"></select></td>
+                            <br>
+                            <div style="float: right;">
+                                <button type="button" class="btn btn-secondary"  >Excluir</button>
+                                <button type="button" class="btn btn-secondary" >...</button>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </fieldset>    
+
+            <fieldset class="fieldset-border">
+                <legend class="legend-border">Caminhos templates - Transformador </legend>
+                <div class="col" >
+                    <div class="col-sm-12">
+                        <div class="form-group mb-4">Memorial de cálculo de cabos de força - Transformador
+                            <td><select multiple  required class="form-control " id="acessos-list" style="width:800px; height: 50px;"onclick="select_path(this.value)"></select></td>
+                            <br>
+                            <div style="float: right;">
+                                <button type="button" class="btn btn-secondary"  >Excluir</button>
+                                <button type="button" class="btn btn-secondary" >...</button>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="fieldset-border">
+                <legend class="legend-border">Caminhos templates - Cargas Auxiliares </legend>
+                <div class="col" >
+                    <div class="col-sm-12">
+                        <div class="form-group mb-4">Memorial de cálculo de cabos de força - Cargas Auxiliares
+                            <td><select multiple  required class="form-control " id="acessos-list" style="width:800px;height: 50px; "onclick="select_path(this.value)"></select></td>
+                            <br>
+                            <div style="float: right;">
+                                <button type="button" class="btn btn-secondary"  >Excluir</button>
+                                <button type="button" class="btn btn-secondary" >...</button>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </fieldset>   
+        </fieldset>
+        <div class="col-sm-2" >
+            <div class="form-group mb-4">
+                <td placeholder="Digite aqui"   data-toggle="" title="Selecionar a pasta do projeto">Distância Média 
+                    <input type="text" required class="form-control" id="os-path" >
+                </td>
+            </div>
+        </div>  
+    </div> 
+
+       
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-warning" style="float: left;" >Renomeia Arquivos</button>
+    <button type="button" class="btn btn-warning" >Atualizar Memorial</button>
+    <button type="button" class="btn btn-warning" >Fechar</button>
+</div>

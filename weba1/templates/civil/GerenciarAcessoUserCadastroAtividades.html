@@ -1,0 +1,53 @@
+
+{%extends 'geral/base.html'%}
+
+{% load static %}
+
+{%block 'titulo'%}Gerenciamento de Acessos - Cadastro Atividades{%endblock%}
+
+{%block 'conteudo' %}
+
+ {% if Admin %}
+<h1> <center>Gerenciar Acessos - Cadastro Atividades</center> </h1>
+
+
+ <div class="col-lg-7 mx-auto">
+           <div class="bg-white rounded-lg shadow-sm p-5" style="width: 100%">
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+                        <div id="ResultadoPesquisa">
+                            <table id="Tabela">
+                                <tr>
+                                     <th>Nome</th>
+                                    <th>Usuário A1</th>
+                                    <th> - </th>
+                                </tr>
+                                 {% for adm in UsuariosCadastroAtividades %}
+                                    <tr>
+                                        <td>{{ adm.Nome }}</td>
+                                        <td>{{ adm.UsuarioLoginA1 }}</td>
+                                        <td> <button value="RemoverUsuario" class="shadow-sm btn btn-danger btn-sm" style="width: 25px; padding: 0px" onclick="window.location='/ApagarUsuarioCadastroAtividades/%{{ adm.id }}'" title="Remover Usuário">[X]</button></td>
+                                    </tr>
+                                 {% endfor %}
+                            </table>
+                            <br/>
+                               <button class="subscribe btn btn-warning  rounded-pill shadow-sm" style="background-color:#ffbe47;" onclick="window.location='/AdicionarUsuarioCadastroAtividades';">Adicionar Usuários</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+{% else %}
+    <h1> Acesso não permitido </h1>
+{% endif %}
+
+
+
+
+
+
+
+{%endblock%}

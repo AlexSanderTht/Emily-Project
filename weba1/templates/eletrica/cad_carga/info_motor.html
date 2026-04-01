@@ -1,0 +1,131 @@
+<!--############################################# Informações do Motor ##############################################-->
+
+{%block info_motor%}
+    <div class="nome_origem">
+        <button  class="btn_mais" data-toggle="collapse" href="#CargaColapseMenuMotor" role="button" aria-expanded="false" aria-controls="CargaColapseMenuMotor" >
+            +
+        </button>Motor
+    </div>
+
+    <div class="collapse" id="CargaColapseMenuMotor">
+        <div class="card card-body bg-gray" id="CargaInforMotor" >
+            <div class="origem">
+                <h6 > Motor </h6>
+            </div>
+
+            <div class="form-row">
+
+                <!--Inicio do bloco rot-->
+                <div class="col-sm-2 col-lg-3">
+                    <div class="form-group mb-4">
+                        <label for="CargRPM"  title="Inserir número do rot">Rot (rpm)</label>
+                                    <input type="text" required class="form-control" id="CargRPM" >
+                    </div>
+                </div>
+                <!--Fim do bloco rot-->
+
+                 <!--Inicio do bloco polos-->
+                <div class="col-sm-2 col-lg-3">
+                    <div class="form-group mb-4">
+                        <label for="CargaPolos" data-toggle="" title="Inserir número do polos">N° Polos</label>
+                        <input type="text" required class="form-control" id="CargaPolos" >
+                    </div>
+                </div>
+                <!--Fim do bloco polos-->
+
+
+                <!--Inicio do bloco Tipo Rotor-->
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label for="CargaTipoRotor" data-toggle="" title="Inserir número do Fornecedor">Tipo Rotor</label>
+                        <input type="text" required class="form-control" id="CargaTipoRotor" >
+                    </div>
+                </div>
+                <!--Fim do bloco Tipo Rotor-->
+
+                <!--Inicio do bloco Tipo Motor-->
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label for="CargaTipoMotor" data-toggle="" title="Inserir número do Fornecedor">Tipo Motor</label>
+                        <input type="text" required class="form-control" id="CargaTipoMotor" >
+                    </div>
+                </div>
+                <!--Fim do bloco Tipo Motor-->
+
+                <!--Inicio do bloco carcaça-->
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label for="CargaCarcaca">Carcaça</label>
+                        <input type="text" name="tipo_subarea" id="CargaCarcaca" class="form-control">
+                    </div>
+                </div>
+                <!--Fim do bloco carcaça-->
+
+                <!--Inicio do bloco IP/IN-->
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label for="CargaIpIn" title="Inserir número do IP/IN">IP/IN</label>
+                        <input type="text" required class="form-control" id="CargaIpIn"  onchange="VerifyCorrentePartidaEquip(this)">
+                    </div>
+                </div>
+                <!--Fim do bloco IP/IN-->
+
+                <!--Inicio do bloco T. Partida-->
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label  for="CargaTipoPartida">T. Partida</label>
+                        <select onchange="change_tipo_partida()" id="CargaTipoPartida" class="form-control">
+                            <option value="none" title=" ## " selected>---</option>
+                            {% for NomePartida, DescPartida, TipoPartida, IdPartida in TiposPartida %}
+                                <option value="{{IdPartida}}" title="{{DescPartida}}##{{TipoPartida}}">{{NomePartida}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <!--Fim do bloco T. Partida-->
+
+                <!--Inicio do bloco Partida descrição-->
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label for="CargaPartidaDescricao" >Partida Descrição</label>
+                        <input type="text" required class="form-control" id="CargaPartidaDescricao" readonly>
+                    </div>
+                </div>
+                <!--Fim do bloco Partida descrição-->
+
+                <!--Inicio do bloco Partida Tipo-->
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label for="CargaPartidaTipo" >Partida Tipo</label>
+                        <input type="text" required class="form-control" id="CargaPartidaTipo" readonly>
+                    </div>
+                </div>
+                <!--Fim do bloco Partida Tipo-->
+
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label for="CargaPartidaTipo" >FP Partida</label>
+                        <input type="number" class="form-control" id="CargaFpPartida">
+                    </div>
+                </div>
+
+                <br>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        function change_tipo_partida(){
+            var Partida = document.getElementById('CargaTipoPartida').selectedOptions
+
+            if (Object.keys(Partida).length){
+            Partida = Partida[0].title
+            document.getElementById('CargaPartidaDescricao').value = Partida.split('##')[0];
+            document.getElementById('CargaPartidaDescricao').title = Partida.split('##')[0];
+            document.getElementById('CargaPartidaTipo').value = Partida.split('##')[1];
+            document.getElementById('CargaPartidaTipo').title = Partida.split('##')[1];
+
+           }
+        }
+    </script>
+{%endblock info_motor%}

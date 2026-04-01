@@ -1,0 +1,101 @@
+
+{%extends 'geral/base.html'%}
+
+{% load static %}
+
+{%block 'titulo'%}Carregar Report 3D{%endblock%}
+
+{%block 'conteudo' %}
+    <div id="image-box"></div>
+        <div class="col-lg-7 mx-auto">
+            <div class="bg-white rounded-lg shadow-sm p-5">
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+                        <div>
+                            <div class="dochead"> 
+                            <span class="dhead" style="width:100px">Upload de Modelo de Cálculo</span>
+                            </div>
+                            <br/>
+                             
+                            <div class="document">
+                                <div class="docheadFilho">
+                                    <span class="dheadFilho">Carregar Arquivo</span>
+                                </div>
+                                <div class="dcontent">
+                                     <div id="alert-box">
+
+
+                                    </div>
+                                     Carregar arquivo de cálculo do Caesar II para o banco de dados
+                                   </br>
+
+                                    </br>
+
+                            </div>
+                                 <div id="progress-box" class="not-visible">progress</div>
+                                   <div id="cancel-box" class="not-visible">
+                                   <button id="cancel-btn" class="btn btn-danger">Cancelar</button>
+                                 </div>
+                                 <div class='progress-wrapper'>
+                                             <div id='progress-bar' class='progress-bar' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                                              </div>
+                                   <div id="progress-bar-message"></div>
+                            
+                            </br>
+                            </div>
+                           
+                        </div>
+                    </div>        
+                </div>
+            </div>
+        </div>
+
+
+<script src="{% static 'js/scriptsgb/UploadArquivoCompleto.js' %}"></script>
+
+<script src="{% static 'js/celery_progress/celery_progress.js' %}"></script>
+
+
+<script>
+ document.getElementById('progress-bar-message').innerHTML = (
+        "Inicializando..."
+        );
+
+
+var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
+
+
+
+        CeleryProgressBar.initProgressBar(progressUrl, {
+     onSuccess: processResult,
+     onProgress: customProgress
+   });
+
+document.getElementById('progress-bar-message').innerHTML = (
+        "Inicializando..."
+        );
+
+function processResult(resultElement, result) {
+	 document.getElementById('progress-bar-message').innerHTML = (
+        "Processo Concluído!"
+        );
+	}
+
+
+function customProgress(progressBarElement, progressBarMessageElement, progress) {
+    progressBarElement.innerHTML = progress.percent + '%';
+    progressBarMessageElement.innerHTML = (
+     progress.description
+    );
+    progressBarElement.style.width = progress.percent + "%";
+}
+
+
+
+
+</script>
+
+
+
+
+{%endblock%}

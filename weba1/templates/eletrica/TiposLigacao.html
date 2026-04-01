@@ -1,0 +1,49 @@
+{% block tipos_ligacao %}
+{% load static %}
+    <div class="modal-header">
+        <h5 class="modal-title text-center w-100" id="setupLabel">Tipos de Alimentação</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <br>
+    <!--------------------Inicio da Interface-------------------->
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="row ml-2 mr-2">
+                    <label>Código:</label>
+                    <input type="text" class="form-control" id="type-lig-cod">
+                </div>
+
+                <div class="row ml-2 mr-2 mt-2">
+                    <label>Descrição:</label>
+                    <input type="text" class="form-control" id="type-lig-desc">
+                </div>
+
+            </div>
+
+            <div class="col-lg-4 border-left">
+                <div class="row ml-2">
+                    <label>Pesquisa:</label>
+                    <input type="text" class="form-control" id="type-lig-search" onkeyup="FilterTipoAli(this.value)">
+                </div>
+
+                <div class="row ml-2 mt-2">
+                    <select id="type-lig-all-types" required class="form-control" multiple>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+    </div><!--------------------Fim da Interface-------------------->
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="RegisterOrUpdateTipoAli()">Adicionar/Atualizar</button>
+        <button type="button" class="btn btn-warning" onclick="CleanFormsTipoAli()">Limpar</button>
+        <button type="button" class="btn btn-danger" onclick="DeleteTipoAli()">Excluir</button>
+<!--        <button type="button" class="btn btn-dark" onclick="$('#tipos-ligacao').modal('hide')">Fechar</button>-->
+    </div>
+
+<script src="{% static 'js/eletrica/A1Pro/TiposAli.js' %}"></script>
+{% endblock %}

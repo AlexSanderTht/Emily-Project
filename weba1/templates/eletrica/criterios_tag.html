@@ -1,0 +1,42 @@
+{% load static %}
+{% block criterios_tag %}
+      <div class="modal-header">
+        <h5 class="modal-title" id="gavetasLabel">Critérios de Formação de TAG</h5>
+        <button type="button" class="close" onclick="HideModalFTag()">
+           <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <div class="modal-body">
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item" id="crit-tag-alimentacao-nav">
+                <a class="nav-link" onclick="working_with_nav_menu('crit-tag-alimentacao',['crit-tag-alimentacao', 'crit-tag-sinal', 'crit-tag-acessorio', 'crit-tag-neutro', 'crit-tag-terra'])"><b>Alimentação</b></a>
+              </li>
+              <li class="nav-item" id="crit-tag-neutro-nav">
+                <a class="nav-link" onclick="working_with_nav_menu('crit-tag-neutro',['crit-tag-alimentacao', 'crit-tag-sinal', 'crit-tag-acessorio', 'crit-tag-neutro', 'crit-tag-terra'])"><b>Neutro</b></a>
+              </li>
+              <li class="nav-item" id="crit-tag-terra-nav">
+                <a class="nav-link" onclick="working_with_nav_menu('crit-tag-terra',['crit-tag-alimentacao', 'crit-tag-sinal', 'crit-tag-acessorio', 'crit-tag-neutro', 'crit-tag-terra'])"><b>Terra</b></a>
+              </li>
+              <li class="nav-item" id="crit-tag-sinal-nav">
+                <a class="nav-link" onclick="working_with_nav_menu('crit-tag-sinal',['crit-tag-alimentacao', 'crit-tag-sinal', 'crit-tag-acessorio', 'crit-tag-neutro', 'crit-tag-terra']); pick_datas_sinais_for_fill_selects()"><b>Sinal</b></a>
+              </li>
+              <li class="nav-item" id="crit-tag-acessorio-nav">
+                <a class="nav-link" onclick="working_with_nav_menu('crit-tag-acessorio',['crit-tag-alimentacao', 'crit-tag-sinal', 'crit-tag-acessorio', 'crit-tag-neutro', 'crit-tag-terra']); pick_datas_acess_for_fill_selects()"><b>Acessório</b></a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+        <br>
+        {% include './formacao_tag/crit-tag-alimentacao.html' %}
+        {% include './formacao_tag/crit-tag-terra.html' %}
+        {% include './formacao_tag/crit-tag-neutro.html' %}
+        {% include './formacao_tag/crit-tag-sinal.html' %}
+        {% include './formacao_tag/crit-tag-acessorio.html' %}
+        {% include './formacao_tag/caracteres.html' %}
+    </div>
+
+<script src="{% static 'js/eletrica/A1Pro/CriterioFTag.js' %}"></script>
+{% endblock %}

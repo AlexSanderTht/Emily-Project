@@ -1,0 +1,310 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Portal Documentação</title>
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/dropzone.css' type='text/css' rel='stylesheet'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/dropzone.js' type='text/javascript'></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
+    <meta charset="utf-8">
+    <style type="text/css">
+        .reset-this {
+		all: initial;
+		}
+
+		.redo-fieldset {
+			border: 1px solid black;
+			padding : 20px;
+		}
+
+		.redo-legend {
+			color: black;
+		}
+
+        .legend-style {
+            color: black;
+            font-size: 20px;
+            font-family: Tahoma;
+            text-transform: uppercase;
+        }
+
+        .label-style {
+            font-size: 15px;
+            font-family: Tahoma;
+            color: black;
+        }
+
+		.custom-button {
+			padding: 2px;
+			color: black;
+			background-color: white;
+			border: 1px solid #000;
+			border-radius: 5px;
+			cursor: pointer;
+			height: 45px;
+			font-size: 15px;
+            font-family: Tahoma;
+		}
+
+		.custom-button:hover {
+			background: #f58c32;
+			color: black
+		}
+
+        .custom-logo {
+			padding: 2px;
+			color: black;
+			background-color: white;
+			border: 1px solid #000;
+			border-radius: 5px;
+			height: 45px;
+		}
+
+        /* Style the tab */
+        .tab {
+          overflow: hidden;
+          border: 1px solid #ccc;
+          background-color: #f1f1f1;
+        }
+
+        /* Style the buttons that are used to open the tab content */
+        .tab button {
+          background-color: inherit;
+          float: left;
+          border: none;
+          outline: none;
+          cursor: pointer;
+          padding: 14px 16px;
+          transition: 0.3s;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+          background-color: #f8ae6d;
+        }
+
+        /* Create an active/current tablink class */
+        .tab button.active {
+          background-color: #f58c32;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+          display: none;
+          padding: 6px 12px;
+          border: 1px solid #ccc;
+          border-top: none;
+          background-color: #cccccc;
+        }
+
+        .sortable {
+          padding: 0;
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          -khtml-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        }
+        .sortable li {
+            display: flex;
+            float: left;
+            width: 200px;
+            height: 75px;
+            overflow:hidden;
+            border:1px solid black;
+            margin:5px;
+            justify-content: left;
+            align-items: center;
+        }
+        li.sortable-placeholder {
+                border: 1px dashed #CCC;
+                background: none;
+            }
+    </style>
+    <script type="text/javascript">
+		function setToNormal(){
+			$('#explainText').text('Posicione o cursor sobre um botão para visualizar aqui a sua funcionalidade');
+		}
+		function explainText(text){
+			$('#explainText').text(text);
+		}
+
+		function explainText2(text){
+			$('#explainText2').text(text);
+		}
+    </script>
+</head>
+<body style="background-color: #f58c32">
+    <div style="overflow: scroll; height: 50vh; min-width: 650px">
+        <form action="{% url 'portal_doc' %}" method="POST" enctype="multipart/form-data" class="sortable dropzone" style="overflow: auto; min-height: 50vh">
+            {% csrf_token %}
+            <div class="fallback">
+            </div>
+        </form>
+    </div>
+    <br>
+    <table style="background-color: #cccccc; margin: auto; width: 500px">
+        <tr>
+            <td style="width:300px;">
+                <label for="item" class="label-style">Selecione o tipo de documento:</label>
+            </td>
+            <td>
+                <select name="tipo_item" class="label-style" style="width: 200px">
+                    {% for key, value in tipo_item%}
+                        <option value={{ key }}>{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="item" class="label-style">Selecione a OS:</label>
+            </td>
+            <td>
+                <select name="os" class="label-style" style="width: 200px">
+                    {% for x in os%}
+                        <option value={{ x }}>{{ x }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="tab" style="width: 100%">
+                    <button class="tablinks custom-button" onclick="openTool(event, 'Robodoc')">Robodoc</button>
+                    {% if doc %}
+                        <button class="tablinks custom-button" onclick="openTool(event, 'Listdoc')">Listdoc</button>
+                    {% endif %}
+                </div>
+                <div id="Robodoc" class="tabcontent" style="height: 130px">
+                    {% if doc %}
+                        <input name="button" type="button" class="custom-button" value='Verificar Arquivos' onclick="clicked(this.value)" onmouseover="explainText('Verifica se o contéudo do documento está conforme o cadastro no greendocs.')" onmouseleave="setToNormal()">
+                    {% endif %}
+                    <input name="button" type="button" class="custom-button" value='Enviar Arquivos' onclick="clicked(this.value)" onmouseover="explainText('Verifica a atividade do documento e realiza o upload para o greendocs.')" onmouseleave="setToNormal()">
+                    <div id="explainText" class="label-style" style="font-size: 16px; font-weight: 400; padding: 1px">
+                        Posicione o cursor sobre um botão para visualizar aqui a sua funcionalidade
+                    </div>
+                </div>
+                <div id="Listdoc" class="tabcontent" style="height: 130px">
+                    <input name="button" type="button" class="custom-button" value='Gerar LD' onclick="clicked(this.value)" onmouseover="explainText2('Esse botão descompacta as GRs e faz triagem dos documentos, classificando-os Em: Novos, Cadastrados, Comentados e Revisão menor.')" onmouseleave="setToNormal()">
+                    <input name="button" type="button" class="custom-button" value='Upload New' onclick="clicked(this.value)" onmouseover="explainText2('Faz upload das LDs de documentos com revisão menor ou igual a do greendocs, caso desejado pela LD_REV_MENOR_+num_gr.')" onmouseleave="setToNormal()">
+                    <input name="button" type="button" class="custom-button" value='Upload Letra' onclick="clicked(this.value)" onmouseover="explainText2('Upload dos arquivos de LD que apresentem revisão comentada no greendocs, linhas de documentos não desejadas para atualização devem ser deletadas.')" onmouseleave="setToNormal()">
+                    <div id="explainText2" class="label-style" style="font-size: 16px; font-weight: 400; padding: 1px">
+                        Posicione o cursor sobre um botão para visualizar aqui a sua funcionalidade
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+               <img src="{% static 'img/logo.png %}" alt="logo" style="margin-top: 5px" class="custom-logo">
+           </td>
+        </tr>
+    </table>
+
+    <ul>
+        <div class="preview" style="display:none;">
+            <li>
+                <div style="margin-left: -25px; margin-top: -10px">
+                    <div class="dz-preview dz-file-preview">
+                      <div class="dz-details">
+                        <table>
+                            <tr>
+                                <td>
+                                    <div class="dz-filename"><span data-dz-name></span></div>
+                                    <div class="dz-size" data-dz-size></div>
+                                </td>
+                                <td>
+                                    <img style="width: 40px; height: 40px; cursor: pointer" src="{% static 'img/file_delete.png' %}" alt="Clique aqui para remover esse arquivo." data-dz-remove />
+                                </td>
+                            </tr>
+                        </table>
+                      </div>
+                      <div class="dz-progress" style="margin-left: 40px; margin-top: 18px; background-color: #f8ae6d"><span class="dz-upload" data-dz-uploadprogress></span></div>
+                      <div class="dz-success-mark"><span></span></div>
+                      <div class="dz-error-mark"><span></span></div>
+                      <div class="dz-error-message"><span data-dz-errormessage></span></div>
+                    </div>
+                </div>
+            </li>
+        </div>
+    </ul>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.sortable').sortable();
+        });
+
+        Dropzone.autoDiscover = false;
+        var myDropzone = new Dropzone(".dropzone", {
+            autoProcessQueue: false,
+            parallelUploads: 100,// Number of files process at a time (default 2)//
+            maxFiles: 100,
+            uploadMultiple: true,
+            dictDefaultMessage: 'Arraste os arquivos aqui.',
+            previewTemplate: $('.preview').html(),
+            init: function() {
+                this.on('completemultiple', function (file, json) {
+                    $('.sortable').sortable('enable');
+                });
+
+                this.on("queuecomplete", function () {
+                    window.location.href = '/render_task/';
+                });
+
+                this.on("addedfile", function(file) {
+                    if (this.files.length) {
+                        var _i, _len;
+                        for (_i = 0, _len = this.files.length; _i < _len - 1; _i++) // -1 to exclude current file
+                        {
+                            if(this.files[_i].name === file.name && this.files[_i].size === file.size && this.files[_i].lastModified.toString() === file.lastModified.toString())
+                            {
+                                this.removeFile(file);
+                            }
+                        }
+                    }
+                })
+            }
+        });
+
+        function clicked(button){
+            myDropzone.on("sending", function (file, xhr, formData) {
+            formData.append('tipo_item', document.getElementsByName('tipo_item')[0].value);
+            formData.append('os', document.getElementsByName('os')[0].value);
+            formData.append('button', button);});
+            myDropzone.processQueue();
+        };
+
+        function openTool(evt, Name) {
+          // Declare all variables
+          var i, tabcontent, tablinks;
+
+          // Get all elements with class="tabcontent" and hide them
+          tabcontent = document.getElementsByClassName("tabcontent");
+          for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+          }
+
+          // Get all elements with class="tablinks" and remove the class "active"
+          tablinks = document.getElementsByClassName("tablinks");
+          for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+          }
+
+          // Show the current tab, and add an "active" class to the button that opened the tab
+          document.getElementById(Name).style.display = "block";
+          evt.currentTarget.className += " active";
+        }
+        openTool(event, 'Robodoc');
+        $(document).ready(function(){
+         $('.sortable').sortable();
+
+        });
+    </script>
+</body>
+</html>
+
+
+

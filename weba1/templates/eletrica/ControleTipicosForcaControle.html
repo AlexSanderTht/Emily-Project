@@ -1,0 +1,1029 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+<title>A1Pro | TÍPICOS DE ALIMENTAÇÃO DE CARGAS</title>
+{% endblock %}
+{% block main %}
+{% include './ModalLoadCelery.html' %}
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/GerarTipicosDoc.js' %} "></script>
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/ControleTipicosForcaControle.js' %} "></script>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<style>
+    body{
+        /*cursor: url("https://img.icons8.com/?size=1x&id=QMOqiZuet9Sp&format=png"), auto;*/
+    }
+    .bg_success_tip {
+        border: 1px solid green;
+        background-color: rgba(0, 255, 0, 0.1);
+        color: green !important;
+    }
+    .bg_danger_tip {
+        border: 1px solid #dc3545;
+        background-color: rgba(255,51,51,0.1);
+        color: #dc3545 !important
+    }
+</style>
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+
+        // Fecha popovers ao abrir um novo
+        $('[data-toggle="popover"]').on('show.bs.popover', function () {
+            $('[data-toggle="popover"]').not(this).popover('hide');
+        });
+    })
+</script>
+
+<div class="text-justify m-3">
+    <button type="button" style="z-index: 10" class="btn btn-primary btn-warning position-absolute" onclick="window.history.go(-1)">Voltar</button>
+</div>
+
+<div class="container mt-5" style="max-width: 1400px;">
+    <!------------------ Cabeçalho da ferramenta de Típicos Força e controle ------------------>
+    <div class="row justify-content-center animate__animated animate__backInRight">
+        <div class="col-lg-12 text-center">
+            <h1>Alimentação de Cargas</h1>
+        </div>
+        <div class="col-lg-12 text-center text-secondary">
+            <h5>Esta ferramenta é dedicada ao controle dos típicos de Alimentação de Cargas.</h5>
+        </div>
+    </div>
+
+    <!------------------ Fim do cabeçalho ------------------>
+
+    <!------------------ Início container conteúdo ------------------>
+    <div class="container position-relative mt-3 p-4 bg-white bordas border shadow animate__animated animate__pulse" style="max-width: 1400px;">
+        {% csrf_token %}
+        <div class="card mb-0">
+            <div class="card-header border-bottom-0">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true"><i class="fa-solid fa-folder-open pr-3"></i>Configuração Documento</a>
+                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false"><i class="fa-solid fa-bolt pr-3"></i>Detalhes Típicos</a>
+                        <a class="nav-item nav-link" onclick = "carrega_configuracoes_acessorios(); $('#testModal').modal('show');" id="nav-acessorios-tab" data-toggle="tab" href="#nav-acessorios" role="tab" aria-controls="nav-acessorios" aria-selected="false"><i class="fa-solid fa-bolt pr-3"></i>Acessorios</a>
+                        <a class="nav-item nav-link" id="nav-suportes-tab" data-toggle="tab" href="#nav-suportes" role="tab" aria-controls="nav-suportes" aria-selected="false" onclick="CarregaDwgsSuportes()"><i class="fa-solid fa-bolt pr-3"></i>Suportes</a>
+                        <a class="nav-item nav-link" id="nav-fixacao_infra-tab" data-toggle="tab" href="#nav-fixacao_infra" role="tab" aria-controls="nav-fixacao_infra" aria-selected="false" onclick="CarregaDwgsFixacaoInfra()"><i class="fa-solid fa-bolt pr-3"></i>Fixação pela Planta</a>
+                    </div>
+                </nav>
+                <div class="tab-content border border-top-0 p-3 bg-white shadow">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <form>
+                            <div class="row">
+                                <div class="form-group text-left col-md-6 col-lg-6 d-flex">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body">
+                                            <label for="numero-doc">Número do documento</label>
+                                            <input type="email" class="form-control" id="numero-doc" placeholder="WSR-2094-100-DTE-0001">
+                                            <small class="form-text text-muted">Alimentação das cargas elétricas.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group text-left col-md-6 col-lg-6 px-3 d-flex">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body">
+                                            <div class="text-center mb-3">
+                                                <label>Configurações</label>
+                                            </div>
+                                            <div class="row mb-1">
+
+                                                <div class="col-6 d-flex align-items-center justify-content-center">
+                                                    <button type="button" class="btn btn-secondary" onclick="CarregaAreaMateriais(); $('#modal_config_mat_fc').modal('show');">Configurar informações de materiais</button>
+                                                </div>
+                                                <div class="col-6 d-flex align-items-center justify-content-center">
+                                                    <div class="dropdown d-flex align-items-center">
+                                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Catálogos</button>
+                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                            <a class="dropdown-item" href="#" onclick="AtivarTabela(); $('#CatalogoEletrodutos').modal('show');">Eletrodutos</a>
+                                                            <a class="dropdown-item" href="#" onclick="CarregaModalTabelaCarcacas()">Carcaças</a>
+                                                            <a class="dropdown-item" href="#" onclick="CarregaFabricantesCabo(); $('#CatalogoCabos').modal('show');">Cabos</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row justify-content-between mx-0">
+                                <!------------------ Início Tipo de carga ----------ajaxOptionNextLevel('tipo_carga_area', '1', 'MO'); -------->
+                                <!--<div class="form-group text-left col-md-3 col-lg-3 mb-0 pl-0 d-flex">
+                                    <div class="bd-callout bd-callout-default my-0 flex-grow-1 bg-light">
+                                        <h6>Tipo de Carga</h6>
+                                        <div class="form-check">
+                                            <input onclick="ajaxOptionNextLevel('tipo_componente_acessorios', '1', 'MO')" name="options" class="form-check-input" type="radio" id="radio_input_motor" checked>
+                                            <label class="form-check-label" for="radio_input_motor">Motores</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input onclick="ajaxOptionNextLevel('tipo_carga_area', '0', 'PN')" name="options" class="form-check-input" type="radio" id="radio_input_painel">
+                                            <label class="form-check-label" for="radio_input_painel">Painéis</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input onclick="ajaxOptionNextLevel('tipo_carga_area', '0', 'TR')" name="options" class="form-check-input" type="radio" id="radio_input_transf">
+                                            <label class="form-check-label" for="radio_input_transf">Transformadores</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input onclick="ajaxOptionNextLevel('tipo_carga_area', '0', 'CA')" name="options" class="form-check-input" type="radio" id="radio_input_aux">
+                                            <label class="form-check-label" for="radio_input_aux">Cargas Auxiliares</label>
+                                        </div>
+                                    </div>
+                                </div>---------------- Fim Tipo de carga ------------------>
+
+
+                                <!------------------ Início Tipo de carga ----------ajaxOptionNextLevel('tipo_carga_area', '1', 'MO'); -------->
+                                <div class="form-group text-left col-md-3 col-lg-3 mb-0 pl-0 d-flex">
+                                    <div class="bd-callout bd-callout-default my-0 flex-grow-1 bg-light">
+                                    <h6>Posição derivação da saída: </h6>
+                                    <div class="form-check">
+                                        <input name="options" class="form-check-input" type="radio" id="derivacao_por_cima" value="Por cima" checked>
+                                        <label class="form-check-label" for="derivacao_por_cima">Por cima</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input name="options" class="form-check-input" type="radio" id="derivacao_por_baixo" value="Por baixo" >
+                                        <label class="form-check-label" for="derivacao_por_baixo">Por baixo</label>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary mx-auto btn-sm my-3" onclick = "SalvarTipoDerivacao()">Salvar/Alterar</button>
+                                </div>
+
+                                </div><!------------------ Fim Tipo de carga ------------------>
+
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <form>
+                            <div class="row">
+                                <div class="form-group text-left col-md-3 col-lg-3 d-flex pr-0 mb-0">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body d-flex flex-column">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span>Motores sem Típicos</span>
+                                                <span class="badge badge-primary my-auto" id="length_cargas_select_tipicos"></span>
+                                            </div>
+                                            <div class="input-group input-group-sm mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text bg-white">
+                                                        <i class="fa-solid fa-magnifying-glass text-secondary"></i>
+                                                    </span>
+                                                </div>
+                                                <input oninput="filtrarOpcoes(this.value, 'cargas_select_tipicos')" placeholder="Pesquisar..." type="text" class="form-control border-left-0 text-secondary">
+                                            </div>
+                                            <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="cargas_select_tipicos" multiple></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group text-left col-md-6 col-lg-6 px-3 d-flex mb-0" >
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body" id="select_detalhes_tipicos">
+                                            <!------------------ Início Tipo de Carga e Área ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="tipo_carga_area">2 - Tipo de Carga e Área</label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <select class="form-control rounded-pill border-right-0" id="tipo_carga_area"
+                                                            onmouseover="ajaxOptionNextLevel('tipo_carga_area', '0', 'MO'); ResetCadastro('equipamentos')"
+                                                            onchange="fillPopoverSelect('tipo_carga_area');ajaxOptionNextLevel('tipo_componente', this.selectedOptions[0].id, 'MO');removeDisabledAtribute('tipo_componente', 'select_detalhes_tipicos');
+                                                            fillCodeTipico();">
+                                                        <option id="--" selected>---</option>
+                                                    </select>
+
+                                                    <!--<div class="input-group-append">
+                                                        <button class="btn p-0 ml-3" type="button" data-toggle="popover" data-html="true" title="Adiconar Nova Carga e Área" data-content='
+                                                        <form id="form_tipo_carga_area">
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="code-area-new-item">Caracteres 1 e 2</label>
+                                                                <input data-type="caracter" oninput="this.value=this.value.toUpperCase()" type="text" class="form-control rounded-pill" id="code-area-new-item" placeholder="Digite os caracteres">
+                                                                <div class="invalid-feedback text-center">Preencha este campo!</div>
+                                                            </div>
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="desc-area-new-item">Descrição do motor/carga</label>
+                                                                <input onkeyup="this.title=this.value;" data-type="desc" type="text" class="form-control rounded-pill" id="desc-area-new-item" placeholder="Descreva este novo item!">
+                                                                <div class="invalid-feedback text-center">Preencha este campo!</div>
+                                                            </div>
+                                                            <div class="form-check mb-3 text-center input-group-sm pl-0">
+                                                                <label class="switch_toggle mb-0 mt-1">
+                                                                    <input data-type="carga_motora" type="checkbox" id="area-carga-motora">
+                                                                    <span class="slider_switch round"></span>
+                                                                </label>
+                                                                <label class="form-check-label" for="carga-motora">Cargas Motora</label>
+                                                            </div>
+                                                            <div class="d-flex justify-content-around">
+                                                                <button type="button" onclick="EventDropItem(`form_tipo_carga_area`, `tipo_carga_area`, `add`)"
+                                                                class="btn btn-outline-primary rounded-pill btn-sm"">
+                                                                <i class="fa-solid fa-circle-plus pr-2"></i>Adicionar</button>
+                                                                <button type="button" onclick="ShowModalRemove(`form_tipo_carga_area`, `tipo_carga_area`, `remove`)"
+                                                                class="btn btn-outline-danger rounded-pill btn-sm">
+                                                                <i class="fa-solid fa-circle-xmark pr-2"></i>Remover</button>
+                                                            </div>
+                                                        </form>'><i class="fa-solid fa-circle-plus text-primary fa-2x"></i></button>
+                                                    </div>-->
+                                                </div>
+                                            </div><!------------------ Fim Tipo de Carga e Área ------------------>
+
+                                            <!------------------ Início Tipo do Acessório ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <!--<label for="tipo_componente_acessorio">3 - Tipo de componente na extremidade do leito ou eletroduto </label>-->
+                                                <label>3 - Tipo de componente na extremidade do leito ou eletroduto </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <select class="form-control rounded-pill border-right-0" id="tipo_componente"
+                                                            onclick="fillPopoverSelect('tipo_componente');fillCodeTipico();ajaxOptionNextLevel('forma_alim', this.selectedOptions[0].id, '');removeDisabledAtribute('forma_alim', 'select_detalhes_tipicos')" disabled>
+                                                        <option id="--" selected>---</option>
+                                                    </select>
+                                                    <!--<div class="input-group-append">
+                                                        <button class="btn p-0 ml-3" type="button"
+                                                         data-toggle="popover" data-html="true" title="Adiconar Tipo do Acessório" data-content='
+                                                        <form id="form_tipo_componente">
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="code-acess-new-item">Caractere 3</label>
+                                                                <input data-type="caracter" oninput="this.value=this.value.toUpperCase()" type="text" class="form-control rounded-pill" id="code-acess-new-item" placeholder="Digite os caracteres">
+                                                                <div class="invalid-feedback text-center">Preencha este campo!</div>
+                                                            </div>
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="desc-acess-new-item">Descrição do motor/carga</label>
+                                                                <input onkeyup="this.title=this.value;" data-type="desc" type="text" class="form-control rounded-pill" id="desc-acess-new-item" placeholder="Descreva este novo item!">
+                                                                <div class="invalid-feedback text-center">Preencha este campo!</div>
+                                                            </div>
+                                                            <div class="form-check mb-3 text-center input-group-sm pl-0">
+                                                                <label class="switch_toggle mb-0 mt-1">
+                                                                    <input data-type="carga_motora" type="checkbox" name="carga-motora" id="acessorio-carga-motora">
+                                                                    <span class="slider_switch round"></span>
+                                                                </label>
+                                                                <label class="form-check-label" for="carga-motora">Cargas Motora</label>
+                                                            </div>
+                                                            <div class="d-flex justify-content-around">
+                                                                <button type="button" onclick="EventDropItem(`form_tipo_componente`, `tipo_componente`, `add`)"
+                                                                class="btn btn-outline-primary rounded-pill btn-sm"">
+                                                                <i class="fa-solid fa-circle-plus pr-2"></i>Adicionar</button>
+                                                                <button type="button" onclick="ShowModalRemove(`form_tipo_componente`, `tipo_componente`, `remove`)"
+                                                                class="btn btn-outline-danger rounded-pill btn-sm">
+                                                                <i class="fa-solid fa-circle-xmark pr-2"></i>Remover</button>
+                                                            </div>
+                                                        </form>'><i class="fa-solid fa-circle-plus text-primary fa-2x"></i></button>
+                                                    </div>-->
+                                                </div>
+                                            </div><!------------------ Fim Tipo do Acessório ------------------>
+
+                                            <!------------------ Início Forma de Alimentação ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="forma_alim">4 - Posição física da ligação </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <select class="form-control rounded-pill" id="forma_alim"
+                                                            onclick="fillPopoverSelect('forma_alim');fillCodeTipico();ajaxOptionNextLevel('tipo_rosca_ligacao_motor', this.selectedOptions[0].id, 'MO');removeDisabledAtribute('tipo_rosca_ligacao_motor', 'select_detalhes_tipicos')" disabled>
+                                                        <option id="--" selected>---</option>
+                                                    </select>
+                                                    <!--<div class="input-group-append">
+                                                        <button class="btn p-0 ml-3" type="button"
+                                                         data-toggle="popover" data-html="true" title="Adiconar Forma de Alimentação" data-content='
+                                                        <form id="form_forma_alim">
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="code-alim-new-item">Caractere 4</label>
+                                                                <input data-type="caracter" oninput="this.value=this.value.toUpperCase()" type="text" class="form-control rounded-pill" id="code-alim-new-item" placeholder="Digite os caracteres">
+                                                            </div>
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="desc-alim-new-item">Descrição do motor/carga</label>
+                                                                <input data-type="desc" type="text" class="form-control rounded-pill" id="desc-alim-new-item" placeholder="Descreva este novo item!">
+                                                            </div>
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="dependency-alim-new-item">Posição Alimentação (3° caracter)</label>
+                                                                <input data-type="aux" oninput="this.value=this.value.toUpperCase()" type="text" class="form-control rounded-pill" id="dependency-alim-new-item" placeholder="Descreva este novo item!">
+                                                            </div>
+                                                            <div class="d-flex justify-content-around">
+                                                                <button type="button" onclick="EventDropItem(`form_forma_alim`, `forma_alim`, `add`)"
+                                                                class="btn btn-outline-primary rounded-pill btn-sm"">
+                                                                <i class="fa-solid fa-circle-plus pr-2"></i>Adicionar</button>
+                                                                <button type="button" onclick="ShowModalRemove(`form_forma_alim`, `forma_alim`, `remove`)"
+                                                                class="btn btn-outline-danger rounded-pill btn-sm">
+                                                                <i class="fa-solid fa-circle-xmark pr-2"></i>Remover</button>
+                                                            </div>
+                                                        </form>'><i class="fa-solid fa-circle-plus text-primary fa-2x"></i></button>
+                                                    </div>-->
+                                                </div>
+                                            </div><!------------------ Fim Forma de Alimentação ------------------>
+
+                                            <!------------------ Início Tipo de Rosca Eletroduto ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="tipo_rosca_ligacao_motor">5 - Tipo de Rosca Eletroduto</label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <select class="form-control rounded-pill" id="tipo_rosca_ligacao_motor"
+                                                            onclick="fillPopoverSelect('tipo_rosca_ligacao_motor');fillCodeTipico();ajaxOptionNextLevel('material_acess', this.selectedOptions[0].id, '');removeDisabledAtribute('material_acess', 'select_detalhes_tipicos')"disabled>
+                                                        <option id="--" selected>---</option>
+                                                    </select>
+                                                    <!--<div class="input-group-append">
+                                                        <button class="btn p-0 ml-3" type="button"
+                                                         data-toggle="popover" data-html="true" title="Adiconar Tipo de Rosca da Caixa do Motor" data-content='
+                                                        <form id="form_tipo_rosca_ligacao_motor">
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="code-tipo-rosca-ligacao-motor-item">Caractere 5</label>
+                                                                <input data-type="caracter" oninput="this.value=this.value.toUpperCase()" type="text" class="form-control rounded-pill" id="code-tipo-rosca-ligacao-motor-item" placeholder="Digite os caracteres">
+                                                                <div class="invalid-feedback text-center">Preencha este campo!</div>
+                                                            </div>
+                                                            <div class="form-group input-group-sm mb-3">
+                                                                <label for="desc-tipo-rosca-ligacao-motor">Descrição Tipo de Rosca de Ligacao</label>
+                                                                <input data-type="desc" type="text" class="form-control rounded-pill" id="desc-tipo-rosca-ligacao-motor" placeholder="Descreva este novo item!">
+                                                                <div class="invalid-feedback text-center">Preencha este campo!</div>
+                                                            </div>
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="dependency-tipo-rosca-ligacao-motor">Posição Alimentação (3° caracter)</label>
+                                                                <input data-type="aux" oninput="this.value=this.value.toUpperCase()" type="text" class="form-control rounded-pill" id="dependency-tipo-rosca-ligacao-motor" placeholder="Descreva este novo item!">
+                                                            </div>
+                                                            <div class="d-flex justify-content-around">
+                                                                <button type="button" onclick="EventDropItem(`form_tipo_rosca_ligacao_motor`, `tipo_rosca_ligacao_motor`, `add`)"
+                                                                class="btn btn-outline-primary rounded-pill btn-sm"">
+                                                                <i class="fa-solid fa-circle-plus pr-2"></i>Adicionar</button>
+                                                                <button type="button" onclick="ShowModalRemove(`form_tipo_rosca_ligacao_motor`, `tipo_rosca_ligacao_motor`, `remove`)"
+                                                                class="btn btn-outline-danger rounded-pill btn-sm">
+                                                                <i class="fa-solid fa-circle-xmark pr-2"></i>Remover</button>
+                                                            </div>
+                                                        </form>'><i class="fa-solid fa-circle-plus text-primary fa-2x"></i></button>
+                                                    </div>-->
+                                                </div>
+                                            </div><!------------------ Fim Tipo de Rosca Eletroduto ------------------>
+
+
+                                            <!------------------ Início Diâmetro eletroduto ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">6 - Diâmetro eletroduto</label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <input type="text" class="form-control rounded-pill" id="preenchimento_diametro_eletroduto" placeholder="Preenchimento automático" style="border: 1px solid #ccc; padding: 5px;" readonly>
+                                                </div>
+                                            </div><!------------------ Fim Diâmetro eletroduto ------------------>
+
+
+                                            <!------------------ Início Material do Acessório ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="material_acess">7 - Material do componente na extremidade do eletroduto </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <select class="form-control rounded-pill" id="material_acess"
+                                                        onclick="fillPopoverSelect('material_acess');fillCodeTipico();ajaxOptionNextLevel('tipo_rosca', this.selectedOptions[0].id, '');removeDisabledAtribute('tipo_rosca', 'select_detalhes_tipicos')"disabled>
+                                                        <option id="--" selected>---</option>
+                                                    </select>
+                                                    <!--<div class="input-group-append">
+                                                        <button class="btn p-0 ml-3" type="button"
+                                                         data-toggle="popover" data-html="true" title="Adiconar Material do Acessório" data-content='
+                                                        <form id="form_material_acess">
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="code-mat-acess-new-item">Caractere 6</label>
+                                                                <input data-type="caracter" oninput="this.value=this.value.toUpperCase()" type="text" class="form-control rounded-pill" id="code-mat-acess-new-item" placeholder="Digite os caracteres">
+                                                                <div class="invalid-feedback text-center">Preencha este campo!</div>
+                                                            </div>
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="desc-mat-acess-new-item">Descrição do Material</label>
+                                                                <input data-type="desc" type="text" class="form-control rounded-pill" id="desc-mat-acess-new-item" placeholder="Descreva este novo item!">
+                                                                <div class="invalid-feedback text-center">Preencha este campo!</div>
+                                                            </div>
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="dependency-mat-acess-new-item">Posição Alimentação (3° caracter)</label>
+                                                                <input data-type="aux" oninput="this.value=this.value.toUpperCase()" type="text" class="form-control rounded-pill" id="dependency-mat-acess-new-item" placeholder="Descreva este novo item!">
+                                                            </div>
+                                                            <div class="d-flex justify-content-around">
+                                                                <button type="button" onclick="EventDropItem(`form_material_acess`, `material_acess`, `add`)"
+                                                                class="btn btn-outline-primary rounded-pill btn-sm"">
+                                                                <i class="fa-solid fa-circle-plus pr-2"></i>Adicionar</button>
+                                                                <button type="button" onclick="ShowModalRemove(`form_material_acess`, `material_acess`, `remove`)"
+                                                                class="btn btn-outline-danger rounded-pill btn-sm">
+                                                                <i class="fa-solid fa-circle-xmark pr-2"></i>Remover</button>
+                                                            </div>
+                                                        </form>'><i class="fa-solid fa-circle-plus text-primary fa-2x"></i></button>
+                                                    </div>-->
+                                                </div>
+                                            </div><!------------------ Fim Material do Acessório ------------------>
+
+                                            <!------------------ Início Tipo de Rosca da Cx. de ligação do Motor ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="tipo_rosca">8 - Tipo de rosca caixa de Ligação do Motor </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <select class="form-control rounded-pill" id="tipo_rosca"
+                                                        onclick="fillPopoverSelect('tipo_rosca');fillCodeTipico();ajaxOptionNextLevel('componente_ligacao_equip', this.selectedOptions[0].id, '');removeDisabledAtribute('componente_ligacao_equip', 'select_detalhes_tipicos')"disabled>
+                                                        <option id="--" selected>---</option>
+                                                    </select>
+                                                    <!--<div class="input-group-append">
+                                                        <button class="btn p-0 ml-3" type="button"
+                                                         data-toggle="popover" data-html="true" title="Adiconar Tipo de Rosca" data-content='
+                                                        <form id="form_tipo_rosca">
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="code-tipo-rosca-new-item">Caractere 11</label>
+                                                                <input data-type="caracter" oninput="this.value=this.value.toUpperCase()" type="text" class="form-control rounded-pill" id="code-tipo-rosca-new-item" placeholder="Digite os caracteres">
+                                                                <div class="invalid-feedback text-center">Preencha este campo!</div>
+                                                            </div>
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="desc-tipo-rosca-new-item">Descrição do motor/carga</label>
+                                                                <input data-type="desc" type="text" class="form-control rounded-pill" id="desc-tipo-rosca-new-item" placeholder="Descreva este novo item!">
+                                                                <div class="invalid-feedback text-center">Preencha este campo!</div>
+                                                            </div>
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="dependency-tipo-rosca-new-item">Tipo da Rosca na carcaça</label>
+                                                                <input data-type="aux" oninput="this.value=this.value.toUpperCase()" type="text" class="form-control rounded-pill" id="dependency-tipo-rosca-new-item" placeholder="Descreva este novo item!">
+                                                            </div>
+                                                            <div class="form-check mb-3 text-center input-group-sm pl-0">
+                                                                <label class="switch_toggle mb-0 mt-1">
+                                                                    <input data-type="carga_motora" type="checkbox" id="tipo-rosca-carga-motora" name="carga-motora">
+                                                                    <span class="slider_switch round"></span>
+                                                                </label>
+                                                                <label class="form-check-label" for="carga-motora">Cargas Motora</label>
+                                                            </div>
+                                                            <div class="d-flex justify-content-around">
+                                                                <button type="button" onclick="EventDropItem(`form_tipo_rosca`, `tipo_rosca`, `add`)"
+                                                                class="btn btn-outline-primary rounded-pill btn-sm"">
+                                                                <i class="fa-solid fa-circle-plus pr-2"></i>Adicionar</button>
+                                                                <button type="button" onclick="ShowModalRemove(`form_tipo_rosca`, `tipo_rosca`, `remove`)"
+                                                                class="btn btn-outline-danger rounded-pill btn-sm">
+                                                                <i class="fa-solid fa-circle-xmark pr-2"></i>Remover</button>
+                                                            </div>
+                                                        </form>'><i class="fa-solid fa-circle-plus text-primary fa-2x"></i></button>
+                                                    </div>-->
+                                                </div>
+                                            </div><!------------------ Fim Tipo de Rosca da Cx. de ligação do Motor ------------------>
+
+
+                                            <!------------------ Início Diâmetro Furo Caixa de Ligação ------------------>
+                                            <!--<div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">9 - Diâmetro Furo Caixa de Ligação </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <input type="text" class="form-control rounded-pill" id="preenchimento_diametro_caixa" placeholder="Preenchimento automático pela carcaça cadastrada na tela de Equipamentos" style="border: 1px solid #ccc; padding: 5px;" readonly>
+                                                </div>
+                                            </div>--><!------------------ Fim Diâmetro Furo Caixa de Ligação ------------------>
+
+
+
+                                            <!------------------ Início Diâmetro eletroduto ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">9 - Diâmetro Furo Caixa de Ligação </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <input type="text" class="form-control rounded-pill" id="preenchimento_diametro_caixa" placeholder="Preenchumento automático" style="border: 1px solid #ccc; padding: 5px;" readonly>
+                                                </div>
+                                            </div><!------------------ Fim Diâmetro eletroduto ------------------>
+
+
+                                            <!------------------ Início Componente de Ligação para Lado do Equipamento ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">10 - Material do componente roscado na caixa do motor</label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <select class="form-control rounded-pill" id="componente_ligacao_equip"
+                                                        onclick="fillPopoverSelect('componente_ligacao_equip');fillCodeTipico();">
+                                                        <option id="--" selected>---</option>
+                                                    </select>
+                                                    <!--<div class="input-group-append">
+                                                        <button class="btn p-0 ml-3" type="button"
+                                                         data-toggle="popover" data-html="true" title="Adiconar Referência e fixação" data-content='
+                                                        <form id="form_componente_ligacao_equip">
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="code-componente_ligacao_equip">Caractere 7</label>
+                                                                <input data-type="caracter" oninput="this.value=this.value.toUpperCase()" type="text" class="form-control rounded-pill" id="code-componente_ligacao_equip" placeholder="Digite os caracteres">
+                                                                <div class="invalid-feedback text-center">Preencha este campo!</div>
+                                                            </div>
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="desc-componente_ligacao_equip">Descrição do carcaça motor e bitola</label>
+                                                                <input data-type="desc" type="text" class="form-control rounded-pill" id="desc-componente_ligacao_equip" placeholder="Descreva este novo item!">
+                                                                <div class="invalid-feedback text-center">Preencha este campo!</div>
+                                                            </div>
+                                                            <div class="form-group input-group-sm">
+                                                                <label for="dependency-componente_ligacao_equip">Tipo da Rosca na carcaça</label>
+                                                                <input data-type="aux" oninput="this.value=this.value.toUpperCase()" type="text" class="form-control rounded-pill" id="dependency-componente_ligacao_equip" placeholder="Descreva este novo item!">
+                                                            </div>
+                                                            <div class="d-flex justify-content-around">
+                                                                <button type="button" onclick="EventDropItem(`form_componente_ligacao_equip`, `componente_ligacao_equip`, `add`)"
+                                                                class="btn btn-outline-primary rounded-pill btn-sm"">
+                                                                <i class="fa-solid fa-circle-plus pr-2"></i>Adicionar</button>
+                                                                <button type="button" onclick="ShowModalRemove(`form_componente_ligacao_equip`, `componente_ligacao_equip`, `remove`)"
+                                                                class="btn btn-outline-danger rounded-pill btn-sm">
+                                                                <i class="fa-solid fa-circle-xmark pr-2"></i>Remover</button>
+                                                            </div>
+                                                        </form>'><i class="fa-solid fa-circle-plus text-primary fa-2x"></i></button>
+                                                    </div>-->
+                                                </div>
+                                            </div><!------------------ Fim Referência Componente de Ligação para Lado do Equipamento ------------------>
+
+
+                                            <!------------------ Início Quantidade cabos  ------------------>
+                                            <!--<div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">11 - Quantidade cabos </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <input type="text" class="form-control rounded-pill" id="preenchumento_qte_cabos" placeholder="Preenchimento automático pela LCA pela quantidade de cabos por fase" style="border: 1px solid #ccc; padding: 5px;" readonly>
+                                                </div>
+                                            </div>--><!------------------ Fim Quantidade cabos  ------------------>
+
+
+
+                                            <!------------------ Início Diâmetro eletroduto ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">11 - Quantidade cabos</label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <input type="text" class="form-control rounded-pill" id="preenchumento_qte_cabos" placeholder="Preenchimento automático" style="border: 1px solid #ccc; padding: 5px;; font-size: 12px;" readonly>
+                                                </div>
+                                            </div><!------------------ Fim Diâmetro eletroduto ------------------>
+
+
+
+                                            <!------------------ Início Código do Típico ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label class="pr-3">Código dos Típicos:</label>
+                                                <div class="row justify-content-between mx-auto">
+                                                    <div class="col-lg-5 bg-white border rounded-pill d-flex justify-content-center align-items-center">
+                                                        <small id="codigo-tipico">************</small>
+                                                    </div>
+                                                </div>
+                                            </div><!------------------ Fim Código do Típico ------------------>
+
+                                            <!------------------ Início Adicionar/Exclui Típico da OS ------------------>
+                                            <div class="form-group mb-0">
+                                                <div class="card mb-0 text-center">
+                                                    <div class="card-body">
+                                                        <h6>Adicionar/Exclui Típico da OS</h6>
+                                                        <a href="#" onclick="registerNewTipic('cargas_select_tipicos', '#codigo-tipico', 'equipamento')" class="btn btn-outline-primary"><i class="fa-solid fa-folder-plus pr-3"></i>Adicionar</a>
+                                                        <a href="#" onclick= "DeletarTipicos('detalhes_tipicos', 'cargas_select_tipicos')" class="btn btn-outline-danger"><i class="fa-solid fa-trash pr-3"></i>Excluir</a>
+                                                    </div>
+                                                </div>
+                                            </div><!------------------ Início Adicionar/Exclui Típico da OS ------------------>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group text-left col-md-3 col-lg-3 d-flex pl-0 mb-0">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body">
+                                            <div class="h-50 d-flex flex-column">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Detalhes Típicos</span>
+                                                    <span class="badge badge-primary my-auto" id="length_detalhes_tipicos"></span>
+                                                </div>
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text bg-white">
+                                                            <i class="fa-solid fa-magnifying-glass text-secondary"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input oninput="filtrarOpcoes(this.value, 'detalhes_tipicos')" placeholder="Pesquisar..." type="text" class="form-control border-left-0 text-secondary">
+                                                </div>
+                                                <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="detalhes_tipicos" multiple></select>
+                                            </div>
+                                            <div class="h-50 d-flex flex-column">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Cargas do Típico</span>
+                                                    <span class="badge badge-primary my-auto" id="length_cargas_tipicos"></span>
+                                                </div>
+                                                <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="cargas_tipicos" multiple></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="nav-acessorios" role="tabpanel" aria-labelledby="nav-acessorios-tab">
+                        <form>
+                            <div class="row">
+                                <div class="form-group text-left col-md-3 col-lg-3 d-flex pr-0 mb-0">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body d-flex flex-column">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span>Motores sem Típicos</span>
+                                                <span class="badge badge-primary my-auto" id="length_cargas_select_tipicos_acessorios"></span>
+                                            </div>
+                                            <div class="input-group input-group-sm mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text bg-white">
+                                                        <i class="fa-solid fa-magnifying-glass text-secondary"></i>
+                                                    </span>
+                                                </div>
+                                                <input oninput="filtrarOpcoes(this.value, 'cargas_select_tipicos-acessorios')" placeholder="Pesquisar..." type="text" class="form-control border-left-0 text-secondary">
+                                            </div>
+                                            <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="cargas_select_tipicos-acessorios" multiple></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group text-left col-md-6 col-lg-6 px-3 d-flex mb-0">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body" id="select_detalhes_tipicos-acessorios">
+
+                                            <!------------------ Tipo de Carga e Área ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">2 - Tipo de área </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <input type="text" class="form-control rounded-pill" id="area_acessorio" placeholder="Preenchimento automático" style="border: 1px solid #ccc; padding: 5px;" readonly>
+                                                </div>
+                                            </div><!------------------ Fim Tipo de Carga e Área ------------------>
+
+
+                                            <!------------------ Início Tipo de componente na extremidade do leito ou eletroduto ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="tipo_componente">3 - Tipo de componente na extremidade do leito ou eletroduto </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <select class="form-control rounded-pill" id="tipo_componente_acessorios"
+                                                        onmouseover="ajaxOptionNextLevel('tipo_componente_acessorios', '1', 'MO'); ResetCadastro('acessorios')"
+                                                        onclick="fillPopoverSelect('tipo_componente_acessorios');fillCodeTipicoAcessorios();ajaxOptionNextLevel('tipo_rosca_ligacao_acessorios', this.selectedOptions[0].id, '');removeDisabledAtribute('tipo_rosca_ligacao_acessorios', 'select_detalhes_tipicos-acessorios')">
+                                                        <option id="--" selected>---</option>
+                                                    </select>
+                                                </div>
+                                            </div><!------------------ Fim Tipo de componente na extremidade do leito ou eletroduto ------------------>
+
+
+                                            <!------------------ Início Posição física da ligação ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">4 - Posição física da ligação </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <input type="text" class="form-control rounded-pill" id="posicao_ligacao_acessorio" placeholder="Preenchimento automático" style="border: 1px solid #ccc; padding: 5px;" readonly>
+                                                </div>
+                                            </div><!------------------ Fim Posição física da ligação ------------------>
+
+                                            <!------------------ Início Tipo de Rosca Eletroduto ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="tipo_componente">5 - Tipo de Rosca Eletroduto </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <select class="form-control rounded-pill" id="tipo_rosca_ligacao_acessorios"
+                                                        onchange="fillPopoverSelect('tipo_rosca_ligacao_acessorios');fillCodeTipicoAcessorios();ajaxOptionNextLevel('material_acess_acessorios', this.selectedOptions[0].id, '');removeDisabledAtribute('material_acess_acessorios',  'select_detalhes_tipicos-acessorios')"disabled>
+                                                        <option id="--" selected>---</option>
+                                                    </select>
+                                                </div>
+                                            </div><!------------------ Fim Tipo de Rosca Eletroduto ------------------>
+
+                                            <!------------------ Início Diâmetro eletroduto ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">6 - Diâmetro eletroduto</label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <input type="text" class="form-control rounded-pill" id="diametro_eletr_acessorios" placeholder="Preenchimento automático" style="border: 1px solid #ccc; padding: 5px;" readonly>
+                                                </div>
+                                            </div><!------------------ Fim Diâmetro eletroduto ------------------>
+
+
+                                            <!------------------ Início Material do componente na extremidade do eletroduto ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="tipo_componente">7 - Material do componente na extremidade do eletroduto</label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <select class="form-control rounded-pill" id="material_acess_acessorios"
+                                                        onclick="fillPopoverSelect('material_acess_acessorios');fillCodeTipicoAcessorios();"disabled>
+                                                        <option id="--" selected>---</option>
+                                                    </select>
+                                                </div>
+                                            </div><!------------------ Fim Material do componente na extremidade do eletroduto ------------------>
+
+
+                                            <!------------------ Início Diâmetro Furo Caixa de Ligação ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">8 - Tipo de rosca caixa de Ligação do Motor</label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <input type="text" class="form-control rounded-pill" id="rosca_caixa_acessorio" placeholder="Preenchimento automático" style="border: 1px solid #ccc; padding: 5px;" readonly>
+                                                </div>
+                                            </div><!------------------ Fim Diâmetro Furo Caixa de Ligação ------------------>
+
+
+                                            <!------------------ Início Diâmetro Furo Caixa de Ligação ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">9 - Diâmetro Furo Caixa de Ligação </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <input type="text" class="form-control rounded-pill" id="diametro_furo_caixa_acessorio" placeholder="Preenchimento automático" style="border: 1px solid #ccc; padding: 5px;" readonly>
+                                                </div>
+                                            </div><!------------------ Fim Diâmetro Furo Caixa de Ligação ------------------>
+
+
+                                            <!------------------ Início Diâmetro Furo Caixa de Ligação ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">10 - Material do componente roscado na caixa do motor</label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <input type="text" class="form-control rounded-pill" id="mat_componente_acessorio" placeholder="Preenchimento automático" style="border: 1px solid #ccc; padding: 5px;" readonly>
+                                                </div>
+                                            </div><!------------------ Fim Diâmetro Furo Caixa de Ligação ------------------>
+
+
+                                            <!------------------ Início Sequencial numérico  ------------------>
+                                            <div class="form-group input-group-sm">
+                                                <label for="componente_ligacao_equip">11 - Sequencial numérico </label>
+                                                <div class="input-group-sm rounded-pill d-flex">
+                                                    <input type="text" class="form-control rounded-pill" id="sequencial_numerico_acessorio" placeholder="Preenchimento automático" style="border: 1px solid #ccc; padding: 5px;" readonly>
+                                                </div>
+                                            </div><!------------------ Fim Sequencial numérico  ------------------>
+
+
+                                            <!------------------ Início Código do Típico ------------------>
+                                            <div class="form-group input-group-sm d-flex justify-content-center">
+                                                <label class="pr-3">Código do Típico:</label>
+                                                <div class="col-lg-5 bg-white border rounded-pill d-flex justify-content-center align-items-center">
+                                                    <small id="codigo-tipico-acessorios">************</small>
+                                                </div>
+                                            </div><!------------------ Fim Código do Típico ------------------>
+
+                                            <!------------------ Início Adicionar/Exclui Típico da OS ------------------>
+                                            <div class="form-group mb-0">
+                                                <div class="card mb-0 text-center">
+                                                    <div class="card-body">
+                                                        <h6>Adicionar/Exclui Típico da OS</h6>
+                                                        <a href="#" onclick="registerNewTipic('cargas_select_tipicos-acessorios', '#codigo-tipico-acessorios', 'acessorios')" class="btn btn-outline-primary"><i class="fa-solid fa-folder-plus pr-3"></i>Adicionar</a>
+                                                        <a href="#" onclick= "DeletarTipicos('detalhes_tipicos_acessorios', 'cargas_select_tipicos-acessorios')" class="btn btn-outline-danger"><i class="fa-solid fa-trash pr-3"></i>Excluir</a>
+                                                    </div>
+                                                </div>
+                                            </div><!------------------ Início Adicionar/Exclui Típico da OS ------------------>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group text-left col-md-3 col-lg-3 d-flex pl-0 mb-0">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body">
+                                            <div class="h-50 d-flex flex-column">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Detalhes Típicos</span>
+                                                    <span class="badge badge-primary my-auto" id="length_detalhes_tipicos_acessorios"></span>
+                                                </div>
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text bg-white">
+                                                            <i class="fa-solid fa-magnifying-glass text-secondary"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input oninput="filtrarOpcoes(this.value, 'detalhes_tipicos_acessorios')" placeholder="Pesquisar..." type="text" class="form-control border-left-0 text-secondary">
+                                                </div>
+                                                <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="detalhes_tipicos_acessorios" multiple></select>
+                                            </div>
+                                            <div class="h-50 d-flex flex-column">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Cargas do Típico</span>
+                                                    <span class="badge badge-primary my-auto" id="length_cargas_tipicos-acessorios"></span>
+                                                </div>
+                                                <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="cargas_tipicos-acessorios" multiple></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="nav-suportes" role="tabpanel" aria-labelledby="nav-suportes-tab">
+                        <form>
+                            <div class="row">
+                                <div class="form-group text-left col-md-3 col-lg-3 d-flex pr-0 mb-0">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body d-flex flex-column">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span>Motores sem Típicos</span>
+                                                <span class="badge badge-primary my-auto" id="length_cargas_select_tipicos_suportes"></span>
+                                            </div>
+                                            <div class="input-group input-group-sm mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text bg-white">
+                                                        <i class="fa-solid fa-magnifying-glass text-secondary"></i>
+                                                    </span>
+                                                </div>
+                                                <input oninput="filtrarOpcoes(this.value, 'cargas_select_tipicos-suportes')" placeholder="Pesquisar..." type="text" class="form-control border-left-0 text-secondary">
+                                            </div>
+                                            <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="cargas_select_tipicos-suportes" multiple></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group text-left col-md-6 col-lg-6 px-3 d-flex mb-0">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body" id="select_detalhes_tipicos-suportes">
+
+                                            <div class="row px-2 scrolim">
+                                                <div class="col-12">
+                                                    <div class="row" id="template_list"> <!-- Corrigido o ID -->
+                                                        <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="template_select" multiple></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+
+                                            <div class="row text-center">
+                                                <div class="container-fluid w-1000 h-1000 p-0">
+                                                    <img src="" id="img_dwg_suporte_fc" class="shadow" style="width: 800px; height: 710px; border: 5px solid #333; border-radius: 20px;">
+                                                </div>
+                                            </div>
+
+                                            <!------------------ Início Adicionar/Exclui Típico da OS ------------------>
+                                            <div class="form-group mb-0">
+                                                <div class="card mb-0 text-center">
+                                                    <div class="card-body">
+                                                        <h6>Adicionar/Exclui Típico da OS</h6>
+                                                        <a href="#" onclick="CadastraSuporte()" class="btn btn-outline-primary"><i class="fa-solid fa-folder-plus pr-3"></i>Adicionar</a>
+                                                        <a href="#" onclick= "StartDelSuporte()" class="btn btn-outline-danger"><i class="fa-solid fa-trash pr-3"></i>Excluir</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group text-left col-md-3 col-lg-3 d-flex pl-0 mb-0">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body">
+                                            <div class="h-50 d-flex flex-column">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Detalhes Típicos</span>
+                                                    <span class="badge badge-primary my-auto" id="length_detalhes_tipicos_suportes"></span>
+                                                </div>
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text bg-white">
+                                                            <i class="fa-solid fa-magnifying-glass text-secondary"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input oninput="filtrarOpcoes(this.value, 'detalhes_tipicos_suportes')" placeholder="Pesquisar..." type="text" class="form-control border-left-0 text-secondary">
+                                                </div>
+                                                <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="detalhes_tipicos_suportes" multiple></select>
+                                            </div>
+                                            <div class="h-50 d-flex flex-column">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Cargas do Típico</span>
+                                                    <span class="badge badge-primary my-auto" id="length_cargas_tipicos-suportes"></span>
+                                                </div>
+                                                <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="cargas_tipicos-suportes" multiple></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+                        </form>
+                    </div>
+
+
+                    <div class="tab-pane fade" id="nav-fixacao_infra" role="tabpanel" aria-labelledby="nav-fixacao_infra-tab">
+                        <form>
+                            <div class="row">
+                                <div class="form-group text-left col-md-3 col-lg-3 d-flex pr-0 mb-0">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body d-flex flex-column">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span>Eletrodutos do Projeto</span>
+                                                <span class="badge badge-primary my-auto" id="length_cargas_select_tipicos_fixacao_infra"></span>
+                                            </div>
+                                            <div class="input-group input-group-sm mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text bg-white">
+                                                        <i class="fa-solid fa-magnifying-glass text-secondary"></i>
+                                                    </span>
+                                                </div>
+                                                <input oninput="filtrarOpcoes(this.value, 'cargas_select_tipicos-fixacao_infra')" placeholder="Pesquisar..." type="text" class="form-control border-left-0 text-secondary">
+                                            </div>
+                                            <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="cargas_select_tipicos-fixacao_infra" multiple></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group text-left col-md-6 col-lg-6 px-3 d-flex mb-0">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body" id="select_detalhes_tipicos-fixacao_infra">
+
+                                            <div class="row px-2">
+                                                <div class="col-3">
+                                                    <div class="row" id="template_list_fixacao_infra"> <!-- Corrigido o ID -->
+                                                        <select class="form-control overflow_chrome overflow_firefox flex-grow-1 " id="template_select_fixacao_infra" style="height: 200px;" multiple></select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-2">
+                                                    <button type="button" class="btn btn-outline-primary rounded-pill ml-2" onclick="AddFixacaoUsuario()"> ➔ </button>
+                                                </div>
+                                                    <div class="col-7">
+                                                        <div class="d-flex justify-content-between">
+                                                            <div class="form-group">
+                                                                <label for="distancia_suportes" class="form-label small"><strong>Dist. Suportes</strong></label>
+                                                                <input id="distancia_suportes" type="text" class="form-control" onchange="CalculaQteTotalPecas()">
+                                                            </div>
+
+                                                            <div class="form-group ml-4">
+                                                                <label for="comprimento_total" class="form-label small"><strong>Comprimento</strong></label>
+                                                                <input id="comprimento_total" type="text" class="form-control border-left-0 text-secondary" onchange="CalculaQteTotalPecas()">
+                                                            </div>
+
+                                                            <div class="form-group ml-4">
+                                                                <label for="quantidade_pecas" class="form-label small" ><strong>Qte Peças</strong></label>
+                                                                <input id="quantidade_pecas" type="text" class="form-control border-left-0 text-secondary" readonly>
+                                                            </div>
+
+
+
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col text-center" style="font-size: 15px;">
+                                                                Típicos
+                                                            </div>
+                                                            <div class="col text-center" style="font-size: 15px;">
+                                                                % Peças
+                                                            </div>
+                                                            <div class="col text-center" style="font-size: 15px; margin-right: 30px;">
+                                                                Qte Tip.
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="border p-3 overflow_chrome overflow_firefox" id="tipicos_selecionados_fixacao_infra" style="height: 150px;">
+
+                                                            <!-- Cabeçalhos -->
+
+
+
+                                                        </div>
+
+                                                        <button type="button" class="btn btn-secondary mt-3" onclick="CarregaAcessoriosEletrodutos(); $('#modal_acessorios_eletroduto').modal('show');">Acessorios de Eletroduto</button>
+
+
+                                                    </div>
+
+
+
+
+                                            </div>
+
+
+
+
+
+
+                                            <div class="row text-center">
+                                                <div class="container-fluid w-1000 h-300 p-0" style="margin-top: 20px;"> <!-- Altere 20px para o valor desejado -->
+                                                    <img src="" id="img_dwg_fixacao_infra_fc" class="shadow" style="width: 800px; height: 710px; border: 5px solid #333; border-radius: 20px;">
+                                                </div>
+                                            </div>
+
+
+                                            <!------------------ Início Adicionar/Exclui Típico da OS ------------------>
+                                            <div class="form-group mb-0">
+                                                <div class="card mb-0 text-center">
+                                                    <div class="card-body">
+                                                        <h6>Adicionar/Exclui Típico da OS</h6>
+                                                        <a href="#" onclick="SalvarFixacaoInfra()" class="btn btn-outline-primary"><i class="fa-solid fa-folder-plus pr-3"></i>Adicionar</a>
+                                                        <a href="#" onclick= "StartDelFixacaoInfra()" class="btn btn-outline-danger"><i class="fa-solid fa-trash pr-3"></i>Excluir</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group text-left col-md-3 col-lg-3 d-flex pl-0 mb-0">
+                                    <div class="card mb-0 flex-grow-1 bg-light">
+                                        <div class="card-body">
+                                            <div class="h-50 d-flex flex-column">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Detalhes Típicos</span>
+                                                    <span class="badge badge-primary my-auto" id="length_detalhes_tipicos_fixacao_infra"></span>
+                                                </div>
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text bg-white">
+                                                            <i class="fa-solid fa-magnifying-glass text-secondary"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input oninput="filtrarOpcoes(this.value, 'detalhes_tipicos_fixacao_infra')" placeholder="Pesquisar..." type="text" class="form-control border-left-0 text-secondary">
+                                                </div>
+                                                <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="detalhes_tipicos_fixacao_infra" multiple></select>
+                                            </div>
+                                            <div class="h-50 d-flex flex-column">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Cargas do Típico</span>
+                                                    <span class="badge badge-primary my-auto" id="length_cargas_tipicos-fixacao_infra"></span>
+                                                </div>
+                                                <select class="form-control overflow_chrome overflow_firefox flex-grow-1" id="cargas_tipicos-fixacao_infra" onclick="InfosFixacaoInfra()" multiple></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+                        </form>
+                    </div>
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include "eletrica/ModalConfigMateriaisForcaControle.html"%}
+    {% include "eletrica/ModalAcessoriosForcaControle.html"%}
+    {% include "eletrica/ModaisCatalogosDeDimencionamento.html"%}
+    {% include "eletrica/GerarAcessoriosEletrForcaControle.html"%}
+
+</div>
+<!------------------ Início Modal de Remoção ------------------>
+<div class="modal fade animate__animated animate__pulse" id="modal_remove_item" role="dialog" aria-hidden="true" style="max-width: 1400px;>
+    <div class="modal-dialog">
+        <div class="modal-content bordas">
+            <div class="modal-header">
+                <h5 class="modal-title text-center">Deseja realmente remover este item?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!------------------ Início card Ação ------------------>
+                <div class="border p-3 rounded bg-light">
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-outline-primary rounded-pill mr-2" id="execute_remove_item" onclick="sendJustificationEmail('Aprovar')"><i class="fa-regular fa-circle-check"></i> Sim</button>
+                        <button type="button" class="btn btn-outline-danger rounded-pill ml-2" data-dismiss="modal" aria-label="Close"><i class="fa-solid fa-circle-xmark"></i> Não</button>
+                    </div>
+                </div><!------------------ Fim card Ação ------------------>
+            </div>
+        </div>
+    </div>
+</div><!------------------ Fim Modal de Remoção ------------------>
+<script src="{% static 'js/eletrica/A1Pro/ControleTipicosFC.js' %}"></script>
+<!--<script src="{% static 'js/eletrica/ControleTipicosForcaControle.js' %}"></script>-->
+
+{% endblock %}

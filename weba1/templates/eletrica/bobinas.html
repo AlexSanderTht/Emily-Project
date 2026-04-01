@@ -1,0 +1,290 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | BOBINAS</title>
+
+{% endblock %}
+
+{% block main %}
+<link rel="stylesheet" href="{% static 'css/flexibilidade/jquery.dataTables.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<style>
+    .list-tags-cabo-container{
+        max-height: 400px;
+        overflow-y: scroll;
+        padding-right: 10px;
+        scrollbar-color: #6c757d #d9dadb;
+        scrollbar-width: thin;
+    }
+</style>
+<div class="container-fluid h-100">
+
+    <div class="col-lg-12 mt-4 mb-3">
+        <button class="btn btn-primary btn-warning position-absolute" onclick="window.history.go(-1)">Voltar</button>
+        <h3 class="text-center"><b>Bobinas</b></h3>
+    </div>
+    <div class="container-fluid d-flex justify-content-center">
+        <div class="bg-white shadow content-bobinas">
+            <div class="row">
+                <div class="col-md-6 col-lg-3 h-100 border-right">
+                    <div class="col-lg-12 text-center mt-2">
+                        <h5><b>OS Selecionada: {{os_num}}</b></h5>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <label for="isolacao_bobina">Material Isolação:</label>
+                        <select class="form-control" id="isolacao_bobina">
+                          <option value="0">Selecione uma Isolação</option>
+                          {% for id, value in isol.items %}
+                            <option value="{{id}}">{{value}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <label for="class_isol_bobina">Classe de Isolação:</label>
+                        <select class="form-control" id="class_isol_bobina">
+                          <option value="0">Selecione uma Classe de Isolação</option>
+                          {% for id, value in class_isol.items %}
+                            <option value="{{id}}">{{value}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        <label for="formacao_bobina">Formação:</label>
+                        <select class="form-control" id="formacao_bobina">
+                          <option value="0">Selecione uma Formação</option>
+                          {% for form in formacao_sin_acess %}
+                            <option value="{{form.nome}}" title="{{form.tipo}}">{{form.nome}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        <label for="formacao_bobina">Tipo Formação:</label>
+                        <select class="form-control" id="tipo_formacao_bobina">
+                          <option value="0">Selecione uma Formação</option>
+                          <option >SINAL/ACESSORIO</option>
+                          <option >ALIMENTAÇÃO</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <label for="secao_bobina">Seção:</label>
+                        <select class="form-control" id="secao_bobina">
+                          <option value="0">Selecione uma Seção</option>
+                          {% for id, value in secao.items %}
+                            <option value="{{id}}">{{value}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        <label for="coda1_bobina">Cód.A1:</label>
+                        <input type="text" class="form-control" placeholder="Digite o Cod.A1" id="coda1_bobina" maxlength="10">
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        <label for="fabricante_bobina">Fabricante:  <button type="button" class="btn btn-warning btn-sm" onclick="$('#fabricantes_bobinas').modal('show'); RequestAllFabGeral()">...</button></label>
+                        <select class="form-control" id="fabricante_bobina">
+                          <option value="0">Selecione um Fabricante</option>
+                            {% for id, value in fabricantes.items %}
+                                <option value="{{id}}">{{value}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        <label for="comprimento_bobina">Comprimento(m):</label>
+                        <input type="number" class="form-control" id="comprimento_bobina">
+                    </div>
+
+                    <div class="col-lg-12">
+                        <div class="mt-lg-2 d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary flex-fill mr-2" onclick="ShowModalCaracOs()">Caracteristicas da OS</button>
+                            <button type="button" class="btn btn-primary w-75" data-toggle="modal" data-target="#modal_import">Importar</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 mt-3">
+                        <div class="mt-2 d-flex justify-content-between">
+                            <button type="button" class="btn btn-success flex-fill mr-2" onclick="SendDatasBobinas()">Salvar</button>
+                            <button type="button" class="btn btn-warning w-50" onclick="window.location.reload(true)">Limpar</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-9">
+                    <div class="container-fluid mt-3">
+                        <div class="col-12 text-left">
+                            <h4>Cadastradas no Sistema</h4>
+                        </div>
+                    </div>
+                    <div class="border p-4 shadow font_size_0_8 mr-3">
+                        <button type="button" class="btn btn-success flex-fill mr-2" id="baixar-bobinas">Baixar Bobinas</button>
+
+                        <table class="table table-sm table-hover" id="TableBobinas">
+                            <thead>
+                                <tr>
+                                    <th>Isolação</th>
+                                    <th>Classe Isolação</th>
+                                    <th>Formação</th>
+                                    <th>Tipo Formação</th>
+                                    <th>Seção(mm²)</th>
+                                    <th>Fabricante</th>
+                                    <th>Comprimento</th>
+                                    <th>Cód.A1</th>
+                                    <th>Remover</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                            {% for obj_bobina in bobinas %}
+                                <tr onclick="OnClickBobinaCadastrada({{obj_bobina.pk}}, this)">
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_id_isol.tb_isol_material}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_id_class_isol.tb_list_ci_desc}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_formacao}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_tipo_formacao}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_id_sec.tb_sec_nc_mm2}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_id_fabg.tb_fabg_nome}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_comprimento}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_coda1}}</td>
+                                    <td class="text-center py-1"><i class="fa-solid fa-xmark" onclick="DeleteBobina({{obj_bobina.pk}})"></i></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <input type="text" class="form-control" id="bobina_selected" hidden>
+            </div>
+        </div>
+    </div>
+
+    <!------------------ Início Modal Mensagem Submit ------------------>
+    <div class="modal fade" id="modal_import" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bordas">
+                <div class="modal-header">
+                    <h4 id="titulo" class="modal-title text-center w-100">Cadastrar Bobinas</h4>
+                    <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                </div>
+
+                <div class="modal-body" data-backdrop="static" data-keyboard="false">
+                    <!------------------ Inicio Dropzone XLSX ------------------>
+                    <div class="col card_dropzone py-3 mr-0 text-center" id="drop-area-xlsx-bobinas">
+                        <div class="text-center w-100" id="xlsx-bobinas">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte o template (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xlsx_bobinas" onchange="dropArquivo('arquivo_xlsx_bobinas','drop-area-xlsx-bobinas','xlsx-bobinas',null)"/>
+                                <i class="fa-solid fa-upload"></i> Import xlsx
+                            </label>
+                        </div>
+                    </div><!------------------ Fim Dropzone XLSX ------------------>
+
+                    <div id="progress-box-bobinas" class="text-center mt-3" hidden>
+                        <div id="load_gif_bobinas" style="width: 0%;">
+                            <img id="gif_progress_bobinas" class="float-right" style="height: 40px;" src="{% static 'img/run-sonic.gif' %}" alt="GIF progress-bar">
+                            <img hidden id="gif_success_bobinas" class="float-right" style="height: 40px;" src="{% static 'img/sonic-success.gif' %}" alt="GIF progress-bar">
+                        </div>
+                        <div class='progress-wrapper text-center'>
+                            <div id='progress-bar-bobinas' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                        </div><br>
+                        <div id="progress-bar-message-bobinas" class="text-center">Aguardando a Inicialização da tarefa ...</div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-success shadow rounded-pill" href="/app/eletrica/a1pro/Bobinas/TemplateExcel/">Download Template</a>
+                    <button type="submit" class="btn btn-warning shadow rounded-pill" onclick="sendCoilsToRegister()">Cadastrar</button>
+                    <div class="loader" id="loaderUploadArquivo"></div>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim Modal Mensagem Submit ------------------>
+
+</div>
+{% include './FabricantesInBobinas.html' %}
+{% include './CaracteristicasOsBobinas.html' %}
+<script type=text/javascript src="{% static 'js/datatables 1.10.20/dataTables.bootstrap.min.js' %} "></script>
+<script type=text/javascript src="{% static 'js/datatables 1.10.20/jquery.dataTables.min.js' %} "></script>
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/Bobinas.js' %} "></script>
+<script>
+
+    $(document).ready(function (){
+        $('#TableBobinas').DataTable({
+            "sDom": "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6 d-flex justify-content-end form-inline pb-2'l>>" +
+                        "<'row'<'col-sm-12 col-md-12 col-lg-12'tr>>" +
+                        "<'row mt-3'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            "scrollCollapse": true,
+            "scrollY": "485px",
+            // "scrollX": true,
+            "paging": false,
+            "bFilter": true,
+            "info": false,
+            "language": {
+                "emptyTable": "Nenhuma Bobina encontrada",
+                "search": "Pesquisar",
+            },
+        })
+        document.getElementById('TableBobinas_filter').parentElement.classList.add('d-flex')
+        document.getElementById('TableBobinas_filter').parentElement.classList.add('justify-content-start')
+        $('#TableBobinas').removeClass('no-footer')
+        document.getElementById('TableBobinas_filter').firstChild.classList.add('text-left')
+        $('tr').addClass('saidas_existentes')
+
+        // lembrar analizar o processo de atualização do datatable e filtro, olhar certamento se a tabela é atualizada corretamente
+        // e como ela se comunica com a parte do front end, e como o dash reage a certas alterações com saídas e requisições
+        // analizar o processo do filtro envolvendo o plano de cortes e o OnClickBobinaCadastrada, e como vou fazer ele interagir
+        // com o datatable e o front end
+
+    })
+
+    // --------------------- Função adiciona campo visual nos dropzones ---------------------//
+
+
+
+    function dropArquivo(id_input,id_drop,campo,arquivo) {
+        let drop_container = document.getElementById(campo);
+        let file = document.getElementById(id_input);
+        let form;
+        let name_file;
+        let broken_name_file;
+        let drop = '';
+        let itens = $('#'+id_drop)[0].children
+
+        // Caso não seja dropado o arquivo é recebido via id
+        form = arquivo !== null ? arquivo.files : file.files;
+
+        for (let i = 0; i <form.length;i++){
+            name_file = form[i].name
+            let extension = name_file.split('.').pop();
+            if (extension === 'xls' || extension === 'xlsx'){
+                if (itens.length === 1) {
+                    let tamanho = FormatNumberToBytes(form[i].size) //Recebe o tamanho para o formato em bytes
+                    if (name_file.split(' ').length <= 1){
+                        name_file = name_file.match(/.{1,18}/g).join(' ') //Caso o nome do arquivo seja maior que 18 caracteres a string é quebrada
+                    }
+                    formFileBobinas.append('filePlanoDeCorte', form[i]);
+                    drop = `<div class="col-5 bordas mx-auto my-1 input-group border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown position-relative">
+                        <button onclick="window.location.reload(true)" title="Remove arquivo" class="btn btn-outline-danger rounded-pill px-2 border-0 position-absolute" type="button" style="right:0px;top:0px;z-index: 1;">
+                            <i class="fas fa-times-circle fa-xl"></i>
+                        </button>
+                        <img id="image_xls_bobinas" class="my-2 w-75 mx-auto" src="{% static 'img/XLS.png' %}" alt="Image XLSX">
+                        <span type="text" class="py-2 w-100 border-bottom font-weight-bold">${tamanho}</span>
+                        <span type="text" title="${name_file}" class="py-2 mx-2 text-center">${name_file}</span>
+                    </div>`
+
+                    drop_container.innerHTML = drop;
+                }
+            } else {
+                // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                swalAlert(false, 'Extensão do campo diferente de (.xlsx)!', 'warning', false)
+            }
+        }
+    }
+
+</script>
+{% endblock %}

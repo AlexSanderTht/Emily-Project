@@ -1,0 +1,215 @@
+{%extends 'geral/base.html'%}
+
+{% load static %}
+{% block head %}
+<title>Indicadores de Verificação</title>
+
+<style>
+        label
+        {
+            margin-bottom: 0px;
+        }
+        .loader {
+          border: 8px solid #A1A1A1;
+          border-top: 8px solid #f6801e;
+          border-radius: 50%;
+          width: 50px;
+          height: 50px;
+          animation: spin 2s linear infinite;
+           display: block;
+          margin-left: auto;
+          margin-right: auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.input-group-text{
+    background-color: gray;// #343A40;
+    color: white;
+}
+.flex {
+  display: flex;
+  justify-content: center;
+    margin-top: 10px;
+}
+
+.flex-item + .flex-item {
+  margin-left: 10px;
+}
+
+.button {
+  margin-top: 15px;
+  background-color: #0066FF;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+
+}
+
+</style>
+{% endblock %}
+{% block main %}
+{% load poll_extras %}
+{% verify_tool as user_info %}
+{% if user_info.A1CIVIndicadoresVerificacao %}
+
+
+
+
+
+<div class="mx-auto">
+    <div class="bg-white rounded-lg shadow-sm p-5" style="margin-left:50px; margin-right:50px; margin-top: 50px">
+        <div class="tab-content">
+            <div id="nav-tab-card1" class="tab-pane fade show active">
+                <div class="jumbotron">
+                    <h1 class="display-4">Indicadores de Verificação</h1>
+                    <p class="lead">Aqui são mostrados os indicadores de erros por verificação, de cada usuário ou de todos.</p>
+                    <hr class="my-4">
+                    <p class="lead">
+
+
+                   <div class="mx-auto">
+           <div class="bg-white rounded-lg shadow-sm p-5" style="margin-left:5px; margin-right:5px; margin-top: 10px">
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+                          <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="SelectOS">Selecione a OS:</label>
+                        </div>
+                        <select class="custom-select" id="SelectOS" disabled="disabled" required>
+                            {%for os in NotasAtividadesForm.OSs %}
+                            {{os}}
+                            {% endfor %}
+                            <option value="Todas">Todas</option>
+                        </select>
+
+                    </div>
+                        <span id="error-OS"></span>
+                         <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="{{ form.Disciplinas.html_name }}">{{form.Disciplinas.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="{{ form.Disciplinas.html_name }}" name="{{ form.Disciplinas.html_name }}" {%if form.Disciplinas.field.required%} required {%endif%}>
+
+                                       {% for valor in form.Disciplinas %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+
+                                  </select>
+
+                                </div>
+
+                        <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="{{ form.TipoVerifica.html_name }}">{{form.TipoVerifica.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="{{ form.TipoVerifica.html_name }}" name="{{ form.TipoVerifica.html_name }}" {%if form.TipoVerifica.field.required%} required {%endif%}>
+
+                                       {% for valor in form.TipoVerifica %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+                                </div>
+
+                         <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="ListaAutoVerificacoes">LVE:</label>
+                                  </div>
+                                  <select class="custom-select" id="ListaAutoVerificacoes">
+
+                                   <option value="" selected="">---------</option>
+
+                                  </select>
+
+                                </div>
+                        <span id="error-LVE"></span>
+
+
+                         {% if AvisoErro %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ AvisoErro }}
+                                </div>
+                         {% endif %}
+                           <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="SelectUsuario">Selecione o Usuário:</label>
+                                </div>
+                                <select class="custom-select" id="SelectUsuario" required>
+                                    <option selected value="Todos">Todos</option>
+
+                                    {% for user in UsuariosList %}
+                                      <option value="{{user.User}}">{{user.Nome}}</option>
+                                    {% endfor %}
+                                </select>
+                                   </div>
+                        <div style="border: 1px solid black; padding-left: 10px; padding-right: 10px; padding-top: 10px">
+                                  <div class="form-check" style="padding-bottom: 5px">
+                                <input type="checkbox" class="form-check-input" id="TodasAsDatas">
+                                <label class="form-check-label" for="TodasAsDatas">Filtrar Data</label>
+                              </div>
+                            <div class="input-group input-group-sm mb-3">
+
+                              <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-smDe">De:</span>
+                              </div>
+                              <input type="date" class="form-control" id="DataFrom" disabled="disabled" aria-label="Small" aria-describedby="inputGroup-sizing-smDe">
+                                <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-smAte">Até:</span>
+                              </div>
+                              <input type="date" class="form-control" id="DataTo" disabled="disabled" aria-label="Small" aria-describedby="inputGroup-sizing-smAte">
+
+                            </div>
+                            <span id="error-Data"></span>
+                            </div>
+                        <button type="button" class=" btn " style="margin-top: 10px; width: 100% ; background-color: #12192C; color: #ffff" id="Pesquisar Indicadores" onclick="Buscar()" title="Pesquisar baseado nos filtros acima">Buscar</button>
+                          <div id="nav-tab-card3" class="tab-pane fade show active">
+                          <div class="input-group mb-3">
+
+
+
+
+                    </div>
+                           <div class="loader" id="loaderDetalhes" style="height: 50px; width:50px; display: none"></div>
+                        <div id="ResultadoPesquisa">
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% else %}
+<h1> Acesso não permitido </h1>
+{% endif %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js"  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="{% static 'css/civil/jquery.dataTables.min.css' %}"/>
+<script type="application/javascript" src="{% static 'js/civil/scriptsGerais.js' %}"></script>
+<script type="application/javascript" src="{% static 'js/civil/ScriptIndicadoresVerificacao.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/a1civ.css' %}"/>
+
+
+
+{%endblock%}

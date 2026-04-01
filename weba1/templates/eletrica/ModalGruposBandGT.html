@@ -1,0 +1,65 @@
+{% load static %}
+<div class="modal fade" id="modal_grupos_band_gt" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content mt-5 shadow border estl_modal">
+      <div class="modal-header border-0 ">
+        <h5 class="modal-title font-weight-bold mt-2 p-1" id="exampleModalLabel">Grupos Bandeja</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body ">
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group">
+              <label class="col-form-label">Nome:</label>
+              <input type="text" class="form-control form-control input-a1style" id="nome_grupo_band_gt">
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label">Tipo:</label>
+              <select class="form-control" id="tipo_grupo_band_gt">
+                <option value="0">---</option>
+                <option value="BANDEJA">BANDEJA</option>
+                <option value="ELETROCALHA">ELETROCALHA</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">Fixação da Bandeja:</label>
+              <select class="form-control" id="tipo_grupo_fixacao">
+                <option value="0">---</option>
+                <option value="PERFIL">PERFIL</option>
+                <option value="PERFILADO">PERFILADO</option>
+              </select>
+            </div>
+
+            <div class="form-group ml-4" hidden>
+              <input class="form-check-input" type="checkbox" value="" id="vp_grupo_band_gt" >
+              <label class="form-check-label" for="vp_grupo_band_gt">
+                Vista em planta
+              </label>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group">
+              <label class="col-form-label">Procurar:</label>
+              <input type="text" class="form-control input-a1style" id="search_grupo_band_gt" onkeyup="FilterSelectsCt(this.value, 'all_grupos_band_gt')">
+            </div>
+
+            <div class="form-group">
+              <select multiple class="form-control input-a1style pe-auto" id="all_grupos_band_gt">
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="grid d-flex align-self-start mr-auto">
+          <button type="button" class="btn btn-success" onclick="SendDatasGruposBand()" style="">Adicionar/Alterar</button>
+        </div>
+        <button type="button" class="btn btn-warning"  onclick="ClearGruposBand()">Limpar</button>
+        <button type="button" class="btn btn-danger"  onclick="DeleteGrupoBand()">Excluir</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,229 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+<link href="{% static 'css/eletrica/resumo_tbr.css' %} " rel="stylesheet" />
+{% block head %}
+{% csrf_token %}
+<title>TBR</title>
+{% endblock %}
+
+{% block help %}
+
+    <br><br>
+    <h6><small>Tensão em cor vermelha: Existe essa tensão somente em algum equipamento e não tem uma TBR referente a ela.</small></h6>
+    <br><br>
+    <h6><small>Tensão em cor verde: Tensão tanto no tipo de equipamento quanto na TBR.</small></h6>
+    <br><br>
+    <h6><small>Tensão em cor amarela: Tensão que existe uma TBR cadastrada mas não tem um equipamento com ela.</small></h6>
+{% endblock %}
+{% block main %}
+{% load static %}
+<style>
+
+  .rolagem{
+      height:350px;
+      overflow-y: auto;
+      overflow-x: hidden;
+  }
+</style>
+
+<!-------------------------------------------------INICIO DA DROP DE ARQUIVOS---------------------------------------------------------->
+<div class="d-inline-block col-lg-6 border-right">
+    <button class="btn btn-primary btn-warning btn-sm position-absolute mt-3" onclick="window.history.go(-1)">Voltar</button>
+    <h2 class="p-4 mx-5">
+        <small class="text-muted">TBR</small>
+    </h2>
+    <div class="area-upload">
+         <div class="card_dropzone p-5" id="dropzone_xlsx_tbr">
+            <label  class="label-upload">
+                <input class="hidden" type="file" id="file_tbr" onchange="DropFileExcelTbr()">
+                <div class="container" id="content-file-not-droped">
+                    <i class="fas fa-cloud-upload-alt">
+                    </i>
+                    <div class="texto">Clique ou arraste o arquivo</div>
+                </div>
+                <div class="lista-uploads" id="files-uploads-tbr">
+                </div>
+            </label>
+         </div>
+    </div>
+
+    <form class="p-3">
+        <div class="form-row mt-5 mx-5">
+            <div class="form-group col-lg-2">
+                <label> Tensão</label>
+                <input type="number" required class="form-control" id="tensao_tbr" placeholder="Tensão" onkeyup="VerifyFieldsFloat(this.id)">
+            </div>
+
+            <div class="form-group col-lg-3">
+                 <label>Tipo de Equipamento</label>
+                 <select class="custom-select" id="tipo_equip_tbr">
+                     <option value="MD">Motor Partida Direta</option>
+                     <option value="MS">Motor Partida Softstarter</option>
+                     <option value="MI">Motor Partida Inversor</option>
+                     <option value="PN">Painel</option>
+                     <option value="TR">Transformador</option>
+                     <option value="CA">Carga Auxiliar</option>
+                 </select>
+            </div>
+
+            <div class="form-group col-lg-3">
+                <label>Fator de Agrupamento</label>
+                <input type="number" required class="form-control" id="fator_agrupamento" placeholder="Fator de Agrupamento" onkeyup="VerifyFieldsFloat(this.id)">
+            </div>
+
+            <div class="form-group col-lg-4">
+                <label for="corrente_continua">Corrente de Curto-Circuito</label>
+                <input type="number" required class="form-control"  placeholder="Corrente de Curto-Circuito"  id="corrente_continua" onkeyup="VerifyFieldsFloat(this.id)">
+            </div>
+        </div>
+
+        <div class="row p-5 text-center">
+            {% csrf_token %}
+            <div class="col-lg-12">
+                <div id='progress-bar-tbr' class='progress-bar h-50'>&nbsp;</div>
+                <div id="progress-bar-message-tbr">Esperando a inicialização de uma tarefa...</div>
+            </div>
+            <div class="col-lg-12">
+                <a class="btn btn-success" onclick="SendTbrBack()">Adicionar/Alterar</a>
+                <a class="btn btn-warning" onclick="CleanFormsTbr();window.location.reload()">Limpar</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--------------------------------------------FINAL DA DROP DE ARQUIVOS---------------------------------------------------------->
+
+<!------------------------------------------------INICIO DOS BOTOES------------------------------------------------------------->
+
+<div class="position-absolute d-inline-block col-lg-5">
+    <h3 class=" mx-2 p-4 text-muted">Tensões da TBR</h3>
+    <div class="row justify-content-center text-center rolagem " >
+        <div class=" form-group col-lg-2">
+            <label class="text-nowrap">Painel<BR>(PN)</label>
+            {% for tensions, color in PN.items %}
+                <div class="row mt-2 mx-1">
+                    <a type="button" class="form-control btn btn-{{color}} justify-content-center">{{tensions}}</a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-group col-lg-2">
+            <label class="text-nowrap">Motor Direta<BR>(MD)</label>
+            {% for tensions, color in MD.items %}
+                <div class="row mt-2 mx-1">
+                    <a type="button" class="form-control btn btn-{{color}} justify-content-center">{{tensions}}</a>
+                </div>
+            {% endfor %}
+        </div>
+
+         <div class="form-group col-lg-2">
+            <label class="text-nowrap" >Motor Inversor<BR>(MI)</label>
+             {% for tensions, color in MI.items %}
+                <div class="row mt-2 mx-1">
+                    <a type="button" class="form-control btn btn-{{color}}">{{tensions}}</a>
+                </div>
+             {% endfor %}
+         </div>
+
+        <div class="form-group col-lg-2">
+            <label class="text-nowrap">Motor Soft Start<BR>(MS)</label>
+            {% for tensions, color in MS.items %}
+                <div class="row mt-2 mx-1">
+                    <a type="button" class="form-control btn btn-{{color}}">{{tensions}}</a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-group col-lg-2">
+            <label class="text-nowrap">Transformador<BR>(TR)</label>
+            {% for tensions, color in TR.items %}
+                <div class="row mt-2 mx-1">
+                    <a type="button" class="form-control btn btn-{{color}}">{{tensions}}</a>
+                </div>
+            {% endfor %}
+        </div>
+
+         <div class="form-group col-lg-2">
+            <label class="text-nowrap">Carga Auxiliar<BR>(CA)</label>
+             {% for tensions, color in CA.items %}
+                <div class="row mt-2 mx-1">
+                    <a type="button" class="form-control btn btn-{{color}}">{{tensions}}</a>
+                </div>
+             {% endfor %}
+        </div>
+    </div>
+    <h3 class=" mx-2 p-4 text-muted">Controle TBR</h3>
+    <!-- Cabeçalho da tabela de controle de tbr-->
+    <div class="rolagem">
+        <div class="row w-100 ml-2">
+            <div class="col-lg-5 text-center bg-secondary text-white border-right border-light rounded-top">
+                Tipo de Equipamento
+            </div>
+
+            <div class="col-lg-5 text-center bg-secondary text-white border-right border-light rounded-top">
+                Tensão
+            </div>
+
+            <div class="col-lg-2 text-center bg-secondary text-white rounded-top">
+                🗑️
+            </div>
+        </div>
+        <!-- Fim Cabeçalho da tabela de controle de tbr-->
+
+        <!-- Conteudo da tabela de controle de tbr -->
+        {% if all_tbr != '' %}
+            {% for id_tbr, tensao_tbr, tipo_eqp_tbr in all_tbr%}
+                <div class="row w-100 ml-2 border-bottom">
+                    <div class="col-lg-5 text-center border-right align-self-center">
+                        {{tipo_eqp_tbr}}
+                    </div>
+
+                    <div class="col-lg-5 text-center border-right align-self-center">
+                        {{tensao_tbr}}
+                    </div>
+
+                    <div class="col-lg-2 text-center">
+                        <button type="button" class="btn btn-outline-danger btn-sm mt-1 mb-1" value="{{id_tbr}}" onclick="DeleteTbr(this.value)">X</button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="row w-100 ml-2 d-flex justify-content-center">
+                NENHUMA TBR CADASTRADA
+            </div>
+        {% endif %}
+        <!-- Fim Conteudo da tabela de controle de tbr -->
+    </div>
+</div>
+{% include './modal_warning.html' %}
+<!--------------------------------------------FINAL DOS BOTOES------------------------------------------------------------->
+<script src="{% static 'js/eletrica/A1Pro/resumotbr.js' %}"></script>
+<script src="{% static 'js/eletrica/A1Pro/a1pro_ctrl.js' %}"></script>
+<script>
+    jQuery(document).ready(function($) {
+
+        $('#dropzone_xlsx_tbr').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover-blue');
+        })
+
+        $('#dropzone_xlsx_tbr').on('drop', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+          let files = event_2.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropFileExcelTbr(files)
+        })
+
+        $('#dropzone_xlsx_tbr').on('dragleave', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+        })
+
+    });
+</script>
+{% endblock %}
+

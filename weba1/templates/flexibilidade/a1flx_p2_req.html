@@ -1,0 +1,496 @@
+{% extends 'geral/base.html' %}
+{% load poll_extras %}
+{% load static %}
+{% block head %}
+<title>Tela de Requisições</title>
+    <link rel="stylesheet" href="{% static 'css/flexibilidade/jquery.dataTables.min.css' %}"/>
+{% endblock %}
+{% block help %}
+    <h7>Drop List <strong>"Liberar sistema"</strong>> Droplist: Liberar / revisar sistema Finalizar comentários</h7>
+    <br><br>
+    <h7>Opção "Controladoria" Nesta opção você irá revisar somente  listas da controladoria. </h7>
+    <br><br>
+    <h7>Opção "Outra lista" Nesta opção você irá revisar as demais listas. </h7>
+    <br><br>
+    <h7>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas. </h7>
+    <br><br>
+    <h7>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores. </h7>
+    <br><br>
+    <h7> "Chave 2" Neste campo você irá inserir a coluna  sem repetição de valores(caso a primeira tenha repetição). </h7>
+    <br><br>
+    <h7>Botão "Revisar" Neste botão ele realizará a revisão entre os doc. marcando em amarelo o que mudou, mantendo a extensão .xlsx.</h7>
+    <br><br>
+    <h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+
+    <div class="row mb-4">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4"><b>Tela de Requisições, OS: {{ os }}</b></h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="bg-white rounded-lg shadow-sm p-5">
+          <!-- Credit card form content -->
+          <div class="tab-content row">
+
+            <!-- credit card info-->
+            <div id="nav-tab-card" class="tab-pane fade show active col-12">
+
+              <div>
+                <form action="{% url 'download' %}" id="auto-download" method="GET" enctype="multipart/form-data">
+                    {% csrf_token %}
+                </form>
+              </div>
+              <div id="muda"></div>
+
+              <div id="tabela_req">
+
+                  <table id = "tb_req" class="table table-striped table-bordered table-responsive text-nowrap table-sm tb_req">
+                    <thead class="thead-light">
+                        <tr id = "header_tab_req">
+                            {% if header %}
+                                {% for h in header %}
+                                    <th scope="col" style="text-align: center">{{ h|underline_off }}</th>
+                                {% endfor %}
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody id = "dados_tab_req">
+                        {% if sis %}
+                            {% for rw in sis %}
+                                <tr>
+                                    {% for dt in rw %}
+                                        <td title="{{dt}}" style="text-align:center; max-width:25vw;">{{dt|limit_string}}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                    <tfoot class="thead-light">
+                        <tr id = "footer_tab_req">
+                            {% if header %}
+                                {% for h in header %}
+                                    <th scope="col" style="text-align: center">{{ h|underline_off }}</th>
+                                {% endfor %}
+                            {% endif %}
+                        </tr>
+                    </tfoot>
+                </table>
+
+              </div>
+
+              <div id="tabela_pipe">
+                  <table id = "tb_pipe" class="table table-striped table-bordered table-responsive text-nowrap table-sm tb_pipe">
+                        <thead class="thead-light">
+                            <tr id = "header_tab_pipe">
+                                {% if header_pipe %}
+                                    {% for h in header_pipe %}
+                                        <th scope="col" style="text-align: center">{{ h|underline_off }}</th>
+                                    {% endfor %}
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody id = "dados_tab_pipe">
+                            {% if plan_pipe %}
+                                {% for rw in plan_pipe %}
+                                    <tr>
+                                        {% for dt in rw %}
+                                            <td title="{{dt}}" style="text-align:center; max-width:25vw;">{{dt|limit_string}}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
+                        <tfoot class="thead-light">
+                            <tr id = "footer_tab_pipe">
+                                {% if header_pipe %}
+                                    {% for h in header_pipe %}
+                                        <th scope="col" style="text-align: center">{{ h|underline_off }}</th>
+                                    {% endfor %}
+                                {% endif %}
+                            </tr>
+                        </tfoot>
+                    </table>
+              </div>
+
+              <div class="col-12">
+                <div>
+                  <div class="btncalc" id = "btn_holder"></div>
+                </div>
+              </div>
+            </div>
+
+              <!-- barra de progresso -->
+          </div>
+            <!-- End -->
+            <!-- End -->
+        </div>
+          <!-- End -->
+      </div>
+    </div>
+    <div class="modal fade" id="ModalSelecionarLinhas" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" >Solucione as linhas em que houve alteração</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                            <table id="TabelaLinhasDoSistema" class="display" style="padding: 0px; width:100%; font-size:75%; overflow-y: hidden;color: black; "></table>
+                            <div id="ErroLinhaNaoEscolhida"></div>
+                        <div class="modal-footer">
+                                <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                        data-dismiss="modal">Fechar
+                                </button>
+                                <button type="button" onclick="AtualizarSistemaLinhasFiltradas()" class="subscribe btn btn-warning  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                        data-dismiss="modal">Enviar
+                                </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/poppder.js/1.14.7/umd/popper.min.js"></script> -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+
+
+    <script>
+
+        var ctrl = parseInt('{{ lvl_ctrl|safe }}');
+        var rows = '';
+        var tela = 0;
+        let None = '';
+        let nan = '';
+        var sis = {{ dict_req|safe }};
+        var pipe_flex = {{ dict_pipe|safe }};
+        let sistemas = {{ dict_req|safe }};//Object.keys(sis);  // Lista de todos os sistemas
+
+        let sis_last_rev = {{ last_rev|safe }};
+        let login = '{{ log|safe }}';
+        let num_os = {{ os|safe }};
+
+        var table_pipe = $('#tb_pipe').DataTable(
+        {
+        "language": {
+              "lengthMenu": " Apresentar  _MENU_ linhas por página.",
+              "zeroRecords": "Não há registros",
+              "info": "Mostrando a página _PAGE_ de _PAGES_",
+              "infoEmpty": "Mostrado 0 para 0 de 0 entradas",
+              "search": "Pesquisar:",
+              "paginate":{
+              "next": "Próximo",
+              "previous":"Anterior",
+              },
+              "infoFiltered": "(Filtrando de   _MAX_ registros)",
+            }
+        });
+
+        table_pipe.columns().every( function () {
+            var that = this;
+            $('input', this.header() ).on( 'keyup change', function () {
+                if ( that.search() !== this.value ) {
+                    that.search( this.value ).draw();
+                }
+            });
+        });
+
+        var table_req = $('#tb_req').DataTable({
+              "language": {
+              "lengthMenu": " Apresentar  _MENU_ linhas por página.",
+              "zeroRecords": "Não há registros",
+              "info": "Mostrando a página _PAGE_ de _PAGES_",
+              "infoEmpty": "Mostrado 0 para 0 de 0 entradas",
+              "search": "Pesquisar:",
+              "paginate":{
+              "next": "Próximo",
+              "previous":"Anterior",
+              },
+              "infoFiltered": "(Filtrando de   _MAX_ registros)",
+            }
+        });
+
+        table_req.columns().every( function () {
+            var that = this;
+            $('input', this.header() ).on( 'keyup change', function () {
+                if ( that.search() !== this.value ) {
+                    that.search( this.value ).draw();
+                }
+            });
+        });
+
+
+        // Funções de envio de informações ao back-end por ajax
+        function act_rej_req(num_of_list, act){  // Função para o profissional de flexibilidade
+
+            let idd = sistemas[num_of_list];
+            let comentario = `O sistema de flexibilidade ${idd[1]} foi ${act} por ${login}`;
+
+            let list_req = [idd[0], comentario, act, login];
+
+            $.ajax({
+                type: "POST",
+                url: "atualizar/",
+                dataType: 'json',
+                data: {'dict_req_flx':JSON.stringify({'list_req': list_req, 'tipo_req': 'aceita_rejeita'}),
+                       'csrfmiddlewaretoken': '{{ csrf_token|safe }}' },
+            }).done(function (data){
+                alert(data['response']);
+                document.getElementById(`row_${idd[0]}`).remove();
+            });
+        }
+
+        function finaliza_sis(num_of_list){
+            let idd = sistemas[num_of_list];
+
+            if (document.getElementById(`check_${num_of_list}`).checked === true) {
+                let list_req = [[idd][0][0], login]; // (id_sys_flex, login)
+                $.ajax({
+                    type: "POST",
+                    url: "atualizar/",
+                    dataType: 'json',
+                    data: {'dict_req_flx':JSON.stringify({'list_req': list_req, 'tipo_req': 'finaliza_sis'}),
+                           'csrfmiddlewaretoken': '{{ csrf_token|safe }}'},
+                }).done(function (data){
+                    alert(data['response']);
+                    document.getElementById(`row_${idd[0]}`).remove();  // Descarta a linha aprovada
+                })
+
+            } else {
+                alert('Se os comentários não foram atendidos, entre em contato com a Flexibilidade ou Revise o sistema')
+            }
+
+        }
+
+        async function new_req(idd){
+
+            // Recebe do form os seguintes dados (id_sys_flex, isometrico, arquivo_pd2c, observacao, demanda, login)
+
+            let sis_flex = document.getElementById('sistema').value;
+            let rev = document.getElementById('revisao').value;
+            if(sis_flex) {
+
+                let id_sys_flex = pipe_flex[`${sis_flex}_${rev}`];
+                var resp = await NovaRequisicao(id_sys_flex, sis_flex, rev);
+
+            } else {
+                return alert('Forneça um sistema de flexibilidade válido!')
+            }
+        }
+
+        function muda_rev() {  // Função que altera a revisão do intup ao lado do sistema depois do sistema ter sido preenchido
+            var sys = sis_last_rev[document.getElementById('sistema').value];
+            if (typeof(sys) == 'undefined'){ sys = 'Revisão não encontrada' }
+            document.getElementById('revisao').value = sys;
+        }
+
+        // Função que muda a tela de requisição
+        function tela_req(){
+            var rowx = '';
+            if (document.getElementById('estados').value === 'Liberar Sistemas') {  // Tela do requisitor
+                var sel = `<div class="form-group col-3 p-0 " >
+                              <select class="form-control bg-gray" id="estados" onchange="tela_req()">
+                                <option>Liberar Sistemas</option>
+                                <option>Criar/Revisar Sistema de Requisições</option>
+                              </select>
+                           </div>`;
+
+                if (sistemas.length > 0) {
+                    for (s in sistemas) {
+
+                        rowx += `
+                                <div class="row row-cols-5" id = "row_${sistemas[s][0]}">
+                                    <div class="form-group marcador col-md">
+                                        <label for="sistema">Sistema</label>
+                                        <input class="form-control" type="sistema" id="sistema_${sistemas[s]}" placeholder="${sistemas[s][1]}" readonly>
+                                    </div>
+                                    <div class="form-group marcador col-md" >
+                                        <label for="revisao">Revisão</label>
+                                        <input class="form-control" type="revisao" id="revisao_${sistemas[s]}" placeholder="${sistemas[s][2]}" readonly>
+                                    </div>
+                                    <div class="form-group marcador col-md">
+                                        <label for="status">Pendencia</label>
+                                        <input class="form-control" type="status" id="status_${sistemas[s]}" placeholder="${sistemas[s][6]}" readonly>
+                                    </div>
+                                    <div class="form-group marcador col-md">
+                                        <label for="responsavel">Responsável</label>
+                                        <input class="form-control" type="responsavel" id="responsavel_${sistemas[s]}" placeholder="${sistemas[s][7]}" readonly>
+                                    </div>
+                                    <div class="form-group marcador col-lg-3">
+                                      <br style='margin: 7px;'>
+                                      <input class="form-check-input" type="checkbox" id="check_${s}">
+                                      <label class="form-check-label">
+                                        Todos os comentários foram atendidos
+                                      </label>
+                                    </div>
+                                    <div class="col-md" style="child-align: middle">
+                                        <div class="btncalc" style="alignment: center">
+                                          <button id="fim_${sistemas[s][0]}" onclick="finaliza_sis('${s}')" style="align: center; width: 100%; margin-left: 0px ;" type="button" class="efeito efeito-1">Finalizar Sistema</button>
+                                        </div>
+                                    </div>
+                                </div>`;
+                    }
+                } else {
+                    rowx = `<h3>Não existem requisições pendentes para seu usuário.</h3>`;
+                }
+
+            } else { // Se a opção for outra, volta à tela inicial
+                muda();
+                return // Para não mudar o módulo
+            }
+
+            document.getElementById('muda').innerHTML = `
+                <div class="row">
+                    <div style="overflow-x: hidden">
+                      ${sel}
+                      <div style="overflow-x: hidden; max-height: 40vh; width: 100%">
+                        ${rowx}
+                      </div>
+                      <br><br>
+                    </div>
+                </div>`;
+
+            document.getElementById('btn_holder').innerHTML = '';
+            document.getElementById('tabela_pipe').style.display = "none";
+            document.getElementById('tabela_req').style.display = "block";
+        }
+
+
+        function muda(){
+            var tipo_tab = '';
+
+            if (ctrl === 3){  // Tela do requisitor
+                var select = `<div class="form-group col-12 p-0 " >
+                                <select class="form-control bg-gray" id="estados" onchange="tela_req()">
+                                    <option>Criar/Revisar Sistema de Requisições</option>
+                                    <option>Liberar Sistemas</option>
+                                </select>
+                              </div>`;
+                var marcador = `<div class="custom-file marcador col-12">
+                                    <input class="custom-file-input" type="file" name="arq-iso" id="arq-iso" onchange="selectedFolder(event, 'lbl_iso')">
+                                    <label class="custom-file-label" id="lbl_iso">Isométricos</label>
+                                </div><br><br>
+                                <div class="custom-file marcador col-12">
+                                    <input class="custom-file-input" type="file" name="arq-pd2" id="arq-pd2" onchange="selectedFolder(event, 'lbl_pd2')">
+                                    <label class="custom-file-label" id="lbl_pd2">Arquivos PD2CII</label>
+                                </div><br><br>`;
+                var btn = `<button  style="width: 120%; margin-left: -10px ;" type="button" class="efeito efeito-1" id = "btz_env_req" onclick="new_req('Atualizar')">Enviar Requisição</button>`;
+
+                document.getElementById('muda').innerHTML = `
+                        <form role="form" action="{% url 'atualizar' %}" method="POST" enctype="multipart/form-data" id="form">
+                          {% csrf_token %}
+                          <div class="row">
+                            <div class="col-lg-6">
+                              ${select}
+                              <div class="row">
+                                <div class="form-group marcador col-6" id="sistema_flex">
+                                    <label for="sistema">Sistema</label>
+                                    <input class="form-control" type="sistema" name="sistema" id="sistema" placeholder="SXXX" onchange="muda_rev()">
+                                </div>
+                                <div class="form-group marcador col-6">
+                                    <label for="revisao">Revisão</label>
+                                    <input class="form-control" type="revisao" name="revisao" id="revisao" placeholder="X" readonly>
+                                </div>
+                              </div>
+                              ${marcador}
+                            </div>
+                            <div class="valid-feedback">
+                              Campo Obrigatório
+                            </div>
+                            <div class="col-6">
+                              <div class="row">
+                                <div class="form-group marcador col-12">
+                                  <label for="mensagem">Observações</label>
+                                  <textarea class="form-control" name="observacao" id="observacao" rows="4" placeholder="Alterações em relação à última revisão"></textarea>
+                                  <label for="demanda">Demanda</label>
+                                  <select class="form-control " id="demanda" >
+                                  <option>Interna Tubulação</option>
+                                  <option>Interna Flexibilidade</option>
+                                  <option>Interna Suportação</option>
+                                  <option>Interna Equipamentos</option>
+                                  <option>Cliente</option>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </form>`;
+
+                document.getElementById('btn_holder').innerHTML = btn;
+                document.getElementById('tabela_req').style.display = "none";
+                document.getElementById('tabela_pipe').style.display = "block";
+
+            } else {  // Tela do aprovador de flexibilidade, cria também funções para copiar texto de botão
+
+                var rowx = '';
+                if (sistemas.length > 0) {
+                    for (s in sistemas) {
+                        rowx += `
+                                <div class="row row-cols-5" id = "row_${sistemas[s][0]}" style="alignment: center">
+                                    <div class="form-group marcador col-md">
+                                        <label for="sistema">Sistema</label>
+                                        <input class="form-control" type="sistema" id="sistema_${sistemas[s]}" placeholder="${sistemas[s][1]}" readonly>
+                                    </div>
+                                    <div class="form-group marcador col-md" >
+                                        <label for="revisao">Revisão</label>
+                                        <input class="form-control" type="revisao" id="revisao_${sistemas[s]}" placeholder="${sistemas[s][2]}" readonly>
+                                    </div>
+                                    <div class="form-group marcador col-md">
+                                        <label for="status">Pendencia</label>
+                                        <input class="form-control" type="status" id="status_${sistemas[s]}" placeholder="${sistemas[s][6]}" readonly>
+                                    </div>
+                                    <div class="form-group marcador col-md">
+                                        <label for="responsavel">Responsável</label>
+                                        <input class="form-control" type="responsavel" id="responsavel_${sistemas[s]}" placeholder="${sistemas[s][7]}" readonly>
+                                    </div>
+                                    <div class="form-group marcador col-2" style="margin-top:27px">
+                                         <button type="button" class="btn btn-success" onclick="act_rej_req(${s},'ACEITO')">Aceitar</button>
+                                    </div>
+                                    <div class="form-group marcador col-2" style="margin-top:27px; margin-left: -45px">
+                                         <button type="button" class="btn btn-danger" onclick="act_rej_req(${s},'REJEITADO')">Rejeitar</button>
+                                    </div>
+                                </div>`;
+                    }
+                } else {
+                    rowx = `<h3 style="alignment: center">Não há novas requisições para aprovação.</h3>`;
+                }
+
+                document.getElementById('muda').innerHTML = `
+                <div class="row" style="alignment: center">
+                    <div style="overflow-x: hidden; ">
+                      <div style="overflow-x: hidden; max-height: 40vh;">
+                        ${rowx}
+                      </div>
+                      <br><br>
+                    </div>
+                </div>`;
+
+                document.getElementById('btn_holder').innerHTML = '';
+                document.getElementById('tabela_req').style.display = "block";
+                document.getElementById('tabela_pipe').style.display = "none";
+            }
+        }
+
+        muda();
+
+
+    </script>
+
+{% endblock %}
+
+{% block end %}
+    <script src="{% static 'js/flexibilidade/a1flx_p2_req.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="pt-br">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EIA1Ferramentas</title>
+  <link href="{% static 'vendor/bootstrap-4.1/bootstrap.min.css' %}" rel="stylesheet" media="all" />
+  <link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+
+  <style>
+    /* ─── CSS VARS (mesma paleta do login) ───────────── */
+    :root {
+      --accent:        #f3b768;
+      --accent-hover:  #f6c783;
+      --accent-active: #e7a64f;
+      --accent-dark:   #c8862a;
+      --glass-bg:      linear-gradient(145deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%);
+      --glass-border:  rgba(255,255,255,.32);
+      --glass-radius:  20px;
+      --text-invert:   #ffffff;
+      --text-strong:   #1f1f1f;
+      --text-soft:     #404040;
+      --focus-ring:    0 0 0 3px rgba(243,183,104,.45);
+      --card-w:        220px;
+      --card-h:        430px;
+    }
+  </style>
+
+  <style>
+    /* ── FROSTED BACKGROUND IMAGE (mesma do login) ─── */
+    body {
+      background: #0d0d0d;
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: url("{% static 'img/Espaço Inovação.jpg' %}") center center / cover no-repeat;
+      filter: blur(14px) brightness(0.28) saturate(0.55);
+      transform: scale(1.06); /* evita borda branca do blur */
+      z-index: 0;
+    }
+    .login-layout { position: relative; z-index: 1; }
+
+    /* ─── ESCALA DE TELA (equivalente a zoom 110%) ───────── */
+      .login-layout {
+        zoom: 1.1;
+      }
+      @supports not (zoom: 1) {
+        .login-layout {
+            transform: scale(1.1);
+            transform-origin: top left;
+            width: 90.9091%;
+        }
+      }
+
+    /* ── PANEL — mesma receita do login, mais largo ── */
+    .panel-login {
+      background: linear-gradient(145deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.09) 100%) !important;
+      border: 1px solid rgba(255,255,255,.32) !important;
+      border-radius: 22px !important;
+      backdrop-filter: blur(18px) saturate(145%) !important;
+      -webkit-backdrop-filter: blur(18px) saturate(145%) !important;
+      box-shadow: 0 16px 56px -14px rgba(0,0,0,.75), 0 4px 20px -4px rgba(0,0,0,.50) !important;
+      overflow: visible !important;
+    }
+    /* reflexo interno igual ao login */
+    .panel-login::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 16% 8%, rgba(255,255,255,.40), transparent 55%);
+      pointer-events: none;
+      border-radius: 22px;
+    }
+
+    /* ── CARD BASE — glassmorphism com accent âmbar ── */
+    .eia-card {
+      width: var(--card-w);
+      height: var(--card-h);
+      background: linear-gradient(160deg, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.70) 100%);
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.75);
+      box-shadow: 0 6px 28px rgba(0,0,0,0.22), 0 1px 4px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      transition: transform .25s cubic-bezier(.2,.9,.2,1), box-shadow .25s ease;
+      position: relative;
+      backdrop-filter: blur(6px);
+    }
+    .eia-card:hover {
+      transform: translateY(-7px) scale(1.018);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.32), 0 4px 16px rgba(243,183,104,0.18);
+      border-color: rgba(243,183,104,.55);
+    }
+
+    /* ── CARD BANNER — tons âmbar/escuro unificado ── */
+    .card-banner {
+      width: 100%;
+      height: 148px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* onda de transição para o fundo branco do card */
+    .card-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -18px;
+      left: -8%;
+      width: 116%;
+      height: 36px;
+      background: rgba(255,255,255,0.82);
+      border-radius: 50%;
+    }
+    /* paleta âmbar/quente — 6 variações sutis */
+    .banner-1 { background: linear-gradient(145deg, #1c1008 0%, #3b1f04 45%, #6b3a0c 100%); }
+    .banner-2 { background: linear-gradient(145deg, #0e1a10 0%, #1a3a20 45%, #2e6040 100%); }
+    .banner-3 { background: linear-gradient(145deg, #1a100a 0%, #3d2008 45%, #7a4010 100%); }
+    .banner-4 { background: linear-gradient(145deg, #140c1e 0%, #2c1554 45%, #4a2590 100%); }
+    .banner-5 { background: linear-gradient(145deg, #081518 0%, #0c3040 45%, #125570 100%); }
+    .banner-6 { background: linear-gradient(145deg, #1a0810 0%, #3d0e22 45%, #720030 100%); }
+    .banner-7 { background: linear-gradient(145deg, #071510 0%, #0d3528 45%, #175c40 100%); }
+    .banner-8 { background: linear-gradient(145deg, #100e08 0%, #2e2808 45%, #5c4e08 100%); }
+    .banner-9 { background: linear-gradient(145deg, #0c0c1a 0%, #1a1a40 45%, #2a2a72 100%); }
+
+    /* brilho âmbar no canto do banner */
+    .card-banner::before {
+      content: '';
+      position: absolute;
+      top: -20px; right: -20px;
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(243,183,104,.30) 0%, transparent 70%);
+      z-index: 0;
+    }
+
+    .card-banner .banner-icon {
+      font-size: 3.4rem;
+      color: var(--accent);
+      z-index: 1;
+      filter: drop-shadow(0 4px 14px rgba(243,183,104,.55));
+    }
+    .card-banner .banner-img {
+      width: 115px;
+      height: 115px;
+      object-fit: contain;
+      z-index: 1;
+      filter: drop-shadow(0 4px 14px rgba(0,0,0,.45));
+    }
+
+    /* A1Pro — logo com fundo claro sobre banner escuro */
+    .banner-1 .banner-img {
+      width: 155px;
+      height: auto;
+      max-height: 135px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: transparent;
+      filter: drop-shadow(0 0 18px rgba(243,183,104,.45)) drop-shadow(0 4px 10px rgba(0,0,0,.50));
+      mix-blend-mode: screen;
+    }
+
+    /* badge */
+    .card-banner .banner-badge {
+      position: absolute;
+      top: 9px; right: 9px;
+      z-index: 2;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: rgba(243,183,104,0.22);
+      color: var(--accent);
+      border: 1px solid rgba(243,183,104,.45);
+    }
+    /* círculos decorativos */
+    .dot-deco {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+    .dot-deco.d1 { width:80px; height:80px; bottom:-28px; left:-18px; }
+    .dot-deco.d2 { width:48px; height:48px; top:-14px; right:4px; }
+
+    /* ── CARD BODY ─────────────────────────────────── */
+    .card-body-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 14px 12px;
+      gap: 5px;
+    }
+    .card-title {
+      font-size: 0.94rem;
+      font-weight: 700;
+      color: #1c1408;
+      margin: 0;
+      line-height: 1.2;
+    }
+    .card-subtitle {
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent-dark);
+      margin: 0;
+    }
+    .card-desc {
+      font-size: 0.76rem;
+      color: #4a3f30;
+      line-height: 1.5;
+      margin: 3px 0 0;
+      flex: 1;
+    }
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .card-tag {
+      font-size: 0.60rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      padding: 2px 7px;
+      border-radius: 20px;
+      background: rgba(243,183,104,.15);
+      color: var(--accent-dark);
+      border: 1px solid rgba(243,183,104,.30);
+    }
+    .card-divider {
+      border: none;
+      border-top: 1px solid rgba(243,183,104,.20);
+      margin: 6px 0;
+    }
+    .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: auto;
+    }
+
+    /* botão primário — gradiente âmbar do login */
+    .btn-card-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: none;
+      font-size: 0.80rem;
+      font-weight: 700;
+      letter-spacing: .02em;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: #2d210c;
+      text-decoration: none;
+      box-shadow: 0 4px 14px -4px rgba(200,134,42,.45);
+      transition: filter .16s ease, transform .16s ease, box-shadow .16s ease;
+    }
+    .btn-card-primary:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px -6px rgba(200,134,42,.55);
+      color: #2d210c;
+      text-decoration: none;
+    }
+
+    /* botão secundário — glass sutil */
+    .btn-card-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      padding: 7px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(243,183,104,.45);
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(243,183,104,.10);
+      color: #5a3a0a;
+      text-decoration: none;
+      transition: background .16s ease, border-color .16s ease;
+    }
+    .btn-card-secondary:hover {
+      background: rgba(243,183,104,.22);
+      border-color: var(--accent);
+      color: #2d210c;
+      text-decoration: none;
+    }
+
+    /* ── PAGER — com accent âmbar ──────────────────── */
+    .pager-wrap {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+      padding: 10px 22px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%);
+      border: 1px solid rgba(255,255,255,.26);
+      border-radius: 999px;
+      backdrop-filter: blur(14px) saturate(130%);
+      -webkit-backdrop-filter: blur(14px) saturate(130%);
+      box-shadow: 0 6px 24px rgba(0,0,0,.30), 0 1px 4px rgba(0,0,0,.20);
+    }
+    .pager-arrow {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(243,183,104,.40);
+      background: rgba(243,183,104,.12);
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background .18s, border-color .18s;
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+    }
+    .pager-arrow:hover { background: rgba(243,183,104,.28); border-color: var(--accent); }
+    .pager-arrow:disabled { opacity: .30; cursor: not-allowed; }
+    .dots { display: flex; gap: 10px; align-items: center; }
+    .dot {
+      width: 24px; height: 6px;
+      border-radius: 6px;
+      background: rgba(255,255,255,.25);
+      cursor: pointer;
+      transition: all .22s ease;
+      border: none; padding: 0;
+    }
+    .dot[aria-current="true"] { background: var(--accent); width: 38px; }
+    .dot:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ── CAROUSEL ──────────────────────────────────── */
+    /* padding-top dá espaço para o card subir no hover sem ser cortado pelo overflow:hidden */
+    .brand-block > div.carousel-root { overflow: hidden; position: relative; padding-top: 14px; }
+    .carousel-track {
+      display: flex;
+      align-items: flex-start;
+      transition: transform .46s cubic-bezier(.2,.9,.2,1);
+      will-change: transform;
+    }
+    .carousel-card { flex: 0 0 auto; }
+
+    /* ── STAT PILLS ────────────────────────────────── */
+    .stat-row { display: flex; gap: 5px; flex-wrap: wrap; }
+    .stat-pill {
+      display: flex; flex-direction: column; align-items: center;
+      flex: 1; min-width: 50px;
+      background: rgba(243,183,104,.12);
+      border: 1px solid rgba(243,183,104,.28);
+      border-radius: 10px;
+      padding: 6px 4px 5px;
+    }
+    .stat-pill .stat-num { font-size: 1.0rem; font-weight: 800; color: #2d1a04; line-height:1; }
+    .stat-pill .stat-lbl { font-size: 0.56rem; font-weight: 700; color: var(--accent-dark); letter-spacing:.05em; text-transform:uppercase; margin-top:2px; }
+
+    /* mini barra de progresso âmbar */
+    .mini-bar-wrap { background: rgba(243,183,104,.15); border-radius: 6px; height: 6px; overflow:hidden; }
+    .mini-bar-fill { height:100%; border-radius:6px; background: linear-gradient(90deg, var(--accent-active), var(--accent-hover)); }
+
+    /* ── OVERLAY DE ENTRADA ────────────────────────────── */
+    #page-enter-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0d0d0d;
+      opacity: 1;
+      pointer-events: none;
+      transition: opacity .55s cubic-bezier(.4,0,.2,1);
+    }
+    #page-enter-overlay.done { opacity: 0; }
+
+    /* ── OVERLAY DE SAÍDA ────────────────────────────── */
+    #page-exit-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0d0d0d;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .42s cubic-bezier(.4,0,.2,1);
+    }
+    #page-exit-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* animação de entrada do conteúdo principal */
+    .login-layout {
+      opacity: 0;
+      transform: translateY(18px) scale(0.985);
+      transition: opacity .60s cubic-bezier(.2,.9,.2,1) .18s,
+                  transform .60s cubic-bezier(.2,.9,.2,1) .18s;
+    }
+    .login-layout.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  </style>
+</head>
+<body>
+  <!-- overlays de transição -->
+  <div id="page-enter-overlay" aria-hidden="true"></div>
+  <div id="page-exit-overlay" aria-hidden="true"></div>
+
+  <main class="login-layout" aria-labelledby="titulo-login">
+    <div style="display:flex; flex-direction:column; align-items:center;">
+    <section class="panel-login" role="form" style="width:780px; min-height:520px; padding:28px 32px; position:relative;">
+      <div class="brand-block">
+        <div style="display:grid; gap:18px; grid-template-columns: repeat(3, var(--card-w)); padding-top:14px;">
+          <!-- carousel: only 3 visible at a time via JS -->
+          ════════════════════════════════════════ -->
+          <div class="eia-card">
+            <div class="card-banner banner-1">
+              <span class="dot-deco d1"></span>
+              <span class="dot-deco d2"></span>
+              <img src="{% static 'img/A1Pro_icon.png' %}" alt="A1Pro" class="banner-img" loading="lazy" />
+            </div>
+            <div class="card-body-inner">
+              <p class="card-subtitle">Elétrica | A1Pro</p>
+              <p class="card-desc">Geração de documentação elétrica: lista de cargas, cálculo e lista cabos, diagrama de interligação, detalhes típicos, plano de corte, etc.</p>
+
+              <hr class="card-divider">
+              <div class="card-actions">
+                <button id="openA1ProConfigBtn" class="btn-card-secondary" type="button">
+                  <i class="fa-solid fa-gear fa-sm"></i> Config. Globais
+                </button>
+                <button id="openA1ProBtn" class="btn-card-primary" type="button">
+                  <i class="fa-solid fa-bolt fa-sm"></i> Entrar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════
+               CARD 2 — Calc. Cabos
+          ════════════════════════════════════════ -->
+          <div class="eia-card">
+            <div class="card-banner banner-2">
+              <span class="dot-deco d1"></span>
+              <span class="dot-deco d2"></span>
+              <img src="{% static 'img/LogoCalcCabos.png' %}" alt="Calc. Cabos" class="banner-img" loading="lazy" />
+            </div>
+            <div class="card-body-inner">
+              <p class="card-subtitle">Elétrica | Calc. Cabos</p>
+              <p class="card-desc">Cálculo de cabos de baixa tensão, média tensão e corrente contínua. Geração do documento com o memorial completo.</p>
+              <hr class="card-divider">
+              <div class="card-actions">
+                <button id="openCalcCabosConfigBtn" class="btn-card-secondary" type="button">
+                  <i class="fa-solid fa-gear fa-sm"></i> Config. Globais
+                </button>
+                <button id="openCalcCabosBtn" class="btn-card-primary" type="button">
+                  <i class="fa-solid fa-calculator fa-sm"></i> Entrar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════
+               CARD 3 — Lista de Materiais
+          ════════════════════════════════════════ -->
+          <div class="eia-card">
+            <div class="card-banner banner-3">
+              <span class="dot-deco d1"></span>
+              <span class="dot-deco d2"></span>
+              <img src="{% static 'img/LogoListaMate.png' %}" alt="Lista de Materiais" class="banner-img" loading="lazy" />
+            </div>
+            <div class="card-body-inner">
+              <p class="card-subtitle">ELÉTRICA | Lista de Materiais</p>
+              <p class="card-desc">Extração automática de materiais a partir de arquivos AutoCAD e Revit.</p>
+              <hr class="card-divider">
+              <div class="card-actions">
+                <button id="openListaMateriaisBtn" class="btn-card-primary" type="button">
+                  <i class="fa-solid fa-list fa-sm"></i> Entrar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════
+               CARD 4 — Tabelaço
+          ════════════════════════════════════════ -->
+          <div class="eia-card">
+            <div class="card-banner banner-4">
+              <span class="dot-deco d1"></span>
+              <span class="dot-deco d2"></span>
+              <span class="banner-badge">Demo</span>
+              <i class="fa-solid fa-table-list banner-icon"></i>
+            </div>
+            <div class="card-body-inner">
+              <p class="card-subtitle">INSTRUMENTAÇÃO | Tabelaço</p>
+              <p class="card-desc">Permite controle mais preciso do que foi modelado. Sincronização de suportes junto ao instrumento.
+              Gera o report do avanço do projeto.</p>
+              <hr class="card-divider">
+              <div class="card-actions">
+                <button id="openTabelaBtn" class="btn-card-primary" type="button">
+                  <i class="fa-solid fa-table fa-sm"></i> Entrar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════
+               CARD 5 — A1Control
+          ════════════════════════════════════════ -->
+          <div class="eia-card">
+            <div class="card-banner banner-5">
+              <span class="dot-deco d1"></span>
+              <span class="dot-deco d2"></span>
+              <i class="fa-solid fa-chart-pie banner-icon"></i>
+            </div>
+            <div class="card-body-inner">
+              <p class="card-subtitle">AUTOMAÇÃO | A1Control</p>
+              <p class="card-desc">Transformação de arquivo .XML para transferência da plataforma desejada.</p>
+              <hr class="card-divider">
+              <div class="card-actions">
+                <button id="openA1ControlBtn" class="btn-card-primary" type="button">
+                  <i class="fa-solid fa-chart-pie fa-sm"></i> Entrar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════
+               CARD 6 — A1MAT CONSULTAS
+          ════════════════════════════════════════ -->
+          <div class="eia-card">
+            <div class="card-banner banner-6">
+              <span class="dot-deco d1"></span>
+              <span class="dot-deco d2"></span>
+               <img src="{% static 'img/a1matImg.png' %}" alt="A1MAT" class="banner-img" loading="lazy" />
+            </div>
+            <div class="card-body-inner">
+              <p class="card-subtitle">GERAL | A1MAT CONSULTAS</p>
+              <p class="card-desc">Consultas no banco de dados de materiais.</p>
+              <hr class="card-divider">
+              <div class="card-actions">
+                <button id="openInstrumentationBtn" class="btn-card-primary" type="button">
+                  <i class="fa-solid fa-sliders fa-sm"></i> Entrar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════
+               CARD 7 — RODACABOS
+          ════════════════════════════════════════ -->
+          <div class="eia-card">
+            <div class="card-banner banner-7">
+              <span class="dot-deco d1"></span>
+              <span class="dot-deco d2"></span>
+              <i class="fa-solid fa-drafting-compass banner-icon"></i>
+            </div>
+            <div class="card-body-inner">
+              <p class="card-subtitle">INSTRUMENTAÇÃO | RODACABOS</p>
+              <p class="card-desc">texto.</p>
+              <hr class="card-divider">
+              <div class="card-actions">
+                <button id="openEngenhariaBtn" class="btn-card-primary" type="button">
+                  <i class="fa-solid fa-folder-open fa-sm"></i> Entrar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════
+               CARD 8 — INFOCABOS
+          ════════════════════════════════════════ -->
+          <div class="eia-card">
+            <div class="card-banner banner-8">
+              <span class="dot-deco d1"></span>
+              <span class="dot-deco d2"></span>
+              <i class="fa-solid fa-shield-halved banner-icon"></i>
+            </div>
+            <div class="card-body-inner">
+              <p class="card-subtitle">ELÉTRICA | INFOCABOS</p>
+              <p class="card-desc">texto.</p>
+              <hr class="card-divider">
+              <div class="card-actions">
+                <button id="openSgqBtn" class="btn-card-primary" type="button">
+                  <i class="fa-solid fa-circle-check fa-sm"></i> Entrar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════
+               CARD 9 — PMO
+          ════════════════════════════════════════ -->
+          <div class="eia-card">
+            <div class="card-banner banner-9">
+              <span class="dot-deco d1"></span>
+              <span class="dot-deco d2"></span>
+              <i class="fa-solid fa-diagram-project banner-icon"></i>
+            </div>
+            <div class="card-body-inner">
+              <p class="card-subtitle">ELÉTRICA | PREÇO DE CABOS</p>
+              <p class="card-desc">texto.</p>
+              <hr class="card-divider">
+              <div class="card-actions">
+                <button id="openPmoBtn" class="btn-card-primary" type="button">
+                  <i class="fa-solid fa-chart-gantt fa-sm"></i> Entrar
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /grid -->
+      </div><!-- /brand-block -->
+
+    </section>
+
+    <div class="pager-wrap" aria-label="Paginação">
+      <button id="prevPage" class="pager-arrow" aria-label="Anterior" disabled>
+        <i class="fa-solid fa-chevron-left fa-sm" aria-hidden="true"></i>
+      </button>
+      <div id="pagerDots" class="dots" role="tablist" aria-label="Páginas"></div>
+      <button id="nextPage" class="pager-arrow" aria-label="Próxima" disabled>
+        <i class="fa-solid fa-chevron-right fa-sm" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    </div><!-- /flex-column wrapper -->
+  </main>
+
+  <script src="{% static 'js/EIA1-cards.js' %}"></script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!-- barra -->
+<div class='progress-wrapper' >
+  <button type="button" onclick="document.getElementById('agua-modal-task').style.display='block'"
+  style="background-color:#12192C; color: #ffff; width:100%" class=" btn " > Iniciar </button>
+  <br>
+  <div id='progress-bar' class='progress-bar' style="border-radius: 10px; background: #6d6d6d; height: 10px">&nbsp;</div>
+  <div id="progress-bar-message">Esperando a inicialização de uma tarefa...</div>
+</div>
+<!-- barra -->
+<!-- modal -->
+<div id="agua">
+    <div id="agua-modal-task" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            
+            <div class="modal-content">
+                <div class="modal-header" style="border:none">
+                    <span onclick="document.getElementById('agua-modal-task').style.display='none'" class="w3-button w3-display-topright">x</span>
+                    <center><b><h5 class="modal-title">ATENÇÃO</b></h5></center>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja continuar o envio dos dados?</p>
+                </div>
+                
+                <tr>
+                
+                    <td><label id="agua-percent"></label></td>
+                </tr>
+                <div class="modal-footer" style="border:none">
+                    <button type="button" class=" btn btn-success  " onclick="dropzone_trigger()"> SIM </button>
+                    <button type="button" class=" btn btn-danger  " onclick="document.getElementById('agua-modal-task').style.display='none'">NÃO</button>
+                    <span onclick="document.getElementById('agua-modal-task').style.display='none'" class="w3-button w3-display-topright">x</span>
+                </div>
+           
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->

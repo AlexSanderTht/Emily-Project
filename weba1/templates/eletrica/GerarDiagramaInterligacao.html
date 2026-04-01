@@ -1,0 +1,206 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1pro</title>
+{% endblock %}
+
+{% block main %}
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/GerarTipicosDoc.js' %} "></script>
+<script type="text/javascript" src="{% static 'js/eletrica/GerarDiagramaInterligacao.js' %}"></script>
+
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<div class="container-fluid h-100">
+    <div class="text-justify m-3">
+        <button class="btn btn-primary btn-warning" onclick="window.history.go(-1)">Voltar</button>
+    </div>
+    <div class="row d-flex justify-content-center mt-2">
+        <h3>Gerar Diagrama de Interligação - Documentos</h3>
+    </div>
+    <div class="container-fluid d-flex justify-content-center">
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4">
+            <div class="col-12 py-2">
+
+                <div class="row mt-4">
+                    <div class="col-3 text-right p-0">
+                        <label for="numero_a1">Número A1:</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="text" class="form-control" id="numero_a1">
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-3 text-right p-0">
+                        <label for="numero_cliente">Número Cliente:</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="text" class="form-control" id="numero_cliente">
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-3 text-right p-0">
+                        <label for="descricao_documento">Descrição do Doc.:</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="text" class="form-control" id="descricao_documento">
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-3 text-right p-0">
+                        <label for="descricao_area">Descrição da Área:</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="text" class="form-control" id="descricao_area">
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-3 text-right p-0">
+                        <label for="diagrama_funcional">Diagrama Funcional:</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="text" class="form-control" id="diagrama_funcional">
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-3 text-right p-0">
+                        <label for="revisao_a1">Revisão A1:</label>
+                    </div>
+                    <div class="col-2">
+                        <input type="text" class="form-control" id="revisao_a1">
+                    </div>
+                    <div class="col-3 text-right p-0">
+                        <label for="revisao_cliente">Revisão Cliente:</label>
+                    </div>
+                    <div class="col-2">
+                        <input type="text" class="form-control" id="revisao_cliente">
+                    </div>
+                </div>
+                <div style="margin-top: 40px;"></div>
+
+                <div class="row mt-2" style="margin-top: 100px;">
+
+                    <div class="col-3 text-right p-0">
+                        <label for="painels_origem"><b style="font-weight: 640;">Selecione o painel:</b></label>
+                    </div>
+
+                    <div class="col-5">
+                        <select class="form-control" id="painels_origem" onchange="PreencherCamposPainel()"></select>
+                    </div>
+
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+                    <div class="col-2">
+                        <button type="button" class="btn btn-success w-100" onclick="SalvarCabecalhoPainel()">Salvar</button>
+                    </div>
+
+                    <div class="col-2">
+                        <button type="button" class="btn btn-success w-110" onclick="ShowScreenPainelAcessorio()">TEMPLATES</button>
+                    </div>
+
+                    <div class="col-4">
+
+                    </div>
+                </div>
+            </div>
+
+
+
+<div style="margin-top: 35px;"></div>
+<div class = 'row'>
+<div class="col-3 text-center">
+    CAPA:
+</div>
+<div class="col-3 text-center">
+    ÍNDICE:
+</div>
+<div class="col-3 text-center">
+    LOGO A1:
+</div>
+<div class="col-3" style="margin-right: -15px;">
+    LOGO CLIENTE:
+</div>
+    </div>
+
+
+<div class="row px-0 mx-1 animate__animated animate__fadeIn mt-2 scroll_tipicos_doc" id="drop-area-capa_dwg">
+
+    <div class="col-3 card_dropzone_blue text-center" id="capa_dwg_1">
+        <div class="file-dropzone">
+            <span class="font-italic text-primary">Arraste e solte o arquivo (*.DWG)</span><br>
+            <span class="font-italic text-primary">ou clique para fazer o upload.</span><br>
+            <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_1" onchange="DropRelatPdms('uploaded-file-1', this.id, 'FileCapa', false, null)"/>
+                <i class="fa-solid fa-upload"></i> Import DWG
+            </label>
+            <div id="uploaded-file-1" class="uploaded-file mt-3"></div>
+        </div>
+    </div>
+
+    <div class="dashed-line"></div> <!-- Linha Tracejada -->
+
+    <div class="col-3 card_dropzone_blue text-center" id="capa_dwg_2">
+        <div class="file-dropzone">
+            <span class="font-italic text-primary">Arraste e solte o arquivo (*.DWG)</span><br>
+            <span class="font-italic text-primary">ou clique para fazer o upload.</span><br>
+            <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_2" onchange="DropRelatPdms('uploaded-file-2', this.id, 'FileIndice', false, null)"/>
+                <i class="fa-solid fa-upload"></i> Import DWG
+            </label>
+            <div id="uploaded-file-2" class="uploaded-file mt-3"></div>
+        </div>
+    </div>
+
+    <div class="dashed-line"></div> <!-- Linha Tracejada -->
+
+    <div class="col-3 card_dropzone_blue text-center" id="capa_dwg_3">
+        <div class="file-dropzone">
+            <span class="font-italic text-primary">Arraste e solte o arquivo (*.DWG)</span><br>
+            <span class="font-italic text-primary">ou clique para fazer o upload.</span><br>
+            <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_3" onchange="DropRelatPdms('uploaded-file-3', this.id, 'FileLogoA1', false, null)"/>
+                <i class="fa-solid fa-upload"></i> Import DWG
+            </label>
+            <div id="uploaded-file-3" class="uploaded-file mt-3"></div>
+        </div>
+    </div>
+
+    <div class="col-3 card_dropzone_blue text-center" id="capa_dwg_4">
+        <div class="file-dropzone">
+            <span class="font-italic text-primary">Arraste e solte o arquivo (*.DWG)</span><br>
+            <span class="font-italic text-primary">ou clique para fazer o upload.</span><br>
+            <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_4" onchange="DropRelatPdms('uploaded-file-4', this.id, 'FileLogoCliente', false, null)"/>
+                <i class="fa-solid fa-upload"></i> Import DWG
+            </label>
+            <div id="uploaded-file-4" class="uploaded-file mt-3"></div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div class="col-12 mt-2 d-flex justify-content-end my-2">
+        <button type="button" class="btn btn-primary w-100" onclick="GerarDiagramaInterligacao()" style="margin-top: 20px;">Enviar</button>
+    </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% include './ModalDadosDocumento.html' %}
+{% include './ModalLoadCelery.html' %}
+
+<script type="text/javascript" src="{% static 'js/eletrica/GerarDiagramaInterligacao.js' %}"></script>
+
+
+{% endblock %}

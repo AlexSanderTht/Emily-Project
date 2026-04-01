@@ -1,0 +1,513 @@
+{% load static %}
+{% block config_calc_cabos_bt %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<div class="container mt-3" id="container-bt-config-cc">
+  <h5>Baixa Tensão</h5>
+  <hr>
+
+    {% csrf_token %}
+    <div class="row mt-1 ml-1">
+        <div class="col-lg-3 text-left">
+            <label for="procalc-install-mode">Maneira de instalar:</label>
+        </div>
+        <div class="col-lg-9">
+            <select class="form-control" id="procalc-install-mode" onchange="ChangeManeiraInstalar(); VerifyAmbienteOrSolo(this.selectedOptions[0]);fill_temperatura(document.getElementById('procalc-cable').selectedOptions[0].title);">
+                    <option value="0">---</option>
+                {%for id_man_inst, man_inst, enterrado in maneira_instalar%}
+                    <option value="{{id_man_inst}}" title="{{enterrado}}">{{man_inst}}</option>
+                {%endfor%}
+            </select>
+            <div class="invalid-feedback">
+                Prencha corretamente!
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-1 ml-1">
+        <div class="col-lg-3 text-left">
+            <label for="procalc-system">Sistema:</label>
+        </div>
+        <div class="col-lg-9">
+            <select class="form-control" id="procalc-system" onchange="Fill_Tipo_Cabo(this)">
+                    <option value="0" title="0">---</option>
+                {%for id_sis_lig, sis_lig, uni_multi in sistema_ligacao%}
+                    <option title="{{id_sis_lig}}" value="{{uni_multi}}">{{sis_lig}}</option>
+                {%endfor%}
+            </select>
+            <div class="invalid-feedback">
+                Prencha corretamente!
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-1 ml-1">
+        <div class="col-lg-3 text-left">
+            <label for="procalc-cable">Cabo:</label>
+        </div>
+        <div class="col-lg-9">
+            <select class="form-control" id="procalc-cable" onchange="fill_temperatura(this.selectedOptions[0].title)">
+                    <option value="0">---</option>
+                {%for id_cabos, nome_cabos, material in cabos %}
+                    <option title="{{material}}" value="{{id_cabos}}">{{nome_cabos}}</option>
+                {%endfor%}
+            </select>
+            <div class="invalid-feedback">
+                Prencha corretamente!
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="row mt-1 ml-1">
+        <div class="col-lg-3 text-left">
+            <label for="procalc-temperature-env">Temperatura ambiente:</label>
+            <label for="procalc-temperature-solo" hidden>Temperatura solo:</label>
+        </div>
+        <div class="col-lg-2 pr-0">
+            <select class="form-control h-100" id="procalc-temperature-env">
+                    <option value="0">---</option>
+                {%for id_temp, temperatura, material in fator_temperatura_ambiente %}
+                    <option title="{{material}}" value="{{id_temp}}" hidden>{{temperatura}}</option>
+                {%endfor%}
+            </select>
+            <select class="form-control h-100" id="procalc-temperature-solo" hidden>
+                    <option value="0">---</option>
+                {%for id_temp, temperatura, material in fator_temperatura_solo %}
+                    <option title="{{material}}" value="{{id_temp}}" hidden>{{temperatura}}</option>
+                {%endfor%}
+            </select>
+            <div class="invalid-feedback">
+                Prencha corretamente!
+            </div>
+        </div>
+
+        <div class="col-lg text-left">
+            °C
+        </div>
+    </div>
+
+
+    <div class="row mt-1 ml-1" id="conformacao_cabos_unipolar">
+        <div class="col-lg-3 text-left">
+            <label for="unipolar_conformacao">Conformação cabos:</label>
+        </div>
+        <div class="col-lg-2 pr-0">
+            <select class="form-control" id="unipolar_conformacao">
+                <option value="0">---</option>
+                {%for id_conformacao, conformacao in conformacao_unipolar%}
+                <option value="{{id_conformacao}}">{{conformacao}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-1 ml-1" id="disctancia_cabos_unipolar">
+        <div class="col-lg-3 text-left">
+            <label for="unipolar_espacameno">Distancia Unipolar:</label>
+        </div>
+        <div class="col-lg-2 pr-0">
+            <select class="form-control" id="unipolar_espacameno" >
+                <option value="0">---</option>
+                {%for id_espacamento, espacamento in espacamento_unipolar%}
+                <option value="{{id_espacamento}}">{{espacamento}}</option>
+                {% endfor%}
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-1 ml-1">
+        <div class="col-lg-3 text-left">
+            <label for="material_condutor">Material do Condutor:</label>
+        </div>
+        <div class="col-lg-2 pr-0">
+            <select class="form-control" id="material_condutor">
+                <option selected value="COBRE">COBRE</option>
+                <option value="ALUMINIO">ALUMÍNIO</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-1 ml-1">
+        <div class="col-lg-3 text-left pr-0 ">
+            <label for="procalc-clustering-factor">Fator de agrupamento:</label>
+        </div>
+
+        <div class="col-lg-2 pr-0 input-group-prepend">
+            <input type="text" class="form-control" id="procalc-clustering-factor" onkeyup="VerifyFormsCalcBt(this.id, 0, 1)">
+
+        </div>
+
+        <button id="botao_eye" class="ml-1 btn btn-outline-info bg-white input-group-append" type="button" onclick="ShowTableGrouping()" title="Clique para Ocultar a tabela" hidden>
+            <i class="my-auto fa-solid fa-eye text-info"></i>
+        </button>
+
+        <button id="botao_eye_closed" class="ml-1 btn btn-outline-info bg-white input-group-append" type="button" onclick="ShowTableGrouping()" title="Clique para exibir a tabela 42 - Fator de Agrupamento">
+            <i class="my-auto fa-solid fa-eye-slash text-info"></i>
+        </button>
+
+        <div class="invalid-feedback"></div>
+
+        <div class="col-lg text-left">
+        </div>
+    </div>
+
+    <div class="row mt-1 mx-3" id="table_grouping" hidden>
+    </div>
+
+    <div class="row mt-1 ml-1">
+        <div class="col-lg-3 text-left pr-0">
+            <label for="procalc-circuit-current">Curto-Circuito:</label>
+        </div>
+        <div class="col-lg-2 pr-0">
+            <input type="text" class="form-control" id="procalc-circuit-current" onkeyup="VerifyFormsCalcBt(this.id, 0, 1000)">
+            <div class="invalid-feedback">
+                Prencha corretamente!
+            </div>
+        </div>
+
+        <div class="col-lg-1 text-left border-right">
+            <label for="procalc-circuit-current">kA</label>
+        </div>
+    </div>
+
+    <div class="row mt-1 ml-1">
+        <div class="col-lg-3 text-left">
+            <label for="procalc-harmonic">Harmônicos:</label>
+        </div>
+        <div class="col-lg-2 pr-0">
+            <input class="form-control" id="procalc-harmonic" onkeyup="VerifyFormsCalcBt(this.id, 0, 100)">
+        </div>
+        <div class="col-lg-1 text-left border-right">
+            <label for="procalc-harmonic">%</label>
+        </div>
+    </div>
+
+    <div class="row mt-1 ml-1" hidden>
+        <div class="col-lg-3 text-left pr-0">
+            <label for="procalc-conductors-fase">Condutores por fase:</label>
+        </div>
+        <div class="col-lg-2 pr-0">
+            <input type="text" class="form-control" id="procalc-conductors-fase">
+        </div>
+
+        <div class="col-lg-1 text-left border-right">
+        </div>
+
+        <div class="col-lg-3 text-left p-0 ml-1" hidden>
+            <label for="procalc-content-harmonic">Conteudo de harmônicas:</label>
+        </div>
+
+        <div class="col-lg-2 pr-0" hidden>
+            <input type="text" class="form-control" id="procalc-content-harmonic">
+        </div>
+
+        <div class="col-lg text-left" hidden>
+            <label for="procalc-voltage-fase-neutral">%</label>
+        </div>
+    </div>
+
+
+<!--        <div class="col-lg-3 text-left pr-0">-->
+<!--            <label for="procalc-resist-termic">Resistv. térmica solo:</label>-->
+<!--        </div>-->
+<!--        <div class="col-lg-2 pr-0">-->
+<!--            <select class="form-control" id="procalc-resist-termic">-->
+<!--            </select>-->
+<!--        </div>-->
+
+<!--        <div class="col-lg-1 text-left border-right mr-1">-->
+<!--            <label for="procalc-resist-termic">K.m/W</label>-->
+<!--        </div>-->
+    <div class="row mt-1 ml-1">
+        <div class="col-lg-3 text-left">
+            <label for="procalc-sec-cond" >Seção mínima:</label>
+        </div>
+        <div class="col-lg-2 pr-0">
+            <select class="form-control" id="procalc-sec-cond" onchange="secao_minima()">
+                <option value="0">Automático</option>
+                {%for id_secao, secao in secao_cabos%}
+                    <option value="{{id_secao}}">{{secao}}</option>
+                {%endfor%}
+            </select>
+
+        </div>
+
+        <div class="col-lg-1 text-left border-right">
+            <label for="procalc-sec-cond">mm²</label>
+        </div>
+
+        <div class="col-lg-3 text-left p-0 ml-1">
+            <label for="secao_maxima" >Seção máxima:</label>
+        </div>
+        <div class="col-lg-2 pr-0">
+            <select class="form-control" id="secao_maxima" onchange="secao_minima()">
+                <option value="0">Automático</option>
+                {%for id_secao, secao in secao_cabos%}
+                    <option value="{{id_secao}}">{{secao}}</option>
+                {%endfor%}
+            </select>
+
+        </div>
+        <div class="col-lg text-left p-0 ml-1">
+            <label for="secao_maxima">mm²</label>
+        </div>
+    </div>
+
+    <div class="row mt-1 ml-1">
+        <div class="col-lg-3 text-left">
+            <label for="numero_condutores">Número de condutores por fase:</label>
+        </div>
+        <div class="col-lg-2 pr-0">
+            <input type="text" class="form-control" id="numero_condutores" placeholder="Automático" onchange="numero_condutores()">
+        </div>
+    </div>
+
+    <div class="row mt-1 ml-1">
+        <div class="col-lg-5 text-left">
+            <input class="form-check-input" type="checkbox" value="" id="check_box_sobrecarga" onchange="ChangeSobrecarga(this.checked)">
+            <label class="form-check-label" for="check_box_sobrecarga">
+                Desconsiderar Sobrecarga
+            </label>
+            <br>
+            <input class="form-check-input" type="checkbox" value="" id="check_box_cc" onchange="ChangeCheckBoxCC(this.checked)">
+            <label class="form-check-label" for="check_box_cc">
+                Desconsiderar Curto-Circuito
+            </label>
+        </div>
+        <div class="col-lg-1 text-left border-right">
+        </div>
+        <div class="col-lg-3 text-left p-0 ml-1">
+            <label for="temp_dips_protecao_sobrecarga" hidden>Tempo Atuação Disp. proteção:</label>
+        </div>
+        <div class="col-lg-2 pr-0">
+            <input type="text" class="form-control" id="temp_dips_protecao_sobrecarga" hidden onkeyup="VerifyFormsCalcBt(this.id, 0, 5)">
+        </div>
+        <div class="col-lg text-left">
+            <label for="temp_dips_protecao_sobrecarga" hidden>s</label>
+        </div>
+    </div>
+
+
+    <div class="container border-right border-left border-bottom mt-3 text-center" id="content_disp_prot">
+        <h6><b>Dispositivo de proteção</b></h6>
+        <div class="row justify-content-center ml-2">
+            <div class="col">
+                  <input class="form-check-input" type="radio" name="checkbox_disp_prot" id="disjuntor_caixa_aberto" value="Caixa Aberta" onchange="SelectDisjuntorCaixaaberta()">
+                  <label class="form-check-label" for="disjuntor_caixa_aberto"> Disp. Proteção Caixa Aberta</label>
+            </div>
+            <div class="col">
+                  <input class="form-check-input" type="radio" name="checkbox_disp_prot" id="disjuntor_caixa_moldada" value="Caixa Moldada" onchange="SelectDisjuntorCaixaMoldada()">
+                  <label class="form-check-label" for="disjuntor_caixa_moldada">Disp. Proteção Caixa Moldada </label>
+            </div>
+            <div class="col">
+                  <input class="form-check-input" type="radio" name="checkbox_disp_prot" id="disjuntor_limitador" value="Disjuntor Limitador" onchange="SelectDisjuntorLimitado()">
+                  <label class="form-check-label" for="disjuntor_limitador">Disp. Proteção Limitador </label>
+            </div>
+
+            <div class="col">
+                  <input class="form-check-input" type="radio" name="checkbox_disp_prot" id="disjuntor_outro" value="Outro" onchange="SelectDispProtOutro()">
+                  <label class="form-check-label" for="disjuntor_outro">Outro</label>
+            </div>
+        </div>
+        <br>
+
+        <div id="corrente_disjuntor" class="row">
+            <div class="col-lg-3 text-left pr-0">
+                <label for="corrente_disjuntor_nominal">Corrente Nominal Disp. Proteção:</label>
+            </div>
+            <div class="col-lg-2 pr-0">
+
+                <input type="text" class="form-control" id="corrente_disjuntor_nominal" onkeyup="VerifyFormsCalcBt(this.id, 0, 1000)">
+                <div class="invalid-feedback">
+                    Prencha corretamente!
+                </div>
+            </div>
+            <div class="col-lg-1 text-left">
+                <label for="corrente_disjuntor_nominal">A</label>
+            </div>
+
+            <div class="col-lg-5 text-left">
+                <input class="form-check-input" type="checkbox" value="" id="check_box_corrente_regulada" onchange="CheckCorrenteRegulada()">
+                <label class="form-check-label" for="check_box_corrente_regulada">
+                    Corrente regulada Disp.Proteção
+                </label>
+            </div>
+        </div>
+
+        <div id="tempo_atuacao_disp_protecao" class="row">
+            <div class="col-lg-3 text-left">
+                <label for="temp_dips_protecao">Tempo Atuação Disp. proteção:</label>
+            </div>
+            <div class="col-lg-2 pr-0">
+                <select id="temp_dips_protecao" class="form-control">
+                    <option selected>---</option>
+                </select>
+                <div class="invalid-feedback">
+                    Prencha corretamente!
+                </div>
+                <input type="text" class="form-control" id="temp_dips_protecao_livre" hidden>
+                <div class="invalid-feedback">
+                    Prencha corretamente!
+                </div>
+            </div>
+            <div class="col-lg-1 text-left">
+                <label for="temp_dips_protecao">s</label>
+            </div>
+
+            <div class="col-lg-5 text-left" id="content_checkbox_tempo_livre">
+                <input class="form-check-input" type="checkbox" value="" id="check_box_tempo_livre" onchange="ChangeCheckboxTempoLivre(this)">
+                <label class="form-check-label" for="check_box_tempo_livre">
+                    Tempo Livre
+                </label>
+            </div>
+        </div>
+
+        <div id="corrente_limitada" class="row" hidden>
+            <div class="col-lg-3 text-left pr-0">
+                <label for="procalc-circuit-current-limit">Corrente de Curto Limitada:</label>
+            </div>
+            <div class="col-lg-2 pr-0">
+                <input type="text" class="form-control" id="procalc-circuit-current-limit" onkeyup="VerifyFormsCalcBt(this.id, 0, 1000)">
+            </div>
+            <div class="col-lg-1 text-left">
+                <label for="procalc-circuit-current">kA</label>
+            </div>
+        </div>
+
+        <div id="corrente_regulada" class="row" hidden>
+            <div class="col-lg-3 text-left pr-0">
+                <label for="procalc-corrente-regulada">Corrente Regulada Disp.Proteção:</label>
+            </div>
+            <div class="col-lg-2 pr-0">
+                <input type="text" class="form-control" id="procalc-corrente-regulada" onkeyup="VerifyFormsCalcBt(this.id, 0, false)">
+            </div>
+            <div class="col-lg-1 text-left">
+                A
+            </div>
+        </div>
+    </div>
+
+    <div class="container border-right border-left border-bottom mt-2 text-center">
+
+        <h6><b>Queda de tensão máxima admitida(%)</b></h6>
+
+        <div class="row ml-2 mt-3">
+            <div class="col-lg-3 text-left">
+                <label for="procalc-drop-voltage-circuit">Em regime:</label>
+            </div>
+
+            <div class="col-lg-2 pr-0">
+                <input type="text" class="form-control" id="procalc-drop-voltage-circuit"  onkeyup="VerifyFormsCalcBt(this.id, 0, 100)">
+            </div>
+
+            <div class="col-lg-1 text-left border-right">
+            </div>
+
+            <div class="col-lg-3 text-left p-0 ml-1">
+
+                <label for="procalc-drop-voltage-circuit-start" >Do circuito na partida:</label>
+            </div>
+
+            <div class="col-lg-2 pr-0">
+                <input type="text" class="form-control" id="procalc-drop-voltage-circuit-start" onkeyup="VerifyFormsCalcBt(this.id, 0, 100)">
+
+            </div>
+        </div>
+
+
+
+        <div class="col-lg-6 text-left mt-2" id="row_circuito_desequilibrado">
+            <input class="form-check-input" type="checkbox" value="" id="check_box_desequilibrado">
+            <label class="form-check-label" for="check_box_desequilibrado">
+                Circuito desequilibrado
+            </label>
+        </div>
+
+    </div>
+
+    <div class="row mx-3 mt-2">
+        <div class="col-sm-4">
+            <input class="form-check-input" type="checkbox" name="checkbox-formacao-bt-cc" id="checkbox-pot-bt" value="POT" onchange="block_checkbox('potencia', 'bt')">
+            <label class="form-check-label" for="checkbox-pot-bt"> Se potência ></label>
+        </div>
+
+        <div class="col-sm-4">
+            <input type="text" class="form-control" id="pot-bt-formacao" onkeyup="block_checkbox('potencia', 'bt');VerifyFormsCalcBt(this.id, 0, false)">
+        </div>
+
+        <div class="col-sm-4 d-flex justify-content-center">
+            <label for="inputZip">Cabo Unipolar (1 x 1)</label>
+        </div>
+    </div>
+    <br>
+    <div class="row mx-3">
+        <div class="col-sm-4">
+            <input class="form-check-input" type="checkbox" name="checkbox-formacao-bt-cc" id="checkbox-sec-bt" value="SEC" onchange="block_checkbox('secao', 'bt')">
+            <label class="form-check-label" for="checkbox-sec-bt"> Se seção ></label>
+        </div>
+
+        <div class="col-sm-4">
+            <input type="text" class="form-control" id="sec-bt-formacao" onkeyup="block_checkbox('secao', 'bt');VerifyFormsCalcBt(this.id, 0, false)">
+        </div>
+
+        <div class="col-sm-4 d-flex justify-content-center">
+            <label for="inputZip">Cabo Unipolar (1 x 1)</label>
+        </div>
+    </div>
+
+    <div class="row mt-2 mb-2">
+        <div class="col-sm col-md-8 col-xl">
+            <fieldset class="border">
+                <legend>
+                    <h6><b>Cabos Multipolares</b></h6>
+                </legend>
+                <div class="row mx-2">
+
+                    <div class="col sm-2">
+                        <fieldset class="border">
+                            <legend>
+                                <h6><b>Cabos ímpares</b></h6>
+                            </legend>
+
+                            <div class="row mx-4">
+                                <select id="select_impar_cc_bt" class="form-control" onchange="ChangeImpares()">
+                                    <option value="0">NENHUM</option>
+                                    <option value="1X3">1X3</option>
+                                    <option value="1X4">1X4/1X5</option>
+                                </select>
+                            </div>
+                            <br>
+
+
+                        </fieldset>
+                        <br>
+                    </div>
+
+                    <div class="col sm-2">
+                        <fieldset class="border">
+                            <legend>
+                                <h6><b>Cabos Pares</b></h6>
+                            </legend>
+
+                            <div class="row mx-4">
+                                <select id="select_par_cc_bt" class="form-control" disabled>
+                                    <option value="0">NENHUM</option>
+                                    <option value="1X3">1X3</option>
+                                    <option value="1X4">1X4/1X5</option>
+                                </select>
+                            </div>
+                            <br>
+
+                        </fieldset>
+                        <br>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

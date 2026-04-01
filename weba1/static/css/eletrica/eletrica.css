@@ -1,0 +1,276 @@
+#cargas-content{
+    width: 150%;
+    left: -2%;
+}
+
+.bloco{
+    width:100%;
+    height: 100%;
+    display: inline-block;
+
+}
+
+.obs1{
+    
+    padding: 30px 10px 5px 10px;
+    width: 35%;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background-color: rgb(238, 238, 238); 
+    float:left;
+    
+}
+
+.obs2{
+    padding: 30px 10px 30px 10px;
+    width: 720px;
+    border-radius: 10px;
+    background-color: rgb(238, 238, 238); 
+    float: right;
+    height: 80%;
+    overflow-y: scroll;
+    
+
+}
+
+
+#btnBusca{
+   width: 10%;
+}
+#btnBuscaAcess{
+    position: absolute;
+    width: 10%;
+    right: 20px;
+}
+.divBuscaAcess{
+    height: 30px;
+    background-color: rgb(233, 232, 232);
+    border:solid 1px rgb(153, 153, 153);
+    border-radius:15px;
+    width:100%;
+}
+.divBusca{
+    background-color: rgb(233, 232, 232);
+    border:solid 1px rgb(153, 153, 153);
+    border-radius:15px;
+    width:75%;
+}
+.txtBuscaAcess{
+    position: absolute;
+    float:left;
+    background-color:transparent;
+    padding-left:10px;
+    font-style:normal;
+    font-size:15px;
+    border: none;
+    height:10%;
+    width:70%;
+    margin-top: 3px;
+}
+.txtBusca{
+    float:left;
+    background-color:transparent;
+    padding-left:10px;
+    font-style:normal;
+    font-size:18px;
+    border: none;
+    height:10%;
+    width:260px;
+}
+
+.origem{
+    border-bottom: 2px solid rgb(161, 158, 158);
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 2%;
+    padding-bottom: 2%;
+}
+
+.destino{
+    border-bottom: 2px solid rgb(161, 158, 158);
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 2%;
+    padding-bottom: 2%;
+}
+
+.dados_moto{
+    border-bottom: 2px solid rgb(161, 158, 158);
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 2%;
+    padding-bottom: 2%;
+}
+.selctmot{
+    padding-top: 20px;
+    padding-left: 5px;
+
+}
+
+.tag{
+    
+    width: 40%;
+    float: right;
+    margin-top: -8%;
+}
+
+#tag_mot{
+    width: 100%;
+}
+
+#cub_mot{
+
+width: 30%;
+display: inline-block;
+}
+
+#gav_mot{
+    display: inline-block;
+    width: 30%;
+    float: right;
+}
+
+.btn_mais{
+    
+    color:rgb(107, 107, 107) ;
+    
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    font-weight: bold;
+    align-items: center;
+}
+
+#carddestino{
+   background-color: rgb(238, 238, 238); border: none; 
+}
+
+#carddados{
+    background-color: rgb(238, 238, 238); border: none; 
+}
+
+#carorigem{
+    background-color: rgb(238, 238, 238); border: none; 
+}
+ 
+.bloco_1{
+    border: none;
+    padding-top: 20px;
+}
+
+.bood{
+    
+    margin-top: 13%;
+    
+}
+
+.tipicoid{
+    margin-top: -8%;
+}
+
+
+.nome_origem{
+    border-bottom: 1px dashed rgb(161, 158, 158);
+}
+
+.bar1_dados{
+
+    border: 1px solid transparent ;
+
+}
+
+.bar2_dados{
+
+    border: 1px solid transparent ;
+
+}
+
+.bg-green-option-eqp{
+    background-color: #3acbc7;
+}
+
+.bg-red-option-eqp{
+    background-color: #fe857f;
+}
+
+.label_total {
+    font-size: 100%;
+    position: relative;
+    padding: 0.8em;
+    margin-bottom: 1em;
+    color: #fff;
+    border: 2px solid rgb(200, 200, 200);
+    border-radius: 20px;
+    max-width: max-content;
+    background-color: #6c757d;
+}
+
+.checkbox-wrapper-51 input[type="checkbox"] {
+  visibility: hidden;
+  display: none;
+}
+
+.checkbox-wrapper-51 .toggle {
+  position: relative;
+  display: block;
+  width: 42px;
+  height: 24px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transform: translate3d(0, 0, 0);
+}
+
+.checkbox-wrapper-51 .toggle:before {
+  content: "";
+  position: relative;
+  top: 1px;
+  left: 1px;
+  width: 40px;
+  height: 22px;
+  display: block;
+  background: #c8ccd4;
+  border-radius: 12px;
+  transition: background 0.2s ease;
+}
+
+.checkbox-wrapper-51 .toggle span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  display: block;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(154,153,153,0.75);
+  transition: all 0.2s ease;
+}
+
+.checkbox-wrapper-51 .toggle span svg {
+  margin: 7px;
+  fill: none;
+}
+
+.checkbox-wrapper-51 .toggle span svg path {
+  stroke: #c8ccd4;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 0;
+  transition: all 0.5s linear;
+}
+
+.checkbox-wrapper-51 input[type="checkbox"]:checked + .toggle:before {
+  background: #1175c7;
+}
+
+.checkbox-wrapper-51 input[type="checkbox"]:checked + .toggle span {
+  transform: translateX(18px);
+}
+
+.checkbox-wrapper-51 input[type="checkbox"]:checked + .toggle span path {
+  stroke: #000000;
+  stroke-dasharray: 25;
+  stroke-dashoffset: 25;
+}

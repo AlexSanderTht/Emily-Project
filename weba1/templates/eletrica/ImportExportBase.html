@@ -1,0 +1,281 @@
+
+<!-- template deve ser precedido de um with do jinja para poder funcionar [nome_id, nome_app, nome_url_download_template, nome_url_download_arquivo, nome_url_enviar_arquivo ] -->
+<div class="modal fade" id="{{nome_id}}" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <form method="post" enctype="multipart/form-data">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastrar em Lote</h5>
+                    <button type="button" class="close" onclick="$('#{{nome_id}}').modal('hide');clear_progress_bar()" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body" data-backdrop="static" data-keyboard="false">
+                    <div class="input-group mb-3">
+                        <p class="mb-1">Selecione o arquivo excel preenchido</p>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Arquivo</span>
+                            </div>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" name="ArquivoUpload" id="ArquivoUploadInput" aria-describedby="inputGroupFileAddon01" required>
+                                <label class="custom-file-label" name="NomeDoArquivolbl" id="id_NomeDoArquivolbl">Selecione um arquivo</label>
+                                <input hidden type="text" name="NomeDoArquivo" id="id_NomeDoArquivo" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer d-inline text-center">
+                    <button type="button" class="subscribe btn btn-info shadow" onclick="ShowModalTable()">Tabela</button>
+                    <a href="/app/{{nome_app}}/{{nome_url_download_template}}/">
+                        <button type="button" class="subscribe btn btn-success shadow">Template</button>
+                    </a>
+                    <button type="button" onclick="GerarArquivo()" class="subscribe btn btn-secondary shadow">Download Cargas</button>
+                    <button type="submit" class="subscribe btn btn-warning shadow" onclick="EnviarArquivo()">Enviar</button>
+                    <div class="loader" id="loaderUploadArquivo"></div>
+                </div>
+
+                <div class="pb-3" id="progress-box">
+                    {% include "eletrica/BaseProgressBar.html"%}
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+
+    let link_to_dowload = '/app/{{nome_app}}/{{nome_url_download_arquivo}}/'
+    let link_relatorio = '/app/{{nome_app}}/{{nome_url_enviar_arquivo}}/'
+    let response_id
+    let task_id_observed
+    let ctrl = 0 // Parâmetro default
+    let dataframe_impot_carga = ''
+    window.onload = function() {
+        $('#ArquivoUploadInput').attr('accept', ".xlsx");
+    };
+    $('input:file').change(
+    function(e){
+        $('#id_NomeDoArquivolbl').html(e.target.files[0].name);
+    });
+
+    function isNumeric(value) {
+        return /^-?\d+$/.test(value);
+    }
+
+    function CloseModalTable() {
+        setTimeout(()=>{$('#'+ '{{nome_id | safe}}')[0].style.display = 'block'}, 500);
+        $('#Modal_Import_Carga').modal('hide');
+    }
+
+    function ShowModalTable() {
+        if ($('#TabelaDados')[0].children.length > 0){
+            $('#Modal_Import_Carga').modal('show')
+            if ($('#'+ '{{nome_id | safe}}')[0].style.display === 'block'){
+                setTimeout(()=>{
+                    $('#{{nome_id}}').modal('hide')
+                },500)
+            }
+        } else {
+            alert('A visualização de tabela só será exibida no caso de erros após enviar o arquivo!')
+        }
+    }
+
+    function EnviarArquivo(){
+        dataframe_impot_carga = ''
+        ctrl = 2 // Para Ctrl = 2 a função exibir os erros no modal tabela
+        var NomeArquivo = $('#id_NomeDoArquivolbl').html();
+        var NumOs = document.getElementById('OS').title;
+        if(NomeArquivo.includes("xlsx") && isNumeric(NumOs)) {
+            const csrf = document.getElementsByName("csrfmiddlewaretoken")
+            const input = document.getElementById("ArquivoUploadInput")
+            const fd = new FormData()
+            const file_data = input.files[0]
+            fd.append('csrfmiddlewaretoken', csrf[0].value)
+            fd.append("Arquivo", file_data)
+            fd.append("OSNUM", NumOs)
+
+            $.ajax({
+                type: 'post',
+                url: link_relatorio + 'xxx-xxx-xxx/',
+                enctype: 'multipart/form-data',
+                data: fd,
+                beforeSend: function(){
+                    document.getElementById("progress-box").hidden = false;
+                },
+                success: function(response){
+                    inti_celery_bar({'task_id': response['id']})
+                    task_id_observed = response['id']
+                },
+                fail: function(error){},
+                cache: false,
+                contentType: false,
+                processData: false
+            })
+        } else {
+            alert("Item não enviado! Extensão do arquivo incorreta.")
+        }
+    }
+
+    function AjaxTaskID(url) {
+        const csrf = document.getElementsByName("csrfmiddlewaretoken")
+        console.log(url)
+        window.location.href = `/app/eletrica/a1pro/TableResult/${url}/`;
+        // $.ajax({
+        //     url: url, // Caminho do Ajax
+        //     type: "GET", // http method
+        //     headers:{'X-CSRFToken':csrf[0].value},
+        //     dataType: "json",
+        //     data: {}, // Envia dados pela solicitação do POST
+        //     success: function (data) {
+        //         setTimeout(() =>{
+        //             $('#tabela_verificacao_carga').html(data['ImportData'])
+        //             $('#Modal_Import_Carga').modal('show')
+        //             document.getElementById('ArquivoUploadInput').value=''
+        //             document.getElementById('id_NomeDoArquivolbl').innerHTML = 'Selecione um arquivo'
+        //         },100);
+        //         setTimeout(()=>{
+        //             $('#Modal_Load_Import_Carga').modal('hide')
+        //         },300)
+        //
+        //     },
+        //     failure: function () {
+        //         alert('Algo deu errado! verifique e tente novamente.')
+        //     }
+        // });
+    }
+
+    //----------------- Evento observador de mutação de texto na bar-progress -----------------//
+    $('#progress-bar-message').on('DOMSubtreeModified', function(){
+        if(ctrl === 2) { // Para Ctrl = 2 a função exibir os erros no modal tabela
+
+            //----------------- Método obtem result JSON via ajax HTTP -----------------//
+            $.getJSON('/celery-progress/' + task_id_observed, (e) => {
+                if (e.success) {
+                    //----------------- Caso contenha erros no arquivo entra aqui -----------------//
+                    if (e.result.status === 'Failure') {
+                        let url =`${task_id_observed}`
+                        document.getElementById('div_bar_taks').hidden = false
+                        document.getElementById('progress-bar').style.width = '100%';
+                        document.getElementById('progress-bar').style.backgroundColor = '#dc4f63';
+                        document.getElementById('progress-bar-message').innerHTML = "Erro ao enviar planilha!";
+                        AjaxTaskID(url)
+                        document.getElementById("progress-box").hidden = true;
+                        $('#{{nome_id}}').modal('hide')
+                        $('#Modal_Load_Import_Carga').modal('show')
+                    }
+                    //----------------- Caso esteja tudo certo oculta a bar-progress -----------------//
+                    else if(e.result.status === 'Success') {
+                        setTimeout(()=>{document.getElementById('div_bar_taks').hidden = true}, 500)
+                    } window.
+                    ctrl = 0; // Parâmetro default
+                }
+            })
+
+        } else if(ctrl === 1) { // Para Ctrl = 1 a função irá gerar o arquivo de download de cargas
+
+            //----------------- Método obtem result JSON via ajax HTTP -----------------//
+            $.getJSON('/celery-progress/' + response_id, (e)=>{
+                if(e.success){
+                    //----------------- Faz o download das cargas após gerar arquivo e concluir a task -----------------//
+                    let url =  link_to_dowload + response_id + '/'
+                    window.open(url, '_self')
+                    setTimeout(()=>{document.getElementById('div_bar_taks').hidden = true}, 1000)
+                    ctrl = 0; // Parâmetro default
+                }
+            })
+        }
+    });
+
+    function GerarArquivo(){
+        var IDOS = document.getElementById('OS');
+        const csrf = document.getElementsByName("csrfmiddlewaretoken")
+        const fd = new FormData()
+
+        fd.append('csrfmiddlewaretoken', csrf[0].value)
+        fd.append("OSNUM", IDOS)
+        $.ajax({
+            type: 'POST',
+            url: "/app/{{nome_app}}/{{nome_url_download_arquivo}}/xxx-xxxx-xxx/",
+            enctype: 'multipart/form-data',
+            data: fd,
+
+            beforeSend: function(){
+                document.getElementById("progress-box").hidden = false;
+            },
+            success: function(response){
+                inti_celery_bar({'task_id': response['id']})
+                set_storage_session('ID_TASK',response['id'])
+                response_id = response['id']
+                ctrl = 1 // Para Ctrl = 1 a função irá gerar o arquivo de download de cargas
+            },
+            fail: function(error){
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        })
+    }
+
+    $(function() {
+        // This function gets cookie with a given name
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+
+        /*
+        The functions below will create a header with csrftoken
+        */
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        function sameOrigin(url) {
+            // test that a given url is a same-origin URL
+            // url could be relative or scheme relative or absolute
+            var host = document.location.host; // host + port
+            var protocol = document.location.protocol;
+            var sr_origin = '//' + host;
+            var origin = protocol + sr_origin;
+            // Allow absolute or scheme relative URLs to same origin
+            return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                // or any other URL that isn't scheme relative or absolute i.e relative.
+                !(/^(\/\/|http:|https:).*/.test(url));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                    // Send the token to same-origin, relative URLs only.
+                    // Send the token only if the method warrants CSRF protection
+                    // Using the CSRFToken value acquired earlier
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+    });
+    function clear_progress_bar() {
+        document.getElementById("ArquivoUploadInput").value='';
+        document.getElementById("id_NomeDoArquivolbl").innerHTML = 'Selecione um arquivo';
+        document.getElementById("progress-box").hidden = true;
+    }
+
+</script>

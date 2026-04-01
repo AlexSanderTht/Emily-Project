@@ -1,0 +1,357 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>A1 Histogramas</title>
+{% endblock %}
+{% block help %}
+
+{% endblock %}
+{% block main %}
+
+<div class="container row mx-auto">
+    <div class="col-sm-12 col-md-12 col-xl-12 mt-5 bordas bg-white border shadow">
+        {% csrf_token %}
+        <h1 class="display-4 row justify-content-center ">Controle de OS</h1>
+        <hr class="my-2">
+
+        <!------------------ Início Cartões ------------------>
+        <div class="row justify-content-md-center m-3">
+            <!------------------ inicio Cartão Gestores ------------------>
+            <div class="col-sm-12 col-lg-10 col-xl-10">
+                <div class="bordas fundo_grad_1 border">
+                    <div class="card-body pt-0">
+                        <div class="form-group">
+                            <div class="row">
+                                <!------------------ Inicio Campo Unidade ------------------>
+                                <div class="c0l-12 col-sm-6 col-lg-2">
+                                    <h6 class="card-subtitle m-2 text-muted">UND</h6>
+                                    <select id="SelectUnd" class="form-control" onchange="FilterOS()" onclick="FilterOS()">
+                                        <option id="0" value="0" class="text-muted" selected>Selecione</option>
+                                        {% for un_id,un_desc in UND.items %}
+                                        <option id="{{un_id}}">{{un_desc}}</option>
+                                        {%endfor%}
+                                    </select>
+                                </div><!------------------ Fim Campo OS ------------------>
+                                <!------------------ Inicio Campo OS ------------------>
+                                <div class="c0l-12 col-sm-6 col-lg-2">
+                                    <h6 class="card-subtitle m-2 text-muted">OS</h6>
+                                    <select id="SelectOS" class="form-control">
+                                        <option id="0" value="0" class="text-muted" selected>Selecione</option>
+                                    </select>
+                                </div><!------------------ Fim Campo OS ------------------>
+                                <!------------------ inicio Campo Ocupação ------------------>
+                                <div class="col-12 col-sm-6 col-lg-3">
+                                    <h6 class="card-subtitle m-2 text-muted">Ocupação</h6>
+                                    <select id="Tipo" class="form-control">
+                                        <option id="0" value="0" class="text-muted" selected>Selecione</option>
+                                        <option id="1">Planejador</option>
+                                        <option id="2">Gestor</option>
+                                    </select>
+                                </div><!------------------ Fim Campo Ocupação ------------------>
+                                <!------------------ inicio Campo Colaborador ------------------>
+                                <div class="col-sm-12 col-lg-5">
+                                    <h6 class="card-subtitle m-2 text-muted">Colaborador</h6>
+                                    <select id="Colaborador" class="form-control">
+                                        <option id="0" value="0" class="text-muted" selected>Selecione</option>
+                                    </select>
+                                </div><!------------------ Fim Campo Colaborador ------------------>
+                            </div>
+                            <div class="my-3">
+                                <div class="text-center w-100">
+                                    <button class="btn col-sm-6 col-md-3 col-lg-3 mb-3 mb-sm-3 mb-md-0 rounded-pill fundo_azul" onclick="PesquisaAcesso()">
+                                        Pesquisar
+                                    </button>
+                                    <button class="btn col-sm-6 col-md-3 col-lg-3 mb-3 mb-sm-3 mb-md-0 rounded-pill butof" onclick="AdicionaUsuario()">
+                                        Adicionar
+                                    </button>
+                                    <button class="btn col-sm-6 col-md-3 col-lg-3 rounded-pill text-white bg-secondary" onclick="LimparCampo()">
+                                        Limpar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!------------------ inicio Campo Preenchimento Colaborador ------------------>
+                        <div id="CampoPreenchimento" class="border shadow rounded p-2 bg-white altura_campo_colab row mx-0">
+                            <!--- Aqui é chamado o container colaborador através do JS --->
+                            <div class="col-sm-12 col-lg-12 col-xl-12 px-0" id="Container">
+
+                            </div>
+                        </div><!------------------ Fim Campo Preenchimento Colaborador ------------------>
+                        <p class="card-text pt-3 mb-0">Selecione OS, Página e colaborador, e pressione adicionar.</p>
+                    </div>
+                </div>
+            </div><!------------------ Fim Cartão Gestores ------------------>
+
+            <!------------------ Início Modal Preenchimento ------------------>
+            <div class="modal fade" id="modal_mensagem_erro">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title text-center text-danger w-100">Atenção</h4>
+                            <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <p><b id="text_mensagem_erro"></b></p>
+                            <hr>
+                            <div class="mx-auto">
+                                <img class="w-50" src="{% static 'img/alert.gif' %}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!------------------ Fim Modal Preenchimento ------------------>
+
+            <!------------------ Início Modal Mensagem Submit ------------------>
+            <div class="modal fade" id="modal_mensagem_submit">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title text-center text-success w-100">Atenção</h4>
+                            <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <p><b id="text_mensagem_submit"></b></p>
+                            <hr>
+                            <div class="mx-auto">
+                                <img class="w-50" src="{% static 'img/success_alert.gif' %}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!------------------ Fim Modal Mensagem Submit ------------------>
+        </div><!------------------ Fim Cartões ------------------>
+    </div>
+</div>
+{% endblock %}
+{% block end %}
+<script>
+    // ---------------------Função para Limpar campos---------------------//
+    function LimparCampo() {
+        $("#SelectOS").val("0");
+        $("#Tipo").val("0");
+        $("#Colaborador").val("0");
+        document.getElementById('Container').innerText = '';
+    }
+
+
+    // ---------------------Função para pesquisar OS de acordo com unidade---------------------//
+    function FilterOS() {
+        let os = document.getElementById('SelectUnd').selectedOptions[0].id;
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url: "/app/a1hist/filtra_os/", // Caminho do Ajax
+            type: "POST", // http method
+            headers: {'X-CSRFToken': csrftoken},
+            dataType: "json",
+            data: {'FiltraOS': JSON.stringify(os)}, // Envia dados pela solicitação do POST
+            success: function (data) {
+                let array_os = data['OS']
+                let array_user = data['User']
+                let os = document.getElementById('SelectOS');
+                let colab = document.getElementById('Colaborador');
+                let option_os = ''
+                let option_user = ''
+
+                // Limpa o campo os e colaborador antes de preencher.
+                for (let j=0;j<os.length;j++){os.innerHTML=''}
+                for (let j=0;j<colab.length;j++){colab.innerHTML=''}
+
+                // Preenche Numero e id da OS
+                os.innerHTML += '<option id="0" value="0" class="text-muted" selected>Selecione</option>'
+                colab.innerHTML += '<option id="0" value="0" class="text-muted" selected>Selecione</option>'
+
+                for(let i in array_os){
+                    let opt ='<option id="'+ i +'">'+ array_os[i] +'</option>'
+                    option_os += opt
+                }
+                for(let i in array_user){
+                    let opt ='<option id="'+ array_user[i][0] +'" value="'+ array_user[i][1] +'">'+ array_user[i][1] +'</option>'
+                    option_user += opt
+                }
+                os.innerHTML += option_os
+                colab.innerHTML += option_user
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        });
+    }
+
+    // ---------------------Função para pesquisar acessos---------------------//
+    function RemoveAcessoNoBanco(id_os,id_per) {
+        let data_dict = {'ID_OS':id_os, 'ID_PER':id_per}
+
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url: "/app/a1hist/remove_acesso_os/", // Caminho do Ajax
+            type: "POST", // http method
+            headers: {'X-CSRFToken': csrftoken},
+            dataType: "json",
+            data: {'RemoveAcessoControleOS': JSON.stringify(data_dict)}, // Envia dados pela solicitação do POST
+            success: function (data) {
+                let id_colaborador = data['DeleteUserSuccess']
+                let mensagem_delete = 'Usuário Removido com Sucesso!'
+                document.getElementById('text_mensagem_submit').innerHTML = mensagem_delete
+                $('#modal_mensagem_submit').modal('show')
+                RemoveUsuario(id_colaborador)
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        });
+    }
+
+    // ---------------------Função para pesquisar acessos---------------------//
+    function PesquisaAcesso() {
+        let value_os = document.getElementById('SelectOS').value;
+        let value_user = document.getElementById('Colaborador').value;
+        let id_os = document.getElementById('SelectOS').selectedOptions[0].id;
+        let id_user = document.getElementById('Colaborador').selectedOptions[0].id;
+        let data_dict = {'ID_OS':id_os, 'ID_USER':id_user}
+
+        if (Number(value_os) === 0 && Number(value_user) === 0){
+            let erro_select_os = 'Selecione a OS ou colaborador para pesquisar!'
+            document.getElementById('text_mensagem_erro').innerHTML = erro_select_os
+            $('#modal_mensagem_erro').modal('show')
+        } else {
+            const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+            $.ajax({
+                url: "/app/a1hist/pesquisa_os/", // Caminho do Ajax
+                type: "POST", // http method
+                headers: {'X-CSRFToken': csrftoken},
+                dataType: "json",
+                data: {'PesquisaAcessoOS': JSON.stringify(data_dict)}, // Envia dados pela solicitação do POST
+                success: function (data) {
+                    // Primeiramente o campo é limpo e após verifica se existe dados do banco
+                    document.getElementById('Container').innerHTML = '';
+
+                    if (data['DataSearchSuccess'].length === 0){
+                        let num_os = document.getElementById('SelectOS').selectedOptions[0].value
+                        let erro_select_os = ''
+                        if (num_os == 0){
+                            erro_select_os = 'Nenhum Acesso encontrado'
+                        } else {
+                            erro_select_os = 'Nenhum Acesso encontrado para OS '+ num_os
+                        }
+                        document.getElementById('text_mensagem_erro').innerHTML = erro_select_os
+                        $('#modal_mensagem_erro').modal('show')
+                    }else{
+                        PreencheCampoPesquisa(data['DataSearchSuccess'])
+                    }
+                },
+                failure: function () {
+                    alert('Algo deu errado! verifique e tente novamente.')
+                }
+            });
+        }
+    }
+
+    // ---------------------Função para pesquisar acessos---------------------//
+    function PreencheCampoPesquisa(data) {
+        let id_os_index = 0;
+        let num_os_index = 1;
+        let tipo_index = 2;
+        let per_id_index = 3;
+        let nome_per_index = 4;
+        let add_campo = document.getElementById("Container");// cria ID do container.
+
+        for (let item = 0; item < data.length; item++){
+            let array_item = data[item]
+            let id_os = array_item[id_os_index]
+            let os_num = array_item[num_os_index]
+            let tipo_ocupacao = array_item[tipo_index]
+            let id_per = array_item[per_id_index]
+            let name_per = array_item[nome_per_index]
+            let campo_container = `
+                <div class="col-12 mt-1 input-group input-group-sm" id="${id_per}">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-light">${os_num}</span>
+                    </div>
+                    <span type="text" class="col col-sm-2 col-lg-2 text-center w-100 bg-white input-group-text rounded-0 overflox_text" onclick="$('#Tipo').val('${tipo_ocupacao}')">${tipo_ocupacao}</span>
+                    <span type="text" class="col bg-white input-group-text rounded-0 overflox_text" onclick="$('#Colaborador').val('${name_per}')">${name_per}</span>
+                    <div class="d-flex input-group-append">
+                        <button class="btn btn-outline-danger" type="button" onclick="RemoveAcessoNoBanco(${id_os},${id_per})">
+                        <i class="fas fa-times-circle"></i></button>
+                    </div>
+                </div>`;
+            add_campo.innerHTML += campo_container;
+        }
+    }
+
+    // ---------------------Função para adicionar Colaborador---------------------//
+    function AdicionaUsuario() {
+        document.getElementById('Container').innerText = '';
+        let os_numero = document.getElementById('SelectOS').selectedOptions[0].value;
+        let id_os = document.getElementById('SelectOS').selectedOptions[0].id;
+        let tipo = document.getElementById('Tipo').selectedOptions[0].value;
+        let id_tipo = document.getElementById('Tipo').selectedOptions[0].id;
+        let colaborador = document.getElementById('Colaborador').selectedOptions[0].value;
+        let id_colaborador = document.getElementById('Colaborador').selectedOptions[0].id;
+        let add_campo = document.getElementById("Container");// cria ID do container.
+
+        let verifica_unique_usuario = $('#CampoPreenchimento').find('#' + id_colaborador)
+        let verifica_unique_os = $('#CampoPreenchimento').find('#' + id_os)
+        if ( Number(id_os) !== 0  && Number(id_tipo) !== 0  && Number(id_colaborador) !== 0){
+            let campo_container = `
+                <div class="col-12 mt-1 input-group input-group-sm" id="${id_colaborador}">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-light">${os_numero}</span>
+                    </div>
+                    <span type="text" class="col col-sm-2 col-lg-2 text-center w-100 bg-white input-group-text rounded-0 overflox_text">${tipo}</span>
+                    <span type="text" class="col bg-white input-group-text rounded-0 overflox_text">${colaborador}</span>
+                    <div class="d-flex input-group-append">
+                        <button class="btn btn-outline-danger" type="button" onclick="RemoveAcessoNoBanco(${id_os},${id_colaborador})" >
+                        <i class="fas fa-times-circle"></i></button>
+                    </div>
+                </div>`;
+            add_campo.innerHTML += campo_container;
+
+            //Aqui é chamada a função de cadastro de usuário na OS
+            CadastroUsuario(Number(id_os),Number(id_tipo),Number(id_colaborador))
+
+        }else if (Number(id_os) === 0 || Number(id_tipo) === 0 || Number(id_colaborador) === 0){
+            let erro_preenchimento = 'Preencha todos os campos corretamente!'
+            document.getElementById('text_mensagem_erro').innerHTML = erro_preenchimento
+            $('#modal_mensagem_erro').modal('show')
+
+        }else{
+            let erro_duplicata = 'Não é possível adicionar duplicatas!'
+            document.getElementById('text_mensagem_erro').innerHTML = erro_duplicata
+            $('#modal_mensagem_erro').modal('show')
+        }
+    }
+
+    // ---------------------Função para remover Colaborador---------------------//
+    function RemoveUsuario(id_colaborador) {
+        $('#CampoPreenchimento').find('#' + id_colaborador).remove()
+    }
+
+    // ---------------------Função para cadastrar Colaborador---------------------//
+    function CadastroUsuario(id_os,id_tipo,id_colaborador) {
+        let data_dict = {'ID_OS':id_os,'ID_TIPO':id_tipo,'ID_COLAB':id_colaborador}
+
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url: "/app/a1hist/controle_os/", // Caminho do Ajax
+            type: "POST", // http method
+            headers: {'X-CSRFToken': csrftoken},
+            dataType: "json",
+            data: {'DadosControleOS': JSON.stringify(data_dict)}, // Envia dados pela solicitação do POST
+            success: function (data) {
+                let mensagem = ''
+                if (data['DataSuccess'] === 'existe'){
+                    mensagem = 'Ocupação do Usuário alterada com Sucesso!'
+                } else {
+                    mensagem = 'Usuário adicionado com Sucesso!'
+                }
+                // Atribui a mensagem de texto no modal conforme a condição IF acima
+                document.getElementById('text_mensagem_submit').innerHTML = mensagem;
+                $('#modal_mensagem_submit').modal('show')
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        });
+    }
+</script>
+{% endblock %}

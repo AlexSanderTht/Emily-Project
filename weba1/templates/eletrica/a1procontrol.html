@@ -1,0 +1,100 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+
+<title>A1proControl</title>
+{% endblock %}
+{% block help %}
+    <h7></h7>
+    <br><br>
+    <h7>Opção "Controladoria" Nesta opção você irá revisar somente listas da controladoria.</h7>
+    <br><br>
+    <h7>Opção "Outra lista" Nesta opção você irá revisar as demais listas.</h7>
+    <br><br>
+    <h7>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas.</h7>
+    <br><br>
+    <h7>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores.</h7>
+    <br><br>
+    <h7> "Chave 2" Neste campo você irá inserir a coluna sem repetição de valores(caso a primeira tenha repetição).</h7>
+    <br><br>
+    <h7>Botão "Revisar" Neste botão ele realizará a revisão entre os doc. marcando em amarelo o que mudou, mantendo a
+        extensão .xlsx.
+    </h7>
+    <br><br>
+    <h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos.</h7>
+{% endblock %}
+{% block main %}
+
+{% csrf_token %}
+    <div class="container">
+        <div class="container justify-content-center text-center mt-5">
+            <img src="{% static 'img/logoa1procontrol.png' %}" class="w-25">
+            <br>
+            <h6 class="cu">Ferramenta de controle de funcionalidades do A1Pro</h6>
+        </div>
+
+        <div class="container border border-warning rounded-top rounded-lg mt-5 bg-warning">
+            <div class="row ml-1 mt-2 mb-2">
+
+                <div class="col-lg-2 align-self-center">
+                    Selecione uma OS:
+                </div>
+
+                <div class="col-lg-3">
+                    <select class="form-control" id="procontrol-os" onchange="change_os_a1procontrol()">
+                        <option value="none" selected>Selecione...</option>
+                        {% for os in list_os %}
+                            <option value="{{os}}">{{os}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-lg-1 align-self-center text-right">
+                    Pesquise:
+                </div>
+
+                <div class="col-lg-3">
+                    <input type="text" class="form-control" placeholder="Filtre por nome" id="procontrol-filter" onkeydown="fill_all_items_a1procontrol()" disabled>
+                </div>
+
+                <div class="col-lg-3">
+                    <button type="button" class="btn btn-secondary" onclick="show_modal_gerents_fill_elements();">Gerenciar Gestores da disciplina</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Cabeçalho da tabela feita a mão -->
+        <div class="container bg-dark text-white">
+            <div class="row ml-1">
+                <div class="col-lg-9 mt-1">
+                    Nomes
+                </div>
+
+                <div class="col-lg-3 mt-1">
+                    Hierarquia
+                </div>
+            </div>
+        </div>
+
+        <!-- fim do cabeçalho-->
+
+        <div class="container text-dark bg-light hidden" id="container-all-persons">
+            <!-- aqui os elementos estão sendo adicionados com o javascript -->
+        </div>
+
+        <div class="container content-persons-a1procontrol bg-light text-center" id="container-no-persons">
+            <h5>Para utilizar a ferramenta selecione uma OS</h5>
+        </div>
+
+        <!-- Modal de Warning feito para usar no a1pro, facilmente manipulado com js-->
+        {% include './modal_warning.html' %}
+        {% include './modal_gerenc_gest_a1procontrol.html' %}
+        {% with id_modal='modal-load-a1pro-control' %}
+            {% include '../catracas/modal_load.html' %}
+        {% endwith %}
+        <!-- Fim Modal de Warning feito para usar no a1pro, facilmente manipulado com js-->
+    </div>
+<script src="{% static 'js/eletrica/A1Pro/a1procontrolusers.js' %}"></script>
+<script src="{% static 'js/eletrica/A1Pro/a1pro_ctrl.js' %}"></script>
+{% endblock %}

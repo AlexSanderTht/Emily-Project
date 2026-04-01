@@ -1,0 +1,802 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>PDF ChatBot</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+{% endblock %}
+
+{% block main %}
+<style>
+    :root {
+        --primary-color: #0b5ed7;
+        --primary-hover: #0a4cb7;
+        --border-radius: 25px;
+        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .container-bot {
+        background-color: white;
+        box-shadow: var(--box-shadow);
+        border-radius: var(--border-radius);
+        width: 100%;
+        max-width: 1110px;
+        margin: 0 auto;
+    }
+
+    .bot-content {
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .file-input-container {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        align-items: center;
+    }
+
+    .text-display {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 30px;
+    }
+
+    .text-display h2 {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .features-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: space-between;
+    }
+
+    .feature-box {
+        flex: 1;
+        min-width: 280px;
+        padding: 20px;
+        border-radius: 15px;
+        background-color: #f8f9fa;
+    }
+
+    .btn-primary {
+        padding: 10px 15px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 15px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-2px);
+    }
+
+    .btn-primary:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+    }
+
+    .text-area {
+        width: 100%;
+        height: 300px;
+        border: 2px solid var(--primary-color);
+        padding: 20px;
+        border-radius: 15px;
+        overflow-y: auto;
+        background-color: white;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .search-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .search-input {
+        padding: 10px 15px;
+        border-radius: 15px;
+        width: 100%;
+        border: 1px solid #E7E7E7;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 30px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 800px;
+        border-radius: 20px;
+        box-shadow: var(--box-shadow);
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+    }
+
+    .highlighted {
+        background-color: #ffff00;
+        font-weight: bold;
+    }
+
+    .loading {
+        display: none;
+        text-align: center;
+        margin: 10px 0;
+    }
+
+    .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: var(--primary-color);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .page-indicator {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .error-message {
+        color: #dc3545;
+        margin-top: 10px;
+        display: none;
+    }
+
+    .success-message {
+        color: #28a745;
+        margin-top: 10px;
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .bot-content {
+            padding: 20px;
+        }
+
+        .file-input-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .features-container {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+<div class="container mt-5">
+    <div class="row justify-content-center animate__animated animate__fadeIn">
+        <div class="col-lg-12 text-center">
+            <h1>A1PDF ChatBot</h1>
+        </div>
+        <div class="col-lg-12 text-center mb-4">
+            <h5>Ferramenta para extrair, pesquisar e resumir conteúdo em PDFs</h5>
+        </div>
+    </div>
+
+    <div class="container-bot animate__animated animate__fadeInUp">
+        <div class="bot-content">
+            <div class="file-input-container">
+                <input type="file" id="pdfInput" accept="application/pdf" class="form-control">
+                <button id="extractBtn" class="btn-primary">
+                    <i class="fas fa-file-import"></i> Extrair Texto
+                </button>
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+
+            <div id="loadingExtract" class="loading">
+                <div class="spinner"></div>
+                <p>Extraindo texto do PDF...</p>
+            </div>
+
+            <div class="text-display">
+                <h2>Texto Extraído</h2>
+                <div id="pdfText" class="text-area"></div>
+                <div id="pageIndicator" class="page-indicator"></div>
+            </div>
+
+            <div class="features-container">
+                <div class="feature-box">
+                    <h3><i class="fas fa-search"></i> Buscar no PDF</h3>
+                    <div class="search-container">
+                        <input type="text" id="searchTerm" placeholder="Pesquisar termo..." class="search-input">
+                        <button id="searchBtn" class="btn-primary" disabled>
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div id="searchResult" class="mt-2"></div>
+                    <div class="mt-2">
+                        <button id="prevMatchBtn" class="btn-primary" disabled>
+                            <i class="fas fa-arrow-up"></i>
+                        </button>
+                        <button id="nextMatchBtn" class="btn-primary" disabled>
+                            <i class="fas fa-arrow-down"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="feature-box">
+                    <h3><i class="fas fa-file-alt"></i> Resumo do PDF</h3>
+                    <p>Gere um resumo automático do conteúdo do PDF.</p>
+                    <button id="summaryBtn" class="btn-primary mt-2" disabled>
+                        <i class="fas fa-magic"></i> Gerar Resumo
+                    </button>
+                    <div id="loadingSummary" class="loading mt-2">
+                        <div class="spinner"></div>
+                        <p>Gerando resumo...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="summaryModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal" class="close">&times;</span>
+            <h2>Resumo do PDF</h2>
+            <div id="summaryText" class="p-3"></div>
+            <button id="downloadPdfBtn" class="btn-primary mt-3">
+                <i class="fas fa-download"></i> Baixar Resumo em PDF
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Estado da aplicação
+    const appState = {
+        extractedText: "",
+        pdfDocument: null,
+        currentPage: 1,
+        totalPages: 0,
+        pageTexts: [],
+        searchResults: [],
+        currentMatch: -1
+    };
+
+    // Elementos do DOM
+    const elements = {
+        pdfInput: document.getElementById("pdfInput"),
+        extractBtn: document.getElementById("extractBtn"),
+        pdfTextArea: document.getElementById("pdfText"),
+        searchTermInput: document.getElementById("searchTerm"),
+        searchBtn: document.getElementById("searchBtn"),
+        searchResult: document.getElementById("searchResult"),
+        prevMatchBtn: document.getElementById("prevMatchBtn"),
+        nextMatchBtn: document.getElementById("nextMatchBtn"),
+        summaryBtn: document.getElementById("summaryBtn"),
+        summaryModal: document.getElementById("summaryModal"),
+        summaryText: document.getElementById("summaryText"),
+        closeModal: document.getElementById("closeModal"),
+        downloadPdfBtn: document.getElementById("downloadPdfBtn"),
+        loadingExtract: document.getElementById("loadingExtract"),
+        loadingSummary: document.getElementById("loadingSummary"),
+        pageIndicator: document.getElementById("pageIndicator"),
+        errorMessage: document.getElementById("errorMessage"),
+        successMessage: document.getElementById("successMessage")
+    };
+
+    // Configuração da biblioteca PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.mjs';
+
+    // Inicialização de eventos
+    function initializeEvents() {
+        elements.extractBtn.addEventListener("click", extractText);
+        elements.searchBtn.addEventListener("click", searchText);
+        elements.prevMatchBtn.addEventListener("click", goToPreviousMatch);
+        elements.nextMatchBtn.addEventListener("click", goToNextMatch);
+        elements.summaryBtn.addEventListener("click", summarizeText);
+        elements.closeModal.addEventListener("click", closeModal);
+        elements.downloadPdfBtn.addEventListener("click", downloadSummaryAsPdf);
+        elements.pdfInput.addEventListener("change", resetUI);
+        elements.searchTermInput.addEventListener("keypress", handleSearchKeyPress);
+
+        window.addEventListener("click", (event) => {
+            if (event.target === elements.summaryModal) {
+                closeModal();
+            }
+        });
+    }
+
+    // Função para exibir mensagem de erro
+    function showError(message) {
+        elements.errorMessage.textContent = message;
+        elements.errorMessage.style.display = "block";
+
+        // Esconde automaticamente após 5 segundos
+        setTimeout(() => {
+            elements.errorMessage.style.display = "none";
+        }, 5000);
+    }
+
+    // Função para exibir mensagem de sucesso
+    function showSuccess(message) {
+        elements.successMessage.textContent = message;
+        elements.successMessage.style.display = "block";
+
+        // Esconde automaticamente após 3 segundos
+        setTimeout(() => {
+            elements.successMessage.style.display = "none";
+        }, 3000);
+    }
+
+    // Função para resetar a UI quando um novo arquivo é selecionado
+    function resetUI() {
+        elements.pdfTextArea.innerHTML = "";
+        elements.searchResult.textContent = "";
+        elements.pageIndicator.textContent = "";
+
+        // Reset do estado da aplicação
+        appState.extractedText = "";
+        appState.pdfDocument = null;
+        appState.currentPage = 1;
+        appState.totalPages = 0;
+        appState.pageTexts = [];
+        appState.searchResults = [];
+        appState.currentMatch = -1;
+
+        // Desativa botões
+        elements.searchBtn.disabled = true;
+        elements.prevMatchBtn.disabled = true;
+        elements.nextMatchBtn.disabled = true;
+        elements.summaryBtn.disabled = true;
+    }
+
+    // Função para extrair texto do PDF
+    async function extractText() {
+        const file = elements.pdfInput.files[0];
+        if (!file) {
+            showError("Por favor, selecione um arquivo PDF");
+            return;
+        }
+
+        // Mostrar indicador de carregamento
+        elements.loadingExtract.style.display = "block";
+        resetUI();
+
+        try {
+            const fileReader = new FileReader();
+
+            fileReader.onload = async function () {
+                try {
+                    const typedarray = new Uint8Array(this.result);
+                    appState.pdfDocument = await pdfjsLib.getDocument(typedarray).promise;
+                    appState.totalPages = appState.pdfDocument.numPages;
+                    appState.pageTexts = [];
+
+                    // Extrai o texto de todas as páginas
+                    for (let i = 1; i <= appState.totalPages; i++) {
+                        const page = await appState.pdfDocument.getPage(i);
+                        const content = await page.getTextContent();
+                        const pageText = content.items
+                            .map(item => item.str)
+                            .join(" ");
+
+                        appState.pageTexts.push(pageText);
+                    }
+
+                    appState.extractedText = appState.pageTexts.join("\n\n");
+                    displayPageText(1);
+
+                    // Habilita os botões de busca e resumo
+                    elements.searchBtn.disabled = false;
+                    elements.summaryBtn.disabled = false;
+
+                    showSuccess(`PDF com ${appState.totalPages} páginas carregado com sucesso`);
+                } catch (error) {
+                    showError("Erro ao processar o PDF: " + error.message);
+                    console.error("PDF processing error:", error);
+                } finally {
+                    elements.loadingExtract.style.display = "none";
+                }
+            };
+
+            fileReader.readAsArrayBuffer(file);
+        } catch (error) {
+            elements.loadingExtract.style.display = "none";
+            showError("Erro ao ler o arquivo: " + error.message);
+            console.error("File reading error:", error);
+        }
+    }
+
+    // Função para exibir o texto de uma página específica
+    function displayPageText(pageNum) {
+        if (pageNum < 1 || pageNum > appState.totalPages) {
+            return;
+        }
+
+        appState.currentPage = pageNum;
+
+        // Formata o texto para exibição
+        const pageText = appState.pageTexts[pageNum - 1];
+        const paragraphs = pageText.split(/\s*\n\s*/).filter(p => p.trim() !== "");
+        const formattedText = paragraphs.map(p => `<p>${p}</p>`).join("");
+
+        elements.pdfTextArea.innerHTML = formattedText;
+        elements.pageIndicator.textContent = `Página ${pageNum} de ${appState.totalPages}`;
+
+        // Adiciona controles de navegação para múltiplas páginas
+        if (appState.totalPages > 1) {
+            const navControls = document.createElement('div');
+            navControls.className = 'text-center mt-3';
+
+            // Botão para página anterior
+            if (pageNum > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'btn-primary mx-2';
+                prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i> Anterior';
+                prevBtn.onclick = () => displayPageText(pageNum - 1);
+                navControls.appendChild(prevBtn);
+            }
+
+            // Botão para próxima página
+            if (pageNum < appState.totalPages) {
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'btn-primary mx-2';
+                nextBtn.innerHTML = 'Próxima <i class="fas fa-chevron-right"></i>';
+                nextBtn.onclick = () => displayPageText(pageNum + 1);
+                navControls.appendChild(nextBtn);
+            }
+
+            elements.pageIndicator.appendChild(navControls);
+        }
+    }
+
+    // Função para buscar termo no texto
+    function searchText() {
+        const term = elements.searchTermInput.value.trim();
+
+        if (!appState.extractedText) {
+            showError("Por favor, extraia o texto do PDF primeiro");
+            return;
+        }
+
+        if (!term) {
+            showError("Digite um termo para buscar");
+            return;
+        }
+
+        // Limpa resultados anteriores
+        clearHighlights();
+        appState.searchResults = [];
+        appState.currentMatch = -1;
+
+        // Busca em todo o texto extraído
+        const regex = new RegExp(term, 'gi');
+
+        if (!regex.test(appState.extractedText)) {
+            elements.searchResult.textContent = "Termo não encontrado no documento";
+            elements.prevMatchBtn.disabled = true;
+            elements.nextMatchBtn.disabled = true;
+            return;
+        }
+
+        // Busca em cada página individualmente
+        appState.pageTexts.forEach((pageText, pageIndex) => {
+            let match;
+            regex.lastIndex = 0;
+
+            while ((match = regex.exec(pageText)) !== null) {
+                appState.searchResults.push({
+                    page: pageIndex + 1,
+                    position: match.index,
+                    text: match[0]
+                });
+            }
+        });
+
+        elements.searchResult.textContent = `Encontradas ${appState.searchResults.length} ocorrências de "${term}"`;
+
+        // Habilita botões de navegação entre resultados
+        elements.prevMatchBtn.disabled = false;
+        elements.nextMatchBtn.disabled = false;
+
+        // Vai para o primeiro resultado
+        if (appState.searchResults.length > 0) {
+            goToNextMatch();
+        }
+    }
+
+    // Função para ir ao próximo resultado
+    function goToNextMatch() {
+        if (appState.searchResults.length === 0) return;
+
+        appState.currentMatch = (appState.currentMatch + 1) % appState.searchResults.length;
+        navigateToMatch(appState.currentMatch);
+    }
+
+    // Função para ir ao resultado anterior
+    function goToPreviousMatch() {
+        if (appState.searchResults.length === 0) return;
+
+        appState.currentMatch = (appState.currentMatch - 1 + appState.searchResults.length) % appState.searchResults.length;
+        navigateToMatch(appState.currentMatch);
+    }
+
+    // Função para navegar até um resultado específico
+    function navigateToMatch(matchIndex) {
+        const match = appState.searchResults[matchIndex];
+
+        // Muda para a página do resultado
+        if (appState.currentPage !== match.page) {
+            displayPageText(match.page);
+        }
+
+        // Destaca os termos na página atual
+        highlightTermsInCurrentPage(elements.searchTermInput.value.trim());
+
+        // Atualiza contador de resultados
+        elements.searchResult.textContent = `Resultado ${matchIndex + 1} de ${appState.searchResults.length}`;
+
+        // Rola até o resultado atual
+        const highlightElements = document.querySelectorAll('.highlighted');
+        if (highlightElements.length > 0) {
+            highlightElements[0].scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+    }
+
+    // Função para limpar destaques anteriores
+    function clearHighlights() {
+        const oldHighlights = elements.pdfTextArea.querySelectorAll('.highlighted');
+        oldHighlights.forEach(el => {
+            const parent = el.parentNode;
+            parent.replaceChild(document.createTextNode(el.textContent), el);
+        });
+    }
+
+    // Função para destacar termos na página atual
+    function highlightTermsInCurrentPage(term) {
+        clearHighlights();
+
+        const regex = new RegExp(`(${escapeRegExp(term)})`, 'gi');
+
+        // Percorre todos os nós de texto dentro da área de texto
+        const walker = document.createTreeWalker(
+            elements.pdfTextArea,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false
+        );
+
+        const textNodes = [];
+        let node;
+
+        while (node = walker.nextNode()) {
+            textNodes.push(node);
+        }
+
+        // Substitui o termo por versão destacada em cada nó de texto
+        textNodes.forEach(textNode => {
+            const parent = textNode.parentNode;
+            const text = textNode.nodeValue;
+
+            if (regex.test(text)) {
+                const frag = document.createDocumentFragment();
+                let lastIdx = 0;
+                let match;
+
+                regex.lastIndex = 0;
+
+                while ((match = regex.exec(text)) !== null) {
+                    const beforeMatch = text.substring(lastIdx, match.index);
+                    if (beforeMatch) {
+                        frag.appendChild(document.createTextNode(beforeMatch));
+                    }
+
+                    const highlighted = document.createElement('span');
+                    highlighted.className = 'highlighted';
+                    highlighted.appendChild(document.createTextNode(match[0]));
+                    frag.appendChild(highlighted);
+
+                    lastIdx = regex.lastIndex;
+                }
+
+                if (lastIdx < text.length) {
+                    frag.appendChild(document.createTextNode(text.substring(lastIdx)));
+                }
+
+                parent.replaceChild(frag, textNode);
+            }
+        });
+    }
+
+    // Função auxiliar para escapar caracteres especiais em expressões regulares
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    // Função para gerar resumo do texto
+    async function summarizeText() {
+        if (!appState.extractedText) {
+            showError("Por favor, extraia o texto do PDF primeiro");
+            return;
+        }
+
+        // Mostrar indicador de carregamento
+        elements.loadingSummary.style.display = "block";
+        elements.summaryText.innerHTML = "";
+
+        try {
+            // Limita o texto para não sobrecarregar a API (se necessário)
+            let textToSummarize = appState.extractedText;
+            if (textToSummarize.length > 10000) {
+                textToSummarize = textToSummarize.substring(0, 10000) + "...";
+            }
+
+            // Faz a requisição para a API de resumo
+            const response = await fetch('/generate_summary/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                body: JSON.stringify({
+                    text: textToSummarize
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Formata e exibe o resumo
+            if (data.summary) {
+                // Divide o resumo em parágrafos para melhor formatação
+                const paragraphs = data.summary.split('\n').filter(p => p.trim() !== "");
+                const formattedSummary = paragraphs.map(p => `<p>${p}</p>`).join("");
+
+                elements.summaryText.innerHTML = formattedSummary;
+                elements.summaryModal.style.display = "block";
+            } else {
+                throw new Error("Não foi possível gerar um resumo");
+            }
+
+        } catch (error) {
+            console.error("Erro ao gerar resumo:", error);
+            elements.summaryText.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                Erro ao gerar resumo: ${error.message}
+            </div>
+        `;
+            elements.summaryModal.style.display = "block";
+        } finally {
+            // Oculta o indicador de carregamento
+            elements.loadingSummary.style.display = "none";
+        }
+    }
+
+    // Função para fechar o modal
+    function closeModal() {
+        elements.summaryModal.style.display = "none";
+    }
+
+    // Função para obter o token CSRF
+    function getCsrfToken() {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+
+        return cookieValue || '';
+    }
+
+    // Função para baixar o resumo como PDF
+    function downloadSummaryAsPdf() {
+        const {jsPDF} = window.jspdf;
+
+        // Verifica se há texto de resumo
+        if (elements.summaryText.innerHTML.trim() === "") {
+            showError("Não há resumo para baixar");
+            return;
+        }
+
+        try {
+            // Cria um novo documento PDF
+            const doc = new jsPDF();
+
+            // Título do documento
+            doc.setFontSize(16);
+            doc.text("Resumo do PDF", 20, 20);
+
+            // Conteúdo do resumo
+            doc.setFontSize(12);
+
+            // Obtém o texto puro do resumo (sem as tags HTML)
+            const summaryContent = elements.summaryText.innerText || elements.summaryText.textContent;
+
+            // Divide o texto em linhas para caber no PDF
+            const splitText = doc.splitTextToSize(summaryContent, 170);
+
+            // Adiciona o texto ao PDF
+            doc.text(splitText, 20, 30);
+
+            // Adiciona informações do documento original
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            const date = new Date().toLocaleDateString();
+            doc.text(`Gerado por A1PDF ChatBot em ${date}`, 20, doc.internal.pageSize.height - 10);
+
+            // Gera o nome do arquivo baseado no nome do PDF original
+            let fileName = "resumo_pdf.pdf";
+            if (elements.pdfInput.files[0]) {
+                const originalName = elements.pdfInput.files[0].name.replace(".pdf", "");
+                fileName = `resumo_${originalName}.pdf`;
+            }
+
+            // Salva o arquivo
+            doc.save(fileName);
+            showSuccess("Resumo baixado com sucesso!");
+        } catch (error) {
+            showError("Erro ao gerar o PDF: " + error.message);
+            console.error("PDF generation error:", error);
+        }
+    }
+
+    // Função para tratar evento de tecla Enter no campo de busca
+    function handleSearchKeyPress(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            elements.searchBtn.click();
+        }
+    }
+
+    // Inicializa todos os eventos quando o DOM estiver pronto
+    document.addEventListener("DOMContentLoaded", initializeEvents);
+</script>
+{% endblock %}

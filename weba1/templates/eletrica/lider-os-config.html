@@ -1,0 +1,77 @@
+<!-- /c:/EIA1Project/htdocs/eia1ferramentas/weba1/templates/eletrica/lider-os-config.html -->
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Configurações - Lider OS</title>
+    <style>
+        :root{
+            --bg:#f5f7fa; --card:#ffffff; --accent:#0b74da; --muted:#6b7280;
+            font-family: Inter, Roboto, Arial, sans-serif;
+        }
+        body{margin:0;background:var(--bg);color:#111;line-height:1.4}
+        .container{max-width:980px;margin:36px auto;padding:20px}
+        header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+        h1{font-size:20px;margin:0}
+        .card{background:var(--card);border-radius:8px;padding:18px;box-shadow:0 4px 18px rgba(15,23,42,0.06)}
+        /* layout */
+        form{display:grid;grid-template-columns:1fr 320px;gap:18px}
+        @media(max-width:880px){form{grid-template-columns:1fr;padding-bottom:0}}
+        fieldset{border:1px solid #e6e9ef;padding:14px;border-radius:6px}
+        legend{font-weight:600;padding:0 6px}
+        label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+        input[type="text"], input[type="email"], input[type="password"], select, textarea {
+            width:100%;padding:10px;border:1px solid #d6d8df;border-radius:6px;font-size:14px;background:#fff;
+        }
+        textarea{min-height:90px;resize:vertical}
+        .row{display:flex;gap:12px}
+        .controls{display:flex;gap:8px;align-items:center;margin-top:12px}
+        button{padding:10px 14px;border-radius:6px;border:0;cursor:pointer;font-weight:600}
+        .btn-primary{background:var(--accent);color:#fff}
+        .btn-secondary{background:#e7eefc;color:var(--accent)}
+        .sidebar .item{padding:10px;border-radius:6px;background:#fafafb;margin-bottom:8px;font-size:14px}
+        .muted{color:var(--muted);font-size:13px}
+        .small{font-size:13px;color:var(--muted)}
+        .success{background: #e6ffef;border-left:4px solid #16a34a;padding:10px;border-radius:6px;margin-bottom:12px;color:#064e3b}
+
+        /* tabs */
+        .tabbar{display:flex;gap:8px;margin-bottom:12px}
+        .tabbar button{background:#f3f6fb;color:#0b74da;border:1px solid transparent;padding:8px 12px;border-radius:6px;cursor:pointer}
+        .tabbar button.active{background:var(--accent);color:#fff}
+        .tab-content{display:none}
+        .tab-content.active{display:block}
+        .tab-title{font-size:14px;margin:0 0 10px 0;color:#111}
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <header>
+            <h1>Configurações - Lider OS</h1>
+            <!-- pequena aba (mini tab) à direita do título -->
+            <div style="display:flex;gap:6px;align-items:center">
+                    {% include 'eletrica/cadastro_os.html' %}
+
+            </div>
+        </header>
+    </div>
+
+       
+</body>
+
+
+
+<script>
+    function verify(){
+        if ($('#os-type').val() === "none"){
+            return import_data_tb_os()
+        }
+        else {
+            return exec_update_method()
+        }
+    }
+</script>
+
+</body>
+</html>

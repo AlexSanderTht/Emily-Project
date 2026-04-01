@@ -1,0 +1,747 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Controle Acesso Usuários</title>
+<link rel="icon" href="{% static 'img/conf.gif' %}" type="image/x-icon">
+{% endblock %}
+{% block help %}
+<hr>
+<h6><small>No card <b>Colaboradores</b>, ao selecionar nome, nível de acesso e pressionar botão "Adicionar" será
+    adicionado o card no campo abaixo.</small>
+    <div class="col-12 mt-1 input-group input-group-sm mb-1">
+         <div class="input-group-prepend">
+             <span class="input-group-text bg-light"><small>Nv.1</small></span>
+         </div>
+         <span type="text" class="col bg-white input-group-text overflox_text"><small>Colaborador</small></span>
+         <div class="d-flex input-group-append">
+             <button class="btn btn-outline-danger bg-white" type="button">
+             <i class="fas fa-times-circle text-danger"></i></button>
+         </div>
+    </div>
+    <div class="mb-2"><small>Clique sobre o nome do colaborador para visualizar todas as ferramentas que este possui acesso.</small></div>
+    <div class="mb-2"><small>Pressione <i class="fas fa-times-circle text-danger p-1 border border-danger rounded"></i> para
+    remover o usuário do campo.</small></div>
+    <div class="mb-2"><small>Clicando sobre a checkbox <input type="checkbox" checked>
+        ao lado de colaborador, selecionando o nível de acesso e pressionando botão "Adicionar" será adicionado todos os colaboradores com o nível respectívo.</small>
+    </div>
+</h6>
+<hr>
+
+<h6><small>No card <b>Ferramentas</b>, ao selecionar ferramenta pressione o botão "Adicionar" para
+    adicionar o card ferrramenta no campo abaixo.</small>
+    <div class="col-12 mt-1 input-group input-group-sm">
+         <div class="input-group-prepend">
+             <span class="input-group-text bg-light"><i class="fa fa-wrench fa-spin fa-fw"></i></span>
+         </div>
+         <span type="text" class="col bg-white input-group-text rounded-0 overflox_text"><small>a1pro</small></span>
+         <div class="d-flex input-group-append">
+             <button class="btn btn-outline-danger bg-white" type="button">
+             <i class="fas fa-times-circle text-danger"></i></button>
+         </div>
+      </div>
+    <div class="mb-2"><small>Clique sobre o nome da ferramenta para visualizar todos os usuários que possuem acesso, junto ao seu nível de acesso.</small></div>
+    <div class="mb-2"><small>Pressione <i class="fas fa-times-circle text-danger p-1 border border-danger rounded"></i> para
+    remover a ferramenta do campo.</small></div>
+    <div class="mb-2"><small>Clicando sobre a checkbox <input type="checkbox" checked>
+        ao lado da disciplina selecionada e pressionando botão "Adicionar" será adicionado todas as ferramentas pela disciplina.</small>
+    </div>
+</h6>
+<hr>
+{% endblock %}
+{% block main %}
+
+<div class="container row mx-auto">
+    <div class="col-sm-12 col-md-12 col-xl-12 mt-5 bordas bg-white border shadow">
+        {% csrf_token %}
+        <h1 class="display-4 row justify-content-center ">Controle de Acessos</h1>
+        <hr class="my-4">
+
+        <div class="row justify-content-md-center m-3">
+            <!------------------ inicio Cartão Colaborador ------------------>
+            <div class="col col-lg-4 col-xl-4">
+                <div class="bordas_radio fundo_grad_1 border">
+                    <div class="card-body">
+                        <h5 class="card-title row justify-content-center">Colaboradores</h5>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <select id="SelectColaborador" class="form-control">
+                                    {% for k, v in Users.items %}
+                                        <option title="{{k}}">{{v}}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <input id="CheckUser" type="checkbox">
+                                    </div>
+                                </div>
+                                <div class="input-group-append">
+                                     <button class="btn btn-outline-danger" onclick="LimpaConteudoColaborador()" type="button">
+                                     <i class="fas fa-times-circle"></i></button>
+                                </div>
+                            </div>
+                            <div class="row text-center my-3 mx-2">
+                                <hr class="col bg-white">
+                                <button class="btn col-lg-5 rounded-pill fundo_azul" onclick="AdicionarUsuario()">
+                                    Adicionar
+                                </button>
+                                <hr class="col bg-white">
+                            </div>
+                        </div>
+
+                        <!------------------ inicio Campo Preenchimento Colaborador ------------------>
+                        <div id="CampoColaborador" class="border shadow rounded p-2 bg-white altura_campo_controle row mx-0">
+                                <div class="col-xl-12 px-0" id="UsuarioContainer"></div><!--- Aqui é chamado o container colaborador através do JS --->
+                        </div><!------------------ Fim Campo Preenchimento Colaborador ------------------>
+                        <p class="card-text py-3">Selecione o usuário ou grupo de usuários para prosseguir.</p>
+
+                        <!------------------ inicio Campo modal duplicata Colaborador ------------------>
+                        <div class="modal fade" id="modal_mensagem_user">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title text-center w-100 text-danger">Atenção</h4>
+                                        <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p class="d-flex align-items-center justify-content-center"><b>Você já adicionou este usuário,<br> não é possível adicionar dupicatas!</b></p><hr>
+                                        <img src="{% static 'img/digitando.gif' %}">
+                                    </div>
+                                </div>
+                            </div>
+                         </div><!------------------ Fim Campo modal duplicata Colaborador ------------------>
+                    </div>
+                </div>
+            </div><!------------------ Fim Cartão Colaborador ------------------>
+
+            <!------------------ inicio Cartão Ferramenta ------------------>
+            <div class="col col-lg-4 col-xl-4">
+                <div class="bordas_radio fundo_grad_2 border">
+                    <div class="card-body">
+                        <h5 class="card-title row justify-content-center">Ferramentas</h5>
+                        <div class="form-group ">
+                            <div class="input-group">
+                                <select id="SelectFerramentas" class="form-control">
+                                    {%for ferramenta in Tools%}
+                                        <option id="{{ferramenta.pk}}" title="{{ferramenta.tb_tool_name}}">
+                                            {{ferramenta.tb_tool_name}}
+                                        </option>
+                                    {%endfor%}
+                                </select>
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <input id="CheckTool" type="checkbox">
+                                    </div>
+                                </div>
+                                <div class="input-group-append">
+                                     <button class="btn btn-outline-danger" onclick="LimpaConteudoFerramentas()" type="button">
+                                     <i class="fas fa-times-circle"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="row text-center my-3 mx-2">
+                                <hr class="col bg-white">
+                                <button class="btn btn-outline-secondary col-lg-5 rounded-pill" onclick="AdicionaTool()" id="btn-mensagem">
+                                    Adicionar
+                                </button>
+                                <hr class="col bg-white">
+                            </div>
+                        </div>
+
+                        <!------------------ inicio Campo Preenchimento Ferramenta ------------------>
+                        <div id="CampoFerramenta" class="border shadow rounded p-2 bg-white altura_campo_controle row mx-0">
+                                <div class="col-xl-12 px-0" id="FerramentaContainer"></div>
+                        </div>
+                        <p class="card-text py-3">Selecione a Ferramenta ou grupo de ferramentas para prosseguir.</p>
+
+                        <!------------------ inicio Modal duplicata Tool ------------------>
+                        <div class="modal fade" id="modal_mensagem_tool">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title text-center w-100 text-danger">Atenção</h4>
+                                        <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p class="d-flex align-items-center justify-content-center"><b>Você já adicionou esta ferramenta,<br>não é possível adicionar dupicatas!</b></p><hr>
+                                        <img src="{% static 'img/digitando.gif' %}">
+                                    </div>
+                                </div>
+                            </div>
+                         </div><!------------------ Fim Modal duplicata Tool ------------------>
+                    </div><!------------------ Fim Campo Preenchimento Ferramenta ------------------>
+                </div>
+            </div><!------------------ Fim Cartão Ferramenta ------------------>
+
+            <!------------------ inicio Cartão Cadastro ------------------>
+            <div class="col col-lg-4 col-xl-4">
+                <div class="bordas_radio bg-light border">
+                    <div class="card-body">
+                        <h5 class="card-title row justify-content-center">Cadastros</h5>
+                        <div class="row text-center mb-3 mx-2">
+                            <hr class="col">
+                            <button class="btn col-xl-6 rounded-pill btn-outline-danger" onclick="ListRemoveAllUser()">
+                                Remover Tudo
+                            </button>
+                            <hr class="col">
+                        </div>
+                        <!------------------ inicio Campo Visualização ------------------>
+                        <div id="CampoCadastro" class="row mx-0 border shadow rounded p-2 bg-white altura_campo_cad ">
+                            <div class="col-xl-12 px-0" id="Cadastros"></div>
+                        </div>
+                        <p class="card-text py-3">Este campo exibe as ferramentas cadastradas por colaborador.</p>
+                    </div><!------------------ Fim Campo Visualização ------------------>
+                </div>
+
+                <!------------------ Início Modal Remoção todos os acessos ------------------>
+                <div class="modal fade" id="modal_remove_all_access">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 id="text_header_remove" class="modal-title text-center w-100">Atenção</h4>
+                                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <p><b id="text_remove"></b></p>
+                                <hr>
+                                <div class="mx-auto">
+                                    <img id="image_remove" class="w-50">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!------------------ Fim Modal Remoção  todos os acessos ------------------>
+
+                <!------------------ Início Modal Remoção Ferramenta ------------------>
+                <div class="modal fade" id="modal_mensagem_delete">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title text-center text-danger w-100">Atenção</h4>
+                                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <p><b>Ferramenta Removida!</b></p>
+                                <hr>
+                                <div class="mx-auto">
+                                    <img class="w-50" src="{% static 'img/alert.gif' %}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!------------------ Fim Modal Remoção Ferramenta ------------------>
+            </div><!------------------ Fim Cartão Cadastro ------------------>
+
+            <!------------------ Início Modal Preenchimento ------------------>
+            <div class="modal fade" id="modal_mensagem_fill">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title text-center text-danger w-100">Atenção</h4>
+                            <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <p><b>Preencha todos os campos!<br>Você deve adicionar colaborador(es) e ferramenta(s).</b></p>
+                            <hr>
+                            <div class="mx-auto">
+                                <img class="w-50" src="{% static 'img/alert.gif' %}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!------------------ Fim Modal Preenchimento ------------------>
+
+            <!------------------ Início Botão Submit Alterar Autorizações ------------------>
+            <button type="button" id="VerificaPreenchimento" onclick="AlterarPermissoes()" class="m-4 row col-lg-3 subscribe btn btn-block btn-warning rounded-pill shadow border">
+                Alterar Autorizações
+            </button><!------------------ Fim Botão Submit Alterar Autorizações ------------------>
+
+            <!------------------ Início Modal Mensagem Submit ------------------>
+            <div class="modal fade" id="modal_mensagem_submit">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title text-center text-success w-100">Atenção</h4>
+                            <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <p><b>Níveis de Acesso Alterados com Sucesso!</b></p>
+                            <hr>
+                            <div class="mx-auto">
+                                <img class="w-50" src="{% static 'img/success_alert.gif' %}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!------------------ Fim Modal Mensagem Submit ------------------>
+
+        </div><!------------------ Fim Cartões ------------------>
+    </div>
+</div>
+{% endblock %}
+{% block end %}
+<script>
+
+    // ---------------------Função altera nível de acesso---------------------//
+    function AlterarPermissoes() {
+        let user_container = document.getElementById('UsuarioContainer').children;
+        let tool_container = document.getElementById('FerramentaContainer').children;
+        let array_list_id_user = [];
+        let array_list_id_level = [];
+        let user_id = [];
+        let level_ids = [];
+        let tool_ids = [];
+        let dict_list_enviar = [];
+
+        // Para cada Usuário e nível adiciona os elementos da array a variável
+        for (let item of user_container) {
+            array_list_id_level = item.title
+            array_list_id_user = item.id;
+            user_id.push(array_list_id_user)
+            level_ids.push(array_list_id_level)
+        }
+        // Para cada ferramenta adiciona os elementos da array a variável
+        for (let tool of tool_container) {
+            tool_ids.push(tool.id);
+        }
+        // Verificação de preenchimento dos campos colaborador e ferramenta
+        if (user_id.length == 0 || tool_ids.length == 0) {
+            $("#modal_mensagem_fill").modal('show');
+        } else {
+            // A variável abaixo filtra valores únicos na array de níveis de acesso
+            let level_unique = level_ids.filter((value, index, self) => {
+              return self.indexOf(value) === index
+            })
+            if (level_unique.length ===1){
+                dict_list_enviar = {"IDFerramenta":tool_ids ,"IDUsuario":user_id ,"NivelAcesso":['3']}
+            } else {
+                dict_list_enviar = {"IDFerramenta":tool_ids ,"IDUsuario":user_id ,"NivelAcesso":['3']}
+            }
+            console.log(dict_list_enviar)
+            $.ajax({
+                url: "/app/a1hub/controle_usuarios/alter_access", // Caminho do Ajax
+                type: "POST", // http method
+                dataType: "json",
+                data: {'DictAlterarAcesso': JSON.stringify(dict_list_enviar)},  // Envia dados pela solicitação do POST
+                success: function () {
+                    swal({
+                        text: "Alterado com sucesso!!",
+                        icon: "success",
+                    });
+
+                },
+                failure: function () {
+                        swal({
+                        text: "Houve um erro ao alterar!",
+                        icon: "error",
+                    });
+
+                }
+            });
+        }
+    }
+
+    // ---------------------Função para adicionar Colaboradores e nível de acesso---------------------//
+    function AdicionarUsuario() {
+        let user_select = document.getElementById("SelectColaborador").options;
+        let usuario_container = document.querySelector("#UsuarioContainer");// cria ID container
+        let nome_usuario = document.getElementById('SelectColaborador').value;
+        let id_usuario = document.getElementById('SelectColaborador').selectedOptions[0].title;
+        let condition_check = document.getElementById('CheckUser');
+        let id_user = [];
+        let name_user = [];
+        let list_user = {};
+        let item_id_user = [];
+        let item_name_user = [];
+
+        // Loop - percorre id dos elementos e adiciona a lista.
+        for (let user = 0; user < user_select.length; user++) {
+            id_user = user_select[user].title;
+            name_user = user_select[user].value;
+            list_user[id_user] = name_user;
+        }
+
+        if (condition_check.checked === true) {
+            for (const property in list_user) {
+                item_id_user = `${property}`
+                item_name_user = `${list_user[property]}`
+                let verifica_unique_usuario = $('#CampoColaborador').find('#' + item_id_user)
+
+                // Verifica checkbox, se marcada adiciona todas os usuarios.
+                if (verifica_unique_usuario.length === 0) {
+                    let user_container = `
+                              <div class="col-12 mt-1 input-group input-group-sm" id="${item_id_user}">
+                                 <span type="text" class="col bg-white input-group-text rounded-pill text-truncate" onclick="PostDataRegistered(${item_id_user})">${item_name_user}</span>
+                                 <div class="d-flex input-group-append">
+                                     <button class="btn btn-outline-danger" onclick="RemoverColaborador(${item_id_user});LimpaConteudoCadastro()"  type="button">
+                                     <i class="fas fa-times-circle"></i></button>
+                                 </div>
+                              </div>`
+                    usuario_container.innerHTML += user_container;
+
+                // Caso encontre ID's duplicados é exibido um modal de alerta.
+                } else {
+                    $("#modal_mensagem_user").modal('show');
+                }
+            }
+            $("#CheckUser").prop('checked', false);
+        } else {
+            let verifica_unique_usuario = $('#CampoColaborador').find('#' + id_usuario)
+            if (verifica_unique_usuario.length === 0) {
+                let user_container = `
+                                  <div class="col-12 mt-1 input-group input-group-sm" id="${id_usuario}">
+                                     <span type="text" class="col bg-white input-group-text rounded-pill rounded-right overflox_text" onclick="PostDataRegistered(${id_usuario})">${nome_usuario}</span>
+                                     <div class="d-flex input-group-append">
+                                         <button class="btn btn-outline-danger" onclick="RemoverColaborador(${id_usuario});LimpaConteudoCadastro()"  type="button">
+                                         <i class="fas fa-times-circle"></i></button>
+                                     </div>
+                                  </div>`;
+                usuario_container.innerHTML += user_container;
+            // Caso encontre ID's duplicados é exibido um modal de alerta.
+            } else {
+                $("#modal_mensagem_user").modal('show');
+            }
+
+            $("#CheckUser").prop('checked', false);
+        }
+    }
+
+    // ---------------------Função para remover elemento Colaborador ao clicar no X vermelho---------------------//
+    function RemoverColaborador(id_usuario) {
+        $('#CampoColaborador').find('#' + id_usuario).remove()
+    }
+
+    // ---------------------Função para remover todos os elementos visuais da aba Colaborador ao clicar no X vermelho---------------------//
+    function LimpaConteudoColaborador() {
+        let div_cadastro = document.querySelector('#UsuarioContainer');
+        div_cadastro.innerHTML = "";
+    }
+
+    // ---------------------Função POST recebe o id do usuário adicionado e devolve dicionário com as ferramentas de acesso---------------------//
+    function PostDataRegistered(id_usuario) {
+        $.ajax({
+            url: "/app/eletrica/ControleUser/", // Caminho do Ajax
+            type: "POST", // http method
+            dataType: "json",
+            data: {'UsuarioSelecionado': JSON.stringify(id_usuario)}, // Envia dados pela solicitação do POST
+            success: function (data) {
+                FerramentasCadastradas(data)
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        });
+    }
+
+
+    // ---------------------Função para adicionar Ferramentas---------------------//
+    function AdicionaTool() {
+        let ferramenta_container = document.querySelector("#FerramentaContainer");// Cria ID container para poder incrementar elementos
+        let tool_name = document.getElementById('SelectFerramentas').value;// Pega o valor do campo selecionado
+        let id_tool = document.getElementById('SelectFerramentas').selectedOptions[0].id;// Pega o ID do campo selecionado
+        let condition_check = document.getElementById('CheckTool');
+        let item_id_tool = [];
+
+        // Verifica checkbox, se marcada adiciona todas as ferramentas pertencentes a disciplina, se não conforme seleção da ferramenta.
+        if (condition_check.checked) {
+            for (const property in item_id_tool) {
+                item_id_tool = `${property}`
+                let verifica_unique_tool = $('#CampoFerramenta').find('#' + item_id_tool)
+
+                // Verifica condição de duplicata de ferramenta no campo abaixo do botão.
+                if (verifica_unique_tool.length === 0) {
+                    let tool_container = `<div class="col-12 mt-1 input-group input-group-sm" id="${item_id_tool}">
+                                              <div class="input-group-prepend">
+                                                  <span class="input-group-text bg-light"><i class="fa fa-wrench fa-spin fa-fw"></i></span>
+                                              </div>
+                                              <span type="text" class="col bg-white input-group-text rounded-0 overflox_text" onclick="PostUserTool(${item_id_tool})">${item_name_tool}</span>
+                                              <div class="input-group-append">
+                                                  <button class="btn btn-outline-danger" onclick="RemoverFerramenta('${item_id_tool}');LimpaConteudoCadastro()" type="button">
+                                                  <i class="fas fa-times-circle"></i></button>
+                                              </div>
+                                           </div>`
+                    ferramenta_container.innerHTML += tool_container;
+                } else {
+                    $("#modal_mensagem_tool").modal('show');
+                }
+
+            }
+            $("#CheckToolChild").prop('checked', false);
+        // Caso encontre ID's duplicados é exibido um modal de alerta.
+        } else {
+            let verifica_unique_tool = $('#CampoFerramenta').find('#' + id_tool)
+            if (verifica_unique_tool.length === 0) {
+                    let tool_container = `<div class="col-12 mt-1 input-group input-group-sm" id="${id_tool}">
+                                              <div class="input-group-prepend">
+                                                  <span class="input-group-text bg-light"><i class="fa fa-wrench fa-spin fa-fw"></i></span>
+                                              </div>
+                                              <span type="text" class="col bg-white input-group-text rounded-0 overflox_text" onclick="PostUserTool(${id_tool})">${tool_name}</span>
+                                              <div class="input-group-append">
+                                                  <button class="btn btn-outline-danger" onclick="RemoverFerramenta('${id_tool}');LimpaConteudoCadastro()" type="button">
+                                                  <i class="fas fa-times-circle"></i></button>
+                                              </div>
+                                           </div>`
+                    ferramenta_container.innerHTML += tool_container;
+            } else {
+                $("#modal_mensagem_tool").modal('show');
+            }
+            $("#CheckToolChild").prop('checked', false);
+        }
+    }
+
+    // ---------------------Função para remover elemento ferramenta ao clicar no X vermelho---------------------//
+    function RemoverFerramenta(id_tool) {
+        $('#CampoFerramenta').find('#' + id_tool).remove()
+    }
+
+    // ---------------------Função para remover todos os elementos visuais da aba ferramentas ao clicar no X vermelho---------------------//
+    function LimpaConteudoFerramentas() {
+        let div_cadastro = document.querySelector('#FerramentaContainer');
+        div_cadastro.innerHTML = "";
+    }
+
+    // ---------------------Função POST recebe o id da ferramenta adicionada e retorna dicionário com todos os usuários com acesso---------------------//
+    function PostUserTool(id_tool) {
+        $.ajax({
+            url: "/app/a1hub/controle_usuarios/select_tool_user/", // Caminho do Ajax
+            type: "POST", // http method
+            dataType: "json",
+            data: {'IDToolSelect': JSON.stringify(id_tool)}, // Envia dados pela solicitação do POST
+            success: function (data) {
+                let obj_data = Object.values(data)
+                let item_data = obj_data[0];
+                let length_data = [];
+
+                for (const property in item_data) {
+                    length_data = `${item_data[property]}`
+                }
+                if (length_data.length===0) {
+                    document.getElementById('text_header_remove').classList.remove('text-success');
+                    document.getElementById('text_header_remove').classList.add('text-danger');
+                    document.getElementById('text_remove').innerText = 'Nenhum usuário com acesso a Ferramenta!';
+                    document.getElementById('image_remove').src="{% static 'img/alert.gif' %}";
+                    $("#modal_remove_all_access").modal('show');
+                } else {
+                    PessoasCadastradas(data['ToolUserAcess'])
+                }
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        });
+    }
+
+    // ---------------------Função para adicionar Usuários ja Cadastradastrados na ferramenta selecionada---------------------//
+    function PessoasCadastradas(data) {
+        let campo_container = document.getElementById("Cadastros");// cria ID do container.
+        let key_data = Object.keys(data)
+        let values_data = Object.values(data)
+        let values_array = [];
+        let index_array = 0;
+        let id_tool = key_data[index_array];
+        let array_data = values_data[index_array];
+        let uniq_name_user_array = [];
+        let uniq_id_user_array = [];
+        let uniq_acc_tool_array = [];
+        let index_name_user = 0;
+        let index_name_id = 1;
+        let index_nivel_tool = 2;
+        let list_remove = [];
+        let gera_html = '';
+
+        // Loop - cria elementos usuários com acesso a ferramenta selecionada.
+        for (let item = 0; item < array_data.length; item++) {
+            values_array = array_data[item]
+            uniq_name_user_array = values_array[index_name_user];
+            uniq_id_user_array = values_array[index_name_id];
+            uniq_acc_tool_array = values_array[index_nivel_tool].substring(0, 4);
+            list_remove.push(uniq_id_user_array)
+            let cadastro_container = `
+                              <div class="col-12 mt-1 input-group input-group-sm" id="${uniq_id_user_array}">
+                                  <div class="input-group-prepend">
+                                      <span class="input-group-text bg-light">${uniq_acc_tool_array}</span>
+                                  </div>
+                                  <span title="${uniq_name_user_array}" type="text" class="form-control bg-white input-group-text rounded-0 overflox_text">${uniq_name_user_array}</span>
+                                  <div class="input-group-append">
+                                      <button class="btn btn-outline-danger" onclick="RemoverUsuarioCadastrado(${uniq_id_user_array}); ListRemoveToolCadastro(${id_tool}, ${uniq_id_user_array})" type="button">
+                                      <i class="fas fa-times-circle"></i></button>
+                                  </div>
+                              </div>`
+            gera_html += cadastro_container;
+        }
+        campo_container.innerHTML = gera_html;
+    }
+
+    // ---------------------Função para remover Usuários ja Cadastradastrados na ferramenta selecionada---------------------//
+    function RemoverUsuarioCadastrado(uniq_id_user_array) {
+        $('#CampoCadastro').find('#' + uniq_id_user_array).remove()
+    }
+
+    // ---------------------Função para adicionar Ferramentas ja Cadastradas no 3°campo---------------------//
+    function FerramentasCadastradas(data) {
+        let campo_container = document.getElementById("Cadastros");// cria ID do container.
+        let array_key = Object.keys(data);// Acessa as chaves da array data vindo do POST.
+        let array_value = Object.values(data);// Acessa os valores da array data vindo do POST.
+        let index_array = 0; // indexação da array recebida.
+        let key_tool_access = Object.keys(array_value[index_array]); // Acessa as chaves da array armazenada na variavel array_value.
+        let value_tool_access = Object.values(array_value[index_array]); // Acessa os valores da array armazenada na variavel array_value.
+        let uniq_id_tool_array = [];
+        let uniq_name_tool_array = [];
+        let nivel_tool_array = [];
+        let nome_tool_array = [];
+        let index_name_tool = 0;
+        let index_nivel_tool = 1;
+        let gera_html = '';
+
+        // Loop - cria elementos do campo ferramentas de acesso cadastradas jundo ao nível de acesso.
+        for (let item = 0; item < key_tool_access.length; item++) {
+            uniq_id_tool_array = key_tool_access[item];
+            uniq_name_tool_array = value_tool_access[item];
+            nivel_tool_array = uniq_name_tool_array[index_nivel_tool].substring(0, 4)
+            nome_tool_array = uniq_name_tool_array[index_name_tool]
+            let cadastro_container = `
+                              <div class="col-12 mt-1 input-group input-group-sm" id="${uniq_id_tool_array}">
+                                  <div class="input-group-prepend">
+                                      <span class="input-group-text bg-light">${nivel_tool_array}</span>
+                                  </div>
+                                  <span title="${nome_tool_array}" type="text" class="form-control bg-white input-group-text rounded-0 overflox_text">${nome_tool_array}</span>
+                                  <div class="input-group-append">
+                                      <button class="btn btn-outline-danger" onclick="RemoverCadastroUnique(${uniq_id_tool_array});ListRemoveToolCadastro(${uniq_id_tool_array},${array_key})" type="button">
+                                      <i class="fas fa-times-circle"></i></button>
+                                  </div>
+                              </div>`
+            gera_html += cadastro_container;
+        }
+        campo_container.innerHTML = gera_html;
+    }
+
+    // ---------------------Função para remover elemento Cadastrado ao clicar no X vermelho---------------------//
+    function RemoverCadastroUnique(uniq_id_tool_array) {
+        $('#CampoCadastro').find('#' + uniq_id_tool_array).remove()
+    }
+
+    // ---------------------Função para remover todos os elementos visuais da aba Cadastro ao clicar no X vermelho no campo colaborador---------------------//
+    function LimpaConteudoCadastro() {
+        let div_cadastro = document.querySelector('#Cadastros');
+        div_cadastro.innerHTML = "";
+    }
+
+    // ---------------------Função para remover ferramentas Cadastradas por usuário---------------------//
+    function ListRemoveToolCadastro(uniq_id_tool_array, array_key) {
+        let dict_list_remove = {"IDtool":uniq_id_tool_array ,"IDUser":array_key};
+
+        $.ajax({
+                url: "/app/a1hub/controle_usuarios/remove_access", // Caminho do Ajax
+                type: "POST", // http method
+                dataType: "json",
+                data: {'DictRemoveAcesso': JSON.stringify(dict_list_remove)}, // Envia dados pela solicitação do POST
+                success: function () {
+                    $("#modal_mensagem_delete").modal('show');
+                },
+                failure: function () {
+                    alert('Algo deu errado! verifique e tente novamente.')
+                }
+        });
+    }
+
+    // ---------------------Função para remover usuarios Cadastradas na ferramenta---------------------//
+    function ListRemoveAllUser() {
+        let tool_select = document.getElementById("FerramentaContainer").children;
+        let user_select = document.getElementById("Cadastros").children;
+        let id_tool = [];
+        let id_user = [];
+        let list_tool_remove = [];
+        let list_user_remove = [];
+
+        // Loop - percorre id dos elementos e adiciona a lista.
+        for (let user = 0; user < user_select.length; user++) {
+            id_user = user_select[user].id;
+            list_user_remove.push(id_user);
+        }
+
+        // Loop - percorre id dos elementos e adiciona a lista.
+        for (let tool = 0;  tool <tool_select.length;tool++) {
+            id_tool = tool_select[tool].id;
+            list_tool_remove.push(id_tool);
+        }
+        // adiciona os ids da ferramenta e usuários com acesso a um dicionário
+        let dict_list_remove = {"IDtool":list_tool_remove ,"IDUser":list_user_remove};
+        // em seguida limpa o campo cadastro
+        LimpaConteudoCadastro()
+
+        $.ajax({
+                url: "/app/a1hub/controle_usuarios/remove_all_user_access/", // Caminho do Ajax
+                type: "POST", // http method
+                dataType: "json",
+                data: {'DictRemoveAllAcessTool': JSON.stringify(dict_list_remove)}, // Envia dados pela solicitação do POST
+                success: function () {
+                    document.getElementById('text_header_remove').classList.add('text-success');
+                    document.getElementById('text_header_remove').classList.remove('text-danger');
+                    document.getElementById('text_remove').innerText = 'Todos os acessos foram removidos com Sucesso!';
+                    document.getElementById('image_remove').src="{% static 'img/success_alert.gif' %}";
+                    $("#modal_remove_all_access").modal('show');
+                },
+                failure: function () {
+                    alert('Algo deu errado! verifique e tente novamente.')
+                }
+        });
+
+    }
+
+
+    $(function () {
+        // This function gets cookie with a given name
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+
+        /*
+        The functions below will create a header with csrftoken
+        */
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        function sameOrigin(url) {
+            // test that a given url is a same-origin URL
+            // url could be relative or scheme relative or absolute
+            var host = document.location.host; // host + port
+            var protocol = document.location.protocol;
+            var sr_origin = '//' + host;
+            var origin = protocol + sr_origin;
+            // Allow absolute or scheme relative URLs to same origin
+            return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                // or any other URL that isn't scheme relative or absolute i.e relative.
+                !(/^(\/\/|http:|https:).*/.test(url));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                    // Send the token to same-origin, relative URLs only.
+                    // Send the token only if the method warrants CSRF protection
+                    // Using the CSRFToken value acquired earlier
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>A1Book</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="{% static 'js/bootstrap-filestyle.min.js'%}"> </script>
+	<meta charset="utf-8">
+	<style type="text/css">
+		.size{
+			height: 40px;
+			width: 98px;
+			margin-left: 8px;
+			margin-right:8px;
+			margin-top: 5px;
+			margin-bottom: 5px;
+			text-align: center;
+			background-color: #f58c32;
+			color: white;
+		}
+		.reset-this {
+		all: initial;
+		}
+
+		.redo-fieldset {
+			border: 1px solid black;
+			padding : 10px;
+		} 
+
+		.redo-legend {
+			color: black;
+		}
+		.custom-button {
+			padding: 2px;
+			color: black;
+			background-color: white;
+			border: 1px solid #000;
+			border-radius: 5px;
+			cursor: pointer;
+			height: 40px;
+			font-size: 20px;
+		}
+
+		.custom-button:hover {
+			background: #f58c32;
+			color: black
+		}
+
+		.custom-text {
+			margin-left: 10px;
+			font-family: Tahoma,Verdana,Segoe,sans-serif; ;
+			color: #aaa;
+			font-size: 10px;
+		}
+		.select-text{
+			font-family: tahoma,Verdana,Segoe,sans-serif; ;
+			font-size: 16px;
+			margin: 4px;
+		}
+
+	</style>
+
+</head>
+<body style="background-color: black">
+	<form>
+		<fieldset class="reset-this redo-fieldset" style="margin-left: 10px; width: 600px; background-color: #a0a0a0 ">
+		    <legend class="reset-this redo-legend" style="color: white">Arquivos</legend>
+		    <input type="file" id="folder" hidden="hidden"  onchange="selectedFolder(event)" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
+			<button type="button" id="bot-folder" class="custom-button" onclick="clicked('folder')">Escolher</button>
+			<span id="text-folder" style="font-size: 20px">Pasta com os arquivos excel.</span>
+			<br>
+			<br>
+		</fieldset>
+		<fieldset class="reset-this redo-fieldset" style="margin-left: 10px; width: 300px; background-color: #a0a0a0 ">
+		    <legend class="reset-this redo-legend" style="color: white">Revisão</legend>
+		    <input type="radio" name="options" value="lstComos"><span class = "select-text">Lista do Comos.</span><br>
+			<input type="radio" name="options" value="othlst"><span class = "select-text">Outras listas.</span><br>
+		</fieldset>
+		<button style=" height: 70px;float: right; width: 291px; margin-top: 8px; margin-right: 9px" class="custom-button">Gerar</button>
+		<br>
+
+
+	<form>
+
+
+	<script type="text/javascript">
+
+		function clicked(name){
+			$(`#${name}`).click();
+			console.log("oi");
+		}
+
+		function selectedFolder(e) {
+		    var theFiles = e.target.files;
+		    var relativePath = theFiles[0].webkitRelativePath;
+		    var folder = relativePath.split("/");
+		    console.log(theFiles);
+		    console.log("oi")
+		    if (1) {
+				$(`#text-folder`).text(folder[0]);
+		  	} else {
+		    	$(`#text-folder`).innerHTML = "Pasta com os tipicos";
+			}
+		}
+
+	</script>
+</body>
+</html>

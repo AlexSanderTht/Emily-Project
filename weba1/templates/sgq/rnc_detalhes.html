@@ -1,0 +1,586 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.css' %}"/>
+<link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.min.css' %}"/>
+<script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.bundle.js' %}"></script>
+<script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.js' %}"></script>
+
+<style>
+    * {
+        font-family: -apple-system, system-ui, BlinkMacSystemFont;
+    }
+
+    .explorer-container {
+        display: flex;
+        margin: 20px;
+        height: 85vh;
+    }
+
+    .file-list {
+        width: 40%;
+        box-shadow: rgba(128, 128, 128, 0.28) 0 0 27px 3px;
+        border-radius: 15px;
+        padding: 15px;
+        overflow-y: auto;
+        background-color: #f9f9f9;
+        margin-right: 15px;
+    }
+
+    .file-detail {
+        width: 60%;
+        box-shadow: rgba(128, 128, 128, 0.28) 0 0 27px 3px;
+        border-radius: 15px;
+        padding: 20px;
+        overflow-y: auto;
+        background-color: #ffffff;
+    }
+
+    .file-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .file-item:hover {
+        background-color: #e9e9e9;
+    }
+
+    .file-item.selected {
+        background-color: #cce5ff;
+        border-left: 4px solid #007bff;
+    }
+
+    .file-icon {
+        font-size: 24px;
+        color: #555;
+        margin-right: 10px;
+    }
+
+    .file-item-content {
+        flex-grow: 1;
+    }
+
+    .file-name {
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+
+    .file-meta {
+        font-size: 0.8rem;
+        color: #666;
+    }
+
+    .status-indicator {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        margin-left: 10px;
+        box-shadow: rgba(180, 180, 180, 0.45) 0 0 7px 3px;
+    }
+
+    .status-green {
+        background-color: #28a745;
+    }
+
+    .status-yellow {
+        background-color: #ffc107;
+    }
+
+    .status-orange {
+        background-color: #ff9e53;
+    }
+
+    .status-red {
+        background-color: #ff3838;
+    }
+
+    .detail-header {
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .detail-status {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: white;
+        margin-left: 10px;
+    }
+
+    .detail-section {
+        margin-bottom: 20px;
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .detail-section h5 {
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+    }
+
+    .detail-table {
+        width: 100%;
+    }
+
+    .detail-table td {
+        padding: 5px 10px;
+    }
+
+    .detail-table td:first-child {
+        font-weight: bold;
+        width: 30%;
+    }
+
+    .file-list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .search-box {
+        padding: 5px 10px;
+        border-radius: 15px;
+        border: 1px solid #ced4da;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .tab-button {
+        padding: 5px 15px;
+        border-radius: 15px;
+        border: 1px solid #ced4da;
+        background-color: #f8f9fa;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+
+    .tab-button.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .detail-evidence {
+        margin-top: 5px;
+        padding: 10px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+    }
+
+    /* Estilização para os detalhes em abas */
+    .detail-tabs {
+        display: flex;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .detail-tab {
+        padding: 8px 15px;
+        cursor: pointer;
+        margin-right: 5px;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .detail-tab.active {
+        background-color: #007bff;
+        color: white;
+        border: 1px solid #007bff;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #e7f1ff;
+        color: #0c63e4;
+    }
+
+    .list-group-item {
+        width: 700px;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="explorer-container">
+    <!-- Lista de RNCs (similar aos arquivos do Windows Explorer) -->
+    <div class="file-list">
+        <div class="file-list-header">
+            <h4>Relatórios de Não Conformidade</h4>
+            <button class="btn btn-sm btn-success" onclick="location.href='/app/sgq/index/'">
+                <i class="fa fa-plus"></i> Novo
+            </button>
+        </div>
+
+        <!-- Barra de pesquisa -->
+        <input type="text" class="search-box" id="search-rnc" placeholder="Buscar RNC...">
+
+        <!-- Botões de filtro por status -->
+        <div class="mb-3">
+            <button class="tab-button active" data-status="all">Todos</button>
+            <button class="tab-button" data-status="ABERTO">Abertos</button>
+            <button class="tab-button" data-status="PENDENTE">Pendentes</button>
+            <button class="tab-button" data-status="FECHADO">Fechados</button>
+        </div>
+
+        <!-- Lista de RNCs -->
+        <div id="rnc-list-container">
+            {% for rnc in rnc_list %}
+            <div class="file-item {% if rnc.rnc_id|stringformat:'i' == selected_rnc_id %}selected{% endif %}"
+                 data-rnc-id="{{ rnc.rnc_id }}"
+                 data-status="{{ rnc.status }}">
+                <div class="d-flex align-items-center">
+                    <i class="fa fa-file-alt file-icon"></i>
+                    <div class="file-item-content">
+                        <p class="file-name">RNC {{ rnc.rnc_num }}/{{ rnc.rnc_ano }}</p>
+                        <div class="file-meta">
+                            <span><i class="fa fa-user"></i> {{ rnc.responsavel }}</span><br>
+                            <span><i class="fa fa-calendar"></i> {{ rnc.data_criacao }}</span><br>
+                            <span><i class="fa fa-tag"></i> {{ rnc.area }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="status-indicator status-{{ rnc.status_class }}"></div>
+            </div>
+            {% empty %}
+            <div class="alert alert-info">Nenhum RNC encontrado.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Painel de detalhes para o RNC selecionado -->
+    <div class="file-detail">
+        {% if rnc_detail %}
+        <div class="detail-header">
+            <h3>
+                RNC {{ rnc_detail.rnc_num }}/{{ rnc_detail.rnc_ano }}
+                <span class="detail-status" style="background-color: {% if rnc_detail.status == 'FECHADO' %}#28a745{% elif rnc_detail.status == 'ABERTO' %}#ffc107{% else %}#fd7e14{% endif %}">
+                    {{ rnc_detail.status }}
+                </span>
+            </h3>
+            <p>Criado em: {{ rnc_detail.data_criacao }}</p>
+        </div>
+
+        <!-- Abas para organizar as informações -->
+        <div class="detail-tabs">
+            <div class="detail-tab active" data-tab="info">Informações Gerais</div>
+            <div class="detail-tab" data-tab="descricoes">Descrições</div>
+            <div class="detail-tab" data-tab="causas">Causas e Análises</div>
+            <div class="detail-tab" data-tab="acoes">Ações</div>
+            <div class="detail-tab" data-tab="evidencias">Evidências</div>
+        </div>
+
+        <!-- Conteúdo da aba Informações Gerais -->
+        <div class="tab-content active" id="tab-info">
+            <div class="detail-section">
+                <h5>Dados Básicos</h5>
+                <table class="detail-table">
+                    <tr>
+                        <td>Número:</td>
+                        <td>{{ rnc_detail.rnc_num }}/{{ rnc_detail.rnc_ano }}</td>
+                    </tr>
+                    <tr>
+                        <td>Status:</td>
+                        <td>{{ rnc_detail.status }}</td>
+                    </tr>
+                    <tr>
+                        <td>Data de Criação:</td>
+                        <td>{{ rnc_detail.data_criacao }}</td>
+                    </tr>
+                    <tr>
+                        <td>Data de Encerramento:</td>
+                        <td>{{ rnc_detail.data_encerramento }}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="detail-section">
+                <h5>Caracterização</h5>
+                <table class="detail-table">
+                    <tr>
+                        <td>Origem:</td>
+                        <td>{{ rnc_detail.origem }}</td>
+                    </tr>
+                    <tr>
+                        <td>Solicitante:</td>
+                        <td>{{ rnc_detail.solicitante }}</td>
+                    </tr>
+                    <tr>
+                        <td>Responsável:</td>
+                        <td>{{ rnc_detail.responsavel }}</td>
+                    </tr>
+                    <tr>
+                        <td>Área:</td>
+                        <td>{{ rnc_detail.area }}</td>
+                    </tr>
+                    <tr>
+                        <td>Subárea:</td>
+                        <td>{{ rnc_detail.subarea }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Conteúdo da aba Descrições -->
+        <div class="tab-content" id="tab-descricoes">
+            <div class="detail-section">
+                <h5>Descrições da Não Conformidade</h5>
+                {% if rnc_detail.descricoes %}
+                <div class="accordion" id="accordionDescricoes">
+                    {% for desc in rnc_detail.descricoes %}
+                    <div class="accordion-item mb-2">
+                        <h2 class="accordion-header" id="heading-desc-{{ forloop.counter }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-desc-{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse-desc-{{ forloop.counter }}">
+                                Requisito: {{ desc.requisito }}
+                            </button>
+                        </h2>
+                        <div id="collapse-desc-{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading-desc-{{ forloop.counter }}" data-bs-parent="#accordionDescricoes">
+                            <div class="accordion-body">
+                                <strong>Fato:</strong>
+                                <p>{{ desc.fato }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Nenhuma descrição cadastrada.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Conteúdo da aba Causas e Análises -->
+        <div class="tab-content" id="tab-causas">
+            <div class="detail-section">
+                <h5>Causas Raiz</h5>
+                {% if rnc_detail.causas_raiz %}
+                <div class="list-group">
+                    {% for causa in rnc_detail.causas_raiz %}
+                    <div class="list-group-item">
+                        <p>{{ causa.tb_cau_ra_iden_text }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Nenhuma causa raiz identificada.</p>
+                {% endif %}
+            </div>
+
+            <div class="detail-section">
+                <h5>Análises de Causa</h5>
+                {% if rnc_detail.analises_causa %}
+                <div class="accordion" id="accordionAnalises">
+                    {% for analise in rnc_detail.analises_causa %}
+                    <div class="accordion-item mb-2">
+                        <h2 class="accordion-header" id="heading-analise-{{ forloop.counter }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-analise-{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse-analise-{{ forloop.counter }}">
+                                Análise por {{ analise.tb_an_ca_id_per.tb_per_name }}
+                            </button>
+                        </h2>
+                        <div id="collapse-analise-{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading-analise-{{ forloop.counter }}" data-bs-parent="#accordionAnalises">
+                            <div class="accordion-body">
+                                <strong>Pergunta:</strong>
+                                <p>{{ analise.tb_an_ca_pergunta }}</p>
+                                <strong>Resposta:</strong>
+                                <p>{{ analise.tb_an_ca_resposta }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Nenhuma análise de causa cadastrada.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Conteúdo da aba Ações -->
+        <div class="tab-content" id="tab-acoes">
+            <div class="detail-section">
+                <h5>Ações Imediatas</h5>
+                {% if rnc_detail.acoes_imediatas %}
+                <div class="list-group">
+                    {% for acao in rnc_detail.acoes_imediatas %}
+                    <div class="list-group-item">
+                        <h6>Ação: {{ forloop.counter }}</h6>
+                        <p><strong>Descrição:</strong> {{ acao.tb_ac_im_acao }}</p>
+                        <p><strong>Responsável:</strong> {{ acao.tb_ac_im_responsavel_id_per.tb_per_name }}</p>
+                        <p><strong>Prazo:</strong> {{ acao.tb_ac_im_prazo|date:"d/m/Y H:i" }}</p>
+                        {% if acao.tb_ac_im_evidencia_path %}
+                        <p><strong>Evidência:</strong> <a href="{{ acao.tb_ac_im_evidencia_path }}" target="_blank">Ver evidência</a></p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Nenhuma ação imediata cadastrada.</p>
+                {% endif %}
+            </div>
+
+            <div class="detail-section">
+                <h5>Ações Corretivas</h5>
+                {% if rnc_detail.acoes_corretivas %}
+                <div class="list-group">
+                    {% for acao in rnc_detail.acoes_corretivas %}
+                    <div class="list-group-item">
+                        <h6>Ação: {{ forloop.counter }}</h6>
+                        <p><strong>Descrição:</strong> {{ acao.tb_ac_co_acao }}</p>
+                        <p><strong>Responsável:</strong> {{ acao.tb_ac_co_responsavel_id_per.tb_per_name }}</p>
+                        <p><strong>Prazo:</strong> {{ acao.tb_ac_co_prazo|date:"d/m/Y H:i" }}</p>
+                        {% if acao.tb_ac_co_evidencia_path %}
+                        <p><strong>Evidência:</strong> <a href="{{ acao.tb_ac_co_evidencia_path }}" target="_blank">Ver evidência</a></p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Nenhuma ação corretiva cadastrada.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Conteúdo da aba Evidências -->
+        <div class="tab-content" id="tab-evidencias">
+            <div class="detail-section">
+                <h5>Evidências</h5>
+                {% if rnc_detail.evidencias %}
+                <div class="list-group">
+                    {% for evidencia in rnc_detail.evidencias %}
+                    <div class="list-group-item">
+                        <h6>Evidência: {{ forloop.counter }}</h6>
+                        {% if evidencia.tb_evid_text %}
+                        <p><strong>Descrição:</strong> {{ evidencia.tb_evid_text }}</p>
+                        {% endif %}
+                        {% if evidencia.tb_evid_arq %}
+                        <p><strong>Arquivo:</strong> <a href="{{ evidencia.tb_evid_arq }}" target="_blank">Ver arquivo</a></p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Nenhuma evidência cadastrada.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% else %}
+        <div class="text-center mt-5">
+            <i class="fa fa-file-alt" style="font-size: 5rem; color: #ccc;"></i>
+            <h4 class="mt-3">Selecione um RNC para ver seus detalhes</h4>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Função para filtrar os RNCs por status
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove a classe active de todos os botões
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Adiciona a classe active ao botão clicado
+            this.classList.add('active');
+
+            // Obtém o status do botão
+            const status = this.dataset.status;
+
+            // Filtra os itens da lista
+            document.querySelectorAll('.file-item').forEach(item => {
+                if (status === 'all' || item.dataset.status === status) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Função para pesquisar RNCs
+    document.getElementById('search-rnc').addEventListener('input', function() {
+        const searchText = this.value.toLowerCase();
+
+        document.querySelectorAll('.file-item').forEach(item => {
+            const itemText = item.textContent.toLowerCase();
+            if (itemText.includes(searchText)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+
+    // Função para selecionar um RNC e mostrar seus detalhes
+    document.querySelectorAll('.file-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove a classe selected de todos os itens
+            document.querySelectorAll('.file-item').forEach(i => {
+                i.classList.remove('selected');
+            });
+
+            // Adiciona a classe selected ao item clicado
+            this.classList.add('selected');
+
+            // Redireciona para a mesma página com o RNC selecionado
+            window.location.href = `?rnc_id=${this.dataset.rncId}`;
+        });
+    });
+
+    // Função para alternar entre as abas de detalhes
+    document.querySelectorAll('.detail-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove a classe active de todas as abas
+            document.querySelectorAll('.detail-tab').forEach(t => {
+                t.classList.remove('active');
+            });
+
+            // Adiciona a classe active à aba clicada
+            this.classList.add('active');
+
+            // Obtém o ID da aba
+            const tabId = this.dataset.tab;
+
+            // Esconde todos os conteúdos de aba
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Mostra o conteúdo da aba selecionada
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        });
+    });
+
+    // Inicializa a visibilidade das abas (garante que a primeira aba esteja ativa)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verifica se há RNC selecionado
+        if (document.querySelector('.detail-tab')) {
+            // Ativa a primeira aba por padrão
+            const defaultTab = document.querySelector('.detail-tab').dataset.tab;
+            document.getElementById(`tab-${defaultTab}`).classList.add('active');
+        }
+    });
+</script>
+{% endblock %}

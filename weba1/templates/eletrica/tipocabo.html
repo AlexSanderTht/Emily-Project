@@ -1,0 +1,46 @@
+    <div class="modal-header">
+        <h5 class="modal-title" id="tipocaboLabel">Tipo de Cabo</h5>
+    </div>
+    <div class="modal-body">
+        <div class="row"  ><!-- dentro do area-->
+            <div style="border-right: 2px solid rgb(161, 158, 158);"  >
+
+                <div>
+                    <div class="col-sm-8" style="float: left;">
+                        <div class="form-group mb-4">
+                            <td data-toggle="tooltip" title="Inserir codigo ">Código
+                            <input type="text" required class="form-control" id="cod" >
+                            </td>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12" style="float: left;">
+                    <div class="form-group mb-4">
+                        <td placeholder="Digite aqui"  data-toggle="tooltip"  title="Inserir a descrição">Descrição
+                            <input type="text"  required class="form-control" id="desc" >
+                        </td>
+                    </div>
+                </div>
+            </div>
+
+            <div >
+                <div class="col-sm-9" style="float: left;">
+                    <div class="form-group mb-4">
+                        <td  for="area-type">
+                                Pesquisa
+                            <input type="text" list="area-type-list" id="area-type" class="form-control" onclick="list_options(this.id)" onselect="selected_option(this.id, this.value)">
+                            <datalist id="pesquisa">
+                            </datalist>
+                        </td>
+                    </div>
+                </div>
+            </div>
+
+        </div>    
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-warning" >Adicionar/Alterar</button>
+        <button type="button" class="btn btn-warning" >Excluir</button>
+        <button type="button" class="btn btn-warning">Limpar</button>
+    </div>

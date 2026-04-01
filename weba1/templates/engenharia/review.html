@@ -1,0 +1,100 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+
+<title>Review</title>
+
+{% endblock %}
+{% block help %}
+
+{% endblock %}
+{% block main %}
+<div class="container py-5">
+    <div class="row mb-4 ">
+        <div class="col-lg-12 mx auto text-center">
+            <h1 class="display-4"> 
+                <b >Review</b>
+            </h1>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto text-center">
+            <div class="bg-white rounded-lg shadow-sm p-5">
+                <form id="form"  role="form" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="">
+                    <br>
+                    <select id="os" class="form-control">
+                        {% for os, initials in list_os.items %}
+                            <option value="{{os}}">{{initials}}</option>
+                        {% endfor %}
+                    </select>    
+                </form>
+                <br>
+                <br>
+                <button id="send-code" class="btn " style="background-color: #12192C ; color: #ffff; width:30%" onclick="env_req_review()"> Gerar </button>
+            </div> 
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/jquery.min_.js' %}"></script>
+
+<script>
+    const user_info = '{{user_info|safe}}'
+    const mic_review_ = '{{mic_review|safe}}'
+
+    function env_req_review(){
+        const os = document.getElementById('os').value;
+
+        $.ajax({
+            url : 'request/' + user_info +'/' + os + '/', // the endpoint
+            type : "POST", // http method
+            dataType: 'json',
+            data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
+            success: function(data){
+                alert(data['info']['response']);
+            },
+            error: function(){
+                alert('error');
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $("#send-code").click(function() {
+            mins = 2;
+            secs = 0;
+            var btn = $(this);
+            btn.attr("disabled", true);
+            interval = setInterval(function() {
+              if (mins >= 0 && secs >= 0) {
+                btn.text("" + pad(mins, 2) + ":" + pad(secs, 2));
+                if (secs > 0) {
+                  secs--;
+                } else {
+                  secs = 59;
+                  mins--;
+                }
+                if (mins < 0)
+                {
+                  clearInterval(interval);
+                  btn.removeAttr("disabled").text("Gerar");
+                  return true;
+                }
+          }
+          console.log("Mins: " + mins + ", Secs: " + secs);
+        }, 1000);
+      });
+    });
+
+    function pad(num, size) {
+      var s = num + "";
+      while (s.length < size) s = "0" + s;
+      return s;
+    }
+</script>
+
+{% endblock %}
+
+
+
+

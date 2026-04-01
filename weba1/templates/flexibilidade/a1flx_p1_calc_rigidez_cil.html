@@ -1,0 +1,364 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+
+<title>A1 Rigidez - Cálculos de Rigidez</title>
+{% endblock %}
+{% block help %}
+<h7>Botão "Escolher" Neste botão você irá selecionar doc. com extensão .xlsx. </h7>
+<br><br>
+<h7>Opção "Controladoria" Nesta opção você irá revisar somente  listas da controladoria. </h7>
+<br><br>
+<h7>Opção "Outra lista" Nesta opção você irá revisar as demais listas. </h7>
+<br><br>
+<h7>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas. </h7>
+<br><br>
+<h7>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores. </h7>
+<br><br>
+<h7> "Chave 2" Neste campo você irá inserir a coluna  sem repetição de valores(caso a primeira tenha repetição). </h7>
+<br><br>
+<h7>Botão "Revisar" Neste botão ele realizará a revisão entre os doc. marcando em amarelo o que mudou, mantendo a extensão .xlsx.</h7>
+<br><br>
+<h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+<style>
+    div > h3, div > h1, div > p{
+    cursor: default;
+  }
+</style>
+<div class="container py-5">
+  <!-- Titulo -->
+  <div class="row mb-2">
+    <div class="col-lg-12 mx-auto text-center">
+      <h1 class="display-4"><b>A1 Rigidez - Cálculo de Rigidez Cilíndrica</b></h1>
+    </div>
+  </div>
+  <!-- fim -->
+  <div class="row">
+    <div class="col mx-auto p-0">
+      <div class="bg-white rounded-lg shadow-sm px-5 py-3">
+        <!-- card -->
+        <div class="tab-content row">
+          <!-- informações do card-->
+          <div id="nav-tab-card-sup" class="tab-pane fade show active col-12">
+              <div>
+                <form action="{% url 'download' %}" id="auto-download" method="GET" enctype="multipart/form-data">
+                  {% csrf_token %}
+                </form>
+              </div>
+              <form role="form" action="{% url 'a1rev' %}" method="POST" enctype="multipart/form-data" id="form"></form>
+                {% csrf_token %}
+                <div class="row">
+                  <div class="col-lg-4 border border-dark" style="padding-top: 15px;border-bottom-width: 0px;border-bottom-style: solid;margin-bottom: 0px;padding-bottom: 15px;">
+                    <div>
+                      <label><h5><b>Dados de Entrada</b></h5></label>
+                    </div>
+                    <!-- Campo 1-->
+                    <div class="row">
+                      <!-- linha 1-->
+                      <div class="form-group col-12">
+                        <label for="diam_equip">Diâmetro Equipamento ∅ S (mm):</label>
+                        <input class="form-control" type="number" id="diam_equip" placeholder="Diâmetro em mm">
+                        <div class ="invalid-feedback">Caracteres inválidos
+                        </div>
+                      </div>
+                      <!-- Fim-->
+
+
+                      <!-- linha 2-->
+                      <div class="form-group col-12">
+                        <label for="espessura_equip">Espessura do Equipamento T (mm):</label>
+                        <input class="form-control" type="number" id="espessura_equip" placeholder="Espessura em mm">
+                        <div class ="invalid-feedback">Caracteres inválidos
+                        </div>
+                        </div>
+                      <!-- Fim-->
+
+                      <!-- linha 3-->
+                      <div class="form-group col-12">
+                        <label for="diam_bocal">Diâmetro do Bocal ∅ N (mm):</label>
+                        <input class="form-control" type="number" id="diam_bocal" placeholder="Diâmetro em mm">
+                        <div class ="invalid-feedback">Caracteres inválidos
+                        </div>
+                      </div>
+                      <!-- Fim-->
+
+                      <!-- linha 4-->
+                      <div class="form-group col-12 ">
+                        <label for="espessura_bocal">Espessura do Bocal t (mm):</label>
+                        <input class="form-control" type="number" id="espessura_bocal" placeholder="Espessura em mm">
+                        <div class ="invalid-feedback">Caracteres inválidos</div>
+                      </div>
+                      <!-- Fim-->
+
+                      <!-- linha 5-->
+                      <div class="form-group col-12 ">
+                        <label for="dist_refor">Distância até o reforço M (mm):</label>
+                        <input class="form-control" type="number" id="dist_refor" placeholder="Distância em mm">
+                        <div class ="invalid-feedback">Caracteres inválidos</div>
+                      </div>
+                      <!-- Fim -->
+
+                        <!-- linha 6-->
+                      <div class="form-group col-12 ">
+                        <label for="dist_refor_opos">Distância até o reforço oposto N (mm):</label>
+                        <input class="form-control" type="number" id="dist_refor_opos" placeholder="Distância em mm">
+                        <div class ="invalid-feedback">Caracteres inválidos
+                        </div>
+                      </div>
+                      <!-- Fim-->
+
+                        <!-- linha 6-->
+                      <div class="form-group col-12 ">
+                        <label for="modul_elast">Módulo de Elasticidade do Material (GPa):</label>
+                        <input class="form-control" type="number" id="modul_elast" placeholder="Módulo de Elasticidade em GPa" value="210">
+                        <div class ="invalid-feedback">Caracteres inválidos
+                        </div>
+                      </div>
+                      <div class="form-group col-12 p-0 mb-0 text-center">
+                        <button type="button" onclick="env_rig_cil_ajax()" class="btn " style="background-color: #F58C32; color:#ffff;"><b>Calcular Rigidez</b> </button>
+                      </div>
+                      
+                      <!-- Fim-->
+
+                    </div>
+                  </div>
+                  <!-- Campo 2-->
+                    <div class="col-8 border border-dark" style="padding-top: 15px;padding-bottom: 15px; left: 5px;">
+                      <div class="row">
+                        <div class="form-group marcador col-12">
+                          <label style="margin-left: 0px;margin-top: 0px;"><h5><b>Desenho Esquemático</b></h5></label>
+                        </div>
+                      </div>
+                      <div class="row align-items-center text-center">
+                        <div class="form-group col-12 justify-content-md-center" >
+                          <!-- Carregar os estaticos com load static puxa a referência da pasta -->
+                          <img src="{% static 'img\a1_flex_images\a1_rig_dia_img.png' %}">
+                        </div> 
+                      </div>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 150%;">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel"> <b>Análise Cilíndrica</b></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="tab-content row">
+                              <!-- credit card info-->
+                              <div id="nav-tab-card" class="tab-pane fade show active col-12">
+                                <div class="row">
+                                  <div class="col-lg-4">
+                                    <!-- Campo 1-->
+                                    <!-- linha 1-->
+                                    <div class="row text-center">
+                                      <div class="form-group col-12">
+                                        <label for="rig_kz">A rigidez longitudinal é (Kz):</label>
+                                        <input class="form-control" type="text" id="rig_kz" placeholder="" readonly>
+                                      </div>
+              
+                                      <div class="form-group col-12">
+                                        <label for="rig_kx">A rigidez circunferencial é (Kx):</label>
+                                        <input class="form-control" type="text" id="rig_kx" placeholder="" readonly>
+                                      </div>
+              
+                                      <div class="form-group col-12">
+                                        <label for="rig_ky">A rigidez axial é (Ky):</label>
+                                        <input class="form-control" type="text" id="rig_ky" placeholder="" readonly>
+                                      </div>
+
+                                      <div class="form-group col-12">
+                                        <button type="button" class="btn" style="background-color: #F58C32; color:#ffff;" data-dismiss="modal" aria-label="Close"><b>Retornar</b>
+                                        </button>
+                                      </div> 
+                                    </div>
+                                  </div>
+                      
+                                  <!-- Campo 2-->
+                                   <div class="col-8">
+                                     <div class="row">
+                                        <div class="form-group marcador col-12">
+                                            <div class="form-group col-12 text-center" >
+                                              <!-- Carregar os estaticos com load static puxa a referência da pasta -->
+                                              <img class="w-70 rounded" src="{% static 'img\a1_flex_images\a1_rig_cil_img1.png' %}">
+                                            </div> 
+                                        </div>
+                                      </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-12 text-center">
+                                    <button class="btn" type="button" data-toggle="collapse" 
+                                    style="background-color: #F58C32; color:#ffff" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><b>Análise Cilíndrica Propriedades</b>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="collapse" id="collapseExample">
+                              <div class="card card-body">
+                                <div class="row">
+                                  <div class="col-lg-4">
+                                    <!-- linha 1-->
+                                    <div class="row">
+                                      <div class="form-group col-12">
+                                        <label for="mom_iner">Momento de Inércia: </label>
+                                        <input class="form-control" type="text" id="mom_iner" placeholder="mm4" readonly>
+                                      </div>
+              
+                                      <div class="form-group col-12">
+                                        <label for="kbl">Fator de Flexibilidade longitudinal: </label>
+                                        <input class="form-control" type="text" id="kbl" placeholder="" readonly>
+                                      </div>
+              
+                                      <div class="form-group col-12">
+                                        <label for="kbc">Fator de Flexibilidade circunferencial:</label>
+                                        <input class="form-control" type="text" id="kbc" placeholder="" readonly>
+                                      </div>
+        
+                                      <div class="form-group col-12">
+                                        <label for="menor_dist">Menor Distância até o Reforço:</label>
+                                        <input class="form-control" type="text" id="menor_dist" placeholder="mm" readonly>
+                                      </div>
+                                      
+                                      <div class="form-group col-12">
+                                        <label for="dist_equiv">Comprimento equivalente (Leq):</label>
+                                        <input class="form-control" type="text" id="dist_equiv" placeholder="mm" readonly>
+                                      </div>
+                                      
+                                    </div>
+                                  </div>
+              
+                                  <!-- Campo 2-->
+                                  <div class="col-8" >
+                                    <div class="row" style="margin-left: 80px;">
+                                      <div class="form-group marcador col-12">
+                                        <div class="col-sm-8">
+                                          <div class="form-group col-12">
+                                            <label for="alpha">Alpha (Leq/R):</label>
+                                            <input class="form-control" type="text" id="alpha" placeholder="" readonly>
+                                          </div>
+                                          
+                                          <div class="form-group col-12">
+                                            <label for="beta">Beta (r/R): </label>
+                                            <input class="form-control" type="text" id="beta" placeholder="" readonly>
+                                          </div>
+                                          
+                                          <div class="form-group col-12">
+                                            <label for="gama">Gama (R/T):</label>
+                                            <input class="form-control" type="text" id="gama" placeholder="" readonly>
+                                          </div>
+    
+                                          <div class="form-group col-12">
+                                            <label for="coef_a0">Coeficiente A0 (beta=0):</label>
+                                            <input class="form-control" type="text" id="coef_a0" placeholder="" readonly>
+                                          </div>
+    
+                                          <div class="form-group col-12">
+                                            <label for="coef_a8">Coeficiente A8 (beta=0.125):</label>
+                                            <input class="form-control" type="text" id="coef_a8" placeholder="" readonly>
+                                          </div>
+    
+                                          <div class="form-group col-12">
+                                            <label for="coef_a4">Coeficiente A4 (beta=0.250):</label>
+                                            <input class="form-control" type="text" id="coef_a4" placeholder="" readonly>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                             </div>
+                            </div> 
+                         </div>
+                        </div>
+                      </div> 
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div> 
+          </div>
+        </div>
+      </div> 
+      <br>
+      <script>
+        function verify_value_num(item_id, lim) {
+          let item_val = parseFloat(document.getElementById(item_id).value);
+          let inf_lim = lim[0];
+          let sup_lim = lim[1];
+
+          if(!(isNaN(item_val))){  // Caso não seja nulo
+            if(typeof(item_val) == 'number'){  //Se o tipo for número
+              if (item_val >= inf_lim && item_val <= sup_lim) {//Só é válido se estiver nesse range
+                  document.getElementById(item_id).classList.remove('is-invalid');
+                  return true
+              }
+            }  
+          }
+          return false
+        }  
+
+        function env_rig_cil_ajax() {
+            let diam_equip = parseFloat(document.getElementById('diam_equip').value);
+            let espessura_equip = parseFloat(document.getElementById('espessura_equip').value);
+            let diam_bocal = parseFloat(document.getElementById('diam_bocal').value);
+            let espessura_bocal = parseFloat(document.getElementById('espessura_bocal').value);
+            let dist_refor = parseFloat(document.getElementById('dist_refor').value);
+            let dist_refor_opos = parseFloat(document.getElementById('dist_refor_opos').value);
+            let modul_elast = parseFloat(document.getElementById('modul_elast').value); // [GPa]
+            modul_elast = modul_elast * 1e3 // [MPa]
+            let list_ids = ['diam_equip', 'espessura_equip', 'diam_bocal', 'espessura_bocal', 'dist_refor', 'dist_refor_opos', 'modul_elast' ];
+            let list_range = [[100,30000], [1,20], [21.3,1321], [1, 59.54], [0, 10000], [0, 10000], [0, 300000]]
+            var list_err = [];
+
+            for (idd in list_ids) { if (!(verify_value_num(list_ids[idd], list_range[idd]))) { list_err.push(list_ids[idd]) } }
+
+            if (list_err.length == 0) {
+              $.ajax({
+                  type: "GET",
+                  url: "report",
+                  dataType: 'json',
+                  data: {'diam_equip': diam_equip, 'espessura_equip': espessura_equip, 'diam_bocal': diam_bocal, 'espessura_bocal': espessura_bocal, 'dist_refor': dist_refor, 'dist_refor_opos':dist_refor_opos,'modul_elast':modul_elast},
+              }).done(function (data) {
+                  if (Object.keys(data).includes('resposta')){
+                      alert(data['resposta'])
+                  } else {
+
+                      document.getElementById('rig_kz').value = data['kz']+ ' N.m/deg';
+                      document.getElementById('rig_kx').value = data['kx']+ ' N.m/deg';
+                      document.getElementById('rig_ky').value = data['ky']+ ' N/mm';
+                      document.getElementById('mom_iner').value = data['m_iner']+ ' mm4';
+                      document.getElementById('kbl').value = data['kbl'];
+                      document.getElementById('kbc').value = data['kbc'];
+                      document.getElementById('menor_dist').value = data['men_dist'] + ' mm';
+                      document.getElementById('dist_equiv').value = data['dist_equ'] + ' mm';
+                      document.getElementById('alpha').value = data['alpha'];
+                      document.getElementById('beta').value = data['beta'];
+                      document.getElementById('gama').value = data['gama'];
+                      document.getElementById('coef_a0').value = data['coef_a0'];
+                      document.getElementById('coef_a8').value = data['coef_a8'];
+                      document.getElementById('coef_a4').value = data['coef_a4'];
+
+                      $('#modal').modal('show')
+                  }
+
+                  // TAG = INSERIR TAG Comprimento = 100mm Perfil = W 150 x 13,0 kg/m Rigidez (axial, max, min) = 3486000 10001250  1291500 N/mm
+              })
+            } else{
+              for(err in list_err){ document.getElementById(list_err[err]).classList.add('is-invalid') }
+            }
+        }
+    </script>
+      {% endblock %}
+     </div>
+   </div>
+  </div>     
+</div>
+

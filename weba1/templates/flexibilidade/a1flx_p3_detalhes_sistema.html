@@ -1,0 +1,241 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+
+<style>
+    .loader {
+        border: 8px solid #A1A1A1;
+        border-top: 8px solid #f6801e;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 2s linear infinite;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+<title>Detalhes do Sistema - {{ InfoImports_records.os }} - {{ InfoImports_records.sistema }} - {{ InfoImports_records.revisão }} </title>
+{% endblock %}
+{% block help %}
+
+{% endblock %}
+{% block main %}
+<p hidden id="OSRef">{{ InfoImports_records.os }}</p>
+<p hidden id="SistemaRef">{{ InfoImports_records.sistema }}</p>
+<p hidden id="RevRef">{{ InfoImports_records.revisão }}</p>
+
+<div class="dochead col-lg-7 mx-auto" style="box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9)!important;">
+    <span class="dhead">
+        {{ InfoImports_records.os }} - {{ InfoImports_records.sistema }} - {{ InfoImports_records.revisão }}
+    </span>
+</div>
+<br />
+<div class="col-lg-7 mx-auto">
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="tab-content">
+            <div id="nav-tab-card-detalhes" class="tab-pane fade show active" style="background-color: #DDDADA; box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9)!important;">
+                <div class="docheadFilho">
+                    <span class="dheadFilho">Modelo 3D</span>
+                </div>
+                <div class="dcontent">
+                    <div class="dcontent">
+                        Visualização 3D do modelo de cálculo, onde podemos verificar as cargas nos suportes, deslocamentos no modelo devido à ação dos casos de carga, detalhes de suporte mola, juntas de expansão, etc.
+
+                    </div>
+                    <div class="BotaoInfDireito" align="right">
+                        <button class="subscribe btn btn-warning  rounded-pill shadow-sm" style="background-color:#ffbe47;" onclick="window.location.href='/app/flexibilidade/MostrarModelo3D/{{InfoImports_records.os}}/{{InfoImports_records.sistema}}/{{InfoImports_records.revisão}}'">Acessar</button>
+                    </div>
+                </div>
+
+                </br>
+            </div>
+        </div>
+    </div>
+</div>
+ </br>
+
+<div class="col-lg-7 mx-auto">
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="tab-content">
+            <div id="nav-tab-card-detalhes" class="tab-pane fade show active" style="background-color: #DDDADA; box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9)!important;">
+                <div class="docheadFilho">
+                    <span class="dheadFilho">Informações do Cálculo</span>
+                </div>
+                <div class="dcontent">
+                    <div class="dcontent">
+                        <p>Software Utilizado: {{Controle.version}}</p>
+                        <p>Data do upload: {{DataEnvio}}</p>
+                        <p>Número de barras: {{Controle.numelt}}</p>
+                        <p>Quantidade de Suportes: {{Controle.numrest}}</p>
+                        <p>Quantidade de Suportes Mola: {{Controle.nohgrs}}</p>
+                        <p>Quantidade de Juntas de Expansão: {{Controle.numexpjnt}}</p>
+
+                    </div>
+                </div>
+
+                </br>
+            </div>
+        </div>
+    </div>
+</div>
+ </br>
+
+<div class="col-lg-7 mx-auto">
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="tab-content">
+            <div id="nav-tab-card-linhas" class="tab-pane fade show active" style="background-color: #DDDADA; box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9)!important;">
+                <div class="docheadFilho">
+                    <span class="dheadFilho">Linhas no Sistema</span>
+                </div>
+                <div class="dcontent">
+                    <div class="loader" id="loaderLinhas"></div>
+                    <table id="TabelaLinhas" class="display" style="padding: 0px; width:100%; font-size:75%;"></table>
+                </div>
+
+                </br>
+            </div>
+        </div>
+    </div>
+</div>
+ </br>
+
+<div class="col-lg-7 mx-auto">
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="tab-content">
+            <div id="nav-tab-card-suportes" class="tab-pane fade show active" style="background-color: #DDDADA; box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9)!important;">
+                <div class="docheadFilho">
+                    <span class="dheadFilho">Suportes no Sistema</span>
+                </div>
+                <div class="dcontent">
+                    <div class="loader" id="loaderSuportes"></div>
+                    <table id="TabelaSuportes" class="display" style="padding: 0px; width:100%; font-size:75%;"></table>
+                </div>
+
+                </br>
+            </div>
+        </div>
+    </div>
+</div>
+ </br>
+{% load poll_extras %}
+{% verify_tool as user_info %}
+  {% if user_info.A1FlexUploadModelo %}
+<div class="col-lg-7 mx-auto">
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="tab-content">
+            <div id="nav-tab-card-remover" class="tab-pane fade show active" style="background-color: #DDDADA; box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9)!important;">
+                <div class="docheadFilho">
+                    <span class="dheadFilho">Remover Sistema</span>
+                </div>
+                <div class="dcontent">
+                    Remove o sistema completamente do banco de dados
+                </div>
+                <div class="BotaoInfDireito" align="right">
+                    <button class="subscribe btn btn-danger rounded-pill shadow-sm" style=" box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9)!important; " data-toggle="modal" data-target="#AvisoAtividades">Remover Sistema</button>
+                </div>
+                </br>
+            </div>
+        </div>
+    </div>
+</div>
+    {% endif %}
+<div class="modal fade" id="AvisoAtividades" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="TituloConfirmacao">Confirmação de Exclusão</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+
+                {% csrf_token %}
+
+                <div class="input-group mb-3">
+                    <p id="AvisoErroAtividades"><b>Tem certeza que deseja excluir o sistema?</b></p>
+                </div>
+                <div id="ErroExcluirSistema"></div>
+                <div id="resultsComentarios"></div>
+                <div class="modal-footer" id="FooterContinuarEnvioft">
+
+                    <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm"
+                            data-dismiss="modal" style=" box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9)!important; ">
+                        Não
+                    </button>
+                    <!--<button type="submit" class="subscribe btn btn-warning  rounded-pill shadow-sm" id="ConfirmacaoExclusao" style=" box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9)!important;" onclick="window.location='/app/flexibilidade/RemoverSistema/{{ InfoImports_records.os }}/{{ InfoImports_records.sistema }}/{{ InfoImports_records.revisão }}'">
+                        Sim
+                    </button>-->
+                    <button type="button" class="subscribe btn btn-warning  rounded-pill shadow-sm" style=" box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9)!important;" onclick="RemoverSistema('{{ InfoImports_records.os }}','{{ InfoImports_records.sistema }}','{{ InfoImports_records.revisão }}')">
+                        Sim
+                    </button>
+
+                </div>
+
+                <div class="loader" id="loader"></div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="CargasSuporte" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="TituloCargas">Cargas</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+
+                {% csrf_token %}
+
+                <div class="input-group mb-3" id="InfoCargas">
+
+                </div>
+                <div id="Detalhescarga"></div>
+                <div class="modal-footer" id="FooterContinuarEnvio">
+
+                    <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm"
+                            data-dismiss="modal" style=" box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9)!important; ">
+                        Fechar
+                    </button>
+
+
+
+                </div>
+
+                <div class="loader" id="loaderCargas"></div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="{% static 'css/a1flx.css' %}" />
+<script src="{% static 'js/a1flx/detalhes_sistema.js' %}"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" />
+<script type="text/javascript" src="{% static 'js/a1flx/jq_3.6.0.min.js' %}"></script>
+{%endblock%}

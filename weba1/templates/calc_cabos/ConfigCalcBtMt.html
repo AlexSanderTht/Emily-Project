@@ -1,0 +1,117 @@
+<!------------------ Início Modal Projeto ------------------>
+<div class="modal fade" id="config_project_bt_mt" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-center">
+                <div class="btn-group btn-group-toggle " data-toggle="buttons">
+                    <label class="btn btn-outline-secondary focus active rounded-right rounded-pill" onclick="ChangeNivelTensaoInConfigProj('BT')" id="btn_select_bt">
+                        <input type="radio" name="options" id="option1" autocomplete="off"> Baixa Tensão
+                    </label>
+                    <label class="btn btn-outline-secondary rounded-left rounded-pill" onclick="ChangeNivelTensaoInConfigProj('MT')" id="btn_select_mt">
+                        <input type="radio" name="options" id="option2" autocomplete="off"> Média Tensão
+                    </label>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row mx-1">
+                    <div class="col-7 p-0">
+                        <!-- colunas de Bt -->
+                        <div class="content_cols_config_proj" id="cols_in_export_bt">
+                            {% for col_name in cols_bt %}
+                                <div class="col-12 bg-secondary bordas text-white mt-2">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-3">
+                                            <label class="switch_toggle mb-0 mt-1">
+                                                <input type="checkbox" name="cols_config_proj_bt" value="{{col_name}}">
+                                                <span class="slider_switch round"></span>
+                                            </label>
+                                        </div>
+                                        <p class="col-9 mb-0">{{col_name}}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <!-- fim colunas de Bt -->
+
+                        <!-- colunas de Mt -->
+                        <div class="content_cols_config_proj" id="cols_in_export_mt" hidden>
+                            {% for col_name in cols_mt %}
+                                <div class="col-12 bg-secondary bordas text-white mt-2">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-3">
+                                            <label class="switch_toggle mb-0 mt-1">
+                                                <input type="checkbox" name="cols_config_proj_mt" value="{{col_name}}">
+                                                <span class="slider_switch round"></span>
+                                            </label>
+                                        </div>
+                                        <p class="col-9 mb-0">{{col_name}}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <!-- fim colunas de Mt -->
+                    </div>
+                    <div class="col-5">
+
+                        <div class="col-12 mt-2">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-3">
+                                    <label class="switch_toggle mb-0 mt-1">
+                                        <input type="checkbox" id="checkbox_azul_config_proj" name="colors_config_proj" onchange="ChangeCheckBoxColors(this.id)" value="default">
+                                        <span class="slider_switch round"></span>
+                                    </label>
+                                </div>
+                                <p class="col-9 mb-0">Default</p>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-2">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-3">
+                                    <label class="switch_toggle mb-0 mt-1">
+                                        <input type="checkbox" id="checkbox_verde_config_proj" name="colors_config_proj" onchange="ChangeCheckBoxColors(this.id)" value="minimo">
+                                        <span class="slider_switch round"></span>
+                                    </label>
+                                </div>
+                                <p class="col-9 mb-0">Minimo</p>
+                            </div>
+                        </div>
+
+<!--                        <div class="col-12 mt-2">-->
+<!--                            <div class="row d-flex align-items-center">-->
+<!--                                <div class="col-3">-->
+<!--                                    <label class="switch_toggle mb-0 mt-1">-->
+<!--                                        <input type="checkbox" id="checkbox_amarelo_config_proj" name="colors_config_proj" onchange="ChangeCheckBoxColors(this.id)" value="amarelo">-->
+<!--                                        <span class="slider_switch round"></span>-->
+<!--                                    </label>-->
+<!--                                </div>-->
+<!--                                <p class="col-9 mb-0">Amarelo</p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+
+                        <div class="col-12 mt-2">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-3">
+                                    <label class="switch_toggle mb-0 mt-1">
+                                        <input type="checkbox" id="checkbox_livre_config_proj" name="colors_config_proj" onchange="ChangeCheckBoxColors(this.id)" value="livre" checked>
+                                        <span class="slider_switch round"></span>
+                                    </label>
+                                </div>
+                                <p class="col-9 mb-0">Livre</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="text" id="proj_selected_config" hidden>
+                    <input type="text" id="last_checkbox_selected_bt" hidden>
+                    <input type="text" id="last_checkbox_selected_mt" hidden>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="SendColsSelectedConfigProj()">Salvar</button>
+                <button type="button" class="btn btn-secondary" onclick="$('#config_project_bt_mt').modal('hide')">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div><!------------------ Fim Modal Projeto ------------------>

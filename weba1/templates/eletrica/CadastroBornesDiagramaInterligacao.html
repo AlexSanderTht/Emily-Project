@@ -1,0 +1,64 @@
+{% load static %}
+{% block acessorios %}
+<div class="modal-header">
+    <h5 class="modal-title" id="motoracessoriosLabel">Cadastro de Bornes</h5>
+</div>
+<div class="modal-body" style="max-height: 65vh; overflow-y: auto;">
+
+        <div class="row">
+            <div class="form-group mb-5">
+                <td  for="area-type" >
+                    FUNÇÃO:
+                    <select class="form-control" id="funcao_bornes" style="height: 35px; width: 200px;" onchange="ProximaFuncao(); CarregaInfosBornes();"></select>
+                </td>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group mb-5">
+                <td  for="area-type" >
+                    TIPO DA FUNÇÃO
+                    <input type="text" id="descricao_funcao" class="form-control" style="height: 35px; width: 400px;" readonly>
+                </td>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="form-group mb-5">
+                <td  for="area-type" >
+                    FORMAÇÃO DO CABO
+                    <input type="text" id="formacao_funcao" class="form-control" style="height: 35px; width: 400px;" readonly>
+                </td>
+            </div>
+            <div class="col" hidden='true' id="box_formacao_selecionada">
+            <div class="form-group mb-5">
+                <td  for="area-type" >
+                    CONFIGURAR SEPARADAMENTE
+                    <select class="form-control" id="formacao_selecionada" style="height: 35px; width: 230px;" onchange="CarregaInfosBornes();"></select>
+                </td>
+
+            </div>
+        </div>
+        </div>
+
+    <div class="row">
+        <div class="form-group mb-5">
+            <div id="handsontableContainer6"></div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="modal-footer">
+    <div class="col-sm">
+    </div>
+    <button type="button" class="btn btn-success" onclick="SalvarBornes()">Salvar</button>
+    <button type="button" class="btn btn-danger">Fechar</button>
+</div>
+<!--Fim da Interface -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@6.2.2/dist/handsontable.full.min.css">
+<script src="https://cdn.jsdelivr.net/npm/handsontable@6.2.2/dist/handsontable.full.min.js"></script>
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/CadastroBornesDiagramaInterligacao.js' %}"></script>
+{% endblock acessorios %}
+

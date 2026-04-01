@@ -1,0 +1,20 @@
+.border {
+    transition: .5s;
+}
+
+.border:hover {
+    box-shadow: 0 0 17px 1px #c9c9c9;
+    transition: .5s;
+}
+
+.border.selected {
+    border: 1px solid blue;
+}
+
+
+.bobina-item.selected {
+background-color: #d1e7dd !important; /* cor verde clara */
+border-color: #0f5132 !important;     /* borda mais escura */
+font-weight: bold;
+}
+

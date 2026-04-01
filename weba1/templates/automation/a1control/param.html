@@ -1,0 +1,359 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A1 Control — Parâmetros</title>
+  <link href="{% static 'vendor/bootstrap-4.1/bootstrap.min.css' %}" rel="stylesheet" media="all" />
+  <link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  <style>
+    :root {
+      --accent:       #f3b768;
+      --accent-hover: #f6c783;
+      --accent-dark:  #c8862a;
+      --glass-bg:     linear-gradient(145deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%);
+      --glass-border: rgba(255,255,255,.32);
+      --glass-radius: 22px;
+      --text-invert:  #ffffff;
+    }
+
+    body {
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 28px !important;
+      overflow: auto;
+      min-height: 100vh;
+    }
+    body::before {
+      filter: blur(16px) brightness(0.30) saturate(0.58) !important;
+    }
+
+    /* ── OVERLAY DE ENTRADA ── */
+    #page-enter-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0d0d0d;
+      opacity: 1;
+      pointer-events: none;
+      transition: opacity .55s cubic-bezier(.4,0,.2,1);
+    }
+    #page-enter-overlay.done { opacity: 0; }
+
+    /* ── PAINEL PRINCIPAL ── */
+    .a1control-panel {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--glass-radius);
+      backdrop-filter: blur(22px) saturate(150%);
+      -webkit-backdrop-filter: blur(22px) saturate(150%);
+      box-shadow: 0 24px 72px -18px rgba(0,0,0,.60), 0 6px 24px -6px rgba(0,0,0,.35);
+      padding: 28px 30px;
+      position: relative;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      color: var(--text-invert);
+    }
+
+    /* ── TOPBAR ── */
+    .a1control-topbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+    }
+    .a1control-topbar .app-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: .02em;
+    }
+    .a1control-topbar .app-subtitle {
+      font-size: .82rem;
+      color: rgba(255,255,255,.60);
+      margin: 0;
+    }
+    .btn-voltar {
+      margin-left: auto;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.22);
+      color: var(--text-invert);
+      border-radius: 10px;
+      padding: 6px 16px;
+      font-size: .82rem;
+      text-decoration: none;
+      transition: background .2s;
+    }
+    .btn-voltar:hover {
+      background: rgba(255,255,255,.20);
+      color: var(--text-invert);
+      text-decoration: none;
+    }
+
+    /* ── CONTEÚDO ── */
+    .a1control-body {
+      min-height: 340px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 24px;
+    }
+
+    /* ── DROPDOWNS ── */
+    .params-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      width: 100%;
+    }
+
+    .param-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .param-group label {
+      font-size: .80rem;
+      font-weight: 600;
+      color: rgba(255,255,255,.70);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .param-select {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      padding: 10px 40px 10px 14px;
+      background: rgba(255,255,255,.10) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f3b768' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 14px center;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 10px;
+      color: var(--text-invert);
+      font-size: .90rem;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      outline: none;
+    }
+    .param-select:hover {
+      border-color: var(--accent);
+      background-color: rgba(255,255,255,.14);
+    }
+    .param-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(243,183,104,.25);
+    }
+    .param-select option {
+      background: #2a2a2a;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div id="page-enter-overlay" aria-hidden="true"></div>
+
+  <div class="a1control-panel">
+    <!-- Topbar -->
+    <div class="a1control-topbar">
+      <i class="fa-solid fa-sliders fa-lg" style="color:var(--accent);"></i>
+      <div>
+        <div class="app-title">Parâmetros</div>
+        <p class="app-subtitle">AUTOMAÇÃO | A1 Control</p>
+      </div>
+      <a href="/app/automation/a1control/" class="btn-voltar">
+        <i class="fa-solid fa-arrow-left fa-xs"></i> Voltar
+      </a>
+    </div>
+
+    <!-- Corpo -->
+    <div class="a1control-body">
+      <div class="params-grid">
+
+        <div class="param-group">
+          <label for="sel-fabricante">Fabricante</label>
+          <select id="sel-fabricante" class="param-select">
+            <option value="">— Selecione —</option>
+          </select>
+        </div>
+
+        <div class="param-group">
+          <label for="sel-modelo">Modelo / Plataforma</label>
+          <select id="sel-modelo" class="param-select">
+            <option value="">— Selecione —</option>
+          </select>
+        </div>
+
+        <div class="param-group">
+          <label for="sel-versao">Versão / Release</label>
+          <select id="sel-versao" class="param-select">
+            <option value="">— Selecione —</option>
+          </select>
+        </div>
+
+        <div class="param-group">
+          <label for="sel-estrutura">Estrutura Nativa</label>
+          <select id="sel-estrutura" class="param-select">
+            <option value="">— Selecione —</option>
+          </select>
+        </div>
+
+        <div class="param-group">
+          <label for="sel-io">Carregamentos de I/O</label>
+          <select id="sel-io" class="param-select">
+            <option value="">— Selecione —</option>
+          </select>
+        </div>
+
+        <div class="param-group">
+          <label for="sel-logic">Logic Functions</label>
+          <select id="sel-logic" class="param-select">
+            <option value="">— Selecione —</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="{% static 'vendor/jquery-3.6/jquery.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap-4.1/bootstrap.bundle.min.js' %}"></script>
+  <script>
+    /* ── Transição de entrada ── */
+    (function () {
+      var ov = document.getElementById('page-enter-overlay');
+      if (!ov) return;
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          ov.classList.add('done');
+          ov.addEventListener('transitionend', function () { ov.remove(); }, { once: true });
+        });
+      });
+    })();
+
+    /* ── Dados dos dropdowns em cascata ── */
+    const PARAMS_DATA = [
+      {
+        fabricante: 'Yokogawa',
+        modelo: 'CENTUM VP',
+        versoes: ['R5.03', 'R6.0'],
+        estruturas: ['FCS', 'Node'],
+        io: ['Sim', 'Não'],
+        logic: ['Sim', 'Não'],
+      },
+      {
+        fabricante: 'Schneider Electric',
+        modelo: 'EcoStruxure Foxboro DCS',
+        versoes: ['IA/Series', 'Evo'],
+        estruturas: ['Compound', 'Controller (FCP/CP/ZCP)', 'FBM'],
+        io: ['Sim', 'Não'],
+        logic: ['Sim', 'Não'],
+      },
+      {
+        fabricante: 'ABB',
+        modelo: 'System 800xA',
+        versoes: ['5.0', '6.0', '6.1', '6.2'],
+        estruturas: ['AC 800M', 'Select I/O'],
+        io: ['Sim', 'Não'],
+        logic: ['Sim', 'Não'],
+      },
+      {
+        fabricante: 'ABB',
+        modelo: 'Advant Controller AC450',
+        versoes: [],
+        estruturas: ['AC 800M', 'Select I/O'],
+        io: ['Sim', 'Não'],
+        logic: ['Sim', 'Não'],
+      },
+      {
+        fabricante: 'Honeywell',
+        modelo: 'Experion PKS',
+        versoes: ['R431', 'R520.2'],
+        estruturas: ['C300', 'Series 8', 'Series C I/O'],
+        io: ['Sim', 'Não'],
+        logic: ['Sim', 'Não'],
+      },
+      {
+        fabricante: 'Emerson',
+        modelo: 'DeltaV',
+        versoes: ['V14.3', 'v15.3', 'v16'],
+        estruturas: ['Controller', 'PK Controller', 'S-series I/O'],
+        io: ['Sim', 'Não'],
+        logic: ['Sim', 'Não'],
+      },
+      {
+        fabricante: 'Valmet',
+        modelo: 'DNA / DNAe',
+        versoes: ['8.x', '9.x', '10.x'],
+        estruturas: ['ACN', 'Controller', 'M-series I/O'],
+        io: ['Sim', 'Não'],
+        logic: ['Sim', 'Não'],
+      },
+    ];
+
+    const selFabricante = document.getElementById('sel-fabricante');
+    const selModelo     = document.getElementById('sel-modelo');
+    const selVersao     = document.getElementById('sel-versao');
+    const selEstrutura  = document.getElementById('sel-estrutura');
+    const selIo         = document.getElementById('sel-io');
+    const selLogic      = document.getElementById('sel-logic');
+
+    function resetSelect(sel) {
+      sel.innerHTML = '<option value="">— Selecione —</option>';
+      sel.disabled = true;
+    }
+
+    function fillSelect(sel, options) {
+      sel.innerHTML = '<option value="">— Selecione —</option>';
+      options.forEach(function (opt) {
+        const el = document.createElement('option');
+        el.value = opt;
+        el.textContent = opt;
+        sel.appendChild(el);
+      });
+      sel.disabled = options.length === 0;
+    }
+
+    /* Popula Fabricante com valores únicos */
+    (function () {
+      const fabricantes = [...new Set(PARAMS_DATA.map(d => d.fabricante))];
+      fillSelect(selFabricante, fabricantes);
+      selFabricante.disabled = false;
+      resetSelect(selModelo);
+      resetSelect(selVersao);
+      resetSelect(selEstrutura);
+      resetSelect(selIo);
+      resetSelect(selLogic);
+    })();
+
+    selFabricante.addEventListener('change', function () {
+      const fab = this.value;
+      resetSelect(selVersao);
+      resetSelect(selEstrutura);
+      resetSelect(selIo);
+      resetSelect(selLogic);
+
+      const modelos = PARAMS_DATA.filter(d => d.fabricante === fab).map(d => d.modelo);
+      fillSelect(selModelo, modelos);
+    });
+
+    selModelo.addEventListener('change', function () {
+      const entry = PARAMS_DATA.find(d => d.fabricante === selFabricante.value && d.modelo === this.value);
+      resetSelect(selEstrutura);
+      resetSelect(selIo);
+      resetSelect(selLogic);
+
+      if (!entry) { resetSelect(selVersao); return; }
+      fillSelect(selVersao, entry.versoes);
+      fillSelect(selEstrutura, entry.estruturas);
+      fillSelect(selIo, entry.io);
+      fillSelect(selLogic, entry.logic);
+    });
+  </script>
+</body>
+</html>

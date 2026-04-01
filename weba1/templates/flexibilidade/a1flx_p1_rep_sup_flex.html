@@ -1,0 +1,189 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+    <title>Calculadora de Suportes Flex</title>
+{% endblock %}
+{% block help %}
+    <h7>Drop List <strong>"Liberar sistema"</strong>> Droplist: Liberar / revisar sistema Finalizar comentários</h7>
+    <br><br>
+    <h7>Opção "Controladoria" Nesta opção você irá revisar somente  listas da controladoria. </h7>
+    <br><br>
+    <h7>Opção "Outra lista" Nesta opção você irá revisar as demais listas. </h7>
+    <br><br>
+    <h7>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas. </h7>
+    <br><br>
+    <h7>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores. </h7>
+    <br><br>
+    <h7> "Chave 2" Neste campo você irá inserir a coluna  sem repetição de valores(caso a primeira tenha repetição). </h7>
+    <br><br>
+    <h7>Botão "Revisar" Neste botão ele realizará a revisão entre os doc. marcando em amarelo o que mudou, mantendo a extensão .xlsx.</h7>
+    <br><br>
+    <h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+    <!-- For demo purpose -->
+    <div class="row mb-4">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4"><b>A1 Flex - Calculo de suportes</b></h1>
+      </div>
+    </div>
+    <!-- End -->
+
+    <div class="row">
+      <div id="main_col" class="col-lg-6 mx-auto">
+        <div class="bg-white rounded-lg shadow-sm p-5">
+          <!-- Credit card form content -->
+          <div class="tab-content row">
+            <!-- credit card info-->
+            <div id="nav-tab-card" class="tab-pane fade show active col-12" >
+
+                <div id="area" ><!-- Inicio area --></div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        var ctrl = parseInt('{{ ctrl|safe }}');
+
+        function muda_form(){
+
+            if (ctrl == 0){
+                function validar_form() {
+                    var elast = document.getElementById('elasticidade').value;
+                    var comp = document.getElementById('comprimento').value;
+                    var tg = document.getElementById('tag').value;
+                    if (elast == "" | typeof(elast) != "number") {
+                        alert("O campo 'Elasticidade' deve ser preenchido com números");
+                        return false;
+                    } else if (comp == "" | typeof(comp) != "number"){
+                        alert("O campo 'Comprimento' deve ser preenchido com números");
+                        return false;
+                    } else if (tg == "") {
+                        alert("O campo 'Tag' deve ser preenchido com números");
+                        return false;
+                    }
+                }
+
+                document.getElementById('area').innerHTML = `
+                    <form role="form" id="form" onsubmit="return validar_form()" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-9 col-md-auto" style="margin-left: 12%;">
+                              <div class="form-group">
+                                  <div class="form-group col-12">
+                                    <div class="form-group col-12 p-0">
+                                          <label for="elasticidade">Módulo de Elasticidade (E):</label>
+                                          <input class="form-control" type="number" name="elasticidade" id="elasticidade" placeholder="210 GPa">
+                                    </div>
+                                    <div class="form-group col-12 p-0">
+                                          <label for="comprimento">Comprimento (L):</label>
+                                          <input class="form-control" type="number" name="comprimento" id="comprimento" placeholder="mm">
+                                    </div>
+                                    <div class="form-group col-12 p-0">
+                                          <label for="perfil">Perfil:</label>
+                                          <select class="form-control" name="perfil" id="perfil">
+                                            {% for per in perf %}
+                                                <option>{{ per }}</option>
+                                            {% endfor %}
+                                          </select>
+                                    </div>
+                                    <div class="form-group col-12 p-0">
+                                          <label for="tag">Tag Suporte:</label>
+                                          <input class="form-control" type="text" name="tag" id="tag" placeholder="Inserir TAG">
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
+                        </div>
+
+                        <div class="col-7">
+                            <button onclick="validar_form()" type="submit" class="efeito efeito-1" data-toggle="modal" data-target="#modal" style="margin-left: 70%;">Calcular </button>
+                            <br>
+                        </div>
+                    </form>
+                `;
+            } else {
+                ctrl = 0;
+                document.getElementById('main_col').style = `style="max-width: 80vw; padding: 1%; flex: 0 0 90%"`;
+                document.getElementById('area').innerHTML = `
+                                  <div class="row">
+                                    <div class="col-lg-6">
+                                      <div class="row">
+                                        <div class="form-group col-12 p-0">
+                                              <label for="temperatura">K axial :</label>
+                                              <input class="form-control" type="text" id="temperatura" placeholder="N/mm" readonly>
+                                        </div>
+                                        <div class="form-group col-12 p-0">
+                                              <label for="temperatura">K transversal 1 :</label>
+                                              <input class="form-control" type="text" id="temperatura" placeholder="N/mm" readonly>
+                                        </div>
+                                        <div class="form-group col-12 p-0">
+                                              <label for="temperatura">K transversal 2 :</label>
+                                              <input class="form-control" type="text" id="temperatura" placeholder="N/mm" readonly>
+                                        </div>
+                                        <div class="col-12 p-0">
+                                          <div class="row">
+                                            <div class="form-group marcador col-12">
+                                              <label for="mensagem">Job Title :</label>
+                                              <textarea class="form-control" id="mensagem" rows="8" placeholder="TAG = INSERIR TAG Comprimento = 100mm Perfil = W 150 x 13,0 kg/m Rigidez (axial, max, min) = 3486000 10001250  1291500 N/mm"></textarea>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <button class="btn btn-warning" type="button" data-toggle="collapse" style="margin-left: 5%;"data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                          Informações adicionais
+                                        </button>
+                                        <div class="collapse" id="collapseExample">
+                                            <div class="card card-body">
+                                              <div class="row">
+                                                <div class="col-12" >
+                                                  <div class="row">
+                                                    <div class="form-group marcador col-12">
+                                                      <div class="col-sm-12">
+                                                        <label>Viga em balanço:</label>
+                                                        <div class="form-group col-12">
+                                                          <label for="diametro">BK1:</label>
+                                                          <input class="form-control" type="text" id="temperatura" placeholder="N/mm" readonly>
+                                                        </div>
+
+                                                        <div class="form-group col-12">
+                                                          <label for="diametro">BK2:</label>
+                                                          <input class="form-control" type="text" id="temperatura" placeholder="N/mm" readonly>
+                                                        </div>
+
+                                                        <label>Viga em balanço guiada:</label>
+                                                        <div class="form-group col-12">
+                                                          <label for="diametro">GK1:</label>
+                                                          <input class="form-control" type="text" id="temperatura" placeholder="N/mm" readonly>
+                                                        </div>
+
+                                                        <div class="form-group col-12">
+                                                          <label for="diametro">GK2:</label>
+                                                          <input class="form-control" type="text" id="temperatura" placeholder="N/mm" readonly>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="btncalc" style="margin-left: 40%;">
+                                      <button type="button" class="efeito efeito-1" onclick="muda_form()">Voltar</button>
+                                    </div>
+                                  </div>`;
+            }
+        }
+
+        muda_form();
+
+
+    </script>
+
+{% endblock %}

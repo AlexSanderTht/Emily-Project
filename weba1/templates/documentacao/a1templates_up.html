@@ -1,0 +1,270 @@
+{% extends 'geral/base.html' %}
+{% load poll_extras %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+{% block head %}
+<title>A1 Templates Upload</title>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+<script src='https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/dropzone.js' type='text/javascript'></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style type="text/css">
+    .sortable {
+      padding: 0;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      background-color: white;
+    }
+
+    .sortable li {
+        display: flex;
+        float: left;
+        width: 240px;
+        height: 75px;
+        overflow:hidden;
+        margin:5px;
+        justify-content: left;
+        align-items: center;
+        background: #eeeeee;
+    }
+</style>
+{% endblock %}
+{% block help %}
+   <br><br>
+   <h7>Opção "Selcione ambiente" Permite a escolha de qual ambiente do greendocs o documento se encontra. </h7>
+   <br><br>
+   <h7>Opção "Selecione o Tipo Item" Nessa opção o tipo item do documento é selecionado, facilitando a localização </h7>
+   <br><br>
+   <h7>Opção "Selcione OS" Nesta opção você irá selecionar a Ordem de Serviço do projeto OS. </h7>
+   <br><br>
+   <h7>Opção "Selecione a disciplina" Nesta opção você irá selecionar a disicplina do documento. </h7>
+   <br><br>
+   <h7>Botão "Enviar Template" Neste botão você irá enviar ao servidor o arquivo anexado à dropzone</h7>
+   <br><br>
+{% endblock %}
+{% block main %}
+                
+    <!--inicio da interface -->
+    <br>
+        <center> <h1 class="display-4"><b>A1 Templates Upload</b></h1></center>
+    <br>
+
+    <center>
+        <div style="width: 80vw">
+            <form action="{% url 'a1templates_up' %}" method="POST" enctype="multipart/form-data" class="sortable dropzone" style="overflow: auto; height: 400px; border: 1px dashed black">
+                {% csrf_token %}
+                <div class="fallback" >
+                </div>
+            </form>
+        </div>
+    </center>
+    <br>
+    <center>
+    <div class="row"  >
+        <div class="col-lg-10 mx-auto " >
+            <div id="nav-tab-card" class="tab-pane fade show active col-12">
+             
+                <div class="row"   style="justify-content: space-between;">
+                    <div >
+                        <label for="username">Selecione o ambiente:</label>
+                        <select name="projetos" class="form-control" >
+                            {% for nome, cod in projetos%}
+                                <option value={{ cod }}>{{ nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="username">Selecione o tipo de documento:</label>
+                        <select name="tipo" class="form-control" style="width: 13vw;"  >
+                            {% for desc, num in tipo%}
+                                <option value={{ num }}>{{ desc }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                
+                    <div>
+                        <label for="item">  Selecione o Projeto (OS): </label>
+                        <select id="item" name="os" class="form-control"  >
+                            {% for num_os in os %}
+                                <option value={{ num_os }}>{{ num_os }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="item">  Selecione a disciplina: </label>
+                        <select id="item" name="disc" class="form-control"  >
+                            {% for ds in disc%}
+                                <option value={{ ds }}>{{ ds }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="item">  Nomeie o Template: </label>
+                        <input id="nome" name="nome" class="form-control" >
+                    </div>
+                </div>    
+                        
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <button type="button" style="background-color:#F58C32; color: #ffff" class=" btn "onclick="document.getElementById('agua-modal').style.display='block'">Enviar Template</button>
+    </center>
+
+    <div id="agua"><!-- agua -->
+
+        <div id="agua-modal" class="w3-modal">
+            <div class="w3-modal-content modal-style"
+                 style="position: absolute; margin-left: 890px ; top: 400px; width: 370px ; height: 140px;">
+                <div class="w3-container modal-value">
+                    <table>
+                        <tr>
+                            <td><br><h6>Tem certeza que deseja continuar o envio destes Documentos?</h6></td>
+                            <td><label id="agua-percent"></label></td>
+                        </tr>
+                    </table>
+                        <tr>
+                            <center><button type="button" class="subscribe btn btn-success  rounded-pill shadow-sm" onclick="env_template('template')"> SIM </button>
+                            <button type="button" class="subscribe btn btn-danger  rounded-pill shadow-sm" onclick="document.getElementById('agua-modal').style.display='none'">NÃO</button></center>
+                            <span onclick="document.getElementById('agua-modal').style.display='none'" class="w3-button w3-display-topright">x</span>
+                        </tr>
+                </div>
+            </div>
+        </div>
+    </div><!-- agua -->
+    <br>
+    <br>
+    <div style="clear: both"></div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+
+        let err = "{{ err|safe }}";
+        if (err != '0'){
+            document.getElementById('nome').style.borderColor = 'red';
+            document.getElementById('nome').style.borderStyle = 'solid';
+            document.createElement(`<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                      <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+                                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                      </button>
+                                    </div>`)
+        } else {
+            document.getElementById('nome').style.borderColor = '#ced4da';
+            document.getElementById('nome').style.borderStyle = 'solid';
+        }
+
+        let previewTemplate = '' +
+            '          <div class="preview">\n' +
+            '            <li style="width: 15vw; height: 20vh; border-radius:6px;">\n' +
+            '                <div class="container-fluid">\n' +
+            '                    <div class="dz-preview dz-file-preview">\n' +
+            '                      <div >\n' +
+            '                          <table style="margin-top: 25px; ">\n' +
+            '                              <td>\n' +
+            '                                     <img style="width: 20px; height: 20px; cursor: pointer;float:right; " src="{% static "img/icon-cross-4.jpg" %}" alt="Clique aqui para remover esse arquivo." data-dz-remove />\n' +
+            '                                  </td>\n' +
+            '                              <tr>\n' +
+            '                                  <td>\n' +
+            '                                      <div class="dz-filename"  ><span data-dz-name ></span></div><br>\n' +
+            '                                      <div class="dz-size" data-dz-size></div><br>\n' +
+            '                                  </td>\n' +
+            '                              </tr>\n' +
+            '                              <tr>\n' +
+            '                                  <td>\n' +
+            '                                      <div ><span class="dz-upload" data-dz-uploadprogress></span></div>\n' +
+            '                                  </td>\n' +
+            '                              </tr>\n' +
+            '                              <tr>\n' +
+
+            '                              </tr>\n' +
+            '                          </table>\n' +
+            '                      </div>\n' +
+            '                      <div class="dz-success-mark"><span></span></div>\n' +
+            '                      <div class="dz-error-mark"><span></span></div> \n' +
+            '                      <div class="dz-error-message"><span data-dz-errormessage></span></div>\n' +
+            '                    </div>\n' +
+            '                </div>\n' +
+            '            </li>\n' +
+            '        </div>\n' +
+            '    ';
+
+        let message =` <center><img src="{% static 'img/icone.png' %}" style="margin-top: 30px; margin-left: 0">`+
+                       `<br><center>Arraste a pasta com os arquivos aqui ou  </center>`+
+                      ` <img src="{% static 'img/pp.png' %}" style="margin-top: 30px; margin-left: 0"><center>`
+
+        Dropzone.autoDiscover = false;
+        var myDropzone = new Dropzone(".dropzone", {
+            autoProcessQueue: false,//Permite método GET automaticamente ao dropar o arquivo
+            parallelUploads: 1,// Number of files process at a time (default 2)//
+            maxFiles: 1, //Permite só um
+            uploadMultiple: false,
+            dictDefaultMessage: message,
+            previewTemplate: previewTemplate,
+            init: function() {
+                this.on('completemultiple', function (file, json) {
+                    $('.sortable').sortable('enable');
+                });
+
+                this.on("success", function (event, data) {
+                    alert(`Upload realizado com sucesso! Status: ${data['status']}!`);
+                    window.location.href = '/app/documentacao/templates/';
+                });
+
+                this.on("addedfile", function(file) {
+                    if (this.files.length) {
+                        var _i, _len;
+                        for (_i = 0, _len = this.files.length; _i < _len - 1; _i++) // -1 to exclude current file
+                        {
+                            if(this.files[_i].name === file.name && this.files[_i].size === file.size && this.files[_i].lastModified.toString() === file.lastModified.toString())
+                            {
+                                this.removeFile(file);
+                            }
+                        }
+                    }
+                })
+            }
+        });
+
+        function env_template(button){
+
+            myDropzone.on("sending", function (file, xhr, formData) {
+            formData.append('projetos', document.getElementsByName('projetos')[0].value);
+            formData.append('tipo', document.getElementsByName('tipo')[0].value);
+            formData.append('os', document.getElementsByName('os')[0].value);
+            formData.append('disc', document.getElementsByName('disc')[0].value);
+            formData.append('nome', document.getElementsByName('nome')[0].value.replace(/\s/g, ''));
+            formData.append('button', button);});
+            myDropzone.processQueue();
+        }
+
+        {% if task_id %}
+            var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
+            function customResult(resultElement, result) {
+            document.getElementById('auto-download').submit();
+            $( resultElement ).append(
+            $('<p>').text('Sum of all seconds is ' + result)
+            );
+            }
+
+            CeleryProgressBar.initProgressBar(progressUrl, {
+                onResult: customResult,
+            });
+        {% endif %}
+    </script>
+{% endblock %}
+
+

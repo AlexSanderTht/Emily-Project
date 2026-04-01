@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Lista de Matérias - Div</title>
+    <style>
+        :root {
+            --bg: #f6f8fa;
+            --card: #ffffff;
+            --accent: #f3b768;
+            --accent-2: #f6c783;
+            --text: #222;
+        }
+        html, body { height:100%; margin:0; }
+        body {
+        background: url('/static/img/Espaço Inovação.jpg') center center/cover no-repeat fixed;
+        display:flex; align-items:center; justify-content:center;
+        padding: clamp(16px,2vw,48px);
+        -webkit-font-smoothing: antialiased;
+        }
+        .card {
+            width:100%;
+            max-width:540px;
+            background:var(--card);
+            border-radius:12px;
+            box-shadow:0 6px 18px rgba(16,24,40,0.08);
+            padding:28px;
+            text-align:center;
+        }
+        h1 { margin:0 0 8px; font-size:20px; }
+        p.lead { margin:0 0 20px; color:#555; font-size:14px; }
+        .btns {
+            display:flex;
+            gap:12px;
+            justify-content:center;
+            flex-wrap:wrap;
+        }
+        .btn {
+            appearance:none;
+            border:0;
+            background:var(--accent-2);
+            color:#fff;
+            padding:12px 18px;
+            font-size:15px;
+            border-radius:8px;
+            cursor:pointer;
+            min-width:140px;
+            transition:transform .08s ease, box-shadow .08s ease, opacity .08s;
+            text-decoration:none;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .btn.secondary { background:transparent; color:var(--accent); border:2px solid var(--accent); }
+        .btn:active { transform:translateY(1px); }
+        .hint { margin-top:16px; font-size:13px; color:#666; }
+        @media (max-width:420px){
+            .card{ padding:20px; }
+            .btn{ min-width:120px; padding:10px 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="card" role="main" aria-labelledby="titulo">
+            <h1 id="titulo">Selecione uma opção</h1>
+            <p class="lead">Escolha uma das opções para abrir a tela correspondente.</p>
+
+            <div class="btns" style="display:flex;gap:12px;justify-content:center;flex-wrap:nowrap;flex-direction:row;">
+                <!-- Ajuste os hrefs para as rotas/templates corretas da sua aplicação -->
+                <a class="btn" href="/app/calc_cabos/a1calccabos/" style="flex:0 0 auto;">Calculadora BT</a>
+                <a class="btn" href="/app/calc_cabos/a1calccabosmt/" style="flex:0 0 auto;">Calculadora MT</a>
+                <a class="btn secondary" href="/app/calc_cabos/a1calccabosAll/" style="flex:0 0 auto;">Calculadora de Cabos <br>(em desenvolvimento)</a>
+
+            </div>
+            <p class="hint">Se preferir abrir em nova aba, clique com o botão direito e selecione "Abrir em nova guia".</p>
+        </div>
+    </div>
+</body>
+</html>

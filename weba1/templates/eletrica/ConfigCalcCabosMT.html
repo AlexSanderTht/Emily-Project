@@ -1,0 +1,337 @@
+{% load static %}
+{% block config_calc_cabos_mt %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<div class="container mt-3" id="container-bt-config-cc">
+    <h5>Média Tensão</h5>
+    <hr>
+
+    {% csrf_token %}
+    <!--------------------- Início Maneira de intalar -------------------->
+    <div class="row mt-1">
+        <div class="col-lg-3 text-left">
+            <label for="procalc-mt-install-mode">Maneira de instalar:</label>
+        </div>
+        <div class="col-lg-8 pr-1">
+            <select class="form-control" id="procalc-mt-install-mode" onclick="ManeiraInstalarMT();SelectTemperature()" onchange="ManeiraInstalarMT();SelectTemperature()">
+                <option value="0">---</option>
+                {%for modo in ModoInstalacao%}
+                <option value="{{modo.pk}}">{{modo.tb_mod_inst_mt_nome}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-lg p-0 text-left">
+            <button id="botao_eye_mt" class="btn btn-outline-info bg-white" type="button" onclick="ShowTableGroupingMT()" title="Clique para Ocultar a tabela" hidden>
+                <i class=" fa-solid fa-eye text-info"></i>
+            </button>
+
+            <button id="botao_eye_closed_mt" class="btn btn-outline-info bg-white" type="button" onclick="ShowTableGroupingMT()" title="Clique para exibir a tabela">
+                <i class=" fa-solid fa-eye-slash text-info"></i>
+            </button>
+        </div>
+    </div><!--------------------- Fim Maneira de intalar -------------------->
+
+    <!--------------------- Início Campo 2 -------------------->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="row mt-1">
+                <div class="col-lg-6 text-left">
+                    <label for="procalc-mt-class-voltage">Classe de tensão:</label>
+                </div>
+                <div class="col ml-1 pr-0">
+                    <select class="form-control" id="procalc-mt-class-voltage">
+                        <option value="0">---</option>
+                        {%for id, value in Tensao.items%}
+                        <option value="{{id}}">{{value}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="row mt-1">
+                <div class="col-lg-6 text-left">
+                    <label for="procalc-mt-cable">Cabo:</label>
+                </div>
+                <div class="col ml-1 pr-0">
+                    <select class="form-control" id="procalc-mt-cable" onclick="SelectTemperature()" onkeyup="SelectTemperature()">
+                        <option value="0">---</option>
+                        {%for tipo in TipoCabo%}
+                        <option value="{{tipo.pk}}">{{tipo.tb_tpc_mt_nome_cabo}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="row mt-1">
+                <div class="col-lg-6 text-left">
+                    <label for="procalc-mt-cable">Material da cobertura:</label>
+                </div>
+                <div class="col ml-1 pr-0">
+                    <select class="form-control" id="blindagem">
+                        <option value="0">---</option>
+                        {%for blind in Blindagem%}
+                        <option value="{{blind.pk}}">{{blind.tb_blin_material}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mt-1" id="procalc-campo-tipo-cabo">
+                <div class="col-lg-6 text-left">
+                    <label for="procalc-mt-type-cable">Tipo Cabo:</label>
+                </div>
+                <div class="col-lg-5 ml-1 pr-0">
+                    <select class="form-control" id="procalc-mt-type-cable">
+                        <option value="0">---</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mt-1">
+                <div class="col-lg-6 text-left pr-0">
+                    <label for="procalc-mt-ambient-temperature">Temperatura ambiente:</label>
+                </div>
+                <div class="col-lg-3 ml-1 pr-0">
+                    <select class="form-control" id="procalc-mt-ambient-temperature">
+                        <option value="0">---</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 my-auto">
+                    <label for="procalc-mt-ambient-temperature">°C</label>
+                </div>
+            </div>
+
+
+            <div class="row mt-1" id="procalc-campo-material-cabo" >
+                <div class="col-lg-6 text-left">
+                    <label for="procalc-campo-material-cabo-sl">Material Cabo:</label>
+                </div>
+                <div class="col-lg-5 ml-1 pr-0">
+                    <select class="form-control" id="procalc-campo-material-cabo-sl" >
+                        <option value="COBRE" selected >COBRE</option>
+                        <option value="ALUMINIO">ALUMINIO</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="row mt-1">
+                <div class="col-lg-6 text-left pr-0">
+                    <label for="procalc-mt-drop-voltage">Queda tensão máxima em regime:</label>
+                </div>
+                <div class="col-lg-4 ml-1 pr-0">
+                    <input class="form-control h-100" id="procalc-mt-drop-voltage" onkeyup="VerifyFormsCalcBt(this.id, 0, 100)">
+                </div>
+                <div class="col-lg-1 my-auto">
+                    <label for="procalc-mt-drop-voltage">%</label>
+                </div>
+            </div>
+
+
+
+            <div class="row mt-1">
+                <div class="col-lg-6 text-left pr-0">
+                    <label for="queda_tensao_partida">Queda tensão máxima na partida:</label>
+                </div>
+                <div class="col-lg-4 ml-1 pr-0">
+                    <input class="form-control h-100" id="queda_tensao_partida" onkeyup="VerifyFormsCalcBt(this.id, 0, 100)">
+                </div>
+                <div class="col-lg-1 my-auto">
+                    <label for="queda_tensao_partida">%</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <!--------------------- Início tabela de referência -------------------->
+            <div class="d-flex-without-important justify-content-end" id="table_grouping_mt" hidden></div>
+            <div id="toggle_ref" hidden>
+                <div class="my-2">
+                    <label class="switch_btn mb-0">
+                        <input type="checkbox" id="check_mt" onchange="SelectTemperature()">
+                        <div class="slider_btn round">
+                            <div id="toggle-on" class="on" type="button">
+                                <span class="d-inline">
+                                    <span>Exposto</span>
+                                    <i class="fa-solid fa-sun fa-xl text-white m-0"></i>
+                                </span>
+                            </div>
+                            <div id="toggle-off" class="off" type="button">
+                                <span class="d-inline">
+                                    <span>Abrigado</span>
+                                    <i class="fa-solid fa-moon fa-xl text-warning m-0"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+        </div><!--------------------- Fim tipo instalação checkbox -------------------->
+    </div><!--------------------- Fim Campo 2 -------------------->
+
+    <!--------------------- Início fator agrupamento -------------------->
+    <div class="row mt-1">
+        <div class="col-lg-3 text-left pr-0">
+            <label for="procalc-mt-clust-fac">Fator de agrupamento:</label>
+        </div>
+        <div class="col-lg-2 ml-1">
+            <input class="form-control h-100" id="procalc-mt-clust-fac" onkeyup="VerifyFormsCalcBt(this.id, 0, 1)">
+        </div>
+        <div class="col-lg-1 text-left p-0 ml-1 d-flex align-items-center border-right">
+        </div>
+        <div class="col-lg ml-2">
+            <input class="form-check-input" type="checkbox" value="" id="blindagem_enterrada" onchange="ChangeBlindagemEnterrada(this.checked)">
+            <label class="form-check-label" for="blindagem_enterrada">
+               Blindagem aterrada nas duas extremidades
+            </label>
+        </div>
+    </div><!--------------------- Fim fator agrupamento -------------------->
+
+    <!--------------------- Início Corrente condutor -------------------->
+    <div class="row mt-1">
+        <div class="col-lg-3 text-left pr-0">
+            <label for="procalc-mt-chain-cc">Icc nos condutores:</label>
+        </div>
+        <div class="col-lg-2 ml-1">
+            <input class="form-control h-100" id="procalc-mt-chain-cc">
+        </div>
+        <div class="col-lg-1 text-left p-0 ml-1 d-flex align-items-center border-right">
+            <label for="procalc-mt-chain-cc">kA</label>
+        </div>
+        <div class="col-lg-3 text-left d-flex-without-important align-items-center">
+            <label for="procalc-mt-icc-terra" hidden>Icc Fase-Terra:</label>
+        </div>
+        <div class="col-lg-2 d-flex-without-important align-items-center">
+           <input class="form-control h-100" id="procalc-mt-icc-terra" hidden>
+        </div>
+        <div class="col-lg d-flex-without-important">
+            <label for="procalc-mt-icc-terra" hidden>kA</label>
+        </div>
+
+    </div><!--------------------- Fim Corrente condutor -------------------->
+
+    <!--------------------- Início Tempo Corrente condutor -------------------->
+    <div class="row mt-1">
+        <div class="col-lg-3 text-left pr-0">
+            <label for="procalc-mt-time-corrent-cond">Tempo de Icc nos condutores:</label>
+        </div>
+        <div class="col-lg-2 ml-1">
+            <input class="form-control h-100" id="procalc-mt-time-corrent-cond" onkeyup="VerifyFormsCalcBt(this.id, 0, 5)">
+        </div>
+        <div class="col-lg-1 text-left p-0 ml-1 d-flex align-items-center border-right">
+            <label for="procalc-mt-time-corrent-cond">s</label>
+        </div>
+        <div class="col-lg-3 text-left d-flex-without-important align-items-center">
+            <label for="procalc-mt-tempo-icc-terra" hidden>Tempo Icc Fase-Terra:</label>
+        </div>
+        <div class="col-lg-2 d-flex-without-important align-items-center">
+           <input class="form-control h-100" id="procalc-mt-tempo-icc-terra" hidden onkeyup="VerifyFormsCalcBt(this.id, 0, 5)">
+        </div>
+        <div class="col-lg d-flex-without-important align-items-center justify-content-center">
+            <label for="procalc-mt-tempo-icc-terra" hidden>s</label>
+        </div>
+
+    </div><!--------------------- Fim Tempo Corrente condutor -------------------->
+
+    <!--------------------- Início seção nominal condutor -------------------->
+    <div class="row mt-1">
+        <div class="col-lg-3 text-left pr-0">
+            <label for="secao_minima">Seção mínima do condutor:</label>
+        </div>
+        <div class="col-lg-2 ml-1">
+            <select class="form-control h-100" id="secao_minima">
+                <option value="0">---</option>
+                {%for secao_nom in SecaoNominal%}
+                <option value="{{secao_nom.pk}}">{{secao_nom.tb_sec_nc_mm2}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-1 text-left p-0 ml-1 d-flex align-items-center border-right">
+            <label for="secao_minima">mm²</label>
+        </div>
+        <div class="col-lg-3 text-left d-flex align-items-center">
+            <label for="procalc-mt-num-cond">Número de condutores por fase:</label>
+        </div>
+        <div class="col-lg-2 d-flex align-items-center">
+           <input class="form-control h-100" id="procalc-mt-num-cond" onkeyup="VerifyFormsCalcBt(this.id, 1, false)">
+        </div>
+        <div class="col-lg d-flex align-items-center justify-content-center">
+        </div>
+    </div>
+
+
+    <div class="row mt-1">
+        <div class="col-lg-3 text-left pr-0">
+            <label for="secao_maxima">Seção máxima do condutor:</label>
+        </div>
+        <div class="col-lg-2 ml-1">
+            <select class="form-control h-100" id="secao_maxima">
+                <option value="0">---</option>
+                {%for secao_nom in SecaoNominal%}
+                <option value="{{secao_nom.pk}}">{{secao_nom.tb_sec_nc_mm2}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-1 text-left p-0 ml-1 d-flex align-items-center border-right">
+            <label for="secao_maxima">mm²</label>
+        </div>
+        <div class="col-lg-3 text-left d-flex-without-important align-items-center">
+        </div>
+        <div class="col-lg-2 d-flex align-items-center">
+        </div>
+    </div>
+    <!--------------------- Fim seção nominal condutor -------------------->
+
+    <!--------------------- Início Fator distância -------------------->
+    <div class="row mt-1" id="fatores_enterrados" hidden>
+        <div class="col-lg-3 text-left d-flex-without-important align-items-center">
+            <label for="fator_dist_terra">Fator de correção de profundidade:</label>
+        </div>
+        <div class="col-lg-2 ml-1">
+            <input class="form-control h-100" id="fator_dist_terra" onkeyup="VerifyFormsCalcBt(this.id, 0, 2)" onclick="VerifyFormsCalcBt(this.id, 0, 2)" value="1" readonly>
+        </div>
+        <div class="col-lg d-flex align-items-center">
+<!--            <input type="checkbox" id="checkbox_fatores_livres" onchange="ChangeCheckBoxFatoresLivres(this)">-->
+        </div>
+
+        <div class="col-lg-1 p-0 text-left">
+            <button id="botao_eye_mt_dist" class="btn btn-outline-info bg-white" type="button" onclick="ShowTableGroupingMT('profundidade')" title="Clique para Ocultar a tabela" hidden>
+                <i class=" fa-solid fa-eye text-info"></i>
+            </button>
+
+            <button id="botao_eye_closed_mt_dist" class="btn btn-outline-info bg-white" type="button" onclick="ShowTableGroupingMT('profundidade')" title="Clique para exibir a tabela">
+                <i class=" fa-solid fa-eye-slash text-info"></i>
+            </button>
+        </div>
+    </div><!--------------------- Fim Fator distância -------------------->
+    <div class="row justify-content-end mt-1 mr-1" id="table_distancia" hidden></div>
+
+    <!--------------------- Início resistividade térmica -------------------->
+    <div class="row mt-1" id="fatores_resist_termica" hidden>
+        <div class="col-lg-3 text-left d-flex-without-important align-items-center">
+            <label for="fator_resist_termica">Fator Resist. Termica:</label>
+        </div>
+        <div class="col-lg-2 ml-1">
+            <input type="number" step="0.1" class="form-control h-100" id="fator_resist_termica" onkeyup="VerifyFormsCalcBt(this.id, 0, 2)" onclick="VerifyFormsCalcBt(this.id, 0, 2)" value="1" readonly>
+        </div>
+        <div class="col-lg d-flex align-items-center">
+<!--            <input type="checkbox" id="checkbox_fatores_livres" onchange="ChangeCheckBoxFatoresLivres(this)">-->
+        </div>
+
+        <div class="col-lg-1 p-0 text-left">
+            <button id="botao_eye_mt_fat_r" class="btn btn-outline-info bg-white" type="button" onclick="ShowTableGroupingMT('resistencia')" title="Clique para Ocultar a tabela" hidden>
+                <i class=" fa-solid fa-eye text-info"></i>
+            </button>
+
+            <button id="botao_eye_closed_mt_fat_r" class="btn btn-outline-info bg-white" type="button" onclick="ShowTableGroupingMT('resistencia')" title="Clique para exibir a tabela">
+                <i class=" fa-solid fa-eye-slash text-info"></i>
+            </button>
+        </div>
+    </div><!--------------------- Fim resistividade térmica -------------------->
+    <div class="row justify-content-end mt-1 mr-1" id="table_resistencia" hidden></div>
+</div>
+
+{% endblock %}

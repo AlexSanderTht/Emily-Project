@@ -1,0 +1,66 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | DETALHES TÍPICOS</title>
+{% endblock %}
+
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<div class="container-fluid h-100">
+    <div class="text-justify m-3">
+        <button class="btn btn-primary btn-warning" onclick="window.history.go(-1)">Voltar</button>
+    </div>
+    <div class="row d-flex justify-content-center mt-2">
+        <h3>Geração de Documentos - Detalhes Típicos</h3>
+    </div>
+    <div class="container-fluid d-flex justify-content-center">
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4">
+            <div class="col-12 py-2 border-bottom">
+                <div class="row">
+                    <div class="col-3 d-flex align-items-center text-right">
+                        <label for="tipo_doc">Tipo do Documento:</label>
+                    </div>
+
+                    <div class="col-5">
+                        <select class="form-control" id="tipo_doc" onchange="FilterNumDocPorTipoDoc()">
+                            <option value="0">Selecione para filtrar o N° do Documento</option>
+                            {% for value in tipos_doc %}
+                                <option value="{{value}}">{{value}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-4">
+                        <button type="button" class="btn btn-warning" onclick="$('#modal_dados_documento').modal('show'); FillSelectAllNumDocs('dados_doc_num_doc_a1'); BotaoConsolidacao()">Dados do Documento</button>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-3 d-flex align-items-center text-right">
+                        <label for="num_doc">N° do Documento:</label>
+                    </div>
+
+                    <div class="col-5">
+                        <select class="form-control" id="num_doc" onchange="ChangeNumDocTelaPrincipal();ShowContentNumDoc();" disabled></select>
+                    </div>
+
+                    <div class="col-4">
+                    </div>
+
+                </div>
+            </div>
+            {% include "eletrica/GerarTipicosDocAtAliIlu.html"%}
+            {% include "eletrica/GerarTipicosDocSupBand.html"%}
+            {% include "eletrica/GerarTipicosDocForcaControle.html"%}
+        </div>
+    </div>
+</div>
+
+{% include './ModalDadosDocumento.html' %}
+{% include './ModalLoadCelery.html' %}
+
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/GerarTipicosDoc.js' %} "></script>
+
+
+{% endblock %}

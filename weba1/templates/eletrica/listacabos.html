@@ -1,0 +1,587 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | LISTA CABOS</title>
+{% endblock %}
+
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/hamster.css' %}"/>
+<div class="text-justify border-bottom m-3">
+    <button class="btn btn-primary btn-warning position-absolute" onclick="window.history.go(-1)">Voltar</button>
+    <!--------------- Cabeçalho --------------->
+    <h3 class="text-center" id="cargasLabel">Geração de Cabos</h3>
+    <h4 class="text-center" id="list_cabos_os" title="{{OS}}">Os: {{OS}}</h4>
+    <h4 class="text-center" id="list_cabos_area" title="{{Area}}">Área: {{Area}}</h4>
+    <!--------------- Fim do Cabeçalho --------------->
+</div>
+
+<script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+
+<style>
+    .input-error {
+    border: 2px solid red;
+}
+</style>
+<input hidden  id="id_oculto_cabo" value="">
+<div class="container-fluid" data-keyboard="false">
+    <div class="row justify-content-center">
+        <!------------- Botões superiores ------------->
+        <div class="col-lg-12 d-flex flex-wrap">
+            <button type="button" class="tablinks btn btn-secondary mr-2" name="type-eqps-tipo-cabo" id="btn-mt-tipo-cabo" onclick="BtnTypeEqpChecked(this.id, 'type-eqps-tipo-cabo', 'dark', 'secondary');FillLigsPerTypeEqp(df_tipo_eqp_motor);countItemsLista()">Motores</button>
+            <button type="button" class="tablinks btn btn-secondary mr-2" name="type-eqps-tipo-cabo" id="btn-tr-tipo-cabo" onclick="BtnTypeEqpChecked(this.id, 'type-eqps-tipo-cabo', 'dark', 'secondary');FillLigsPerTypeEqp(df_tipo_eqp_trafo);countItemsLista()">Transformadores</button>
+            <button type="button" class="tablinks btn btn-secondary mr-2" name="type-eqps-tipo-cabo" id="btn-pn-tipo-cabo" onclick="BtnTypeEqpChecked(this.id, 'type-eqps-tipo-cabo', 'dark', 'secondary');FillLigsPerTypeEqp(df_tipo_eqp_painel);countItemsLista()">Paineis</button>
+            <button type="button" class="tablinks btn btn-secondary mr-2" name="type-eqps-tipo-cabo" id="btn-ca-tipo-cabo" onclick="BtnTypeEqpChecked(this.id, 'type-eqps-tipo-cabo', 'dark', 'secondary');FillLigsPerTypeEqp(df_tipo_eqp_carga_aux);countItemsLista()">Cargas Auxiliares</button>
+            <button type="button" class="tablinks btn btn-secondary mr-2" name="type-eqps-tipo-cabo" id="btn-br-tipo-cabo" onclick="BtnTypeEqpChecked(this.id, 'type-eqps-tipo-cabo', 'dark', 'secondary');FillLigsPerTypeEqp(df_tipo_eqp_barramento);countItemsLista()">Barramento</button>
+            <button type="button" class="tablinks btn btn-warning mr-2" onclick="CreateTagsCabosInOs()">Gerar Cabos</button>
+            <button class="btn btn-warning dropdown-toggle mr-2" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Export
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" onclick="ShowModalSelectCols()">Padrão A1Pro</a>
+                <a class="dropdown-item" onclick="ExportLcPdms()">Padrão E3D</a>
+            </div>
+            <button type="button" class="tablinks btn btn-warning mr-2" onclick="ModalImportarRotas()">Import Rotas</button>
+            <button type="button" class="tablinks btn btn-warning mr-2" onclick="consolidacao()">Consolidação</button>
+            <button type="button" class="tablinks btn btn-warning mr-2" onclick="getDadosDoc();$('#modal_dados_documento_gerar_cabos').modal('show')">Dados Documentos</button>
+            <button type="button" class="btn btn-outline-primary rounded-pill">Rev: <label id="show_rev"></label> </button>
+        </div><!--------------- Fim Botões superiores --------------->
+
+        <!--------------- Campo de pesquisa --------------->
+        <div class="col-lg-4">
+            <!--------------- Campo text cargas --------------->
+            <div class="w-100">
+                <div id="Cargas" class="tabcontent">
+                    <br>
+                    {% with id_select='ListCabosCargasSearch' %}
+                    {% include "eletrica/cad_carga/pesquisa_e_dados.html"%}
+                    {% endwith %}
+                </div>
+            </div><!--------------- Campo text cargas --------------->
+
+            <div class="label_total" id="total_lista">
+              Total: <label id="itemCountLista"></label>
+            </div>
+
+            <div class="col-lg-12">
+                <div id='progress-bar-list-cabos' class='progress-bar h-50'>&nbsp;</div>
+                <div id="progress-bar-message-list-cabos"></div>
+            </div>
+        </div><!--------------- Fim Campo de pesquisa --------------->
+
+
+        <!--------------- Início campo text Destino --------------->
+        <div class="col-lg-3">
+            <!--------------- Campo text cargas --------------->
+
+            <div class="w-100">
+                <div class="tabcontent">
+                    <br>
+                    {% with id_select='ListCabosCabosSearch' %}
+                    {% include "eletrica/cad_carga/pesquisa_e_dados.html"%}
+                    {% endwith %}
+                </div>
+            </div><!--------------- Campo text cargas --------------->
+
+            <div class="label_total" id="total_lista_dest">
+              Total: <label id="itemCountListaDest"></label>
+            </div>
+             <!--------------- Botões inferiores Campo de pesquisa --------------->
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <label for="StatusLigListaCabos">Status Ligação:</label>
+                </div>
+                <div class="col-lg-5 pl-0">
+                    <textarea class="form-control" id="StatusLigListaCabos" rows="1" readonly></textarea>
+                </div>
+                <div class="col-lg-3 mt-1 d-flex justify-content-end">
+                    <button type="button" class="btn btn-warning position-absolute" onclick="BtnTypeEqpChecked('not-id', 'type-eqps-tipo-cabo', 'dark', 'secondary'); ClearListaCabos(true);">Limpar</button>
+                </div>
+            </div>
+
+
+            <!--------------- Fim Botões inferiores Campo de pesquisa  --------------->
+
+        </div><!--------------- Fim campo text Destino --------------->
+
+        <!--------------- Início formulários dropdown expansível --------------->
+        <div class="col-lg-5 mt-lg-3">
+            {% include "eletrica/info_carga_list_cabos.html"%}
+            {% include "eletrica/info_cabo_list_cabos.html"%}
+            <br>
+        </div><!--------------- Fim formulários dropdown expansível --------------->
+
+        {% include "eletrica/modal_warning.html"%}
+
+        {% with id_modal='modal_load_a1pro'%}
+            {% include "catracas/modal_load.html"%}
+        {% endwith %}
+    </div>
+
+
+    <div id="progress-box-consolida" class="text-center mt-3" hidden>
+        <div class='progress-wrapper'>
+            <div id='progress-bar-consolida-lc' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+            </div><br>
+        <div id="progress-bar-message-consolida-lc" class="text-center">Aguardando a Inicialização da tarefa ...</div>
+    </div>
+
+    <!------------------ Início Modal Import rotas ------------------>
+    <div class="modal fade" id="modal_import_rotas" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bordas">
+                <div class="modal-header">
+                    <h4 id="titulo" class="modal-title text-center w-100">Cadastrar Rotas</h4>
+                    <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                </div>
+
+                <div class="modal-body text-center">
+                    <!------------------ Inicio Dropzone XLSX ------------------>
+                    <div class="col card_dropzone py-3 mr-0" id="drop-area-xls-rota">
+                        <div class="text-center w-100" id="xls">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte o template (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xls" onchange="DropArquivoRotas('arquivo_xls','drop-area-xls-rota','xls',null)"/>
+                                <i class="fa-solid fa-upload"></i> Import xlsx
+                            </label>
+                        </div>
+                    </div><!------------------ Fim Dropzone XLSX ------------------>
+
+
+                    <div id="progress-box-lista" hidden>
+                        <div class="progress-wrapper mt-3">
+                            <div id="progress-bar-lista" class="bordas progress-bar progress-bar-striped progress-bar-animated" style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                        </div><br>
+                        <div id="progress-bar-message-lista" class="text-center">Aguardando a Inicialização da tarefa...</div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary text-white shadow rounded-pill" onclick="ExportRotasE3d()">Download Temp. Ed3</button>
+                    <button class="btn btn-secondary text-white shadow rounded-pill" onclick="ExportRotasA1pro()">Download Temp. A1Pro</button>
+                    <button type="submit" class="btn btn-warning shadow rounded-pill" onclick="SendFileImportRota()">Cadastrar</button>
+                    <div class="loader" id="loaderUploadArquivo"></div>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim Modal Import rotas ------------------>
+
+
+    <div class="modal fade bd-example-modal-lg" id="modal_dados_documento_gerar_cabos" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Dados do Documento</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-3 text-right p-0">
+                        <label for="n_doc_dados_doc_a1_lista_cabos">N° Documento A1:</label>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" class="form-control" id="n_doc_dados_doc_a1_lista_cabos">
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-3 text-right p-0">
+                        <label for="n_doc_dados_doc_cliente_lista_cabos">N° Documento Cliente:</label>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" class="form-control" id="n_doc_dados_doc_cliente_lista_cabos">
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-3 text-right p-0">
+                        <label for="n_rev_dados_doc_a1_lista_cabos">Rev. A1:</label>
+                    </div>
+                    <div class="col-3">
+                        <input type="number" class="form-control" id="n_rev_dados_doc_a1_lista_cabos">
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-3 text-right p-0">
+                        <label for="n_rev_dados_doc_cliente_lista_cabos">Rev. Cliente:</label>
+                    </div>
+                    <div class="col-3">
+                        <input type="number" class="form-control" id="n_rev_dados_doc_cliente_lista_cabos">
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-3 text-right p-0">
+                        <label for="file_dados_doc_lista_cabos_capa">Capa:</label>
+                    </div>
+                    <div class="col-7">
+                        <input class="form-control form-control-lg" id="file_dados_doc_lista_cabos_capa" type="file" accept=".xlsx">
+                        <!-- File Status -->
+                        <small id="status_capa" class="text-muted">Sem Arquivos.</small>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-3 text-right p-0">
+                        <label for="file_dados_doc_lista_cabos_template">Template:</label>
+                    </div>
+                    <div class="col-8">
+                        <input class="form-control form-control-lg" id="file_dados_doc_lista_cabos_template" type="file" accept=".xlsx">
+                        <!-- File Status -->
+                        <small id="status_template" class="text-muted">Sem Arquivos.</small>
+                    </div>
+                </div>
+                <br>
+                <br>
+
+                <div class="modal-footer">
+                    <div class="d-flex">
+                        <button type="button" class="btn btn-success" onclick="window.open('/app/eletrica/gerar_tipicos/TemplateListaMaterialCapa', '_self')">
+                            <i class="fa-solid fa-download pr-2"></i>Capa
+                        </button>
+                    </div>
+                    <div class="d-flex">
+                        <button type="button" class="btn btn-success" onclick="window.open('/app/eletrica/gerar_tipicos/TemplateListaCabosAbas', '_self')">
+                            <i class="fa-solid fa-download pr-2"></i>Temp. Abas
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-warning" onclick="validateAndSendDadosDoc()">Salvar</button>
+                    <button type="button" class="btn btn-warning" onclick="$('#modal_dados_documento_gerar_cabos').modal('hide');">Fechar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+<script src="{% static 'js/eletrica/A1Pro/a1pro_ctrl.js' %}"></script>
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/cad_carga/eqp_ctrl.js' %} "></script>
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/cad_carga/lig_ctrl.js' %} "></script>
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/ListaCabos.js' %} "></script>
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/DefinesA1Pro.js' %} "></script>
+<script>
+    function SendDadosDoc(){
+
+
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const csrf = document.getElementsByName("csrfmiddlewaretoken")
+        $.ajax({
+            url: "/app/eletrica/a1pro/LastRev/", // Caminho do Ajax
+            type: "GET", // http method
+            headers: {'X-CSRFToken': csrf[0].value},
+            success: function (data) {
+                document.getElementById('show_rev').innerHTML = data["rev"]
+            }
+        });
+    })
+
+
+    function ModalImportarRotas() {
+        $('#modal_import_rotas').modal('show')
+    }
+    let a;
+    function consolidacao() {
+        swal({
+            title: "Tem certeza de que deseja consolidar?",
+            type: "warning",
+            dangerMode: true,
+            buttons: {
+              cancel: "Cancelar",
+              confirm: "Consolidar"
+            },
+            }).then((willConfirm) => {
+            if (willConfirm) {
+                const csrf = document.getElementsByName("csrfmiddlewaretoken")
+                $.ajax({
+                    url: "/app/eletrica/a1pro/ConsolidaListaCabos/", // Caminho do Ajax
+                    type: "POST", // http method
+                    headers: {'X-CSRFToken': csrf[0].value},
+                    beforeSend: function () {
+                        document.getElementById("progress-box-consolida").hidden = false;
+                    },
+                    success: function (data) {
+                        var progressUrl = `/celery-progress/${data["task_id"]}/`
+                        CeleryProgressBarEletricaXD.initProgressBar(progressUrl, {
+                            progressBarId: 'progress-bar-consolida-lc',
+                            progressBarMessageId: 'progress-bar-message-consolida-lc',
+                            onSuccess: customSucess,
+                            onError: customError,
+                            onProgress: onProgressCustom
+                        })
+
+                        function onProgressCustom(progressBarElement, progressBarMessageElement, progress) {
+                            // console.log(progress)
+                            progressBarElement.style.backgroundColor = '#68a9ef';
+                            progressBarMessageElement.innerHTML = progress.description || "";
+                            progressBarElement.style.width = progress.percent + "%";
+                        }
+
+                        function customSucess(progressBarElement, progressBarMessageElement, result) {
+                            progressBarMessageElement.innerHTML = "Sucesso";
+                            progressBarElement.style.backgroundColor = '#76ce60';
+                            console.log(result.includes("C:\\A1Fer"))
+                            a = result;
+                            if (result.includes("C:\\A1Fer")){
+
+                                setTimeout(() => {
+                                    swal({
+                                        text: "Houve um problema com a consolidação de cabos (Há cabos duplicado)!",
+                                        icon: "error",
+                                        button: false,
+                                        timer: 3000
+                                    })
+
+                                }, 2000)
+                                window.open('/app/calc_cabos/a1calccabos/DownloadFileReturnImport/' + data["task_id"] + '/', '_self')
+                            }else{
+                                                            // Pausa o cronômetro
+                                setTimeout(() => {
+                                    swal({
+                                        text: "Revisão criada conforme solicitação!",
+                                        icon: "success",
+                                        button: false,
+                                        timer: 3000
+                                    })
+
+                                }, 2000)
+
+                            }
+                            progressBarElement.style.backgroundColor = '#68a9ef';
+                            progressBarMessageElement.innerHTML = "Aguardando Inicialização da tarefa..."
+                            progressBarElement.style.width = '0%'
+                            document.getElementById("progress-box-consolida").hidden = true
+
+                            // window.open('/app/calc_cabos/a1calccabos/DownloadFileReturnImport/' + id_task + '/', '_self')
+
+                        }
+
+                        function customError(progressBarElement, progressBarMessageElement, excMessage) {
+                            progressBarMessageElement.innerHTML = "Houve um erro inesperado:" + excMessage;
+                            progressBarElement.style.backgroundColor = '#dc4f63';
+                            setTimeout(() => {
+                                document.getElementById("progress-box-consolida").hidden = true
+                            }, 2000)
+                        }
+                    }
+                })
+            }
+        })
+    }
+
+    let CeleryProgressBarEletricaXD = (function () {
+    function onSuccessDefault(progressBarElement, progressBarMessageElement, result) {
+        progressBarElement.style.backgroundColor = '#76ce60';
+        progressBarMessageElement.innerHTML = "Success!";
+    }
+
+    function onResultDefault(resultElement, result) {
+        if (resultElement) {
+            resultElement.innerHTML = result;
+        }
+    }
+
+    function onErrorDefault(progressBarElement, progressBarMessageElement, excMessage) {
+        progressBarElement.style.backgroundColor = '#dc4f63';
+        progressBarMessageElement.innerHTML = "Uh-Oh, something went wrong! " + excMessage;
+    }
+
+    function onProgressDefault(progressBarElement, progressBarMessageElement, progress) {
+        progressBarElement.style.backgroundColor = '#68a9ef';
+        progressBarElement.style.width = progress.percent + "%";
+        var description = progress.description || "";
+        progressBarMessageElement.innerHTML = progress.current + ' de ' + progress.total + ' processado. ' + description;
+    }
+
+    function updateProgress (progressUrl, options) {
+        options = options || {};
+        var progressBarElement = options.progressBarElement || document.getElementById(options.progressBarId);
+        var progressBarMessageElement = options.progressBarMessageElement || document.getElementById(options.progressBarMessageId);
+        var onProgress = options.onProgress || onProgressDefault;
+        var onSuccess = options.onSuccess || onSuccessDefault;
+        var onError = options.onError || onErrorDefault;
+        var pollInterval = options.pollInterval || 500;
+        var resultElementId = options.resultElementId || 'celery-result';
+        var resultElement = options.resultElement || document.getElementById(resultElementId);
+        var onResult = options.onResult || onResultDefault;
+
+
+        fetch(progressUrl).then(function(response) {
+            response.json().then(function(data) {
+                if (data.progress) {
+                    onProgress(progressBarElement, progressBarMessageElement, data.progress);
+                }
+                if (!data.complete) {
+                    setTimeout(updateProgress, pollInterval, progressUrl, options);
+                } else {
+                    if (data.success) {
+                        onSuccess(progressBarElement, progressBarMessageElement, data.result);
+                    } else {
+                        onError(progressBarElement, progressBarMessageElement, data.result);
+                    }
+                    if (data.result) {
+                        onResult(resultElement, data.result);
+                    }
+                }
+            });
+        });
+    }
+    return {
+        onSuccessDefault: onSuccessDefault,
+        onResultDefault: onResultDefault,
+        onErrorDefault: onErrorDefault,
+        onProgressDefault: onProgressDefault,
+        initProgressBar: updateProgress,  // just for api cleanliness
+    };
+
+})();
+
+    function validateAndSendDadosDoc() {
+        // Get the input fields
+        const nDocA1 = document.getElementById("n_doc_dados_doc_a1_lista_cabos").value.trim();
+        const nDocCliente = document.getElementById("n_doc_dados_doc_cliente_lista_cabos").value.trim();
+        const nRevA1 = document.getElementById("n_rev_dados_doc_a1_lista_cabos").value.trim();
+        const nRevCliente = document.getElementById("n_rev_dados_doc_cliente_lista_cabos").value.trim();
+        const capaFile = document.getElementById("file_dados_doc_lista_cabos_capa").files.length;
+        const templateFile = document.getElementById("file_dados_doc_lista_cabos_template").files.length;
+
+        // Flag to track validation
+        let isValid = true;
+
+        // Clear previous error messages
+        document.querySelectorAll(".input-error").forEach(element => {
+            element.classList.remove("input-error");
+        });
+
+        // Validate inputs
+        if (!nDocA1) {
+            document.getElementById("n_doc_dados_doc_a1_lista_cabos").classList.add("input-error");
+            isValid = false;
+        }
+
+        // If all fields are valid, send data to the backend
+        if (isValid) {
+            SendDadosDocListaCabos(); // Call your existing function to send the data
+        } else {
+            swalAlert_DOC_without_reload('Warning', 'Por favor, campos estão faltando', 'warning', false)
+            alert("Por favor, campos estão faltando.");
+        }
+    }
+
+    function SendDadosDocListaCabos() {
+        const formData = new FormData();
+        const csrf = document.getElementsByName("csrfmiddlewaretoken")[0].value
+        // Collect inputs
+        const nDocA1 = document.getElementById("n_doc_dados_doc_a1_lista_cabos").value.trim();
+        const nDocCliente = document.getElementById("n_doc_dados_doc_cliente_lista_cabos").value.trim();
+        const nRevA1 = document.getElementById("n_rev_dados_doc_a1_lista_cabos").value.trim();
+        const nRevCliente = document.getElementById("n_rev_dados_doc_cliente_lista_cabos").value.trim();
+        let capaFile
+        let templateFile
+        if (document.getElementById("file_dados_doc_lista_cabos_capa").files){
+            capaFile =  document.getElementById("file_dados_doc_lista_cabos_capa").files[0];
+        }else{
+            capaFile = []
+        }
+        if(document.getElementById("file_dados_doc_lista_cabos_template").files){
+            templateFile = document.getElementById("file_dados_doc_lista_cabos_template").files[0]
+        }else{
+            templateFile = []
+        }
+
+        // Add inputs to FormData
+        formData.append("n_doc_a1", nDocA1);
+        formData.append("n_doc_cliente", nDocCliente);
+        formData.append("n_rev_a1", nRevA1);
+        formData.append("n_rev_cliente", nRevCliente);
+        formData.append("capa_file", capaFile);
+        formData.append("template_file", templateFile);
+
+        // Send AJAX POST request
+        fetch("/app/eletrica/a1pro/DadosDocumentosListaCabos/", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": csrf, // Include CSRF token
+            },
+        }).then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Failed to save data.");
+                }
+            })
+            .then((data) => {
+                swalAlert_DOC('Sucesso', 'Dados do documento salvo com sucesso.', 'success', false)
+                // alert("Data saved successfully!");
+                // Optionally refresh or clear the form
+            })
+            .catch((error) => {
+                swalAlert_DOC_without_reload('Error', 'Dados do documento salvo com sucesso.', 'error', false)
+                // alert("Error: " + error.message);
+            });
+    }
+
+    function getDadosDoc() {
+
+        fetch("/app/eletrica/a1pro/DadosDocumentosListaCabos/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Failed to fetch data.");
+                }
+            })
+            .then((data) => {
+                // Call function to render data
+                renderDadosDoc(data);
+            })
+            .catch((error) => {
+                console.error("Error:", error.message);
+            });
+    }
+
+    function renderDadosDoc(data) {
+        console.log(data['data'])
+        document.getElementById("n_doc_dados_doc_a1_lista_cabos").value = data['data']['num_doc_a1'];
+        document.getElementById("n_doc_dados_doc_cliente_lista_cabos").value  = data['data']['num_doc_cliente'];
+        document.getElementById("n_rev_dados_doc_a1_lista_cabos").value = data['data']['num_rev_a1'];
+        document.getElementById("n_rev_dados_doc_cliente_lista_cabos").value = data['data']['num_rev_cliente'];
+        document.getElementById("status_capa").innerText = data['data']['tb_ddlc_path_capa'] ? 'capa.xlsx': 'Sem Arquivos.';
+        document.getElementById("status_template").innerText = data['data']['tb_ddlc_path_templates'] ? 'Template_os.xlsx': 'Sem Arquivos.';
+        if (data['data']['tb_ddlc_path_capa'] === true){
+            document.getElementById("status_capa").classList.remove('text-muted')
+            document.getElementById("status_capa").classList.add("text-success", "font-weight-bold")
+        }else{
+            document.getElementById("status_capa").classList.remove('text-success', 'font-weight-bold')
+            document.getElementById("status_capa").classList.add('text-muted')
+        }
+        if (data['data']['tb_ddlc_path_templates'] === true){
+            document.getElementById("status_template").classList.remove('text-muted')
+            document.getElementById("status_template").classList.add('text-success', 'font-weight-bold')
+        }else{
+            document.getElementById("status_template").classList.remove('text-success', 'font-weight-bold')
+            document.getElementById("status_template").classList.add('text-muted')
+        }
+    }
+</script>
+
+{% include "eletrica/LoadWheelModal.html"%}
+{% include "eletrica/SimNaoModal.html"%}
+{% include "eletrica/SelectColsExportLc.html"%}
+{% endblock %}
+
+
+
+
+

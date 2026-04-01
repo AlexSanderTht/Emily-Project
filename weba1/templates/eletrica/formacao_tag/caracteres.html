@@ -1,0 +1,85 @@
+{% load static %}
+{% block caracteres %}
+<div class="modal modal-sm hidden mx-auto" id="modal-caracteres" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-caracteres-header"></h5>
+        <button type="button" class="close" onclick="HideModalCaractere()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <div class="row mx-2 border-right border-left border-bottom">
+            <h6 class="ml-2"><b id="modal-caracteres-second-header"></b></h6>
+            <div class="form-check">
+                <div class="col-lg-12">
+                    <input class="form-check-input" type="checkbox" name="checkbox-caractere" id="crit-carac-tensao" onclick="check_only_1_element('crit-carac-tensao', 'checkbox-caractere')" value="TENSAO">
+                    <label class="form-check-label" for="crit-carac-tensao">
+                        <button type="button" class="btn btn-warning btn-sm mb-2" onclick="FillTensionsAndShowModal(true)">Tensão</button>
+                    </label>
+                </div><div class="col-lg-12">
+                    <input class="form-check-input" type="checkbox" name="checkbox-caractere" id="crit-carac-tipo-alim" onclick="check_only_1_element('crit-carac-tipo-alim', 'checkbox-caractere')" value="ALIMENTACAO">
+                    <label class="form-check-label" for="crit-carac-tipo-alim">
+                        <button type="button" class="btn btn-warning btn-sm mb-2" onclick="FillTipoAlimShowModal(true)">Tipo Alimentação</button>
+                    </label>
+                </div>
+                <div class="col-lg-12">
+                    <input class="form-check-input" type="checkbox" name="checkbox-caractere" id="crit-carac-fases" onclick="check_only_1_element('crit-carac-fases', 'checkbox-caractere')" value="FASE">
+                    <label class="form-check-label" for="crit-carac-fases">
+                        <button type="button" class="btn btn-warning btn-sm" onclick="FillFasesShowModal(true)">Fases</button>
+                    </label>
+                </div>
+                <div class="col-lg-12">
+                    <input class="form-check-input" type="checkbox" name="checkbox-caractere" id="crit-carac-seq-num" onclick="check_only_1_element('crit-carac-seq-num', 'checkbox-caractere')" value="SEQ">
+                    <label class="form-check-label" for="crit-carac-seq-num">
+                        Sequencial Numérico
+                    </label>
+                </div>
+                <div class="col-lg-12">
+                    <input class="form-check-input" type="checkbox" name="checkbox-caractere" id="crit-carac-cubiculo" onclick="check_only_1_element('crit-carac-cubiculo', 'checkbox-caractere')" value="CUB">
+                    <label class="form-check-label" for="crit-carac-cubiculo">
+                        Cubículo
+                    </label>
+                </div>
+                <div class="col-lg-12">
+                    <input class="form-check-input" type="checkbox" name="checkbox-caractere" id="crit-carac-gaveta" onclick="check_only_1_element('crit-carac-gaveta', 'checkbox-caractere')" value="GAV">
+                    <label class="form-check-label" for="crit-carac-gaveta">
+                        Gaveta
+                    </label>
+                </div>
+                <div class="row mx-0 mb-2">
+                    <div class="col-lg-7 pr-0 d-flex align-items-center">
+                        <input class="form-check-input" type="checkbox" name="checkbox-caractere" id="crit-carac-letra-num" onclick="check_only_1_element('crit-carac-letra-num', 'checkbox-caractere')" value="L|N">
+                        <label class="form-check-label" for="crit-carac-letra-num">
+                            Letra ou Número
+                        </label>
+                    </div>
+
+                    <div class="col-lg-5 d-flex align-items-center">
+                        <input type="text" class="form-control form-control-sm" id="crit-carac-l-or-n" onkeyup="VerifyFormsSizeFive(this.id)">
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <input class="form-check-input" type="checkbox" id="crit-carac-valid">
+                    <label class="form-check-label" for="crit-carac-valid">
+                        Aplica-se
+                    </label>
+                </div>
+                <input type="text" class="form-control form-control-sm" hidden id="tipo-cabo-selected-ftag">
+                <input type="text" class="form-control form-control-sm" hidden id="unipolar-or-multipolar">
+            </div>
+         </div>
+         {% include './tensao.html' %}
+         {% include './alimentacao.html' %}
+         {% include './fases.html' %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="SendDatasCaractere()">Atualizar</button>
+        <button type="button" class="btn btn-dark" onclick="HideModalCaractere()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,400 @@
+{% load static %}
+<div class="container-fluid " id="content_templates" hidden>
+    <div class="col-xs-12 col-sm-12  col-md-12 col-lg-12 row ">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 h-90 border-right">
+            <div class="col-xs-12 col-sm-12  col-md-12 col-lg-12 text-center">
+                <h5>Insira os Templates</h5>
+            </div>
+            <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 h-50 px-3 scroll_templates_gt" id="cardzone_files_template">
+                <div class="text-center dwgs_insert">
+                    <!------------------ Inicio Message ------------------>
+                    <div class="d-flex flex-column">
+                        <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>TEMPLATE</b></span>
+                        <span class="font-italic text-primary">click em import para fazer o upload.</span>
+                    </div>
+                    <!------------------ Fim Message ------------------>
+                    <label class="mt-2 btn btn-primary rounded-pill text-white">
+                        <input multiple="multiple" accept=".dwg" class="hidden" type="file" id="arquivo_dwg_templates" onchange="DropArquivoTemplateGT()"/>
+                        Upload
+                    </label>
+                </div>
+                <div class="container-fluid" id="cards_file_template">
+
+                </div>
+                <div class="container-fluid radius_10 animate__animated animate__zoomInDown bg-primary" id="filetemplate" hidden>
+                    <br>
+                    <div class="row mt-1 d-flex align-items-center">
+
+                        <div class="col-xs-2 col-sm-2  col-md-2 col-lg-2">
+                            <label>Grupos:</label>
+                        </div>
+
+                        <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                            <select class="form-control" id="grupos_files_templates">
+                                <option value="0">---</option>
+                                {% for id_gp, nome_gp in GRUPOS_TEMPLATES.items %}
+                                    <option value="{{id_gp}}">{{nome_gp}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-xs-1 col-sm-1  col-md-1 col-lg-1">
+                            <button type="button" class="btn btn-secondary" onclick="AddGroupInTemplate()">+</button>
+                        </div>
+                    </div>
+                    <div class="row mt-1 d-flex align-items-center">
+                        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                            <label>Chumbadores:</label>
+                        </div>
+                        <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+                          <select class="form-control" id="chumbadores_templates">
+                                <option value="0">---</option>
+                                {% for index, nome_chumbs in CHUMBS_UNIQ.items %}
+                                    <option value="{{nome_chumbs}}">{{nome_chumbs}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                            <label>Quant:</label>
+                        </div>
+
+                        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                            <input class="form-control" type="number" id="quant_chumbs_templates">
+                        </div>
+
+                    </div>
+                    <div class="row mt-1 d-flex align-items-center" >
+                        <div class="col-xs-3 col-sm-3 col-md-2 col-lg-3" hidden>
+                            <label>Vista em planta:</label>
+                        </div>
+                        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="flexRadioDefault" id="template_vista_em_planta" hidden>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-1 d-flex align-items-center">
+
+                        <div class="col-xs-3 col-sm-3 col-md-2 col-lg-3">
+                            <label>Fixação em bandeja:</label>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                            <div class="form-check">
+                                <input class="form-check-input border border-white" type="radio" name="flexRadioDefault" id="tamplates_radio_perfil">
+                                <label class="form-check-label" for="tamplates_radio_perfil">
+                                    Em perfil
+                                </label>
+                            </div>
+
+                        </div>
+
+                        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                            <div class="form-check">
+                                <input class="form-check-input border border-white" type="radio" name="flexRadioDefault" id="tamplates_radio_perfilado">
+                                <label class="form-check-label" for="tamplates_radio_perfilado">
+                                    Em Perfilado
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-1 d-flex justify-content-around">
+                        <div class="col-3 bg-secondary radius_10">
+                            <div class="col-12 text-center p-0">
+                                Medidas Rodapé <i class="fa-solid fa-sort muda_cursor_hover" onclick="HideShowMedidas(['templates_medidas_rodape', 'templates_medidas_table', 'templates_medidas_logo'])"></i>
+                            </div>
+                            <div class="container-fluid p-0" id="templates_medidas_rodape" hidden>
+                                <div class="row col-12">
+                                    <div class="col-3">
+                                        <label>X:</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control form-control-sm" type="number" id="templates_x_footer" value="25">
+                                    </div>
+                                </div>
+
+                                <div class="row col-12 mb-2">
+                                    <div class="col-3">
+                                        <label>Y:</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control form-control-sm" type="number" id="templates_y_footer" value="12">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 bg-secondary radius_10">
+                            <div class="col-12 text-center">
+                                Medidas Tabela <i class="fa-solid fa-sort muda_cursor_hover" onclick="HideShowMedidas(['templates_medidas_rodape', 'templates_medidas_table', 'templates_medidas_logo'])"></i>
+                            </div>
+                            <div class="container-fluid p-0" id="templates_medidas_table" hidden>
+                                <div class="row col-12">
+                                    <div class="col-3">
+                                        <label>X:</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control form-control-sm" type="number" id="templates_x_table" value="200">
+                                    </div>
+                                </div>
+
+                                <div class="row col-12 mb-2">
+                                    <div class="col-3">
+                                        <label>Y:</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control form-control-sm" type="number" id="templates_y_table" value="259.5">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-3 bg-secondary radius_10">
+                            <div class="col-12 text-center">
+                                Medidas Logo <i class="fa-solid fa-sort muda_cursor_hover" onclick="HideShowMedidas(['templates_medidas_rodape', 'templates_medidas_table', 'templates_medidas_logo'])"></i>
+                            </div>
+                            <div class="container-fluid p-0" id="templates_medidas_logo" hidden>
+                                <div class="row col-12">
+                                    <div class="col-3">
+                                        <label>X:</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control form-control-sm" type="number" id="templates_x_logo" value="25">
+                                    </div>
+                                </div>
+
+                                <div class="row col-12 mb-2">
+                                    <div class="col-3">
+                                        <label>Y:</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control form-control-sm" type="number" id="templates_y_logo" value="269.5">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-12  col-md-12 col-lg-12 row mt-1 d-flex justify-content-center" id="templates_groups_add">
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-12 my-2 d-flex justify-content-end">
+                <button type="button" class="btn btn-outline-secondary me-md-2" onclick="ClearDropZoneTemplate()">Limpar</button>
+                <button type="button" class="btn btn-outline-primary" onclick="SendFileDwgTemplate()">Salvar</button>
+                <input class="form-control form-control-sm" type="text" hidden id="template_exists_selected">
+            </div>
+            <div id="div_all_templates" class="border-top">
+                <div class="row my-2">
+                    <div class="col-auto">
+                        <div class="input-group">
+                            <div class="search-box border border-secondary-subtle d-flex justify-content-end float-end"  >
+                               <input type="search"  class="search-text" id="SerchTemp" placeholder="Pesquisar..." onkeyup="FilterTipicosTempl(this.value)" >
+                               <a id="search-button" class="search-btn">
+                                 <img class="loupe-white" src="{% static 'scripts/search_FILL0_wght400_GRAD0_opsz48.svg' %}">
+                               </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-auto d-inline-flex align-items-end">
+                        <div class="form-check">
+                          <input class="form-check-input border-primary" type="checkbox" id="selectAllTemplates" onchange="changeCheckboxSelectAllChecks(this.checked, 'check_in_templates_exists')">
+                          <label class="form-check-label" for="selectAllTemplates">
+                            Selecionar todos
+                          </label>
+                        </div>
+                    </div>
+
+                    <div class="col-auto d-inline-flex align-items-end">
+                        <button type="button" class="btn btn-danger" onclick="swal_deleta_all_templates()">Remover Selecionados</button>
+                    </div>
+
+                </div>
+
+                <div class="row px-2 overflow-y-auto py-2" style="height: 200px;">
+                    <div class="col-12">
+                        <div class="row">
+                            {% for id_template, nome_template in Templates.items %}
+                                <div class="col-6 name_filter_templ px-4" title="{{nome_template}}">
+                                    <div class="row p-2 border rounded-4 my-2 bg-secondary">
+                                        <div class="col-8">
+                                            <div class="bg-white rounded-4 border p-2 d-inline-flex w-100 muda_cursor_hover" onclick="ClickTemplatesSaveGt('{{id_template}}'); FillDatasInTemplateExists('{{id_template}}')">
+                                                <img  src="{% static 'img/DWG.png' %}" alt="Image TXT"  width="30">
+                                                <div class="ms-2">
+                                                    <span type="text">{{nome_template}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="rounded-4 bg-white border p-2 w-100 d-inline-flex justify-content-between align-items-center">
+                                                <button title="Remover arquivo" class="btn btn-outline-danger rounded-pill border-0" type="button" >
+                                                    <i class="fas fa-times-circle fa-xl" onclick="swal_deleta_templates(['{{id_template}}'])"></i>
+                                                </button>
+
+                                                <div class="form-check">
+                                                  <input class="form-check-input border border-primary check_in_templates_exists" value="{{id_template}}" id="checkbox_select_template_{{id_template}}" type="checkbox">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center mt-2">
+                <h5>Visualização do Template</h5>
+            </div>
+            <div class="container-fluid w-100 h-75 p-0">
+                <img src="" id="img_dwg_template" class="shadow" >
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var FilesTemplate = new FormData()
+
+    function DropArquivoTemplateGT(files_drop=null){
+        let container_cards = document.getElementById('cards_file_template');
+        let list_file = document.getElementById('arquivo_dwg_templates');
+        let element_datas_in_template = document.getElementById('filetemplate')
+        let files = files_drop === null? list_file.files:files_drop.files;
+        let file ;
+        let error_file;
+        let name_file_splited;
+        let extensions ;
+
+        for (let i = 0; i <files.length;i++) {
+            file = files[i]
+            error_file = false
+            name_file_splited = file.name.split('.')
+            extensions = name_file_splited[name_file_splited.length - 1]
+            extensions = extensions.toUpperCase()
+            if(extensions !== 'DWG'){
+                error_file = true
+            }
+            if(!error_file) {
+                FilesTemplate.append('FileTemplate', file)
+                container_cards.innerHTML += `
+                                                    <div class="col-12 my-1 input-group rounded-pill border input-group-sm bg-white shadow animate__animated animate__zoomInDown" title="${file.name}">
+                                                        <div class="input-group-prepend my-auto px-1">
+                                                            <img src="{% static 'img/DWG.png' %}" style="height:20px">
+                                                        </div>
+                                                        <span class="col-6 my-1 text-truncate" type="text">${file.name}</span>
+                                                        <div class="input-group-append ml-auto">
+                                                            <button class="btn btn-outline-danger rounded-pill px-2 border-0" type="button" onclick="DeleFileDWGTemplate(this)">
+                                                                <i class="fas fa-times-circle fa-lg"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>`
+                element_datas_in_template.hidden = false
+
+            }else{
+                return SwitchAlertGt(file.name + ': Extensão de arquivo inválida!!', true)
+            }
+
+        }
+        return true
+    }
+
+    function DeleFileDWGTemplate(btn_del){
+        btn_del.parentElement.parentElement.remove()
+    }
+
+
+    async function FillFileTemplateExistsInDropzone(id_template){
+        let datas_template = await GetDatasTemplateExistsGt(id_template)
+        document.getElementById('templates_x_footer').value = datas_template['x_footer']
+        document.getElementById('templates_y_footer').value = datas_template['y_footer']
+        document.getElementById('templates_x_table').value = datas_template['x_table']
+        document.getElementById('templates_y_table').value = datas_template['y_table']
+        document.getElementById('templates_x_logo').value = datas_template['x_logo']
+        document.getElementById('templates_y_logo').value = datas_template['y_logo']
+        document.getElementById('tamplates_vista_em_planta').checked = datas_template['vista_em_planta']
+        if(datas_template['fixacao_em_perfil'] === true){
+            document.getElementById('tamplates_radio_perfil').checked = true
+        }else{
+            document.getElementById('tamplates_radio_perfilado').checked = true
+        }
+
+
+        let items = datas_template['items']
+        document.getElementById('template_exists_selected').value = id_template
+        ClearDropZoneTemplate()
+        let ObjGrupo;
+        for (let i = 0; i <items.length;i++){
+            document.getElementById('templates_content_cards').insertAdjacentHTML('beforeend', await CreateItemsHtmlInTemplateFileExists(items[i]))
+            ObjGrupo = document.getElementById(`grupos_band_eletr_${items[i]['num_item']}`)
+            ObjGrupo.value = items[i]['id_grupo']
+            //await new Promise(resolve => { ObjGrupo.addEventListener('click', resolve, { once: true }); ObjGrupo.click(); });
+            ObjGrupo.click();
+            await new Promise(r => setTimeout(r, 500)); // timer colocado para dar tempo para o click event ser efetivo
+        }
+
+        let selec_optn
+        for (let i = 0; i <items.length;i++){
+            selec_optn = document.getElementById(`materiais_grupos_band_eletr_${items[i]['num_item']}`)
+            selec_optn.value = items[i]['id_material']
+            if(~selec_optn.selectedIndex === -1){
+                selec_optn.value = 0
+            }
+        }
+    }
+
+
+    jQuery(document).ready(function($) {
+        $('#cardzone_files_template').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover');
+        })
+
+        $('#cardzone_files_template').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+        })
+
+        $('#cardzone_files_template').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+          let file_dwg = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivoTemplateGT(file_dwg)
+        })
+    })
+
+   //--------------------- Filtro de pesquisa ------------------//
+
+    function FilterTipicosTempl(){
+        let input = document.getElementById('SerchTemp').value
+        input = input.toLowerCase();
+        let filt_Templet = document.getElementsByClassName('name_filter_templ');
+
+        for (i = 0; i < filt_Templet.length; i++) {
+            if(!filt_Templet[i].title.toLowerCase().includes(input)){
+            filt_Templet[i].style.display = "none";
+            }else{
+                filt_Templet[i].style.display= ""
+            }
+        }
+    }
+    // //-----------Limpar input pesquisa ------------//
+    // window.onload = function (){
+    //    document.getElementById('SerchTemp').value = '';
+    // }
+</script>

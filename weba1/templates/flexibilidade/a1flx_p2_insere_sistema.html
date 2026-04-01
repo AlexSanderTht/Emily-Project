@@ -1,0 +1,160 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Inserção de Sistemas de Flexibilidade</title>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+<script src='https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/dropzone.js' type='text/javascript'></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style type="text/css">
+    .sortable {
+      padding: 0;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      background-color: white;
+    }
+
+    .sortable li {
+        display: flex;
+        float: left;
+        width: 240px;
+        height: 75px;
+        overflow:hidden;
+        margin:5px;
+        justify-content: left;
+        align-items: center;
+        background: #eeeeee;
+    }
+</style>
+{% endblock %}
+{% block help %}
+
+{% endblock %}
+{% block main %}
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4"><b>Inserção de Sistemas de Flexibilidade</b></h1>
+        </div>
+    </div>
+    <div class="row">
+        <div style="width: 80vw">
+            <form action="/app/flexibilidade/cadastro/insert" id="form" method="GET" enctype="multipart/form-data" class="sortable dropzone" style="overflow: auto; height: 300px; border: 1px dashed black">
+                {% csrf_token %}
+                <div class="fallback" >
+                </div>
+            </form>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-lg-7 mx-auto" >
+            <div class="bg-white rounded-lg shadow-sm p-5" style="height: 120px">
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+                        <div style="margin-left: 0px; margin-right: 0px" ><!-- barra de progresso -->
+                                <button type="button" onclick="dropzone_trigger()" style="background-color:#ffbe47;" class="subscribe btn btn-block btn-warning rounded-pill shadow-sm"> Iniciar </button>
+                        </div><!-- barra de progresso -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block end %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.sortable').sortable();
+    });
+
+    let previewTemplate = '' +
+        '        <div class="preview">\n' +
+        '            <li style="width: 369px; height: 100px; list-style: none;">\n' +
+        '                <div>\n' +
+        '                    <div class="dz-preview dz-file-preview">\n' +
+        '                      <div class="dz-details">\n' +
+        '                          <table style="margin-top: -25px; align-items: center">\n' +
+        '                              <tr>\n' +
+        '                                  <td>\n' +
+        '                                      <div class="dz-filename"><span data-dz-name></span></div>\n' +
+        '                                      <div class="dz-size" data-dz-size></div>\n' +
+        '                                  </td>\n' +
+        '                              </tr>\n' +
+        '                              <tr>\n' +
+        '                                  <td>\n' +
+        '                                      <div class="dz-progress" style="background-color: #f8ae6d; margin-top: -20px; margin-left: 50px;"><span class="dz-upload" data-dz-uploadprogress></span></div>\n' +
+        '                                  </td>\n' +
+        '                              </tr>\n' +
+        '                              <tr>\n' +
+        '                                  <td>\n' +
+        '                                      <img style="width: 40px; height: 40px; cursor: pointer;" src="{% static "img/icon-cross-4.jpg" %}" alt="Clique aqui para remover esse arquivo." data-dz-remove />\n' +
+        '                                  </td>\n' +
+        '                              </tr>\n' +
+        '                          </table>\n' +
+        '                      </div>\n' +
+        '                      <div class="dz-success-mark"><span></span></div>\n' +
+        '                      <div class="dz-error-mark"><span></span></div>\n' +
+        '                      <div class="dz-error-message"><span data-dz-errormessage></span></div>\n' +
+        '                    </div>\n' +
+        '                </div>\n' +
+        '            </li>\n' +
+        '        </div>\n' +
+        '    '
+
+    let message =` <img src="{% static 'img/icone.png' %}" style="margin-top: 30px; margin-left: 0">`+
+                   `<br><center>Arraste a pasta com os arquivos aqui ou  </center>`+
+                  ` <img src="{% static 'img/pp.png' %}" style="margin-top: 30px; margin-left: 0">`
+
+    Dropzone.autoDiscover = false;
+    var myDropzone = new Dropzone(".dropzone", {
+        autoProcessQueue: false,
+        parallelUploads: 1,// Number of files process at a time (default 2)//
+        maxFiles: 1,
+        uploadMultiple: false,
+        maxFilesize : 1500, //MB
+        dictDefaultMessage: message,
+        acceptedFiles: '.xls, .xlsx, .xlsm, .xlsb, .odf, .ods, .odt',
+        previewTemplate: previewTemplate,
+        init: function() {
+            this.on('completemultiple', function (file, json) {
+                $('.sortable').sortable('enable');
+            });
+
+            this.on("success", function (event, data) {
+                window.location.href = '/app/flexibilidade/sistemas/';
+            });
+
+            this.on("addedfile", function(file) {
+                if (this.files.length) {
+                    var _i, _len;
+                    for (_i = 0, _len = this.files.length; _i < _len - 1; _i++) // -1 to exclude current file
+                    {
+                        if(this.files[_i].name === file.name && this.files[_i].size === file.size && this.files[_i].lastModified.toString() === file.lastModified.toString())
+                        {
+                            this.removeFile(file);
+                        }
+                    }
+                }
+            })
+        }
+    });
+
+    function dropzone_trigger(){
+
+        myDropzone.on("sending", function (file, xhr, formData) {
+        let formData2 = new FormData($("#form-aux")[0]);
+        for (var pair of formData2.entries()) {
+            formData.append(pair[0], pair[1]);
+        }
+        });
+        myDropzone.processQueue();
+    }
+
+</script>
+{% endblock %}

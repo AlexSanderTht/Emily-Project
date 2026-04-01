@@ -1,0 +1,40 @@
+label{
+	white-space: nowrap;
+}
+
+.justificado{
+	white-space: nowrap;
+}
+
+.area-upload{
+	box-shadow: 0 5px 20px rgba(0,0,0,.2);
+	margin: 10px auto;
+	padding: 10px;
+	box-sizing: border-box;
+
+	width: 100%;
+	max-width: 800px;
+	position: relative;
+}
+
+
+.area-upload label.label-upload{
+	border: 2px dashed #0d8acd;
+	min-height: 200px;
+	text-align: center;
+	width: 100%;
+
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	color: #0d8acd;
+	position: relative;
+
+	-webkit-transition: .3s all;
+	-moz-transition: .3s all;
+	-o-transition: .3s all;
+	transition: .3s all;
+}
+.rolagem{
+	    overflow-y: scroll;
+     }

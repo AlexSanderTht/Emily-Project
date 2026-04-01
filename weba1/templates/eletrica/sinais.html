@@ -1,0 +1,256 @@
+{% load static %}
+{% block sinais %}
+<div class="modal-header">
+    <h5 class="modal-title" id="motoracessoriosLabel">Sinais</h5>
+</div>
+<br>
+<!--Inicio da Interface -->
+<div class="row"  >
+    <!--Inicio da barra central -->
+    <div style="border-right: 2px solid rgb(161, 158, 158); width: 52%; ">
+        <div class="container">
+            <div class="row justify-content-start">
+                <!-- Inicio do campo Código-->
+                <div class="col-sm-4">
+                    <div class="form-group mb-4">
+                        <td data-toggle="tooltip" title="Inserir codigo ">Código
+                            <input type="text" required class="form-control" id="sinais-cod" >
+                        </td>
+                    </div>
+                </div>
+                <!-- Fim do campo Código-->
+                <!--Inicio do botão Função por OS-->
+                <br>
+                <div class="col-4">
+                    <button name="bot" type="button" style="background-color:#ffbe47; margin-top: 20px; " class="subscribe btn  rounded-pill shadow-sm" data-target="#sinaisOS" data-toggle="modal" onclick="OnclickButtonSinaisOs();">Sinais por OS</button>
+                </div>
+                <!--Fim do botão Função por OS-->
+            </div>
+        </div>
+
+        <!--Inicio do campo Descrição-->
+        <div class="col-sm-11">
+            <div class="form-group mb-4">
+                <td placeholder="Digite aqui"  data-toggle="tooltip"  title="Inserir a descrição">Descrição
+                    <input type="text"  required class="form-control" id="sinais-desc">
+                </td>
+            </div>
+        </div>
+       <!--Fim do campo Descrição-->
+
+    </div>
+    <!--Fim da barra central -->
+
+    <!-- Inicio do campo Pesquisa -->
+    <div style="width: 47%; position: absolute; right: 1%;">
+        {% include "./SearchBarSinais.html" %}
+    </div>
+</div>
+<br>
+<div class="modal-footer">
+    <div class="col-sm">
+        <button type="button" class="btn btn-success" onclick="registerSinais()">Adicionar</button>
+        <button type="button" class="btn btn-primary ml-2" onclick="updateSinais()">Alterar</button>
+    </div>
+    <button type="button" class="btn btn-warning" onclick="clean_all_forms_sinais()">Limpar</button>
+    <button type="button" class="btn btn-danger" onclick="deleteSinais()">Excluir</button>
+</div>
+<script>
+    var sinais_no_ref = {}
+    var sinais_with_ref = {}
+    var id_sinal = ""
+
+     function clean_all_forms_sinais(){
+        document.getElementById('sinais-search').value = ""
+        document.getElementById('sinais-cod').value = ""
+        document.getElementById('sinais-desc').value = ""
+    }
+
+    function clean_form_search_sinais(){
+        const search = document.getElementById('sinais-search')
+        search.addEventListener('keydown', function(event) {
+        const key = event.key; // const {key} = event; ES6+
+        if (key === "Backspace") {
+            clean_all_forms_sinais()
+            $(`#sinais-select`).html(printSinais())
+        }
+    });
+    }
+
+    function filterBarSearchSinais(){
+        var search = document.getElementById('sinais-search').value
+        if (search.length == 0){
+            return $(`#sinais-select`).html(printSinais())
+        }
+        var options='';
+        $(`#sinais-select`).html(options)
+        for (keys in sinais_with_ref){
+            var name_caps = sinais_with_ref[keys]['Nome'].toUpperCase()
+            if (name_caps.includes(search.toUpperCase())){
+                options += `<option value=${keys} onclick="selectSinais(${keys})">${sinais_with_ref[keys]['Nome']}</option>`
+            }
+        }
+        $(`#sinais-select`).html(options)
+    }
+
+    function printSinais(){
+        if ($(`#pro-os`).val() == 'none'){
+            return alert("Selecione uma OS")
+        }
+        var options_sinais='';
+        $.ajax({
+              type: "GET",
+              url: "AllSinais/",
+              dataType: 'json',
+              success: function (data){
+                  for (i in data) {
+                      options_sinais += `<option value=${data[i]['tb_sinais_id']} onclick="selectSinais(${data[i]['tb_sinais_id']})">${data[i]['tb_sinais_nome']}</option>`
+                      sinais_no_ref['Nome'] = data[i]['tb_sinais_nome']
+                      sinais_no_ref['Desc'] = data[i]['tb_sinais_desc']
+                      sinais_with_ref[data[i]['tb_sinais_id']] = sinais_no_ref
+                      sinais_no_ref = {}
+                  }
+                  $(`#sinais-select`).html(options_sinais)
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+        })
+        $('#sinais').modal('show')
+        return options_sinais
+    }
+
+    function selectSinais(id) {
+        id_sinal = id
+        document.getElementById('sinais-cod').value = sinais_with_ref[id]['Nome']
+        document.getElementById('sinais-desc').value = sinais_with_ref[id]['Desc']
+        document.getElementById('sinais-search').value = sinais_with_ref[id]['Nome']
+    }
+
+    function registerSinais(){
+        if (id_sinal == "" || document.getElementById('sinais-search').value == ""){
+            const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+            var cdg = document.getElementById('sinais-cod').value
+            var desc = document.getElementById('sinais-desc').value
+
+
+            if (cdg == "" || desc == ""){
+                // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                return swalAlert(false, 'Por favor, preencha todos os campos para poder cadastrar!', 'warning', false)
+            }
+
+            if (cdg.length > 30){
+                return swalAlert(false, 'O campo código aceita no maximo 30 caracteres!', 'warning', false)
+            }
+
+            if (desc.length > 100){
+                return swalAlert(false, 'O campo descrição aceita no maximo 100 caracteres!', 'warning', false)
+            }
+
+            $.ajax({
+                  type: "POST",
+                  headers:{'X-CSRFToken':csrftoken},
+                  url: "AllSinais/",
+                  dataType: 'json',
+                  data: { 'tb_sinais_nome': cdg,
+                          'tb_sinais_desc': desc },
+                  success: function(data){
+                      if (data['success'] == true){
+                      clean_all_forms_sinais()
+                      printSinais()
+                      return swalAlert(false, 'Cadastrado com sucesso!', 'success', false)
+                    }
+                      else{
+                          return swalAlert(false, 'Já existe um Sinal com este código!', 'error', false)
+                      }
+                  },
+                  error: function (data) {
+                      return swalAlert(false, 'Houve um erro ao cadastrar o Sinal!', 'error', false)
+                }
+              });
+            }
+                    else {
+                        clean_all_forms_sinais()
+                        return swalAlert(false, 'Já existe um Sinal com este código!', 'error', false)
+                    }
+    }
+
+    function updateSinais(){
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        var cdg = document.getElementById('sinais-cod').value
+        var desc = document.getElementById('sinais-desc').value
+
+        if (id_sinal == "" || document.getElementById('sinais-search').value == ""){
+            return swalAlert(false, 'Por favor, selecione um sinal para ser alterado!', 'warning', false)
+        }
+
+        if (cdg.length > 30){
+            return swalAlert(false, 'O campo código aceita no maximo 30 caracteres!', 'warning', false)
+            }
+
+        if (desc.length > 100){
+            return swalAlert(false, 'O campo descrição aceita no maximo 100 caracteres!', 'warning', false)
+            }
+
+        $.ajax({
+              type: "PUT",
+              headers:{'X-CSRFToken':csrftoken},
+              url: "ManipulingSinais/" + id_sinal + "/",
+              dataType: 'json',
+              data: { 'tb_sinais_nome': cdg,
+                      'tb_sinais_desc': desc},
+              success: function(data){
+                  if (data['success'] == true) {
+                      clean_all_forms_sinais()
+                      printSinais()
+                      return swalAlert(false, 'Atualizado com sucesso!', 'success', false)
+                  }
+                  else{
+                      clean_all_forms_sinais()
+                      return swalAlert(false, 'Ocorreu um erro ao alterar pois já existe um Sinal com este código ou os campos continuaram iguais.', 'error', false)
+                  }
+              },
+              error: function () {
+                  clean_all_forms_sinais()
+                  return swalAlert(false, 'Já existe um Sinal com este código!', 'error', false)
+              }
+          });
+    }
+
+
+    function deleteSinais(){
+        if (id_sinal == "" || document.getElementById('sinais-search').value == ""){
+            return swalAlert(false, 'Escolha um Sinal para poder excluir!', 'error', false)
+        }
+        $.ajax({
+              type: "DELETE",
+              url: "ManipulingSinais/" + id_sinal + "/",
+              dataType: 'json',
+              success: function(data){
+                  clean_all_forms_sinais()
+                  printSinais()
+                  return swalAlert(false, 'Excluído com sucesso!', 'success', false)
+              },
+              error: function () {
+                  return swalAlert(false, 'Houve um erro ao excluir o Sinal!!\nTemos um Sinal por OS vinculado a esse Sinal', 'error', false)
+              }
+          });
+    }
+
+    // --------------------- Alert para notificar usuario ---------------------//
+    function swalAlert(titulo, texto, icone_img, btn){
+    swal({
+    title: titulo,
+    text: texto,
+    icon: icone_img,
+    button: btn,
+    })
+    $('div.swal-modal').addClass('bordas')
+    $('div.swal-title').addClass('h4')
+    $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+    $('div.swal-text').addClass('text-center')
+    $('div.swal-footer').addClass('d-flex justify-content-center')
+    }
+
+</script>
+{% endblock sinais %}

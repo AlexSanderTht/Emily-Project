@@ -1,0 +1,105 @@
+{% extends 'geral/base.html' %}
+{% block head %}
+<title>A1Listas</title>
+{% endblock %}
+{% block help %}
+<h7>Botão "Escolher" Neste botão você irá selecionar doc. com extensão .xlsx. </h7>
+<br><br>
+<h7>Botão 2 "Escolher" Neste botão você irá selecionar doc. com extensão .xls. </h7>
+<br><br>
+<h7>Opção "Lista de intrumentos" Nesta opção você irá gerar somente  listas de instrumentos. </h7>
+<br><br>
+<h7>Opção "Lista de linhas " Nesta opção você irá gerar somente lista de linhas. </h7>
+<br><br>
+<h7>Opção "Lista de válvulas manuais " Nesta opção você irá gerar somente lista de válvulas manuais. </h7>
+<br><br>
+<h7>Opção "Lista de compras " Nesta opção você irá gerar somente Lista de compras. </h7>
+<br><br>
+<h7> "Número da revisão" Neste campo você irá inserir o número da revisão. </h7>
+<br><br>
+<h7>Botão "Gerar" Neste botão será gerado a lista dos doc. tranformando em extensão .xlsx.</h7>
+<br><br>
+<h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+<div class="container py-5">
+    <!-- For demo purpose -->
+    <div class="row mb-4">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4"><b>A1 Listas</b></h1>
+
+      </div>
+    </div>
+    <!-- End -->
+
+
+    <div class="row">
+      <div class="col-lg-7 mx-auto">
+        <div class="bg-white rounded-lg shadow-sm p-5">
+
+
+          <!-- Credit card form content -->
+          <div class="tab-content">
+
+            <!-- credit card info-->
+            <div id="nav-tab-card" class="tab-pane fade show active">
+
+              <div>
+                <form action="{% url 'download' %}" id="auto-download" method="GET" enctype="multipart/form-data">
+                    {% csrf_token %}
+                </form>
+              </div>
+
+              <form role="form" id="form" action="{% url 'a1list' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+
+                 <button type="button"  id="bot-template"  class=" btn butof" onclick="clicked('template')"> Escolher</button>
+                 <input type="file" id="template" hidden="hidden"  onchange="selectedFile(event, this.name)" name="template"/>
+                 <span id = "text-template"  class= "label-style">Template/revisão (xlsx):</span>
+
+                 <br>
+                 <br>
+
+                 <button type="button"  id="bot-query" class=" btn butof" onclick="clicked('query')"> Escolher</button>
+                 <input type="file" id="query" hidden="hidden"  onchange="selectedFile(event, this.name)" name="query"/>
+                 <span id = "text-query"  class= "label-style"> Query do Comos (xls):</span>
+
+                </div>
+
+                <div class="form-group">
+                    <input type="radio" name="options" value="instrumentos"><span class = "label-style"> Lista de instrumentos</span><br>
+                    <input type="radio" name="options" value="linhas"><span class = "label-style">  Lista de linhas </span><br>
+                    <input type="radio" name="options" value="valvulas"><span class = "label-style"> Lista de válvulas manuais</span><br>
+                    <input type="radio" name="options" value="compras"><span class = "label-style"> Lista de compras</span><br><br>
+                    <label for="Rev">Selecione o número da revisão:</label>
+                    <select id="rev_value" name="revision">
+                        <option value=0>0</option>
+                        <option value=1>1</option>
+                        <option value=2>2</option>
+                        <option value=3>3</option>
+                        <option value=4>4</option>
+                        <option value=5>5</option>
+                        <option value=6>6</option>
+                        <option value=7>7</option>
+                        <option value=8>8</option>
+                        <option value=9>9</option>
+                    </select>
+                </div>
+
+                <div class="row">
+                </div>
+              </form>
+              <div style="margin-left: 0px; margin-right: 0px" ><!-- barra de progresso -->
+                {% include 'geral/bar.html' %}
+                {% block bar %}
+                {% endblock %}
+              </div><!-- barra de progresso -->
+            </div>
+          </div>
+          <!-- End -->
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}

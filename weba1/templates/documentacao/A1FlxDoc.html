@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<title>A1FlxDoc</title>
+
+    {% load static %}
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="{% static 'js/bootstrap-filestyle.min.js' %}"> </script>
+	<link  href="{% static 'css/viewer.css' %}" rel="stylesheet">
+	<script src="{% static 'js/viewer.js' %}"></script>
+	<meta charset="utf-8">
+	<style type="text/css">
+	
+		.size{
+			height: 40px;
+			width: 98px;
+			margin-left: 8px;
+			margin-right:8px;
+			margin-top: 5px;
+			margin-bottom: 5px;
+			text-align: center;
+			background-color: #f58c32;
+			color: white;
+		}
+		.reset-this {
+		all: initial;
+		}
+
+		.redo-fieldset {
+			padding-left:1%;
+			padding-right: 1%;
+			padding-top: 10px;
+			height: 60px;
+		} 
+
+		.redo-legend {
+			color: black;
+		}
+		.custom-button {
+			padding: 2px;
+			color: black;
+			background-color: white;
+			border: 1px solid #000;
+			border-radius: 5px;
+			cursor: pointer;
+			height: 40px;
+			font-size: 20px;
+		}
+
+		.custom-button:hover {
+			background: #f58c32;
+			color: black
+		}
+
+		.custom-text {
+			margin-left: 10px;
+			font-family: Tahoma,Verdana,Segoe,sans-serif; ;
+			color: #aaa;
+			font-size: 10px;
+		}
+		.select-text{
+			font-family: tahoma,Verdana,Segoe,sans-serif;
+			font-size: 16px;
+			margin: 4px;
+		}
+		.select-box{
+			width: 24.34%;
+			height: 50px;
+			margin-left: 0.2%;
+			margin-right: 0.2%;
+		}
+		body {
+		    -webkit-touch-callout: none;
+		    -webkit-user-select: none;
+		    -khtml-user-select: none;
+		    -moz-user-select: none;
+		    -ms-user-select: none;
+		    user-select: none;
+		}
+	</style>
+
+
+
+</head>
+<body style="background-color: black;">
+	<form style="background-color: #a0a0a0; height: 100vh; border: 1vw black solid; "
+	action="{% url 'flxdoc' %}" method="POST" enctype="multipart/form-data">
+		<fieldset class="reset-this redo-fieldset" style=" width: 96%; background-color: #a0a0a0;">
+			<select id="OS" class="select-box">
+			  <option value="" disabled selected hidden="hidden">OS</option>
+			</select>
+			<select id="Disciplina" class="select-box">
+			  <option value="" disabled selected hidden="hidden">Disciplina</option>
+			</select>
+			<select id="Documento" class="select-box">
+			  <option value="" disabled selected hidden="hidden">Documento</option>
+			</select>
+			<select id="Revisão" class="select-box">
+			  <option value="" disabled selected hidden="hidden">Revisão</option>
+			</select>
+		</fieldset>
+
+	    <div id="imgContainer" style="float: right;height:87vh;width:84vw; border: 1px solid black; margin-right: 3.5vw; overflow: hidden;">
+			<img src="{% static '1.jpg' %}" id="img" hidden="hidden" alt="">
+		</div>
+
+		<div style="margin-left: 1vw; width: 10vw">
+			<span style="color: white">Color</span><br>
+			<input type="radio" name="options" value="rv0"><span class = "select-text">RGB</span><br>
+			<input type="radio" name="options" value="rv1"><span class = "select-text">Inserido</span><br>
+			<input type="radio" name="options" value="rv2"><span class = "select-text">Removido</span><br>
+			<input type="radio" name="options" value="rv3"><span class = "select-text">Comentado</span><br>
+			<span style="color: white">Page</span><br>
+			<button type="button" id="prev">Prev</button>
+			<button type="button" id="next">Next</button><br>
+			<span style="color: white">Revisão</span><br>
+			<select id="Disciplina" class="">
+			  <option value="" disabled selected hidden="hidden">rev</option>
+			</select>
+			<select id="Disciplina" class="">
+			  <option value="" disabled selected hidden="hidden">rev</option>
+			</select>
+		</div>
+	</form>
+
+	<script type="text/javascript">
+	intActualPage = 1;
+	const viewer = new Viewer(document.getElementById('img'), {
+	  inline: true,
+	  viewed() {
+	    viewer.zoomTo(1);
+	  },
+	});
+	$('#prev').on("click", event=>{
+    	if(intActualPage>1){
+    		intActualPage--;
+    		$('img').attr("src",intActualPage+".jpg");
+
+    	}
+    });
+
+    $('#next').on("click", event=>{
+    	if(intActualPage<3){
+    		intActualPage++;
+    		$('img').attr("src","{% static "" %}"+ intActualPage+".jpg");
+    	}
+    })   
+	</script>
+</body>
+</html>

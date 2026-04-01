@@ -1,0 +1,179 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+
+<html>
+<head>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+    <link href="{% static 'js/bootstrap.min.css' %}">
+</head>
+
+<style>
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-5">
+    {% csrf_token %}
+    <div class="card mb-4">
+        <div  class=" card-body col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Controle de Projetos (Ambiente e OS) para Templates</b></h2>
+        </div>
+        <div class=" card-body container m-xl-auto">
+            <div class="tab_cont p-3">
+                <table class="table table-bordered rounded" id="table">
+                    <thead>
+                    <tr>
+                        <th hidden>ID</th>
+                        <th scope="col">Ambiente</th>
+                        <th scope="col">OS</th>
+                        <th scope="col">Status OS</th>
+                        <th scope="col">Status Validação</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for id, id_proj, tb_so_num, status_os, status_ferramenta in OSProject %}
+                    <tr>
+                        <td hidden>{{id}}</td>
+                        <td>{{id_proj}}</td>
+                        <td>{{tb_so_num}}</td>
+                        <td>{{status_os}}</td>
+                        <td>{{status_ferramenta}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class=" tab_cont p-3">
+                <div class="form-row">
+                    <div class="form-group col-md-4" hidden>
+                        <label for="os_proj_id">ID</label>
+                        <input id="os_proj_id" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="os_proj_nome_proj">Ambiente</label>
+                        <select id="os_proj_nome_proj" class="form-control ">
+                            {% for id, nome_proj in Projeto %}
+                            <option title="{{id}}">{{nome_proj}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="os_proj_os">Número da OS</label>
+                        <select id="os_proj_os" class="form-control ">
+                            {% for id, num_os in OsListaAtiva %}
+                            <option title="{{id}}">{{num_os}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="os_proj_status_os">Status da OSS</label>
+                        <select id="os_proj_status_os" class="form-control ">
+                            <option title="ATIVO">ATIVO</option>
+                            <option title="INATIVO">INATIVO</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="os_proj_status_validacao">Status da Validação</label>
+                        <select id="os_proj_status_validacao" class="form-control ">
+                            <option title="ATIVO">ATIVO</option>
+                            <option title="INATIVO">INATIVO</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <button type="button" class="btn butof" onclick="InsertOsProj()">Adicionar\Editar</button>
+                    <button type="button" class="btn btn-primary" onclick="Clear_OS_Proj()">Limpar</button>
+                    <button type="button" class="btn bg-danger" onclick="DeleteOsProj()">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+
+<script>
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+    $("#table tbody tr").click(function () {
+        $(this).addClass('selected table-primary').siblings().removeClass('selected table-primary');
+        Fill_id_os_proj($(this).find('td:nth-child(1)').html(), $(this).find('td:nth-child(2)').html(), $(this).find('td:nth-child(3)').html(), $(this).find('td:nth-child(4)').html(), $(this).find('td:nth-child(5)').html())
+
+    });
+
+    function Fill_id_os_proj(id, nome_proj, nome_os, status_os, status_proj) {
+        document.getElementById('os_proj_id').value = id
+        document.getElementById('os_proj_nome_proj').value = nome_proj
+        document.getElementById('os_proj_os').value = nome_os
+        document.getElementById('os_proj_status_os').value = status_os
+        document.getElementById('os_proj_status_validacao').value = status_proj
+    }
+
+    function Clear_OS_Proj() {
+        Fill_id_os_proj('', '', '', '', '')
+        $("#table tbody tr").removeClass('selected table-primary')
+    }
+
+    function DeleteOsProj(){
+        let id = document.getElementById('os_proj_id').value
+        if(isNaN(parseInt(id))){
+            swalAlert_DOC('Deletar Registro', 'NÃO foi possivel realizar a deleção, necessário selecionar um registro a ser deletado na tabela!','error', 'Fechar')
+            Clear_OS_Proj()
+        }else{
+            $.ajax({
+                url: "", // the endpoint
+                type: "DELETE", // http method
+                headers: {'X-CSRFToken': csrf[0].value},
+                dataType: "json",
+                data: {
+                    "id": id,
+                    'csrfmiddlewaretoken': csrf[0].value
+                 } // data sent with the post request
+        }).done(function (data) {
+                swalAlert_DOC('Deletar Registro', data['data'],'warning', 'Fechar')
+                Clear_OS_Proj()
+        });
+        }
+    }
+
+    async function InsertOsProj() {
+        let id = document.getElementById('os_proj_id').value
+        let proj_id = document.getElementById('os_proj_nome_proj').selectedOptions[0].title
+        let service_order_id = document.getElementById('os_proj_os').selectedOptions[0].title
+        let status_os = document.getElementById('os_proj_status_os').value
+        let status_valid = document.getElementById('os_proj_status_validacao').value
+        $.ajax({
+            url: "", // the endpoint
+            type: "POST", // http method
+            dataType: "json",
+            data: {
+                "id": id,
+                "proj_id": proj_id,
+                "service_order_id": service_order_id,
+                "status_os": status_os,
+                "status_valid": status_valid,
+                'csrfmiddlewaretoken': csrf[0].value
+            } // data sent with the post request
+        }).done(function (data) {
+            swalAlert_DOC('Inserir Registro', data['data'],'warning', 'Fechar')
+            Clear_OS_Proj()
+
+        });
+
+    }
+
+
+</script>
+{% endblock %}

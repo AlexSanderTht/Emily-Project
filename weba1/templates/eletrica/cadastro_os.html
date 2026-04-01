@@ -1,0 +1,99 @@
+{% block cadastro_os %}
+    {% csrf_token %}
+<div class="modal-body">
+    <form>
+        <div class="form-row">
+            <div class="col-sm-4 mb-3">
+                <label for="os-type">Pesquisa OS</label>
+                <select class="form-control" id="os-type" onchange="send_back_front_end()"></select>
+            </div>
+
+            <div class="col-sm-4 mb-3">
+                <label for="os-num">Número</label>
+                <input title="preencha ente campo!" placeholder="Número da OS" type="text" id="os-num" required class="form-control" name="num_os" onkeyup="KeyPressCdgAlterSelect(this.id, 'os-type')">
+                <div class ="invalid-feedback">Caracteres inválidos</div>
+            </div>
+
+            <div class="col-sm-4 mb-3" hidden>
+                <label for="os-sep">Separador</label>
+                <i class="fa fa-question-circle" data-toggle="tooltip" title="Inserir o Caracter que  separa o TAG do motor" data-placement="top"></i>
+                <input title="preencha ente campo!" placeholder="Caractér" onkeyup="this.value=this.value.length > 5? this.value.slice(0, 5): this.value;" type="text" required class="form-control" id="os-sep" name="separador_os" title="Max 5 caracteres">
+                <div class ="invalid-feedback">Caracteres inválidos</div>
+            </div>
+
+            <div class="col-sm-4 mb-3 d-flex align-items-end">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="check-proj-finish">
+                  <label class="form-check-label" for="check-proj-finish">
+                    Finalizado ?
+                  </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col-sm-6 mb-3">
+                <label for="os-client">Cliente</label>
+                <input title="preencha ente campo!" placeholder="Nome do Cliente" type="text" required class="form-control" id="os-client" name="cliente_os">
+                <div class ="invalid-feedback">Caracteres inválidos</div>
+            </div>
+
+            <div class="col-sm-6 mb-3">
+                <label for="os-project">Projeto</label>
+                <input title="preencha ente campo!" placeholder="Nome do projeto" type="text" required class="form-control" id="os-project" name="projeto_os">
+                <div class ="invalid-feedback">Caracteres inválidos</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+             <div class="col-sm-6 mb-3" hidden>
+                <label for="os-project-num">N° Projeto</label>
+                <input title="preencha ente campo!" placeholder="N° do Projeto" type="text" required class="form-control" id="os-project-num" name="num_proj_os">
+                <div class ="invalid-feedback">Caracteres inválidos</div>
+            </div>
+
+            <div class="col-sm-6 mb-3">
+                <label for="os-client-initials">Sigla Cliente</label>
+                <input title="preencha ente campo!" placeholder="Sigla (ex: WLP)" type="text" required class="form-control" id="os-client-initials" name="sigla_cliente_os" title="Max 5 caracteres">
+                <div class ="invalid-feedback">Caracteres inválidos</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col-sm-12 mb-3">
+                <label for="os-desc-prj">Descrição</label>
+                <input title="preencha ente campo!" placeholder="Descrição do projeto" type="text" required class="form-control" id="os-desc-prj" name="os-desc-prj">
+                <div class ="invalid-feedback">Caracteres inválidos</div>
+            </div>
+
+            <div class="col-sm-12 mb-3">
+                <label for="os-unid-fabril">Unid. Fabril</label>
+                <input title="preencha ente campo!" placeholder="Unidade fabril" type="text" required class="form-control" id="os-unid-fabril" name="unid_fabril_os">
+                <div class ="invalid-feedback">Caracteres inválidos</div>
+            </div>
+
+            <div hidden class="col-sm-12 mb-3">
+                <label for="os-path">Pasta da O.S</label>
+                <input title="preencha ente campo!" placeholder="Diretório (ex: P:\PRJ\OS\...)" type="text" required class="form-control" id="os-path" name="pasta_os">
+                <div class ="invalid-feedback">Caracteres inválidos</div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-success" onclick="verify()">Adicionar/Alterar</button>
+    <button type="button" class="btn btn-warning" onclick="clean_forms()">Limpar</button>
+    <button type="button" class="btn btn-danger" onclick="excluirCadastroOS()">Excluir</button>
+</div>
+<script>
+    function verify(){
+        if ($('#os-type').val() === "none"){
+            return import_data_tb_os()
+        }
+        else {
+            return exec_update_method()
+        }
+    }
+</script>
+
+{% endblock %}

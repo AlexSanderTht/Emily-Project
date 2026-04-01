@@ -1,0 +1,233 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>ListDoc DashBoards</title>
+{% endblock %}
+{% block help %}
+{% endblock %}
+{% block main %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4"><b>ListDoc DashBoards</b></h1>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <form action="{% url 'listdoc_dashboards' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="card mb-4" style="background: #f5f5f5; border: none">
+                <div class="row">
+                    <div class="col-6 col-sm-3">
+                        <div class="form-group mb-4" style= "align-items: center; text-align: center;">
+                            <label for="dia-inicial">Data Inicial:</label><br>
+                            <input type="date" id="dia-inicial" name="dia_inicial" style="width: 120px; margin-left: 40px">
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-3 ">
+                        <div class="form-group" style= "align-items: center; text-align: center">
+                            <label for="dia-final">Data Final:</label><br>
+                            <input type="date" id="dia-final" name="dia_final" style="width: 120px; margin-left: 45px">
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="col-6 col-sm-3">
+                        <div class="form-group"style= "align-items: center; text-align: center;">
+                            <label for="item">  Selecione a Ordem de Serviço: </label>
+                            <select id="item" name="os" class="form-control" style="width: 120px; margin-left: 87px ">
+                                <option value="">Todas</option>
+                                <option value="2120">2120</option>
+                                <option value="2121">2121</option>
+                                <option value="2123">2123</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-3">
+                        <br>
+                        <div class="form-group">
+                            <button type="submit" style="background-color:#F58C32; color: #ffff" id="bot-anterior"  class=" btn ">Consultar</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+        <div class="card mb-4"><!-- inicio Área-->
+            <div class="card-header">
+                <i class="fas fa-chart-area mr-1"></i>
+                Documentos Cadastrados Semanalmente
+            </div>
+
+            <div class="card-body"><canvas id="myAreaChart" width="100%" height="30"></canvas></div>
+            <div class="card-footer small text-muted">Atualizado em {{ time_now }}</div>
+        </div><!-- fim Área-->
+        <div class="row">
+            <div class="col-lg-6"><!-- inicio barra-->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar mr-1"></i>
+                        Falhas Semanais Encontradas
+                    </div>
+                    <div class="card-body"><canvas id="myBarChart" width="100%" height="50"></canvas></div>
+                    <div class="card-footer small text-muted">Atualizado em {{ time_now }}</div>
+                </div>
+            </div><!-- fim barra-->
+            <div class="col-lg-6"><!-- inicio pizza-->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie mr-1"></i>
+                        Número de Documentos por Disciplina
+                    </div>
+                    <div class="card-body"><canvas id="myPieChart" width="100%" height="50"></canvas></div>
+                    <div class="card-footer small text-muted">Atualizado em {{ time_now }}</div>
+                </div>
+            </div><!-- fim pizza-->
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block end %}
+
+<script src="{% static 'vendor/chartjs/Chart.bundle.min.js' %}"></script>
+<script src="{% static 'src/assets/demo/chart-area-demo.js' %}"></script>
+<script src="{% static 'src/assets/demo/chart-bar-demo.js' %}"></script>
+
+<script type="text/javascript">
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#292b2c';
+
+    // Area Chart Example
+    var ctx = document.getElementById("myAreaChart");
+    var week_list = [];
+    {% for x in err_week %}
+        week_list.push("{{ x }}")
+    {% endfor %}
+    var myLineChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: week_list,
+        datasets: [{
+          label: "Documentos Cadastrados",
+          lineTension: 0.5,
+          backgroundColor: "rgba(2,117,216,0.2)",
+          borderColor: "rgba(2,117,216,1)",
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(2,117,216,1)",
+          pointBorderColor: "rgba(255,255,255,0.8)",
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgba(2,117,216,1)",
+          pointHitRadius: 50,
+          pointBorderWidth: 2,
+          data: {{ area_data }},
+        }],
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'Semana'
+            },
+            gridLines: {
+              display: false
+            },
+            ticks: {
+              maxTicksLimit: 7
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: {{ max_area }},
+              maxTicksLimit: 5
+            },
+            gridLines: {
+              color: "rgba(0, 0, 0, .125)",
+            }
+          }],
+        },
+        legend: {
+          display: false
+        }
+      }
+    });
+
+</script>
+<script type="text/javascript">
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#292b2c';
+
+    // Bar Chart Example
+    var ctx = document.getElementById("myBarChart");
+    var week_list = [];
+    {% for x in err_week %}
+        week_list.push("{{ x }}")
+    {% endfor %}
+    var myLineChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: week_list,
+        datasets: [{
+          label: "Erros em documentos",
+          backgroundColor: "rgba(2,117,216,1)",
+          borderColor: "rgba(2,117,216,1)",
+          data: {{ err_data }},
+        }],
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'Semana'
+            },
+            gridLines: {
+              display: false
+            },
+            ticks: {
+              maxTicksLimit: 6
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: {{ max_err }},
+              maxTicksLimit: 5
+            },
+            gridLines: {
+              display: true
+            }
+          }],
+        },
+        legend: {
+          display: false
+        }
+      }
+    });
+</script>
+<script>
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#292b2c';
+
+    // Pie Chart Example
+    var ctx = document.getElementById("myPieChart");
+    var myPieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ["A - Automação", "M - Mecânica", "C - Civil/Estrutura Metálica" , "E - Elétrica" , "I - Instrumentação" , "M - Tubulação","S - Suprimentos" , "G - Gerenciamento" , "P - Processo"],
+        datasets: [{
+          data: {{ disc_data }},
+          backgroundColor: ['#f00', '#0f0', '#00f' ,'#ff0', '#28a745' ,'#0ff' , '#f0f' , '#faab05' , '#779ca3'],
+        }],
+      },
+    });
+</script>
+<script>
+    window.setInterval(function (){
+        <!-- Obter a hora atual, e atualizar nos gráficos -->
+    }, 100);
+</script>
+{% endblock %}

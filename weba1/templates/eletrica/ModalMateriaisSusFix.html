@@ -1,0 +1,50 @@
+{% load static %}
+
+<div class="modal fade" id="modal_materiais_codigos_gt" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content mt-5 shadow border estl_modal border-0">
+      <div class="modal-header border-0">
+        <h5 class="modal-title font-weight-bold mt-2 p-1" id="exampleModalLabel">Materiais Códigos</h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#modal_materiais_codigos_gt').modal('hide');window.location.reload()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row ">
+            <div class="col-12 ">
+                <form>
+                    <div class="form-group">
+                        <label class="col-form-label">Areas:</label>
+                        <select class="form-control input-a1style" id="area_mat_gt" onchange="ChangeAreasAndMatInMateriaisCod()"></select>
+                    </div>
+                </form>
+            </div>
+            <div class="col-12">
+                <div class="form-group">
+                    <label class="col-form-label">Materias:</label>
+                    <select class="form-control input-a1style" id="mats_mat_cdg_gt" onchange="ChangeAreasAndMatInMateriaisCod()"></select>
+                </div>
+            </div>
+            <div class="col-12">
+              <label class="col-form-label">Código Material:</label>
+              <input type="text" class="form-control input-a1style" id="cods_mat_cdg_gt" onchange="VerifyMaterialCode(this, 'cods_mat_cdg_gt_desc')">
+            </div>
+
+            <div class="col-12">
+              <label class="col-form-label">Descrição código do material:</label>
+                <textarea type="text" class="form-control input-a1style" id="cods_mat_cdg_gt_desc" readonly></textarea>
+            </div>
+
+        </div>
+      </div>
+        <div class="modal-footer">
+            <div class="grid d-flex align-self-start mr-auto">
+                <button type="button" class="btn btn-success" onclick="SendDatasMaterialCod()" style="">Adicionar/Alterar</button>
+            </div>
+                <button type="button" class="btn btn-warning"  onclick="ClearMateriaisCodGt()">Limpar</button>
+                <button type="button" class="btn btn-danger"  onclick="DeleteMaterialCod()">Excluir</button>
+        </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,113 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+<title>A1Pro | TÍPICOS SUB. E BAND.</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<div class="text-justify border-bottom m-3">
+    <button class="btn btn-primary btn-warning position-absolute" onclick="window.history.go(-1)">Voltar</button>
+</div>
+<style>
+    .image_tip_tag{
+        object-fit: cover;
+        object-position: center center;
+        transition: transform 0.5s, border-radius 0.5s;
+    }
+    .image_tip_tag:hover{
+        z-index: 1000;
+        transform:scale(1.3);
+        border-radius: 10%;
+    }
+
+    .form{
+        position: relative;
+    }
+
+    .form .fa-search{
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        color: #9ca3af;
+    }
+
+    .form button:nth-of-type(1){
+        position: absolute;
+        right: 65px;
+        top: 5px;
+        padding: 2px;
+    }
+
+    .form button:nth-of-type(2){
+        position: absolute;
+        right: 17px;
+        top: 5px;
+        padding: 2px;
+        border-left: 1px solid #d1d5db;
+    }
+
+    .left-pan{
+        padding-left: 7px;
+    }
+
+    .left-pan i{
+       padding-left: 10px;
+    }
+
+    .form-input{
+        text-indent: 25px;
+    }
+
+    .paginationjs .paginationjs-pages li.active {
+        background-color: #007bff !important;
+        color: #FFFFFF !important;
+    }
+
+</style>
+<div class="container mt-5">
+    <button hidden class="btn btn-primary btn-secondary position-absolute rounded-pill" style="z-index: 1000" onclick="window.history.go(-1)">
+        <i class="fa-solid fa-circle-arrow-left pr-2"></i>Voltar</button>
+
+    <!------------------ Cabeçalho da ferramenta de Típicos Força e controle ------------------>
+    <div class="row justify-content-center animate__animated animate__backInRight">
+        <div class="col-lg-12 text-center">
+            <h1>Gerenciar Talas e Fixações na OS</h1>
+        </div>
+        <div class="col-lg-12 text-center text-secondary">
+            <h5>Esta ferramenta é necessária para gerenciar as Talas e os Fixações para a OS selecionada</h5>
+        </div>
+    </div><!------------------ Fim do cabeçalho ------------------>
+
+    <!------------------ Início container conteúdo ------------------>
+    <div class="container position-relative mt-3 p-4 bg-white bordas border shadow animate__animated animate__pulse">
+        {% csrf_token %}
+        <div class="card mb-0">
+            <div class="card-header border-bottom-0">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-talas-tab" data-toggle="tab" href="#content_talas_os" role="tab" aria-controls="content_talas_os" aria-selected="true"><i class="fa-solid fa-folder-open pr-3"></i>Talas</a>
+                        <a class="nav-item nav-link" id="nav-chumbs-tab" data-toggle="tab" href="#content_chumbs_os" role="tab" aria-controls="content_chumbs_os" aria-selected="true"><i class="fa-solid fa-folder-open pr-3"></i>Fixações</a>
+                        <a hidden class="nav-item nav-link" id="nav-band_elet-tab" data-toggle="tab" href="#content_band_elet_os" role="tab" aria-controls="content_band_elet_os" aria-selected="true"><i class="fa-solid fa-folder-open pr-3"></i>Bandeja/Eletrocalha</a>
+                    </div>
+                </nav>
+                <div class="tab-content border border-top-0 p-3 bg-white shadow">
+                    <div class="tab-pane fade show active" id="content_talas_os" role="tabpanel" aria-labelledby="nav-talas-tab">
+                        {% include './ContentTalasOs.html' %}
+                    </div>
+                    <div class="tab-pane fade show" id="content_chumbs_os" role="tabpanel" aria-labelledby="nav-chumbs-tab">
+                        {% include './ContentChumbsOs.html' %}
+                    </div>
+                    <div hidden class="tab-pane fade show" id="content_band_elet_os" role="tabpanel" aria-labelledby="nav-band_elet-tab">
+                        {% include './ContentBandElet.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/eletrica/A1Pro/GerenciarTalasChumbsOs.js' %}"></script>
+<script>
+    FillAllTalasInContainer('{% static 'DWG.png' %}')
+    FillAllChumbsInContainer()
+</script>
+{% endblock %}

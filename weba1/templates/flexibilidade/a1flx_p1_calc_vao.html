@@ -1,0 +1,322 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+
+<title>A1vão</title>
+{% endblock %}
+{% block help %}
+<h7>Botão "Escolher" Neste botão você irá selecionar doc. com extensão .xlsx. </h7>
+<br><br>
+<h7>Opção "Controladoria" Nesta opção você irá revisar somente  listas da controladoria. </h7>
+<br><br>
+<h7>Opção "Outra lista" Nesta opção você irá revisar as demais listas. </h7>
+<br><br>
+<h7>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas. </h7>
+<br><br>
+<h7>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores. </h7>
+<br><br>
+<h7> "Chave 2" Neste campo você irá inserir a coluna  sem repetição de valores(caso a primeira tenha repetição). </h7>
+<br><br>
+<h7>Botão "Revisar" Neste botão ele realizará a revisão entre os doc. marcando em amarelo o que mudou, mantendo a extensão .xlsx.</h7>
+<br><br>
+<h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+<!-- Criação do estilo CSS -->
+<style>
+  div > h3, div > h1, div > p{
+    cursor: default;
+  }
+      #tela{
+        min-width: 750px;
+    }
+</style>
+    <div class="container py-3">
+        <!-- For demo purpose -->
+        <div class="row mb-2">
+          <div class="col-lg-12 mx-auto text-center">
+            <h1 class="display-4"><b>A1 Vão - Vão Máximo Entre Suportes</b></h1>
+          </div>
+        </div>
+        <!-- End -->
+        <!-- End -->
+        <div class="row">
+          <div class="col mx-auto p-0">
+            <div class="bg-white rounded-lg shadow-sm px-5 py-3">
+              <!-- Credit card form content -->
+              <div class="tab-content row">
+                <!-- credit card info-->
+                  <div id="nav-tab-card" class="tab-pane fade show active col-12">
+                    <div class="row">
+                      <div class="col-5 border border-dark" style="padding-top: 15px;border-bottom-width: 0px;border-bottom-style: solid;margin-bottom: 0px;padding-bottom: 15px;">
+                        <!-- Campo 1-->
+                        <div>
+                          <label><h5><b>Dados de Entrada</b></h5></label>
+                        </div>
+                        <!-- linha 0-->
+                        <div class="form-group col-12 p-0">
+                          <label for="material">Material da Tubulação</label>
+                          <select class="form-control bg-gray" id="material" onchange="sch_frp()">
+                            {%for mat in material%}
+                            <option>{{mat}}</option>
+                            {%endfor%}
+                          </select>
+                        </div>
+                          <div class="row">
+                            <div class="form-group col-6">
+                              <label for="diametro">NPS (pol)</label>
+                              <select class="form-control bg-gray" id="diametro" onchange="diametro_manual()">
+                                {%for diameter in list_diameter%}
+                                <option>{{diameter}}</option>
+                                {%endfor%}
+                              </select>
+                            </div>
+                            <div class="form-group col-6">
+                              <label for="usuario_diametro">OD manual (mm)</label>
+                              <input class="form-control" type="number" id="usuario_diametro" min="0" placeholder="Diâm. externo em mm" readonly>
+                              <div class="invalid-feedback">
+                                Caracteres invalidos
+                              </div>
+                            </div>
+                          </div>
+                          <!-- linha 1-->
+                          <div class="row">
+                            <div class="form-group col-6">
+                              <label for="sch">SCH</label>
+                              <select class="form-control bg-gray" id="sch" onchange="espessura_manual()">
+                                {%for sch in list_sch%}
+                                <option>{{sch}}</option>
+                                {%endfor%}
+                              </select>
+                            </div>
+                            <div class="form-group col-6">
+                              <label for="usuario_sch">Espessura manual (mm)</label>
+                              <input class="form-control" type="number" id="usuario_sch" min="0" placeholder="Espessura em mm" readonly>
+                              <div class="invalid-feedback">
+                                Caracteres invalidos
+                              </div>
+                            </div>
+                          </div>
+                          <!-- linha 2 -->
+                          <div class="form-group col-12 p-0">
+                            <label for="espessura">Espessura de Corrosão (mm)</label>
+                            <input class="form-control" type="number" id="espessura" min="0" placeholder="Espessura em mm">
+                            <div class="invalid-feedback">
+                              Caracteres invalidos
+                            </div>
+                        </div>
+                          <div class="form-group col-12 p-0">
+                              <label for="temperatura">Temperatura (°C)</label>
+                              <input class="form-control" type="number" id="temperatura" min="50" max="300" placeholder="Temperatura em °C" onselect="limpaerro(this)" onclick="limpaerro(this)">
+                              <div class="invalid-feedback">
+                                Temperatura Inválida
+                              </div>
+                          </div>
+                          <!-- linha 3 -->
+                          <div class="row">
+                            <div class="form-group col-6">
+                                  <label for="fluido">Fluido</label>
+                                <select class="form-control bg-gray" id="fluido_vao" onchange="fluid_flex()">
+                                    {%for fl in fluid%}
+                                    <option>{{fl}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div class="form-group col-6">
+                              <label for="usuario_fluido">Densidade manual (kg/m³)</label>
+                              <input class="form-control" type="number" id="usuario_fluido" min="0" placeholder="Densidade em kg/m³" readonly>
+                              <div class="invalid-feedback">
+                                Caracteres invalidos
+                              </div>
+                            </div>
+                          </div>                
+                          <!-- linha 6 -->
+                          <div class="row">
+                            <div class="form-group col-6">
+                                <label for="isolamento">Tipo de Isolamento</label>
+                                <select class="form-control bg-gray" id="isolamento" onchange="isolacao_flex()">
+                                    {%for type in isulation%}
+                                    <option>{{type}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+
+                            <div class="form-group col-6">
+                              <label for="usuario_iso">Densidade manual (kg/m³)</label>
+                              <input class="form-control " type="number" id="usuario_iso" min="0" placeholder="Densidade em kg/m³" readonly>
+                              <div class="invalid-feedback">
+                                Caracteres invalidos
+                              </div>
+                            </div>
+
+                          </div>
+                          <!-- linha 7 -->
+                          <div class="form-group col-12 p-0">
+                              <label for="espessuraiso">Espessura do Isolamento (mm)</label>
+                              <input class="form-control" type="number" id="espessuraiso" min="0" placeholder="Espessura em mm">
+                              <div class="invalid-feedback">
+                                Caracteres invalidos
+                              </div>
+                          </div>
+                          <!-- linha 8 -->
+                          <div class="row">
+                            <div class="form-group col-6">
+                                  <label for="criterio">Critério flecha</label>
+                                <select class="form-control bg-gray" id="criterio"  onchange="criterio_flex()">
+                                    {% for type in criterion %}
+                                    <option>{{type}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div class="form-group col-6">
+                              <label for="usuario_flecha">Flecha manual (mm)</label>
+                              <input class="form-control" type="number" id="usuario_flecha" min="0" placeholder="Flecha em mm" readonly>
+                              <div class="invalid-feedback">
+                                Caracteres invalidos
+                              </div>
+                            </div>
+                          </div>
+                          <div class="form-group col-12 p-0 mb-0 text-center">
+                            <button type="button" onclick="env_vao_ajax()" class="btn " style="background-color: #F58C32; color:#ffff;"><b>Calcular Vão</b> </button>
+                          </div>
+                        </div>
+                        <div class="valid-feedback">
+                          Campo Obrigatório
+                        </div>
+                        <!-- Campo 2-->
+                        <div class="col-7 border border-dark" style="padding-top: 15px;padding-bottom: 15px; left: 5px;">
+                            <div class="row">
+                                <div class="form-group marcador col-12">
+                                  <div class="row mb-3">
+                                    <div class="col-sm-1">
+                                      <label style="margin-left: 0px;margin-top: 0px;"><h5><b>Resultados</b></h5></label>
+                                    </div>
+                                    <div class="dropdown col-lg" style="margin-right: 15px;">
+                                      <div align="right">
+                                          <button type="button" class="btn" style="background-color: #F58C32; color:#ffff;" data-toggle="dropdown" > <b>Hipóteses e considerações</b>
+                                          </button>
+                                          <div class="dropdown-menu dropdown-menu-right p-0">
+                                            <div class="p-0 shadow-lg m-0 col-12">
+                                              <p class="p-4 shadow-sm m-0"><i>
+                                                <b>1.</b> Tensão admissível para vão considerada como 1/2 da tensão admissível básica presente no Apêndice A da norma ASME B31.3.<br>
+                                                <b>2.</b> Metodologias de cálculo de tensão e flecha conforme viga híbrida (média apoioada-ancoradada), conforme L.C.Peng pag. 54 cap. 2.<br>
+                                                <b>3.</b> Vãos básicos para as seguintes condições: tubo reto, horizontal, sem acidentes e sem cargas concentradas.<br>
+                                                <b>4.</b> Vãos básicos válidos apenas para tubulações sujeitas à pressão interna; não utilizar para tubulações submetidas à vácuo.<br>
+                                                <b>5.</b> Respeitadas orientações dos padrões Fibria NTI-TUB-004, NTI-TUB-055 e NTI-MEC-024. Para FRP, consideradas orientações e-mails NOV Fiberglass.<br>
+                                                <b>6.</b> Tolerância de fabricação: 12,5%.</i>
+                                              </p>
+                                            </div>
+                                          </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                    <CENTER style="display: none;"><b><p>PROPRIEDADES GEOMÉTRICAS</p></b></CENTER>
+                                    <div class="row" style="justify-content: center; display: none;">
+                                      <div class="form-group col-2">
+                                        <label for="usuario">Espessura</label>
+                                        <input class="form-control text-center" type="text" name="espessura" id="espessura_result" placeholder="mm" readonly>
+                                      </div>
+                                      <div class="form-group col-2">
+                                        <label for="usuario">Área vazia</label>
+                                        <input class="form-control text-center" type="text" id="area_vazia" placeholder="cm2" readonly>
+                                      </div>
+                                      <div class="form-group col-2">
+                                        <label for="usuario">Área mental</label>
+                                        <input class="form-control text-center" type="text" id="area_mental" placeholder="cm2" readonly>
+                                      </div>
+                                      <div class="form-group col-3">
+                                        <label for="usuario">Momento de inércia</label>
+                                        <input class="form-control text-center" type="text" id="momento_inercia" placeholder="cm4" readonly>
+                                      </div>
+                                      <div class="form-group col-3">
+                                        <label for="usuario">Momento   resistente</label>
+                                        <input class="form-control text-center" type="text" id="momento_resistente" placeholder="cm4" readonly>
+                                      </div>
+                                    </div>
+
+                                    <br>
+                                    <CENTER><b><p>CARREGAMENTOS</p></b></CENTER>
+                                    <div class="row" style="justify-content: center;" >
+                                      <div class="form-group col-3" >
+                                        <label for="usuario">Peso fluido</label>
+                                        <input class="form-control text-center" type="text" id="peso_fluido" placeholder="kgf/m" readonly>
+                                      </div>
+                                      <div class="form-group col-3">
+                                        <label for="usuario">Peso tubo</label>
+                                        <input class="form-control text-center" type="text" id="peso_tubo" placeholder="kgf/m" readonly>
+                                      </div>
+                                      <div class="form-group col-3">
+                                        <label for="usuario">Peso total</label>
+                                        <input class="form-control text-center" type="text" id="peso_total" placeholder="kgf/m" readonly>
+                                      </div>
+                                      <div class="form-group col-3">
+                                        <label for="usuario">Peso isolamento</label>
+                                        <input class="form-control text-center" type="text" id="peso_isolamento" placeholder="kgf/m" readonly>
+                                      </div>
+                                    </div>
+
+                                    <br>
+                                    <CENTER><b><p>CÁLCULOS VÃO MÁXIMO</p></b></CENTER>
+                                    <div class="row" style="justify-content: center;">
+                                      <div class="form-group col-3">
+                                        <label for="usuario">Relação OD/Wall</label>
+                                        <input class="form-control text-center" type="text" id="od_wall" placeholder="" readonly>
+                                      </div>
+                                      <div class="form-group col-3">
+                                        <label for="usuario">Vão critério tensão</label>
+                                        <input class="form-control text-center" type="text" id="vao_criterio_tesao" placeholder="m" readonly>
+                                      </div>
+                                      <div class="form-group col-3">
+                                        <label for="usuario">Vão critério flecha</label>
+                                        <input class="form-control text-center" type="text" id="vao_criterio_fleca" placeholder="m" readonly>
+                                      </div>
+                                    </div>
+                                </div>
+                                <div class="form-group marcador">
+                                    <div hidden class="form-group col-3" id="vao_usuario_l" style="float: right; margin-right: 4em; display: none;">
+                                      <label for="usuario">Vão usuário L</label>
+                                      <input class="form-control text-center" type="number" step="0.01" id="value_vao_usuario_l" onchange="env_L_ajax()" placeholder="Valor < 9,90 m" required>
+                                    </div>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <div class="form-group col-4 text-center" style="float: left; margin-left: 2em;"> <!--style="margin-top: 60px; margin-left: 85%;" >-->
+                                      <label>Flecha</label>
+                                      <input class="form-control text-center" type="text" id="sigma" readonly title="ζ">
+                                    </div>
+                                    <div class="form-group col-4 text-center" id="vao_usuario_l" style="float: right; margin-right: 3em;">
+                                      <label>Vão máximo</label>
+                                      <input  class="form-control text-center" type="text" id="tamanho_L" readonly title="L">
+                                    </div>
+
+                                    <div class="form-group col-1" style="float: right; display: none;">
+                                      <label hidden for="usuario">Resultado</label>
+                                          <h4><span id="response_for_user"></span></h4>
+                                    </div>
+
+                                    <div >
+                                      <div class="form-group" >
+                                        <!-- Carregar os estaticos com load static puxa a referência da pasta -->
+                                        <img  class="thumbnail img-responsive" src="{% static 'img\a1_flex_images\a1_vao_img.png' %}">
+                                      </div>
+                                    </div>
+                                    <div class="form-group col-4 text-center mx-auto"> <!-- style="margin-top: 35px; margin-left: 25%;" >-->
+                                      <label>Carga no suporte</label>
+                                      <input class="form-control text-center" type="text" id="fixacao" readonly title="C">
+                                    </div>
+                                    <div>
+                                      <input hidden class="form-control" type="text" id="modulo_elast" placeholder=""  title= "">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        <!-- End -->
+                    </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+<script src="{% static 'js/a1flx/a1flex_p1_vao.js' %}"></script>
+{% endblock %}

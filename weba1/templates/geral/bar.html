@@ -1,0 +1,79 @@
+<style>
+    .botof{
+        width: 28vw ;
+        background-color:#304d9d ;
+        color:#FFFFFF;
+        border-radius: 50px;
+    }
+    .botof:hover{
+        width: 28vw ;
+        background-color:#182a5b ;
+        color:#FFFFFF;
+        border-radius: 50px;
+    }
+
+    .progress-bar{
+        border-radius: 10px;
+        background: #6d6d6d;
+        height: 10px
+    }
+
+    .modal-header{
+        border: 2px;
+        text-align: center;
+    }
+
+    .modal-footer{
+        border:none;
+    }
+
+    .modal-title{
+        
+        text-align: center;
+    }
+
+    .avis {
+        border-bottom: 1px solid grey;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+</style>
+
+<!-- barra -->
+<div class='progress-wrapper' >
+  <button style="bottom: 15px; position: relative;" 
+    type="button" onclick="document.getElementById('agua-modal-task').style.display='block'"
+    class="btn botof w-100" style="font-weight: bold;"> INICIAR 🤖</button>
+  <div id='progress-bar' class='progress-bar'>&nbsp;</div>
+  <div id="progress-bar-message" class="avis">Esperando a inicialização de uma tarefa...</div>
+</div>
+<!-- barra -->
+<!-- modal -->
+<div id="agua">
+    <div id="agua-modal-task" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <b><h5 class="modal-title">ATENÇÃO</b></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"onclick="document.getElementById('agua-modal-task').style.display='none'">
+                        <span aria-hidden="true">&times;</span>
+                    </button>   
+                </div> 
+
+                <div class="modal-body">
+                    <p>Tem certeza que deseja continuar o envio dos dados?</p>
+                </div>    
+                    
+                <div class="modal-footer">
+                    <button type="button" class=" btn btn-success  " onclick="bar_trigger()"> SIM </button>
+                    <button type="button" class=" btn btn-danger" onclick="document.getElementById('agua-modal-task').style.display='none'">NÃO</button>   
+                </div>   
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->

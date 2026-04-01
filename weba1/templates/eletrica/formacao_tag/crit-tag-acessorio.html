@@ -1,0 +1,51 @@
+{% load static %}
+{% block crit_tag_acessorio %}
+<div class="container" id="crit-tag-acessorio">
+    <div class="container mx-2 border-bottom border-right border-left">
+        <div class="row ml-1">
+            <h6><b>TAG do Cabo</b></h6>
+        </div>
+
+        <div class="row ml-1">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="checkbox-tag-acess" id="crit-tag-acess-carga-checkbox" value="CARGA" onchange="check_only_1_element(this.id, 'checkbox-tag-acess')">
+              <label class="form-check-label" for="crit-tag-acess-carga-checkbox">TAG - Carga</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="checkbox-tag-acess" id="crit-tag-acess-alimentador-checkbox" value="ALIMENTADOR" onchange="check_only_1_element(this.id, 'checkbox-tag-acess')">
+              <label class="form-check-label" for="crit-tag-acess-alimentador-checkbox">TAG - Alimentador</label>
+            </div>
+        </div>
+
+        <div class="row ml-1 mt-2">
+            <h6><b>AUXILIARES</b></h6>
+        </div>
+        <div class="row mt-1 mb-3">
+            <div class="col-lg-7">
+                <select class="form-select w-100 h-100" multiple aria-label="multiple select example" id="select-acess-crit-tag">
+                </select>
+            </div>
+
+            <div class="col-lg-5">
+                <label for="crit-tag-acess-first-carac">1° Caractere</label>
+                <input type="text" required class="form-control w-75 mb-1" id="crit-tag-acess-first-carac" onkeyup="VerifyFormsSizeOne(this.id)">
+                <button type="button" class="btn btn-warning w-75 mb-1" onclick="VerifySinalOrAcessForShowModal('AUXILIARES', '2', df_tipo_cabo_acess)">2° Caractere</button>
+                <button type="button" class="btn btn-warning w-75 mb-1" onclick="VerifySinalOrAcessForShowModal('AUXILIARES', '3', df_tipo_cabo_acess)">3° Caractere</button>
+                <button type="button" class="btn btn-warning w-75 mb-1" onclick="VerifySinalOrAcessForShowModal('AUXILIARES', '4', df_tipo_cabo_acess)">4° Caractere</button>
+                <button type="button" class="btn btn-warning w-75 mb-1" onclick="VerifySinalOrAcessForShowModal('AUXILIARES', '5', df_tipo_cabo_acess)">5° Caractere</button>
+                <button type="button" class="btn btn-warning w-75 mb-1" onclick="VerifySinalOrAcessForShowModal('AUXILIARES', '6', df_tipo_cabo_acess)">6° Caractere</button>
+                <button type="button" class="btn btn-warning w-75 mb-1" onclick="VerifySinalOrAcessForShowModal('AUXILIARES', '7', df_tipo_cabo_acess)">7° Caractere</button>
+                <button type="button" class="btn btn-warning w-75 mb-1" onclick="VerifySinalOrAcessForShowModal('AUXILIARES', '8', df_tipo_cabo_acess)">8° Caractere</button>
+                <button type="button" class="btn btn-warning w-75 mb-3" onclick="VerifySinalOrAcessForShowModal('AUXILIARES', '9', df_tipo_cabo_acess)">9° Caractere</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mx-1 mt-2">
+        <div class="col-lg-12 justify-content-end text-right">
+            <button type="button" class="btn btn-primary" onclick="SendFTagBack(df_tipo_cabo_acess)">Atualizar</button>
+            <button type="button" class="btn btn-dark" onclick="HideModalFTag()">Fechar</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

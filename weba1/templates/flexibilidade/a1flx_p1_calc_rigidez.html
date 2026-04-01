@@ -1,0 +1,84 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Escolha a calculadora de Rigidez</title>
+{% endblock %}
+{% block help %}
+    <h7>Drop List <strong>"Liberar sistema"</strong>> Droplist: Liberar / revisar sistema Finalizar comentários</h7>
+    <br><br>
+    <h7>Opção "Controladoria" Nesta opção você irá revisar somente  listas da controladoria. </h7>
+    <br><br>
+    <h7>Opção "Outra lista" Nesta opção você irá revisar as demais listas. </h7>
+    <br><br>
+    <h7>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas. </h7>
+    <br><br>
+    <h7>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores. </h7>
+    <br><br>
+    <h7> "Chave 2" Neste campo você irá inserir a coluna  sem repetição de valores(caso a primeira tenha repetição). </h7>
+    <br><br>
+    <h7>Botão "Revisar" Neste botão ele realizará a revisão entre os doc. marcando em amarelo o que mudou, mantendo a extensão .xlsx.</h7>
+    <br><br>
+    <h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+<style>
+    div > h3, div > h1, div > p{
+    cursor: default;
+  }
+  .destaque:hover{
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, 0.20) !important;
+  }
+</style>
+<!-- For demo purpose -->
+<div class="container py-5">
+
+  <!-- For demo purpose -->
+  <div class="row mb-2">
+    <div class="col-lg-12 mx-auto text-center mb-5">
+      <h1 class="display-4"><b>A1 Rigidez - Cálculo de Rigidez para os Bocais</b></h1>
+    </div>
+  </div>
+  <!-- End -->
+  <div class="row">
+    <div class="col-lg-7 mx-auto">
+      <div class="bg-white rounded-lg shadow-sm p-5">
+        <div class="col-lg-12 mx-auto text-center pb-5">
+          <h4><b>Escolha o tipo de análise</b></h4>
+        </div>
+
+        <!-- Credit card form content -->
+        <div class="tab-content row">
+
+          <!-- credit card info-->
+          <div id="nav-tab-card" class="tab-pane fade show active col-12">
+
+            <div>
+              <form action="{% url 'download' %}" id="auto-download" method="GET" enctype="multipart/form-data">
+                  {% csrf_token %}
+              </form>
+            </div>
+
+            <form role="form" action="{% url 'a1rev' %}" method="POST" enctype="multipart/form-data" id="form">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-6">
+                    <a href="/app/flexibilidade/rigidez_cil"><img class="destaque" style="border-color: black; height: 230px;" src="{% static 'img\a1_flex_images\a1_rig_cil_img.png' %}"></a>
+                </div>
+                <div class="col-6">
+                      <a style="border-color: black;" href="/app/flexibilidade/rigidez_esf"><img class="destaque" style="border-color: black; height: 230px;" src="{% static 'img\a1_flex_images\a1_rig_esf_img.png' %}"></a>
+                </div>
+              </div>
+              
+            </form>
+            <!-- barra de progresso -->
+
+          </div>
+          <!-- End -->
+          <!-- End -->
+        </div>
+        <!-- End -->
+      </div>
+    </div>
+  </div>
+</div>
+  {% endblock %}

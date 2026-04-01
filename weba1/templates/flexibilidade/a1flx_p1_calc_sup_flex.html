@@ -1,0 +1,234 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+    <title>Calculadora de Suportes Flex</title>
+{% endblock %}
+{% block help %}
+    <h7>Drop List <strong>"Liberar sistema"</strong>> Droplist: Liberar / revisar sistema Finalizar comentários</h7>
+    <br><br>
+    <h7>Opção "Controladoria" Nesta opção você irá revisar somente  listas da controladoria. </h7>
+    <br><br>
+    <h7>Opção "Outra lista" Nesta opção você irá revisar as demais listas. </h7>
+    <br><br>
+    <h7>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas. </h7>
+    <br><br>
+    <h7>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores. </h7>
+    <br><br>
+    <h7> "Chave 2" Neste campo você irá inserir a coluna  sem repetição de valores(caso a primeira tenha repetição). </h7>
+    <br><br>
+    <h7>Botão "Revisar" Neste botão ele realizará a revisão entre os doc. marcando em amarelo o que mudou, mantendo a extensão .xlsx.</h7>
+    <br><br>
+    <h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+    <!-- For demo purpose -->
+    <div class="row mb-4">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4"><b>A1 Flex - Calculo de suportes</b></h1>
+      </div>
+    </div>
+    <!-- End -->
+
+    <div class="row">
+      <div class="col-lg-6 mx-auto">
+        <div class="bg-white rounded-lg shadow-sm p-5">
+          <!-- Credit card form content -->
+          <div class="tab-content row">
+            <!-- credit card info-->
+            <div id="nav-tab-card" class="tab-pane fade show active col-12">
+
+                <div class="row">
+                    <div class="col-lg-9 col-md-auto" style="margin-left: 12%;">
+                      <!-- Campo 1-->
+                      <!-- linha 1-->
+                      <div class="form-group">
+                          <div class="form-group col-12">
+                            <div class="form-group col-12 p-0">
+                                  <label for="elasticidade">Módulo de Elasticidade (E):</label>
+                                  <input class="form-control" type="number" name="elasticidade" id="elasticidade" min="100" max="500" placeholder="100GPa - 500GPa">
+                                  <div class="invalid-feedback">
+                                      Caracteres inválidos
+                                  </div>
+                            </div>
+                            <div class="form-group col-12 p-0">
+                                  <label for="comprimento">Comprimento (L):</label>
+                                  <input class="form-control" type="number" name="comprimento" id="comprimento" min="0" max="10000" placeholder="0mm - 10.000mm">
+                                  <div class="invalid-feedback">
+                                    Caracteres inválidos
+                                  </div>
+                            </div>
+                            <div class="form-group col-12 p-0">
+                                  <label for="perfil">Perfil:</label>
+                                  <select class="form-control" name="perfil" id="perfil">
+                                    {% for per in perf %}
+                                        <option>{{ per }}</option>
+                                    {% endfor %}
+                                  </select>
+                            </div>
+                            <div class="form-group col-12 p-0">
+                                  <label for="tag">Tag Suporte:</label>
+                                  <input class="form-control" type="text" name="tag" id="tag" placeholder="Inserir TAG">
+                                  <div class="invalid-feedback">
+                                    Preencha este Campo
+                                  </div>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+
+                <div class="col-7">
+                    <button onclick="env_vao_ajax()" type="button" class="btn" style="margin-left: 70%; background-color: #12192C; color: #ffff">Calcular </button>
+                    <br>
+                </div>
+
+                <div id="area" ><!-- Inicio area -->
+                    <div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content" style="width: 150%;">
+                            <div class="modal-header">
+                              <h5 class="modal-title font-italic" id="exampleModalLabel"  style="margin-left: 45%;">Detalhes</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body p-0">
+                              <div class="tab-content row">
+                                <div id="nav-tab-card" class="tab-pane fade show active col-12 p-5">
+                                  <div class="row">
+                                    <div class="col-lg-6">
+                                      <div class="row">
+                                        <div class="form-group col-12 p-0">
+                                              <label for="temperatura">K axial :</label>
+                                              <input class="form-control" type="text" id="temperatura" placeholder="N/mm" readonly>
+                                        </div>
+                                        <div class="form-group col-12 p-0">
+                                              <label for="temperatura">K transversal 1 :</label>
+                                              <input class="form-control" type="text" id="k-tran-1" placeholder="N/mm" readonly>
+                                        </div>
+                                        <div class="form-group col-12 p-0">
+                                              <label for="temperatura">K transversal 2 :</label>
+                                              <input class="form-control" type="text" id="k-tran-2" placeholder="N/mm" readonly>
+                                        </div>
+                                        <div class="col-12 p-0">
+                                          <div class="row">
+                                            <div class="form-group marcador col-12">
+                                              <label for="mensagem">Job Title :</label>
+                                              <textarea class="form-control" id="mensagem" rows="8" placeholder="" readonly></textarea>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <button class="btn btn-warning" type="button" data-toggle="collapse" style="margin-left: 45%;"data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                          Informações adicionais
+                                        </button>
+                                        <div class="collapse" id="collapseExample">
+                                            <div class="card card-body">
+                                              <div class="row">
+                                                <div class="col-12" >
+                                                  <div class="row">
+                                                    <div class="form-group marcador col-12">
+                                                      <div class="col-sm-12">
+                                                        <label>Viga em balanço:</label>
+                                                        <div class="form-group col-12">
+                                                          <label for="diametro">BK1:</label>
+                                                          <input class="form-control" type="text" id="bk1" placeholder="N/mm" readonly>
+                                                        </div>
+
+                                                        <div class="form-group col-12">
+                                                          <label for="diametro">BK2:</label>
+                                                          <input class="form-control" type="text" id="bk2" placeholder="N/mm" readonly>
+                                                        </div>
+
+                                                        <label>Viga em balanço guiada:</label>
+                                                        <div class="form-group col-12">
+                                                          <label for="diametro">GK1:</label>
+                                                          <input class="form-control" type="text" id="gk1" placeholder="N/mm" readonly>
+                                                        </div>
+
+                                                        <div class="form-group col-12">
+                                                          <label for="diametro">GK2:</label>
+                                                          <input class="form-control" type="text" id="gk2" placeholder="N/mm" readonly>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="btncalc" style="margin-left: 40%;">
+                                      <button type="button" class="efeito efeito-1" data-dismiss="modal" aria-label="Close">Voltar</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    function verify_value_num(item_id, lim) {
+      let item_val = parseFloat(document.getElementById(item_id).value);
+      let inf_lim = lim[0];
+      let sup_lim = lim[1];
+
+      if(!(isNaN(item_val))){  // Caso não seja nulo
+        if(typeof(item_val) == 'number'){  //Se o tipo for número
+          if (item_val >= inf_lim && item_val <= sup_lim) {//Só é válido se estiver nesse range
+              document.getElementById(item_id).classList.remove('is-invalid');
+              return true
+          }
+        }  
+      }
+      return false
+    }
+
+    function env_vao_ajax() {
+        var ctrl = 0;
+        let elast = parseFloat(document.getElementById('elasticidade').value);
+        let comp = parseFloat(document.getElementById('comprimento').value);
+        let perf = document.getElementById('perfil').value;
+        let tg = document.getElementById('tag').value;
+        let list_ids = ['elasticidade', 'comprimento'];
+        let list_range = [[100,500], [0,10000]];
+        var list_err = [];
+        
+        for (idd in list_ids) { if (!(verify_value_num(list_ids[idd], list_range[idd]))) { list_err.push(list_ids[idd]) } }
+        
+        if(list_err.length == 0) { // Se passou pelos erros,
+          $.ajax({
+              type: "GET",
+              url: "report",
+              dataType: 'json',
+              data: {'elast': elast, 'comp': comp, 'perf': perf, 'tag': tg},
+          }).done(function (data) {
+              document.getElementById('temperatura').value = data['dt']["k_axial"];
+              document.getElementById('k-tran-1').value = data['dt']["k_transversal_2"];
+              document.getElementById('k-tran-2').value = data['dt']["k_transversal_1"];
+              document.getElementById('mensagem').value = data['dt']["title"];
+              document.getElementById('bk1').value = data['dt']["BK1"];
+              document.getElementById('bk2').value = data['dt']["BK2"];
+              document.getElementById('gk1').value = data['dt']["GK1"];
+              document.getElementById('gk2').value = data['dt']["GK2"];
+              // TAG = INSERIR TAG Comprimento = 100mm Perfil = W 150 x 13,0 kg/m Rigidez (axial, max, min) = 3486000 10001250  1291500 N/mm
+
+              $('#modal').modal('show')
+          })
+        } else {
+          for(err in list_err){ document.getElementById(list_err[err]).classList.add('is-invalid') }
+        } 
+      }
+    </script>
+
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | COMOS</title>
+{% endblock %}
+
+{% block main %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@6.2.2/dist/handsontable.full.min.css">
+<script src="https://cdn.jsdelivr.net/npm/handsontable@6.2.2/dist/handsontable.full.min.js"></script>
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/IntegracaoComos.js' %}"></script>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+<style>
+    .handsontable .wtHolder {
+        overflow: auto !important; /* Adiciona barras de rolagem se necessário */
+    }
+</style>
+
+<div class="container-fluid h-100">
+    <div class="text-justify m-3">
+        <button class="btn btn-primary btn-warning" onclick="window.history.go(-1)">Voltar</button>
+    </div>
+    <div class="row d-flex justify-content-center mt-2">
+        <h3>Integração com o Comos e Modelo 3D</h3>
+    </div>
+    <div class="container-fluid d-flex justify-content-center">
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4">
+
+
+    <div class="row mt-2" style="margin-top: 100px;">
+        <div class="col-3 text-right p-0">
+            <label for="painels_origem"><b style="font-weight: 640;">Selecione device:</b></label>
+        </div>
+        <div class="col-5">
+        <select class="form-control" id="painels_origem">
+            <option value="opcao1">Motor</option>
+            <!--<option value="opcao1">Cabo</option>
+            <option value="opcao1">Painel</option>-->
+        </select>
+        </div>
+    </div>
+
+
+    <div class="container mt-5" style="margin-bottom: 30px;">
+        <button type="button" class="btn btn-primary w-100" data-toggle="modal" data-target="#meuModal" onclick="ComparaClasseSelecionada()">
+            Enviar
+        </button>
+    </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="meuModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">COMPARAÇÃO DE DEVICES</h5>
+
+                </div>
+                <div class="modal-body">
+                    <div id="tabela-container">
+                        <!-- aqui adicionar a tabela -->
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#meuModal" onclick="ExportaParaComos()">
+                        Exportar para Comos
+                    </button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#meuModal" onclick="AtualizaPosicoesCargas()">
+                        Atualizar Posições no A1Pro
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% include './ModalDadosDocumento.html' %}
+{% include './ModalLoadCelery.html' %}
+
+
+{% endblock %}

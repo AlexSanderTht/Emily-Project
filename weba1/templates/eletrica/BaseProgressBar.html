@@ -1,0 +1,60 @@
+
+    <div class="mx-auto" style="padding-left: 50px; padding-right: 50px" id="div_bar_taks" hidden>
+        <div class="rounded-lg p-1 w-100">
+            <div class="tab-content">
+                <div id="nav-tab-card" class="tab-pane fade show active">
+                    <div class='progress-wrapper'>
+                        <div id='progress-bar' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                    </div>
+                    <div id="progress-bar-message">Aguardando a Inicialização da tarefa ...</div>
+
+                    <div class="loader d-none" id="LoaderLeituraExcel" style="height: 50px; width:50px;"></div>
+                    <table id="TabelaDados" class="display p-0 w-100" style="font-size:75%; overflow-y: hidden;"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+         function inti_celery_bar(data) {
+             document.getElementById('div_bar_taks').hidden = false
+             // console.log(document.getElementById('div_bar_taks'))
+             var progressUrl = `/celery-progress/${data["task_id"]}/`;
+             CeleryProgressBar.initProgressBar(progressUrl)
+         }
+
+        function after_success(msg){
+            //função para encaminhar a pagina para outro
+            const $mensagem = document.getElementById('progress-bar-message').innerText;//pega mensagem da tarefa
+            console.log($mensagem);
+            if($mensagem === 'Success!'){//se a mensagem for sucesso então entra para encaminhar
+                if(msg === 'RELATORIO'){
+                    const task_id = get_storage_session("ID_TASK");
+                    PegarArquivo(task_id);
+                }else{
+                     history.back()
+                }
+            }
+        }
+
+        let a = null
+        function PegarArquivo(task_id){
+            $.ajax({
+                    type: 'GET',
+                    url: "/app/{{nome_app}}/{{nome_url_download_arquivo}}/",
+                    enctype: 'multipart/form-data',
+                    data: {'task_id': task_id},
+                    fail: function(error){
+
+                    },
+                    success: function(data){
+                        a = data;
+
+                    }
+
+            })
+        }
+
+    </script>
+

@@ -1,0 +1,578 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.min.css' %}"/>
+    <script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.bundle.js' %}"></script>
+    <script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.js' %}"></script>
+</head>
+
+<style>
+    * {
+        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+        box-sizing: border-box;
+    }
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+    .cardBoard {
+        box-shadow: rgba(149, 157, 165, 0.2) 0 8px 24px;
+        border-radius: 16px;
+        background: white;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(230, 230, 230, 0.5);
+        margin-bottom: 20px;
+    }
+
+    .cardBoard:hover {
+        box-shadow: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
+    }
+
+    .header {
+        background-color: #f8f9fa;
+        text-align: center;
+        padding: 15px;
+        border-radius: 15px;
+    }
+
+    .section-title {
+        background-color: #f5f5f5;
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }
+
+    .section-title h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #2c3e50;
+    }
+
+    .highlighted-orange {
+        background-color: #ff9800;
+        font-weight: bold;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 4px;
+    }
+
+    .highlighted-yellow {
+        background-color: #fff9c4;
+        padding: 3px 8px;
+        border-radius: 4px;
+    }
+
+    .bordered {
+        padding: 25px;
+        transition: all 0.3s ease;
+    }
+
+    .table th, .table td {
+        padding: 12px;
+    }
+
+    .inputs {
+        width: 100%;
+        border: 1px solid rgba(128, 128, 128, 0.3);
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+        margin-bottom: 15px;
+    }
+
+    .inputs:focus {
+        outline: none;
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+    }
+
+    select {
+        border: 1px solid rgba(128, 128, 128, 0.3);
+        background-color: #f9fffc;
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        width: 100%;
+        box-shadow: rgba(0, 0, 0, 0.05) 0 1px 3px;
+        font-size: 16px;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 1em;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+    }
+
+    .selects {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 0;
+    }
+
+    .areaInput {
+        width: 100%;
+        height: 120px;
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .add-evidence-button, .add-req-button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-left: 10px;
+        font-weight: 500;
+        transition: background-color 0.3s;
+    }
+
+    .add-evidence-button:hover, .add-req-button:hover {
+        background-color: #3e8e41;
+    }
+
+    #sendRel {
+        background-color: #2196F3;
+        color: white;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    #sendRel:hover {
+        background-color: #0b7dda;
+        transform: translateY(-2px);
+    }
+
+    #sendRel:active {
+        transform: translateY(0);
+    }
+
+    .select-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .row {
+        margin-bottom: 15px;
+    }
+
+    /* File input styling */
+    #uploadEvidenceButton {
+        background-color: #ff9800;
+    }
+
+    #uploadEvidenceButton:hover {
+        background-color: #e68a00;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .card.cardBoard {
+            width: 100% !important;
+            padding: 15px !important;
+        }
+
+        .col-6 {
+            width: 100%;
+        }
+
+        .unid\/proc.selects {
+            width: 100%;
+        }
+    }
+
+    /* Input group styling */
+    .input-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .input-group .inputs {
+        flex: 1;
+        margin-bottom: 0;
+    }
+
+    .input-group .add-evidence-button {
+        margin-left: 10px;
+    }
+
+    /* Form section styling */
+    .form-section {
+        margin-bottom: 20px;
+    }
+
+    .form-section label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    /* Required field indicator */
+    .required::after {
+        content: "*";
+        color: #f44336;
+        margin-left: 4px;
+    }
+
+    /* Animation for buttons */
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+        }
+    }
+
+    .add-req-button:focus {
+        animation: pulse 1.5s infinite;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-5">
+    {% csrf_token %}
+
+    <div class="card mb-4 cardBoard" style="width: 100rem; padding: 30px;">
+        <div class="card-body col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Relatório de não conformidade</b></h2>
+        </div>
+        <div id="accordion">
+            <div class="container mt-4">
+                <!-- Header -->
+                <div class="header py-3 cardBoard" style="padding: 20px">
+                    <div class="row align-items-center">
+                        <div class="col-md-10 col-sm-9 text-start">
+                            <img src="{% static 'img/logo.png' %}" alt="Logo" style="height: 50px;">
+                            <span class="h5 ms-3">RNC - Relatório de Não Conformidade</span>
+                        </div>
+                        <div class="col-md-2 col-sm-3 text-end">
+                            <div>RNC Nº: <span class="fw-bold" id="rncNumber">{{proximo_numero}}</span></div>
+                            {% if rnc_origem %}
+                            <div>RNC Origem: <span class="fw-bold" id="rncOrigin">{{rnc_origem.tb_rnc_num}}</span></div>
+                            <input type="hidden" id="rnc_origem_id" name="rnc_origem_id"
+                                   value="{{ rnc_origem.tb_rnc_id }}">
+                            {% endif %}
+                            <div><p id="dataAtual" class="mb-0" style="letter-spacing: 1px; font-weight: bold"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Characterization Section -->
+                <div class="bordered p-3 mt-2 cardBoard">
+                    <div class="section-title"><h3>Caracterização do Problema</h3></div>
+                    <div class="row">
+                        <div class="col-6">Origem:
+                            <select id="origem">
+                                <option value="">Selecione a Origem</option>
+                                {% for id_origem, nome_origem in sugestoesOrigem %}
+                                <option value="{{ id_origem }}">{{ nome_origem }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-6">Solicitante:
+                            <span class="text-danger">
+                                <select id="solicitante">
+                                {% for id_sugestoes, nome_sugestoes in sugestoesColaboradores %}
+                                    <option value="{{ id_sugestoes }}" {% if id_sugestoes == default_solicitante %}selected{% endif %}>
+                                        {{ nome_sugestoes }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row mt-2" style="display: flex;">
+                        <div class="unid/proc selects" style="width: 600px;">
+                            <div class="col-6">Unidade/Processo:</div>
+                            <select id="unid" onchange="filtrarAreasGrupo()">
+                                <option value="">Selecione a Unidade</option>
+                                {% for id_unid, nome_unid in sugestoesUnidades %}
+                                <option value="{{ id_unid }}">{{ nome_unid }}</option>
+                                {% endfor %}
+                            </select>
+                            <select id="area" onchange="filtrarAreas()">
+                                <option value="">Selecione a Área Grupo</option>
+                            </select>
+                            <select id="subarea">
+                                <option value="">Selecione a Área</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6">Responsável pela análise do RNC:
+                            <span class="text-danger">
+                                <select id="resprnc">
+                                  {% for id_sugestoes, nome_sugestoes in sugestoesColaboradores %}
+                                    <option value="{{ id_sugestoes }}">{{ nome_sugestoes }}</option>
+                                  {% endfor %}
+                                </select>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description Section -->
+                <div class="bordered p-3 mt-2 cardBoard">
+                    <div class="section-title"><h3>Descrição</h3></div>
+                    <p><strong>Fato:</strong></p>
+                    <textarea id="fatoInput" class="inputs">{{ default_fato }}</textarea>
+                    <p><strong>Evidência:</strong></p>
+                    <input type="text" id="evidInputText" class="inputs" style="width: 500px;">
+                    <button id="addEvidenceButton" class="add-evidence-button">+</button>
+                    <input id="fileEvid" style="display: none" type="file">
+                    <button id="uploadEvidenceButton" class="add-evidence-button">Fazer Upload</button>
+                    <p><strong>Requisito não atendido:</strong></p>
+                    <div class="re">
+                        <div class="containerSelects">
+                            <div id="select-container">
+                                <select id="reqNASelect">
+                                    {% for id_req, nome_req in sugestoesReq %}
+                                    <option value="{{ id_req }}" {% if id_req == default_requisito %}selected{% endif %}>
+                                        {{ nome_req }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <input
+                                        class="inputs"
+                                        type="text"
+                                        id="outrosInput"
+                                        style="display: none; width: 400px"
+                                        placeholder="Digite o requisito 'Outros'"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btnSend" style="display: flex; justify-content: center; padding: 50px">
+                    <button id="sendRel" class="add-req-button">Enviar Relatório</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Parse JSON data safely
+    const sugestoes_areas_grupo = JSON.parse('{{ sugestoes_areas_grupo|escapejs }}');
+    const sugestoes_areas = JSON.parse('{{ sugestoes_areas|escapejs }}');
+
+    // Initialize date display when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        const data = new Date();
+        const dia = String(data.getDate()).padStart(2, '0');
+        const mes = String(data.getMonth() + 1).padStart(2, '0');
+        const ano = data.getFullYear();
+        const dataFormatada = `${ano}/${mes}/${dia}`;
+        document.getElementById("dataAtual").textContent = dataFormatada;
+
+        // Initially hide the upload button
+        document.getElementById('uploadEvidenceButton').style.display = 'none';
+    });
+
+    function filtrarAreasGrupo() {
+        const unid_id = document.getElementById('unid').value;
+        const select_area_grupo = document.getElementById('area');
+        select_area_grupo.innerHTML = '<option value="">Selecione a Área Grupo</option>'; // Limpa as opções existentes
+
+        if (unid_id && sugestoes_areas_grupo[unid_id]) {
+            sugestoes_areas_grupo[unid_id].forEach(area_grupo => {
+                const option = document.createElement('option');
+                option.value = area_grupo[0];
+                option.text = area_grupo[1];
+                select_area_grupo.appendChild(option);
+            });
+        }
+        filtrarAreas(); // Filtra as áreas ao selecionar a área grupo
+    }
+
+    function filtrarAreas() {
+        const area_grupo_id = document.getElementById('area').value;
+        const select_area = document.getElementById('subarea');
+        select_area.innerHTML = '<option value="">Selecione a Área</option>'; // Limpa as opções existentes
+
+        if (area_grupo_id && sugestoes_areas[area_grupo_id]) {
+            sugestoes_areas[area_grupo_id].forEach(area => {
+                const option = document.createElement('option');
+                option.value = area[0];
+                option.text = area[1];
+                select_area.appendChild(option);
+            });
+        }
+    }
+
+    // Manage Outros requisito field
+    const outrosInput = document.getElementById('outrosInput');
+    const reqNASelect = document.getElementById('reqNASelect');
+
+    reqNASelect.addEventListener('change', () => {
+        if (reqNASelect.value === 'Outros') {
+            outrosInput.style.display = 'block';
+        } else {
+            outrosInput.style.display = 'none';
+        }
+    });
+
+    // File upload handling
+    const addEvidenceButton = document.getElementById('addEvidenceButton');
+    const fileEvid = document.getElementById('fileEvid');
+    const uploadEvidenceButton = document.getElementById('uploadEvidenceButton');
+
+    addEvidenceButton.addEventListener('click', () => {
+        fileEvid.click();
+    });
+
+    fileEvid.addEventListener('change', () => {
+        if (fileEvid.files.length > 0) {
+            uploadEvidenceButton.style.display = 'inline-block';
+        } else {
+            uploadEvidenceButton.style.display = 'none';
+        }
+    });
+
+    uploadEvidenceButton.addEventListener('click', () => {
+        if (!fileEvid.files || fileEvid.files.length === 0) {
+            alert('Selecione um arquivo primeiro.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('files', fileEvid.files[0]);
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+        fetch('upload_evidencia/', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Arquivo enviado com sucesso!');
+                } else {
+                    alert('Erro ao enviar o arquivo: ' + (data.message || 'Erro desconhecido'));
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao enviar o arquivo.');
+            });
+    });
+
+    // Form submission
+    document.getElementById('sendRel').addEventListener('click', () => {
+        // Validate required fields
+        const origem = document.getElementById('origem').value;
+        const unidade = document.getElementById('unid').value;
+        const areaGrupo = document.getElementById('area').value;
+        const subArea = document.getElementById('subarea').value;
+        const fato = document.getElementById('fatoInput').value;
+        const requisito = document.getElementById('reqNASelect').value;
+
+        if (!origem || !unidade || !areaGrupo || !subArea || !fato || !requisito) {
+            alert('Por favor, preencha todos os campos obrigatórios.');
+            return;
+        }
+
+        const data = new Date();
+        const ano = data.getFullYear();
+        const dataFormatada = document.getElementById('dataAtual').textContent;
+
+        // Get form values
+        const solicitanteId = document.getElementById('solicitante').value;
+        const responsavelId = document.getElementById('resprnc').value;
+        const evidenciaTexto = document.getElementById('evidInputText').value;
+        const outrosRequisito = document.getElementById('outrosInput').value;
+        const rncNumber = document.getElementById('rncNumber').innerText;
+
+        // Handle file evidence
+        let evidencia_arq = '';
+        if (fileEvid.files && fileEvid.files.length > 0) {
+            const evidFile = fileEvid.files[0].name;
+            evidencia_arq = `C:/A1Fer/htdocs/sgq_documentos/${evidFile}`;
+        }
+
+        // Get RNC origin values if available
+        let rncOrigemId = null;
+        let rncOrigemNum = null;
+        const rncOrigemElement = document.getElementById('rnc_origem_id');
+        if (rncOrigemElement) {
+            rncOrigemId = rncOrigemElement.value;
+        }
+        const rncOriginElement = document.getElementById('rncOrigin');
+        if (rncOriginElement) {
+            rncOrigemNum = rncOriginElement.innerText;
+        }
+
+        console.log('RNC Origem ID:', rncOrigemId);
+
+        // Create data object
+        const dados = {
+            origem_id: origem,
+            sub_area_id: subArea,
+            fato: fato,
+            data_criacao: dataFormatada,
+            ano_criacao: ano,
+            rnc_number: rncNumber,
+            evidencia_texto: evidenciaTexto,
+            evidencia_arq: evidencia_arq,
+            requisito_id: requisito,
+            outros_requisito: outrosRequisito,
+            solicitante_id: solicitanteId,
+            responsavel_id: responsavelId,
+            rnc_origem_id: rncOrigemId,
+            rnc_origem_num: rncOrigemNum
+        };
+
+        // Send data to server
+        fetch('salvar_rnc/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(dados)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('RNC salva com sucesso!');
+                    window.location.href = '/app/sgq/index/menu-solicitante/';
+                } else {
+                    alert('Erro ao salvar RNC: ' + (data.message || 'Erro desconhecido'));
+                    window.location.href = '/app/sgq/index/menu-solicitante/';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao salvar RNC: ' + error.message);
+            });
+    });
+</script>
+{% endblock %}

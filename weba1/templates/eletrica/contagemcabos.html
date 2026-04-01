@@ -1,0 +1,88 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="contagemcabosLabel">Contagem de Cabos </h5>
+</div>
+<div class="modal-body">
+    <div class="row" ><!-- dentro do area-->
+        <div class="col">
+            <fieldset class="fieldset-border">
+                <legend class="legend-border">Típico para Lista de Materiais </legend>
+                <div class="col" >
+                    <div class="col-sm-12">
+                        <div class="form-group mb-4">CAMINHO SAÍDA
+                            <td><select multiple  required class="form-control " id="acessos-list" style="width:830px; height: 50px;" onclick="select_path(this.value)"></select></td> 
+                            <br>
+                            <div style="float: right;">
+                                <button type="button" class="btn btn-secondary"  >Limpar</button>
+                                <button type="button" class="btn btn-secondary" >...</button>
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col" >
+                    <div class="col-sm-12">
+                        <div class="form-group mb-4">CAMINHO DO TEMPLATE LISTA DE MATERIAIS
+                            <td><select multiple  required class="form-control " id="acessos-list" style="width:830px ; height: 50px;"onclick="select_path(this.value)"></select></td>
+                            <br>
+                            <div style="float: right;">
+                                <button type="button" class="btn btn-secondary"  >Limpar</button>
+                                <button type="button" class="btn btn-secondary" >...</button>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col" >
+                    <div class="col-sm-12">
+                        <div class="form-group mb-4">CAMINHO DO BLOCO 
+                            <td><select multiple  required class="form-control " id="acessos-list" style="width:830px ; height: 50px;"onclick="select_path(this.value)"></select></td>
+                            <br>
+                            <div style="float: right;">
+                                <button type="button" class="btn btn-secondary"  >Limpar</button>
+                                <button type="button" class="btn btn-secondary" >...</button>
+                            </div> 
+                        </div>
+                    </div>
+                    <div style="float: left;">
+                        <button type="button" class="btn btn-secondary"  >Atualizar Caminhos</button>
+                    </div> 
+                </div>
+                <br>
+            </fieldset>    
+        </div>    
+
+        <div class="col">
+            <fieldset class="fieldset-border">
+                
+                <legend class="legend-border">Quantitativo de Cabos</legend>
+
+                <P>* Quantidade dos cabos estão sem  % de folga e comp. médio</P>
+                <div class="form-group mb-4"> CÓDIGO  |  QUANTIDADE(m)  | FORMAÇÃO   |  SEÇÃO(mm²)
+                    <td><select multiple required class="form-control" id="acessos-list" ></select></td>
+                </div>
+            </fieldset>
+            <div style="float: left;">
+                <button type="button" class="btn btn-secondary"  >Gerar Típico - Cabos</button>
+            </div>
+   
+        </div>  
+
+        <div class="col">
+            <fieldset class="fieldset-border">
+            
+                <legend class="legend-border">Quantitativo de Terminais</legend>
+                <div class="form-group mb-4 "> CÓDIGO |  QUANTIDADE
+                    <td><select multiple required class="form-control" id="acessos-list" style=" width: 250px; height: 155px;"></select></td>
+                </div>  
+                    
+            </fieldset>
+            <div style="float: left;">
+                <button type="button" class="btn btn-secondary"  >Gerar Típico - Terminais</button>
+            </div>
+        </div>
+    </div>      
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-warning" style="float: left;" >Contabilizar Cabos e Terminais </button>
+    <button type="button" class="btn btn-warning" >Fechar</button>
+</div>

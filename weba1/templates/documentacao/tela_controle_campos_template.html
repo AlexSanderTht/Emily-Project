@@ -1,0 +1,137 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+    <link href="{% static 'js/bootstrap.min.css' %}">
+</head>
+
+<style>
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-5">
+    {% csrf_token %}
+    <div class="card mb-4">
+        <div class="card-body  col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Controle de Disciplinas</b></h2>
+        </div>
+        <div class="card-body container mx-auto">
+            <div class="tab_cont p-3">
+                <table class="table table-bordered rounded" id="table">
+                    <thead>
+                    <tr>
+                        <th hidden>ID</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Nome Grendocs</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for id, alias, nome_greendocs in ListCamposTemplate %}
+                    <tr>
+                        <td hidden>{{id}}</td>
+                        <td>{{alias}}</td>
+                        <td>{{nome_greendocs}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class=" tab_cont p-3">
+                <div class="form-row">
+                    <div class="form-group col-md-4" hidden>
+                        <label for="id_campo_grendocs">ID</label>
+                        <input id="id_campo_grendocs" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="doc_name_alias">Nome</label>
+                        <input id="doc_name_alias" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="doc_name_greendocs">Nome Grendocs</label>
+                        <input id="doc_name_greendocs" class="form-control ">
+                    </div>
+                    
+                </div>
+                <div>
+                    <button type="button" class="btn butof" onclick="InsertEditCamposGreen()">Adicionar\Editar</button>
+                    <button type="button" class="btn btn-primary" onclick="Clear_campos()">Limpar</button>
+                    <button type="button" class="btn bg-danger" onclick="DeleteCamosGreen()">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+
+<script>
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+    $("#table tbody tr").click(function () {
+        $(this).addClass('selected table-primary').siblings().removeClass('selected table-primary');
+        Fill_campos_gren($(this).find('td:nth-child(1)').html(), $(this).find('td:nth-child(2)').html(), $(this).find('td:nth-child(3)').html())
+
+    });
+    function Fill_campos_gren(id, alias, green_name){
+        document.getElementById('id_campo_grendocs').value = id
+        document.getElementById('doc_name_alias').value = alias
+        document.getElementById('doc_name_greendocs').value = green_name
+    }
+    function Clear_campos(){
+        Fill_campos_gren('','','')
+        $("#table tbody tr").removeClass('selected table-primary')
+    }
+    function InsertEditCamposGreen(){
+        let id = document.getElementById('id_campo_grendocs').value
+        let alias = document.getElementById('doc_name_alias').value
+        let green_name = document.getElementById('doc_name_greendocs').value
+        $.ajax({
+            url: "", // the endpoint
+            type: "POST", // http method
+            dataType: "json",
+            data: {
+                "id": id,
+                "alias": alias,
+                "nome_green": green_name,
+                'csrfmiddlewaretoken': csrf[0].value
+            } // data sent with the post request
+        }).done(function (data){
+                swalAlert_DOC('Inserir Registro', data['data'],'warning', false)
+                Clear_campos()
+        });
+        }
+
+    function DeleteCamosGreen(){
+        let id = document.getElementById('id_campo_grendocs').value
+        if(isNaN(parseInt(id))){
+            swalAlert_DOC('Deletar Registro', 'NÃO foi possivel realizar a deleção, necessário selecionar um registro a ser deletado na tabela!','error', false)
+            Clear_campos()
+        }else{
+            $.ajax({
+                url: "", // the endpoint
+                type: "DELETE", // http method
+                headers: {'X-CSRFToken': csrf[0].value},
+                dataType: "json",
+                data: {
+                    "id": id,
+                    'csrfmiddlewaretoken': csrf[0].value
+                 } // data sent with the post request
+        }).done(function (data) {
+            swalAlert_DOC('Deletar Registro', data['data'],'warning', 'Fechar')
+            Clear_campos()
+        });
+        }
+    }
+</script>
+{% endblock %}

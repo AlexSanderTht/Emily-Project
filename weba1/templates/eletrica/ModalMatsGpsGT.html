@@ -1,0 +1,36 @@
+{% load static %}
+<div class="modal fade bd-example-modal-lg" id="modal_mats_gps_gt" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content mt-5 shadow border">
+      <div class="modal-header border-0 ">
+        <h5 class="modal-title font-weight-bold mt-2 p-1" id="exampleModalLabel">Materiais em Grupos</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row mx-1">
+          <label>Materiais:</label>
+          <select multiple class="form-control" id="mats_mats_gps_gt">
+          </select>
+        </div>
+
+        <div class="row mt-2">
+          <div class="col-6">
+            <label>Grupos Normais:</label>
+            <div class="border border-secondary groups_in_mats_groups" id="gp_normal_mats_gps_gt">
+
+            </div>
+          </div>
+
+          <div class="col-6">
+            <label>Grupos Bandejas:</label>
+            <div class="border border-secondary groups_in_mats_groups" id="gp_band_mats_gps_gt">
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

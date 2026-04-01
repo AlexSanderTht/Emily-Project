@@ -1,0 +1,874 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+
+<title>A1pro</title>
+{% endblock %}
+{% block help %}
+    <br><br>
+    <h6><small>Opção "Controladoria" Nesta opção você irá revisar somente listas da controladoria.</small></h6>
+    <br><br>
+    <h6><small>Opção "Outra lista" Nesta opção você irá revisar as demais listas.</small></h6>
+    <br><br>
+    <h6><small>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas.</small></h6>
+    <br><br>
+    <h6><small>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores.</small></h6>
+    <br><br>
+    <h6><small>"Chave 2" Neste campo você irá inserir a coluna sem repetição de valores(caso a primeira tenha repetição).</small></h6>
+    <br><br>
+    <h7><small>"Barra de progresso" aguarde o fim do processo para o download dos documentos.</small></h7>
+{% endblock %}
+{% block main %}
+<link href="{% static 'css/styles.css' %}" rel="stylesheet"/>
+<link href="{% static 'css/styles_model.css' %}" rel="stylesheet"/>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all. css' %}"/>
+<style>
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+</style>
+<script src="{% static 'js/eletrica/A1Pro/a1pro_ctrl.js' %}"></script>
+<script src="{% static 'js/eletrica/A1Pro/DefinesA1Pro.js' %}"></script>
+<script src="{% static 'js/eletrica/A1Pro/a1procontrolusers.js' %}"></script>
+<script type=text/javascript>
+
+
+        function openTool(evt, Name) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(Name).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        //openTool(event, 'Motores');
+
+    </script>
+    <div class="container py-5">
+
+        <!-- Inicio titulo -->
+        <div class="row mb-4">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 antedeguemon"><b>A1 Pro</b></h1>
+            </div>
+        </div>
+        <!-- Fim -->
+
+        <div class="row">
+            <div class="col-lg-12 mx-auto">
+                <div class="bg-white rounded-lg shadow-sm p-5">
+                    <!-- Inicio cartao -->
+                    <div class="tab-content row">
+                        <!-- Fim cartao-->
+                        <div id="nav-tab-card" class="tab-pane fade show active col-12">
+                            <!-------------------- Campo 1 -------------------->
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <!-------------------- Inicio campo n_os -------------------->
+
+                                    <div class="container-fluid border p-2" style="border-radius: 10px;">
+                                        <span class="bg-warning px-3 mt-2" style="border-radius: 10px;">N° OS</span>
+                                        {% with id_input='test_datalist' name_func_change='changeOsValues' url_get='datalist_in_os/' placeholder_input='Digite a OS que deseja' id_select_get_value_selected='pro-os' %}
+                                            {% include '../custom_datalist.html' %}
+                                        {% endwith %}
+
+                                        <div class="col-12 d-flex justify-content-end">
+                                            <button id="OS-dropdown" class="btn btn-warning rounded-pill shadow-sm mt-2"
+                                                    data-toggle="modal" data-target="#cadastro"
+                                                    onclick="list_options('os-type', select=true)"><i class="fa-solid fa-ellipsis"></i>
+                                            </button>
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-------------------- Inicio campo area -------------------->
+                                    <div class="form-group row mt-2">
+                                        <label class="objte1 col-lg-3 col-form-label" for="pro-area">ÁREA</label>
+                                        <div class="col-lg-5 pl-0">
+                                            <select class="form-control" id="pro-area" onchange="cookies_area()">
+                                                <option value="none">---</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-auto">
+                                            <!-------------------- Inicio Botão cadastro de area -------------------->
+                                            <button id="area-dropdown" class="subscribe btn btn-warning  rounded-pill shadow-sm"
+                                                    onclick="verify_os_scr_index()"><i class="fa-solid fa-ellipsis"></i>
+                                            </button><!-------------------- Fim Botão cadastro de area -------------------->
+                                        </div>
+                                    </div><!-------------------- Fim campo area -------------------->
+                                </div>
+
+                                <!-------------------- Início area de descrição Principal -------------------->
+                                <div class="col-lg-8">
+                                    <div class="form-row col-lg-12">
+                                        <div class="form-group col-lg-6 d-flex">
+                                            <label class="col-lg-4 col-form-label pl-0" for='pro-os-project'>PROJETO:</label>
+                                            <div class="col-lg-8 pl-0">
+                                                <input id='pro-os-project' class="form-control bg-white" type='text' placeholder="Projeto" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-lg-6 d-flex">
+                                            <label class="col-lg-4 col-form-label px-0" for='pro-os-project-num'>N° PROJETO:</label>
+                                            <div class="col-lg-8 px-0">
+                                                <input id='pro-os-project-num' class="form-control bg-white" type='text' placeholder="N° Projeto" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-row col-lg-12">
+                                        <div class="form-group col-lg-12 d-flex">
+                                            <label class="col-lg-2 col-form-label pl-0" for='pro-os-desc'>DESCRIÇÃO:</label>
+                                            <div class="col-lg-10 px-0">
+                                                <input id='pro-os-desc' class="form-control bg-white" type='text' placeholder="Descrição" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row col-lg-12">
+                                        <div class="form-group col-lg-6 d-flex">
+                                            <label class="col-lg-4 col-form-label pl-0" for='pro-os-unid-fabril'>UNIDADE: </label>
+                                            <div class="col-lg-8 pl-0">
+                                                <input id='pro-os-unid-fabril' class="form-control bg-white" type='text' placeholder="Unidade" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-lg-6 d-flex">
+                                            <label class="col-lg-4 col-form-label pl-0" for='pro-os-client'>CLIENTE:</label>
+                                            <div class="col-lg-8 px-0">
+                                                <input id='pro-os-client' class="form-control bg-white" type='text' placeholder="Cliente" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!--------------------Fim de area de descrição Principal -------------------->
+                            </div>
+
+                            <div class="btn-group dropdown" role="group">
+                                <button type="button" class="btn btn-secondary"
+                                    aria-haspopup="true" aria-expanded="false">
+                                    Motores / Cargas
+                                </button>
+                                <div class="dropdown-menu mt-0" aria-labelledby="btnGroupDrop1">
+                                    <a class="dropdown-item" id="equipamentos-dropdown" onclick="check_os_and_area('eqps')">Equipamentos</a>
+                                    <a class="dropdown-item" id="ligacoes-dropdown" onclick="check_os_and_area('cargas')">Ligações</a>
+                                    <a class="dropdown-item" id="funcao-dropdown" onclick="FillFuncs()">Função</a>
+                                    <a class="dropdown-item" id="tipo-ligacao-dropdown" onclick="ShowModalAndCreateSelectTiposLig();">Tipo de Alimentação</a>
+                                    <a class="dropdown-item" id="tipo-partida-dropdown" onclick="printPartidas()">Tipo de Partida</a>
+                                    <a class="dropdown-item" id="acessorios-dropdown" onclick="printAcessorio()">Acessorios</a>
+                                    <a class="dropdown-item" id="sinais-dropdown" onclick="printSinais()">Sinais</a>
+                                    <a class="dropdown-item" id="gav-cubs-dropdown" onclick="print_options_painel()">Gavetas/Cubículos</a>
+                                    <a class="dropdown-item" id="motor-status-dropdown" onclick="print_options_search('MotorStatus/', 'tb_stt', '#motor-status-select', '#motorstatus', 'motor-status')">Motor status</a>
+                                    <a hidden class="dropdown-item" id="resumo-tbr-dropdown" onclick="ResumoTBR()">TBR</a>
+                                    <a class="dropdown-item" id="cadastro-bornes" onclick="ShowScreenConfigBornes()">Bornes</a>
+                                    <a class="dropdown-item" id="integracao-comos" onclick="ShowScreenIntegracaoComos()">Comos e Modelo 3D</a>
+                                </div>
+                            </div>
+<!--                            <div class="btn-group dropdown" role="group">-->
+<!--                                <button type="button" class="btn btn-secondary" aria-haspopup="true" aria-expanded="false">-->
+<!--                                    Auxiliares-->
+<!--                                </button>-->
+<!--                                <div class="dropdown-menu mt-0" aria-labelledby="btnGroupDrop1">-->
+<!--                                    <a class="dropdown-item" data-toggle="modal" id="templates-interligados-dropdown" data-target="#diagrama">Templates Interlig.</a>-->
+<!--                                    <a class="dropdown-item" id="sinais-de-controle-dropdown" href="#" >Sinais de Contr.</a>-->
+<!--                                    <a class="dropdown-item" id="transformadores-dropdown" href="#">Transformadores</a>-->
+<!--                                    <a class="dropdown-item" id="cargas-auxiliares-dropdown" href="#">Cargas Auxiliares</a>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+                            <div class="btn-group dropdown" role="group">
+                                <button type="button" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+                                    Cabos
+                                </button>
+                                <div class="dropdown-menu mt-0" aria-labelledby="btnGroupDrop1">
+                                    <a class="dropdown-item" id="config-calc-cabos-dropdown" onclick="FillFuncsAndShowModalConfigCC()">Configuração Cálculo</a>
+                                    <a class="dropdown-item" id="method-calc-dropdown" onclick="ShowDistMedia()">Distância Média</a>
+                                    <a class="dropdown-item" id="codigos-a1mat-dropdown"  onclick="get_page_a1_mat()" >Códigos - A1MAT</a>
+                                    <a class="dropdown-item" id="criterio-formacao-tag-dropdown" onclick="verify_selects_show_modal('criterios_tag'); working_with_nav_menu('crit-tag-alimentacao',['crit-tag-alimentacao', 'crit-tag-sinal', 'crit-tag-acessorio', 'crit-tag-neutro', 'crit-tag-terra']);FillFTagExistsInOs();">Formação TAG</a>
+                                    <a class="dropdown-item" id="classe-isolacao-dropdown" onclick="fill_all_selects()">Classe de Isolação</a>
+                                    <a class="dropdown-item" id="setup-sinais-acess-dropdown" data-toggle="modal" onclick="DataPageSetup()">Sinais e Acessórios</a>
+                                    <a hidden class="dropdown-item" id="formacao-cabos-dropdown" onclick="fill_select_func_form_cabo()">Formação dos Cabos</a>
+                                    <a class="dropdown-item" id="tipo-cabo-func" onclick="ShowModalTpcFunc()">Tipo de Função</a>
+                                    <a class="dropdown-item" id="lista-de-cabos-dropdown" onclick="OpenScreenListaCabos()">Lista de Cabos</a>
+<!--                                    <a class="dropdown-item" id="contagem-cabos-dropdown" data-toggle="modal" data-target="#contagemcabos">Contagem de Cabos</a>-->
+                                    <a class="dropdown-item" id="bobinas-dropdown" onclick="window.open('/app/eletrica/a1pro/Bobinas/', '_self')">Bobinas</a>
+                                    <a class="dropdown-item" id="integracao-calc_cabos" onclick="ShowScreenIntegracaoCalcCabos()">Integração Calc Cabos</a>
+<!--                                    <a class="dropdown-item" id="setup-cabos-dropdown" href="#">Setup Cabos</a>-->
+                                </div>
+                            </div>
+
+                            <div class="btn-group dropdown" role="group">
+                                <button type="button" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+                                    Controle de Detalhes Típicos
+                                </button>
+                                <div class="dropdown-menu mt-0" aria-labelledby="btnGroupDrop1">
+                                    <a hidden class="dropdown-item" id="gerenciar-tags-tipicos-dropdown" onclick="screenGerenciarTagsTipicos()">Gerenciar TAG's Típicos Sup. e Band.</a>
+                                    <a class="dropdown-item" id="controle-tipicos-doc-dropdown" onclick="ScreenControleTipicos()">Suportes e Bandejas - Materiais</a>
+                                    <a class="dropdown-item" id="gerenciar-talas-chumbs-os-dropdown" onclick="ShowScreenGerenciarTalasChumbs()">Suportes e Bandejas - Talas e Fixações</a>
+                                    <a class="dropdown-item" id="controle-tipicos-forca-control-dropdown" onclick="ScreenControleTipicosForcaControle()">Alimentação de Cargas</a>
+                                </div>
+                            </div>
+
+                            <div class="btn-group dropdown" role="group">
+                                <button type="button" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+                                    Geração Documentos
+                                </button>
+                                <div class="dropdown-menu mt-0" aria-labelledby="btnGroupDrop1">
+<!--                                    <a class="dropdown-item" id="lista-motores-doc-dropdown" href="#">Lista de Motores</a>-->
+<!--                                    <a class="dropdown-item" id="lista-cabos-doc-dropdown" href="#">Lista de Cabos</a>-->
+<!--                                    <a class="dropdown-item" id="plano-corte-cabos-doc-dropdown" href="#">Plano de Corte Cabos</a>-->
+<!--                                    <a class="dropdown-item" id="diagrama-de-interligacao-doc-dropdown" href="#">Diagrama de interligação</a>-->
+<!--                                    <a class="dropdown-item" id="lista-de-materiais-doc-dropdown" href="#">Lista de Materiais</a>-->
+<!--                                    <a class="dropdown-item" id="memorial-de-calculo-doc-dropdown" href="#">Memorial de Cálculo</a>-->
+<!--                                    <a class="dropdown-item" id="diagrama-unifilar-doc-dropdown" href="#">Diagrama Unifilar</a>-->
+<!--                                    <a class="dropdown-item" id="det-tipicos-doc-dropdown" href="#">Det.Típicos</a>-->
+<!--                                    <a class="dropdown-item" id="diagrama-trifilar-doc-dropdown" href="#">Diagrama Trifilar</a>-->
+                                    <a class="dropdown-item" id="gerar-tipicos-doc-dropdown" onclick="ScreenGerarTipicosDoc()">Detalhes Tipicos</a>
+                                    <a class="dropdown-item" id="list-mat-doc-dropdown" onclick="ShowScreenListaMateriais()">Lista de Materiais</a>
+                                    <a class="dropdown-item" id="list-cabos-doc-dropdown" onclick="list_all_consolidado_and_show_modal()">Lista de Cabos</a>
+                                    <a class="dropdown-item" id="cad-plano-corte-dropdown" onclick="ShowScreenPlanoDeCorte()">Plano de corte</a>
+                                    <a class="dropdown-item" id="list-mat-plano-corte-dropdown" onclick="ExportacaoListaMateriaisPlanoDeCorte()">Lista de Materiais Cabos e Terminais</a>
+                                    <a class="dropdown-item" id="gera-memorial" onclick="$('#modal_export_memorial').modal('show')">Memorial de Cálculo</a>
+                                    <a class="dropdown-item" id="gerar-diagrama-interligacao" onclick="ShowScreenGeraDiagInter()">Diagrama de Interligação</a>
+                                    <a class="dropdown-item" id="gerar-lista-revit" onclick="ShowScreenGerarLMRevit()">Lista de Materiais Pelo Revit</a>
+                                </div>
+                            </div>
+
+<!--                            <div class="btn-group dropdown" role="group">-->
+<!--                                <button type="button" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">-->
+<!--                                    Ferramentas Auxiliares-->
+<!--                                </button>-->
+<!--                                <div class="dropdown-menu mt-0" aria-labelledby="btnGroupDrop1">-->
+<!--                                    <a class="dropdown-item" id="converter-tipicos-dropdown" href="#">Converter Típicos</a>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+                            {% load poll_extras %}
+                            {% verify_tool as user_info %}
+                            {% if user_info.A1ProControl %}
+                                <a class="btn btn-secondary" href="/app/eletrica/a1procontrol/">A1 Pro Control</a>
+                            {% endif %}
+
+                            <!-- Botão de debug do a1pro-->
+                            <button hidden type="button" class="btn btn-warning" onclick="DebugA1Pro()">Debug A1Pro</button>
+                            <!-- Fim Botão de debug do a1pro-->
+                        </div>
+                    </div>
+
+                    {% include './ModalTipoCaboFuncao.html' %}
+                    {% include './ModalListaCaboConsolidado.html' %}
+                    <div class="modal" id="bookpdf" tabindex="-1" role="dialog" aria-labelledby="motoracessoriosLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 700px; margin-top: 115px; ">
+                                <div class="w3-container modal-value">
+                                    {% include './gera_book_pdf.html' %}
+                                    {% block bookpdf %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal" id="bookexcel" tabindex="-1" role="dialog" aria-labelledby="motoracessoriosLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 700px; margin-top: 115px; ">
+                                <div class="w3-container modal-value">
+                                    {% include './gera_book_excel_memorial.html' %}
+                                    {% block book_excel_memorial %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal" id="booklistamotores" tabindex="-1" role="dialog" aria-labelledby="motoracessoriosLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 700px; margin-top: 115px; ">
+                                <div class="w3-container modal-value">
+                                    {% include './GeraBookListaMotores.html' %}
+                                    {% block book_lista_motores_memorial %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!--Inicio cadastro_os-->
+                    <div class="modal fade" id="cadastro" tabindex="-1" role="dialog" aria-labelledby="cadastroLabel"
+                        aria-hidden="true" data-backdrop="static">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="cadastroLabel">Cadastro de OS</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="document.location.reload(true)">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                    {% include './cadastro_os.html' %}
+                                    {% block cadastro_os %}
+                                    {% endblock %}
+                               </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim  cadastra_os -->
+
+                    <!--Inicio area-->
+                    <div class="modal fade" id="area" tabindex="-1" role="dialog" aria-labelledby="areaLabel"
+                         aria-hidden="true" data-backdrop="static">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="areaLabel">Área</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-backdrop='static' data-keyboard='false'>
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                    {% include './cadastro_area.html' %}
+                                    {% block cadastro_area %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim area -->
+
+
+                    <!-- AREA-->
+                    <div class="modal fade" id="subarea" tabindex="-1" role="dialog" aria-labelledby="subareaLabel" aria-hidden="true" >
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="subareaLabel">Sub-Área</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="row"><!-- dentro do sub_area-->
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="sub-area-cod">Código</label>
+                                                    <input type="text" required class="form-control" id="sub-area-cod">
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="sub-area-desc">Descrição</label>
+                                                    <input type="text" required class="form-control" id="sub-area-desc">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6 border-left">
+                                                <div class="form-group">
+                                                    <label for="sub-area-type">Sub-áreas Cadastradas</label>
+                                                    <select id="sub-area-type" class="form-control"
+                                                            onchange="exec_manipulation_forms_sub_area()">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" onclick="verify_update_sub_area()">Adicionar/Alterar</button>
+                                    <button type="button" class="btn btn-danger" onclick="exec_drop_sub_area()">Excluir</button>
+                                    <button type="button" class="btn btn-warning" onclick="clean_forms_sub_area()">Limpar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!--inicio acessorios-->
+                    <div class="modal fade" id="acessorios" role="dialog" aria-labelledby="acessoriosLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 500px;  margin-left: 75px; margin-top: 140px;">
+                                <div class="w3-container modal-value" >
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="document.getElementById('cargas').style.display='block'">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './acessorios.html' %}
+                                    {% block acessorios %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim  acessorios-->
+
+
+                    <!-- Modal de pergunta o metodo de calculo que vai ser utilizado na lista de cabos -->
+                    {% include './AskDistMedia.html' %}
+                    {% block ask_method_calc %}
+                    {% endblock %}
+                    <!-- Fim Modal de pergunta o metodo de calculo que vai ser utilizado na lista de cabos -->
+
+                    {% include './ConfigCalcCabos.html' %}
+                    {% block config_calc_cabos %}
+                    {% endblock %}
+
+                    <!--inicio sinais-->
+                    <div class="modal fade" id="sinais_control" role="dialog" aria-labelledby="sinaisLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document" style="max-width: 44vw;  margin-right: 430px; margin-top: 140px;">
+                            <div class="modal-content"  >
+                                <div class="w3-container modal-value" style="align-items: center;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './sinais_controle.html' %}
+                                    {% block sinais_controle %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fimsinais-->
+
+                    <!--Inicio motor_status-->
+                    <div class="modal fade" id="motorstatus" tabindex="-1" role="dialog" aria-labelledby="motorstatusLabel" aria-hidden="true">
+                        <div class="modal-dialog rounded-9 " role="document">
+                            <div class="modal-content estl_modal border-0 ">
+                                <div class="w3-container modal-value">
+                                    {% include './motor_status.html' %}
+                                    {% block motor_status %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim motor_status-->
+                    <!--Inicio import-->
+                    <div class="modal fade aolado " id="statussmotor" tabindex="-1" role="dialog" aria-labelledby="motorstatusLabel" aria-hidden="true" >
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" >
+                                <div class="w3-container modal-value">
+                                    {% include './import.html' %}
+                                    {% block import %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim import-->
+
+                    <!-- Inicio tipo_partida-->
+                    <div class="modal fade bd-example-modal-lg" id="tipopartida" tabindex="-1" role="dialog" aria-labelledby="tipopartidaLabel" aria-hidden="true" >
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                {% include './tipo_partida.html' %}
+                                {% block tipo_partida %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div><!-- Fim tipo_partida-->
+
+                    <!-- Inicio motor_acessorios-->
+                    <div class="modal fade" id="motoracessorios" tabindex="-1" role="dialog" aria-labelledby="motoracessoriosLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 700px; margin-top: 115px; ">
+                                <div class="w3-container modal-value">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './motor_acessorios.html' %}
+                                    {% block motor_acessorios %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim motor_acessorios-->
+
+                    <!-- Inicio motor_acessorios-->
+                    <div class="modal fade" id="cadastrobornes" tabindex="-1" role="dialog" aria-labelledby="cadastrobornesLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 710px; hight: 700px;">
+                                <div class="w3-container modal-value">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './CadastroBornesDiagramaInterligacao.html' %}
+                                    {% block CadastroBornesDiagramaInterligacao %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim motor_acessorios-->
+
+                    <!-- Inicio motor acessorios por OS-->
+                    <div class="modal fade" id="acessoriosOS" tabindex="-1" role="dialog" aria-labelledby="subareaLabel" aria-hidden="true" >
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 600px ; margin-left: 42px; margin-top: 125px;" >
+                                <div class="w3-container modal-value">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './AcessOS.html' %}
+                                    {% block acessOS %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fim motor acessorios por OS-->
+
+                    <!-- Inicio Função-->
+                    <div class="modal fade" id="funcao" tabindex="-1" role="dialog" aria-labelledby="motoracessoriosLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 700px; margin-top: 115px; ">
+                                {% include './funcao.html' %}
+                                {% block funcao %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div><!-- Fim Função-->
+
+                    <div class="modal fade" id="impex" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content shadow-lg">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="ModalLabel">Importar/Exportar Função</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <div class="input-group mb-3">
+                                  <div class="custom-file">
+                                    <label class="custom-file-label" for="file_import_func" id="frase_arquivo_import_func">Selecione um arquivo</label>
+                                    <input type="file" class="custom-file-input" id="file_import_func" onchange="import_export()">
+                                  </div>
+                                </div>
+                                <div id="progress-box-funcao" hidden>
+                                    <div class='progress-wrapper'>
+                                        <div id='progress-bar-xd' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                                    </div><br>
+                                    <div id="progress-bar-message-xd" class="text-center">Aguardando a Inicialização da tarefa ...</div>
+                                </div>
+                              </div>
+                                 <div class="col-lg-12" id="row_load_elements" hidden>
+                                    <img src="{% static 'dashboards/lesma_skate.gif' %}">
+                                    <div id="progress-bar-message" class="w-100 text-center"></div>
+                                 </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="limpaCampo()">Fechar</button>
+                                <button type="button" id="import_func_xd" class="btn btn-primary" onclick="receber_funcao()">Exportar</button>
+                                <form id='import_func' method="get">
+                                </form>
+                                <button type="button" class="btn btn-primary" onclick="enviar_funcao()">Importar</button>
+                                <form id="envia_log" method="post">
+
+                                </form>
+                                <button type="button" class="subscribe btn btn-success shadow" onclick="click_button_download()">Download Template</button>
+                                <form id='download_file_func' method="get">
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+
+                    <!-- Inicio Função por OS-->
+                    <div class="modal fade" id="funcaoOS" tabindex="-1" role="dialog" aria-labelledby="subareaLabel" aria-hidden="true" >
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 600px ; margin-left: 42px; margin-top: 125px;" >
+                                <div class="w3-container modal-value">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './FuncaoOS.html' %}
+                                    {% block funcaoOS %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fim Função por OS-->
+
+                    <!-- Inicio Sinais-->
+                    <div class="modal fade" id="sinais" tabindex="-1" role="dialog" aria-labelledby="motoracessoriosLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 700px; margin-top: 115px; ">
+                                <div class="w3-container modal-value">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './sinais.html' %}
+                                    {% block sinais %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fim Sinais-->
+
+                    <!-- Inicio Sinais por OS-->
+                    <div class="modal fade" id="sinaisOS" tabindex="-1" role="dialog" aria-labelledby="subareaLabel" aria-hidden="true" >
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 600px ; margin-left: 42px; margin-top: 125px;" >
+                                <div class="w3-container modal-value">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './sinaisOS.html' %}
+                                    {% block sinaisOS %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fim Sinais por OS-->
+
+                    <!-- Inicio Gavetas/Cubiculos-->
+                    <div class="modal fade" id="gav-cub" tabindex="-1" role="dialog" aria-labelledby="painelLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-xl" style="  width: 1250px; margin: auto;" role="document">
+                            <div class="modal-content" id="size-modal">
+                                <div class="w3-container modal-value">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btn-close-gavcubs">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './GavCub.html' %}
+                                    {% block GavCub %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim Gavetas/Cubiculos-->
+
+                    <!--inicio setup-->
+                    <div class="modal hide fade" id="setup" tabindex="-1" role="dialog" aria-labelledby="setupLabel" aria-hidden="true" data-backdrop="static">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                {% include './setup.html' %}
+                                {% block setup %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div><!-- Fim setup-->
+
+                    <!--inicio isolacao-->
+                    <div class="modal fade" id="isolacao" tabindex="-1" role="dialog" aria-labelledby="isolacaoLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width:600px; margin-top: 115px; margin-left: 45px; ">
+                                <div class="w3-container modal-value">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './isolacao.html' %}
+                                    {% block isolacao %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim isolacao-->
+
+                    <!--inicio formacao-->
+                    <div class="modal fade" id="formacao" tabindex="-1" role="dialog" aria-labelledby="formacaoLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content " style="width:600px;">
+                                {% include './formacao.html' %}
+                                {% block formacao %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div><!-- Fim formacao-->
+
+                    <!--inicio formacao-->
+                    <div class="modal fade" id="tipos-ligacao" tabindex="-1" role="dialog" aria-labelledby="tipos-ligacaoLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                {% include './TiposLigacao.html' %}
+                                {% block tipos_ligacao %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div><!-- Fim formacao-->
+
+                    <!--inicio criterios-->
+                    <div class="modal hidden" id="criterios_tag" tabindex="-1" role="dialog" aria-labelledby="criterios_tagLabel" data-backdrop="static">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" id="modal-formacao-content" style="width:600px;">
+                                {% include './criterios_tag.html' %}
+                                {% block criterios_tag %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div><!-- Fim criterios-->
+
+                    <!--inicio codigos-a1mat-->
+                    <div class="modal fade" id="tipocabo" tabindex="-1" role="dialog" aria-labelledby="tipocaboLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style=" width: 600px;margin-top:150px; margin-left: 80px;" >
+                                <div class="w3-container modal-value" >
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './tipocabo.html' %}
+                                    {% block tipocabo %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim codigos-a1mat-->
+
+                    <!--inicio resumo-->
+                    <div class="modal fade" id="resumo" tabindex="-1" role="dialog" aria-labelledby="resumoLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 1000px; margin-left: -130px;" >
+                                <div class="w3-container modal-value" >
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './resumo.html' %}
+                                    {% block resumo %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim resumo-->
+
+
+                    <!--inicio contagemcabos-->
+                    <div class="modal fade" id="contagemcabos" tabindex="-1" role="dialog" aria-labelledby="contagemcabosLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 1000px; margin-left: -130px;" >
+                                <div class="w3-container modal-value" >
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './contagemcabos.html' %}
+                                    {% block contagemcabos %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim contagemcabos-->
+
+                    <!--inicio caracteristicaos-->
+                    <div class="modal fade" id="caracteristicaos" role="dialog" aria-labelledby="caracteristicaosLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 500px;  margin-left: 75px; margin-top: 140px;">
+                                <div class="w3-container modal-value" >
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="document.getElementById('cargas').style.display='block'">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% include './caracteristicaos.html' %}
+                                    {% block caracteristicaos %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- Fim  caracteristicaos-->
+
+                    <!-- Inicio modal verificação de exclusão cub -->
+                    <div class="modal fade" id="modal-del" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="left: 14%;width: 550px;">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Verificação</h5>
+                            <button type="button" class="close" onclick="$('#modal-del').modal('hide')" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body" id="content-modal-del">
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-warning" onclick="$('#modal-del').modal('hide')">Cancelar</button>
+                            <button type="button" class="btn btn-danger" onclick="del_cub()">Excluir</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Fim modal verificação de exclusão cub -->
+
+                    <!-- Inicio modal verificação de exclusão gav -->
+                    <div class="modal fade" id="modal-del-gav" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="left: 14%;width: 550px;">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Verificação</h5>
+                            <button type="button" class="close" onclick="$('#modal-del-gav').modal('hide')" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body" id="content-modal-del-gav">
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-warning" onclick="$('#modal-del-gav').modal('hide')">Cancelar</button>
+                            <button type="button" class="btn btn-danger" onclick="del_gav()">Excluir</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Fim modal verificação de exclusão gav -->
+
+                    <div class="modal fade" id="modal_export_memorial" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="left: 14%;width: 550px;">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Exportação Memorial</h5>
+                            <button type="button" class="close" onclick="$('#modal_export_memorial').modal('hide')" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-warning" onclick="$('#bookpdf').modal('show');$('#modal_export_memorial').modal('hide')">Memorial Cálculo PDF</button>
+                            <button type="button" class="btn btn-danger" onclick="MemorialBookExcel(document.getElementById('pro-os').value);$('#modal_export_memorial').modal('hide')">Memorial Cálculo Excel</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!------------------ inicio Campo modal duplicata Colaborador ------------------>
+                    <div class="modal fade" id="modal_loading_list_material">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content bordas">
+                                <div class="modal-header position-relative">
+                                    <h4 class="modal-title text-center w-100 text-danger">Atenção</h4>
+                                    <button type="button" class="close position-absolute" style="right: 5%" data-dismiss="modal"><span>×</span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="progress-box-list-material-plan-corte" class="col-lg-12 d-flex flex-column mt-3 font_size_0_8 mb-3" hidden>
+                                        <div id="load-gif-list-material-plan-corte" style="width: 0%;height: 40px;">
+                                            <img id="gif-progress-list-material-plan-corte" class="float-right" style="height: 40px;" src="{% static 'img/run-sonic.gif' %}" alt="GIF progress-bar">
+                                            <img hidden id="gif-success-list-material-plan-corte" class="float-right" style="height: 40px;" src="{% static 'img/sonic-success.gif' %}" alt="GIF complete-progress-bar">
+                                        </div>
+                                        <div class='progress-wrapper text-center'>
+                                            <div id='progress-bar-list-material-plan-corte' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                                        </div>
+                                        <span id="progress-bar-message-list-material-plan-corte" class="text-center">Aguardando a Inicialização da tarefa ...</span>
+                                    </div>
+                                    <hr>
+                                    <img src="{% static 'img/digitando.gif' %}">
+                                </div>
+                            </div>
+                        </div>
+                     </div><!------------------ Fim Campo modal duplicata Colaborador ------------------>
+
+
+
+                    <!-- Modal de Warning feito para usar no a1pro, facilmente manipulado com js-->
+                    {% include './modal_warning.html' %}
+                    <!-- Fim Modal de Warning feito para usar no a1pro, facilmente manipulado com js-->
+
+                    {% with id_modal='modal-load-a1pro' %}
+                        {% include '../catracas/modal_load.html' %}
+                    {% endwith %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/calc_cabos/a1calccabosjs.js' %}"></script>
+    <script>
+        window.onload = on_load_a1pro()
+        // $('#cadastro').modal({backdrop: 'static', keyboard: false, show: false})
+    </script>
+{% endblock %}
+
+
+

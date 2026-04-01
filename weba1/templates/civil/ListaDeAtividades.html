@@ -1,0 +1,170 @@
+
+{%extends 'geral/base.html'%}
+
+{% load static %}
+{% block head %}
+<title>Lista de Atividades</title>
+<link rel="stylesheet" href="{% static 'css/a1civ.css' %}"/>
+
+<style>
+.loader {
+  border: 8px solid #A1A1A1;
+  border-top: 8px solid #f6801e;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+   display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+        label
+        {
+            margin-bottom: 0px;
+        }
+     #TabelaAtividades {
+
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.9);
+  }
+
+  #TabelaAtividades td, #TableUsuarios th {
+    border: 0px solid #ddd;
+    padding: 4px;
+     text-align: center;
+  }
+
+
+
+  #TabelaAtividades tr:nth-child(odd){background-color: #f2f2f2;}
+
+  #TabelaAtividades td:hover {
+    background-color: #ddd;
+
+  }
+
+  #TabelaAtividades th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #343a40;
+    color: white;
+  }
+
+
+
+        label
+        {
+            margin-bottom: 0px;
+        }
+.input-group-text{
+    background-color: gray;// #343A40;
+    color: white;
+}
+
+</style>
+{% endblock %}
+
+{% block main %}
+
+{% load poll_extras %}
+{% verify_tool as user_info %}
+{% if user_info.A1CIVAtividades %}
+
+ <div class="mx-auto">
+           <div class="bg-white rounded-lg shadow-sm p-5" style="margin-left:50px; margin-right:50px; margin-top: 50px">
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+ {% csrf_token %}
+<h1><center>Lista de Atividades </center></h1>
+
+                          <div class="input-group mb-3">
+                          <div class="input-group-prepend">
+                            <label class="input-group-text" for="SelectOS" >Selecione a OS:</label>
+                          </div>
+                          <select disabled="disabled" class="custom-select" id="SelectOS">
+                              {%for os in OSs %}
+                                 <option >{{os}}</option>
+                              {% endfor %}
+
+                          </select>
+                        </div>
+                        <div class="loader" id="loader">
+
+                        </div>
+
+                             <table id="TabelaAtividades" class="display" style="padding: 0px; width:100%; font-size:75%; overflow-y: hidden;"></table>
+                        {% load poll_extras %}
+                        {% verify_tool as user_info %}
+                        {% if user_info.A1CIVCadastrarAtividade %}
+                         <button class=" btn btn-danger " id="BotaoExcluir" style="display: none; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important" onclick="ModalExcluirAtividade()">Excluir Atividades da Tela</button>
+                        {% endif %}
+                         <button class=" btn btn-primary  " id="BotaoExportar" style="display: none; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important" onclick="ExportarAtividades()">Exportar Atividades da Tela</button>
+                         <div class="loader" id="loaderExportarAtividade" style="height: 50px; width:50px; display: none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+<div class="modal fade" id="ExcluirAtividadeModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <form method="post" enctype="multipart/form-data">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmação de Exclusão de Atividade</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                        <p> Tem certeza que deseja excluir as atividades da tabela?</p>
+                        <p> <b>Isso irá remover todos os dados de todas as etapas, incluindo arquivos e notas de verificação</b></p>
+                        <br/>
+                        <p> Para confirmar, digite <b>Excluir Atividades</b> abaixo</p>
+                    <div class="input-group mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-default">Confirmação:</span>
+                      </div>
+                      <input type="text" class="form-control" aria-label="Default" id="TextoConfirmacao" aria-describedby="inputGroup-sizing-default" required>
+
+                    </div>
+                      <div id="progressExcluir"></div>
+                        <div id="ErroConfirmacao"></div>
+                        <div class="modal-footer" >
+                             <div class="loader" id="loaderExcluirAtividade" style="height: 50px; width:50px; display: none"></div>
+                            <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm"
+                                    style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important" data-dismiss="modal">Não
+                            </button>
+                            <button type="button" class="subscribe btn btn-warning  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important"
+                                    onclick="ExcluirAtividade()">Sim
+                            </button>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endif %}
+
+<script src="{% static 'js/civil/ScriptsListaAtividades.js' %}"></script>
+<script src="{% static 'js/civil/scriptsGerais.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/civil/jquery.dataTables.min.css' %}"/>
+
+{%endblock%}

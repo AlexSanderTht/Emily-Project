@@ -1,0 +1,323 @@
+<!--####################################################### MOTOR CARGA ################################################-->
+
+{%block info_carga%}
+    <div class="nome_origem">
+        <div class="row">
+            <div class="col-6">
+                <button class="btn_mais" type="button" data-toggle="collapse" data-target="#CargaColapseMenuCarga" aria-expanded="false" aria-controls="CargaColapseMenuCarga">
+                    +
+                </button>Dados Equipamento
+            </div>
+
+            <div class="col-6" hidden>
+                <div class="row d-flex justify-content-center radius_10 bg-secondary text-white">
+                    <div class="col-5 text-center">
+                        GERAR CABO
+                    </div>
+
+                    <div class="col-2">
+                        <label class="switch_toggle mb-0 mt-1">
+                            <input type="checkbox" value="NAO" id="eqps_gerar_cabos">
+                            <span class="slider_switch round"></span>
+                        </label>
+                    </div>
+
+                    <div class="col-5 text-center">
+                        NÃO GERAR
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="collapse multi-collapse" id="CargaColapseMenuCarga">
+        <div class="card card-body bg-gray" id="CargaInfoCarga">
+
+            <!--Inicio barra 2-->
+            <div class="dados_moto">
+               <h6> DADOS EQUIPAMENTO </h6>
+            </div>
+
+            <div id="Carga_bar0_dados" class="row ml-1 mb-4">
+                <div class="col">
+                    <input class="form-check-input" type="radio" name="eqp-datas-carga-type" id="flexRadioDefault1" value="MO">
+                    <label class="form-check-label" for="flexRadioDefault1">
+                     Motor
+                    </label>
+                </div>
+
+                <div class="col">
+                    <input class="form-check-input" type="radio" name="eqp-datas-carga-type"  id="flexRadioDefault1" value="TR">
+                    <label class="form-check-label" for="flexRadioDefault1">
+                     Transformador
+                    </label>
+                </div>
+
+                <div class="col">
+                    <input class="form-check-input" type="radio" name="eqp-datas-carga-type"  id="eqp-radio-pn" value="PN">
+                    <label class="form-check-label" for="flexRadioDefault1">
+                     Painel
+                    </label>
+                </div>
+
+                <div class="col">
+                    <input class="form-check-input" type="radio" name="eqp-datas-carga-type"  id="flexRadioDefault1" value="CA">
+                    <label class="form-check-label" for="flexRadioDefault1">
+                     Carga Auxiliar
+                    </label>
+                </div>
+
+                <div class="col">
+                    <input class="form-check-input" type="radio" name="eqp-datas-carga-type"  id="flexRadioDefault1" value="BR">
+                    <label class="form-check-label" for="flexRadioDefault1">
+                     Barramento
+                    </label>
+                </div>
+
+
+            </div>
+
+
+            <div id="Carga_bar1_dados" class="form-row">
+                <div class="form-row mb-4">
+
+                     <!--Inicio campo Tag Cliente-->
+                    <div class="col-sm-3" >
+                        <label for="CargaTagCliente" title="Inserir número da Tag">Tag Cliente</label>
+                        <input type="text" required class="form-control" id="CargaTagCliente">
+                    </div>
+                    <!--Fim campo Tag Cliente-->
+
+                    <!--Inicio campo Fluxograma-->
+                    <div class="col-sm-3">
+                        <label for="CargaFluxograma"  data-toggle="" title="Inserir número do fluxograma">Fluxograma n°</label>
+                        <input type="text" required class="form-control" id="CargaFluxograma">
+                    </div>
+                    <!--Fim campo Fluxograma-->
+
+                    <!--Inicio campo Local Planta-->
+                    <div class="col-sm-3">
+                        <label for="CargaLocalPlanta"  data-toggle="" title="Inserir número do fluxograma">Local Planta</label>
+                        <input type="text" required class="form-control" id="CargaLocalPlanta">
+                    </div>
+                    <!--Fim campo Local Planta-->
+
+                    <div class="col-sm-3">
+                        <label for="CargaLocalPlanta"  data-toggle="" title="Inserir número do fluxograma">Tag Equipamento</label>
+                        <input type="text" required class="form-control" id="CargaTagEqp">
+                    </div>
+
+                </div>
+            </div>
+            <!--Fim barra 2-->
+
+            <div id="Carga_bar2_dados" class="form-row">
+
+                <!--Inicio bloco Pot (KW)-->
+                <div class="col-sm-2 col-lg-3">
+                    <div class="form-group mb-4">
+                        <label for="CargaPotencia" data-toggle="" title="Inserir número do pot">Pot (KW)</label>
+                        <input type="number" step=".01" required class="form-control hide_arrows" id="CargaPotencia">
+                    </div>
+                </div>
+                <!--Fim bloco Pot (KW)-->
+
+                <!--Inicio bloco Pot (KVA)-->
+                <div class="col-sm-2 col-lg-3">
+                    <div class="form-group mb-4">
+                        <label for="CargaPotenciaAparente" data-toggle="" title="Inserir número do pot">Pot (KVA)</label>
+                        <input type="number" required class="form-control hide_arrows" id="CargaPotenciaAparente">
+                    </div>
+                </div>
+                <!--Fim bloco Pot (KVA)-->
+
+                <!--Inicio bloco Pot (CV)-->
+                <div class="col-sm-2 col-lg-3">
+                    <div class="form-group mb-4">
+                        <label for="CargaPotenciaCavalos" data-toggle="" title="Inserir número do pot">Pot (CV)</label>
+                        <input type="number" required class="form-control hide_arrows" id="CargaPotenciaCavalos">
+                    </div>
+                </div>
+                <!--Fim bloco Pot (CV)-->
+
+                <!--Inicio do bloco corrente-->
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label for="CargaCorrente" data-toggle="" title="Inserir o valor da corrente">Corrente(A) </label>
+                        <input type="number" required class="form-control hide_arrows" id="CargaCorrente">
+                    </div>
+                </div>
+                <!--Fim do bloco corrente-->
+
+                <!--Inicio do bloco Tensao-->
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label for="CargaTensao" data-toggle="" title="Inserir o valor da tensão">Tensão(V)</label>
+                        <input type="text" required class="form-control" id="CargaTensao">
+                    </div>
+                </div>
+                <!--Fim do bloco Tensao-->
+
+                <!--Inicio do bloco Gr. Proteção-->
+                <div class="col-sm-2 col-lg-3">
+                    <div class="form-group mb-4">
+                        <label for="CargaProtecao" data-toggle="" title="Inserir número do Gr. Proteção">Gr.Proteção</label>
+                        <input type="text" required class="form-control" id="CargaProtecao" >
+                    </div>
+                </div>
+                <!--Fim do bloco Gr. Proteção-->
+
+
+                <!--Inicio do bloco Fornecedor-->
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label  for="CargaFornecedor" title="Inserir número do Fornecedor">Fornecedor</label>
+                        <input type="text" required class="form-control" id="CargaFornecedor" >
+                    </div>
+                </div>
+                <!--Fim do bloco Fornecedor-->
+
+                <!--Inicio do bloco Detalhe típico-->
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label  for="code_tipico" title="Inserir número do Fornecedor">Detalhe típico</label>
+                        <input type="text" required class="form-control" id="code_tipico" readonly>
+                    </div>
+                </div>
+                <!--Fim do bloco Detalhe típico-->
+
+                <div class="col-sm-2 col-lg-3 d-flex align-items-center">
+                    <button type="button" class="btn btn-secondary w-100 h-50" id="btn-eqp-acess" onclick="OnclickAcessEquip();" hidden="">Acessorios</button>
+                </div>
+
+            </div>
+
+             <div class="row">
+                 <div class="col-lg-6">
+                     <label for="AllAcessInEquip">Todos Acessórios:</label>
+                     <select class="form-control" id="AllAcessInEquip" multiple></select>
+                 </div>
+
+                 <div class="col-lg-6">
+                     <label for="AcessInEquip">Acessórios do equipamento:</label>
+                     <select class="form-control" id="AcessInEquip" multiple ondragover="changecolor_gerents(event, 'gray', this.id)" ondrop="DropAdcAcess(event);" ondragleave="changecolor_gerents(event, 'white', this.id)"></select>
+                 </div>
+             </div>
+
+             <div class="row mt-3">
+                 <div class="col-lg-12 text-right">
+                     <button type="button" class="btn btn-secondary" id="BtnTrashAcessEquip"
+                             onclick="clickDropAccesForTrash(event)"
+                             ondragover="changecolor_gerents(event, 'white', this.id)"
+                             ondrop="DropAcessForTrash(event)"
+                             ondragleave="changecolor_gerents(event, 'gray', this.id)"
+                             data-toggle="tooltip" data-placement="top" title="Arraste e solte para remover o acessório">🗑️</button>
+                 </div>
+             </div>
+
+
+            <div id="Carga_bar3_dados" class="form-row">
+                <!--Inicio do bloco Acessórios-->
+                <div class="col-sm-4">
+                    <div class="form-group mb-4">
+                        <label for="CargaStatus">Status</label>
+                        <select required class="form-control" id="CargaStatus">
+                            <option value="none" selected>---</option>
+                            {% for id_status, nome_status in AllStatus.items %}
+                                <option value="{{id_status}}">{{nome_status}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <!--Fim do bloco Acessórios-->
+
+                <div class="col-sm-4">
+                    <div class="form-group mb-4">
+                        <label for="CargaArea">Area</label>
+                        <select required class="form-control" id="CargaArea" onchange="change_area_eqps()">
+                            <option value="none" selected>---</option>
+                             {% for area in List_Areas %}
+                                <option value="{{area}}">{{area}}</option>
+                             {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group mb-4">
+                        <label for="CargaSubArea">Sub-Area</label>
+                        <select required class="form-control" id="CargaSubArea" disabled>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Carga_bar4_dados" class="form-row">
+                <!--Inicio do bloco Forma Constr.-->
+                <div class="col-sm-2 col-lg-3">
+                    <div class="form-group mb-4">
+                        <label  for="CargaCormaConstru" title="Inserir número do Forma Constr.">Forma Constr.</label>
+                        <input type="text" required class="form-control" id="CargaCormaConstru">
+                    </div>
+                </div>
+                <!--Fim do bloco Forma Constr.-->
+
+                <!--Inicio do bloco Fabricante-->
+                <div class="col-sm-2 col-lg-3">
+                    <div class="form-group mb-4">
+                        <label  for="CargaFabricante" title="Inserir número do Fabricante">Fabricante</label>
+                        <input type="text" required class="form-control" id="CargaFabricante">
+                    </div>
+                </div>
+                <!--Fim do bloco Fabricante-->
+
+                <!--Inicio do bloco Revisão-->
+                <div class="col-sm-2 col-lg-3"  >
+                    <div class="form-group mb-4">
+                        <label for="CargaRevisao" title="Inserir número de Revisão">Revisão</label>
+                        <input type="text" required class="form-control" id="CargaRevisao" >
+                    </div>
+                </div>
+                <!--Fim do bloco Revisão-->
+
+
+                <!--Inicio do bloco ID EQUIP-->
+                <div class="col-sm-2 col-lg-3" >
+                    <div class="form-group mb-4">
+                        <label  for="IdEquip" title="ID EQUIP">ID EQUIPAMENTO</label>
+                        <input type="text" required class="form-control" id="IdEquip" readonly>
+                    </div>
+                </div>
+                <!--Fim do bloco ID EQUIP-->
+
+                <!--Inicio campo Descrição PT-->
+                <div class="col-sm-4" >
+                    <label for="CargaDescPT" title="Inserir número da Tag">Descrição PT</label>
+                    <textarea type="text" required class="form-control" id="CargaDescPT"> </textarea>
+                </div>
+                <!--Fim campo Descrição PT-->
+
+                <!--Inicio campo Descrição EN-->
+                <div class="col-sm-4" >
+                    <label for="CargaDescEN" title="Inserir número da Tag">Descrição EN</label>
+                    <textarea type="text" required class="form-control" id="CargaDescEN"> </textarea>
+                </div>
+                <!--Fim campo Descrição EN-->
+
+                <!--Inicio do bloco Observação-->
+                <div class="col-sm-4"  >
+                    <div class="form-group mb-4">
+                        <label for="CargaObservacao" title="Inserir número de Det. Típico">Observação</label>
+                        <textarea type="text" required class="form-control" id="CargaObservacao" ></textarea>
+                        <!-- <input type="checkbox" name="english" value="True"><span class = "select-text"> Gerar cabo de Alimentação </span> -->
+                    </div>
+                </div>
+                <!--Fim do bloco Observação-->
+            </div>
+
+        </div>
+    </div>
+
+
+{%endblock info_carga%}
