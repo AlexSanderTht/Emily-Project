@@ -139,6 +139,7 @@ WSGI_APPLICATION = 'weba1.wsgi.application'
 #SESSION_COOKIE_AGE = 3 * 3600  # 3 horas a duração da session
 #SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 #SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
