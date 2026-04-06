@@ -1,0 +1,295 @@
+{%extends 'geral/base.html'%}
+
+{% load static %}
+
+{%block head%}<title>Aprovação Integração</title>{%endblock%}
+
+{%block main %}
+{% if Permissao %}
+<style>
+
+
+        label
+        {
+            margin-bottom: 0px;
+        }
+        .loader {
+  border: 8px solid #A1A1A1;
+  border-top: 8px solid #f6801e;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+   display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.input-group-text{
+    background-color: gray;// #343A40;
+    color: white;
+}
+.flex {
+  display: flex;
+  justify-content: center;
+    margin-top: 10px;
+}
+
+.flex-item + .flex-item {
+  margin-left: 10px;
+}
+
+.button {
+  margin-top: 15px;
+  background-color: #0066FF;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+</style>
+
+
+
+<p hidden id="IDAtiv">{{ IDAtividade.id }}</p>
+<p hidden id="IDItemIntegracao">{{ IDItemIntegracao }}</p>
+<p hidden id="IDIntegracao">{{ IDIntegracao }}</p>
+<p hidden id="IDEstudo">{{ IDEstudo }}</p>
+<p hidden id="ArquivoInt">{{ArquivoInt}}</p>
+
+
+
+<button type="button" style="margin: 10px 10px;" class="subscribe btn btn-warning  rounded-pill shadow-sm" onclick="window.location='/app/civil/Integracao/{{ IDAtividade.id }}'">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+        <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1z"/>
+    </svg>Voltar para Integração
+</button>
+
+
+<div class="mx-auto">
+           <div class="bg-white rounded-lg shadow-sm p-5" style="margin-left:50px; margin-right:50px; margin-top: 50px">
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+ {% csrf_token %}
+
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.OSAtiv.id_for_label }}">{{IntegracaoForm.OSAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="OSAtiv" name="{{ IntegracaoForm.OSAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.OSAtiv.value %}
+                                   value="{{IntegracaoForm.OSAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.OSAtiv.id_for_label }}">
+                            <div class="input-group-prepend">
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.CodigoDocumentoAtiv.id_for_label }}">{{IntegracaoForm.CodigoDocumentoAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="CodigoDocumentoAtiv" name="{{ IntegracaoForm.CodigoDocumentoAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.CodigoDocumentoAtiv.value %}
+                                   value="{{IntegracaoForm.CodigoDocumentoAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.CodigoDocumentoAtiv.id_for_label }}">
+
+
+
+
+                            <div class="input-group-prepend">
+                                <span style="height:34px" class="input-group-text" id="{{ IntegracaoForm.RevisaoAtiv.id_for_label }}">{{IntegracaoForm.RevisaoAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="RevisaoAtiv" name="{{ IntegracaoForm.RevisaoAtiv.html_name }}" class="form-control"
+                                   {% if IntegracaoForm.RevisaoAtiv.value %} value="{{IntegracaoForm.RevisaoAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.RevisaoAtiv.id_for_label }}">
+
+
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.DisciplinaAtiv.id_for_label }}">{{IntegracaoForm.DisciplinaAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="DisciplinaAtiv" name="{{ IntegracaoForm.DisciplinaAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.DisciplinaAtiv.value %}
+                                   value="{{IntegracaoForm.DisciplinaAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.DisciplinaAtiv.id_for_label }}">
+                            <div class="input-group-prepend">
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.TipoDocumentoAtiv.id_for_label }}">{{IntegracaoForm.TipoDocumentoAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="TipoDocumentoAtiv" name="{{ IntegracaoForm.TipoDocumentoAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.TipoDocumentoAtiv.value %}
+                                   value="{{IntegracaoForm.TipoDocumentoAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.TipoDocumentoAtiv.id_for_label }}">
+
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.TagAtiv.id_for_label }}">{{IntegracaoForm.TagAtiv.label_tag}}</span>
+
+                            <input readonly type="text" id="TagAtiv" name="{{ IntegracaoForm.TagAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.TagAtiv.value %}
+                                   value="{{IntegracaoForm.TagAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.TagAtiv.id_for_label }}">
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.AreaCorrespondenteAtiv.id_for_label }}">{{IntegracaoForm.AreaCorrespondenteAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="AreaCorrespondenteAtiv" name="{{ IntegracaoForm.AreaCorrespondenteAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.AreaCorrespondenteAtiv.value %}
+                                   value="{{IntegracaoForm.AreaCorrespondenteAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.AreaCorrespondenteAtiv.id_for_label }}">
+                            <div class="input-group-prepend">
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.FinalidadeAtiv.id_for_label }}">{{IntegracaoForm.FinalidadeAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="FinalidadeAtiv" name="{{ IntegracaoForm.FinalidadeAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.FinalidadeAtiv.value %}
+                                   value="{{IntegracaoForm.FinalidadeAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.FinalidadeAtiv.id_for_label }}">
+
+                        </div>
+
+                    </div>
+                         <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Descrição</span>
+                                </div>
+                                <textarea readonly class="form-control" aria-label="With textarea">{{IntegracaoForm.DescricaoAtiv.value }}</textarea>
+                            </div>
+                         <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Observação da Integração</span>
+                                </div>
+                                <textarea readonly class="form-control" aria-label="With textarea">{{IntegracaoForm.ObservacaoIntegracao.value }}</textarea>
+                            </div>
+
+                    <div id="Arquivos">
+                        <div class="jumbotron">
+                          <h1 class="display-4">Arquivos</h1>
+                          <p class="lead">Arquivos enviados para aprovação</p>
+                          <hr class="my-4">
+                          <div id="MensagemArquivos"></div>
+                            <table id="TabelaArquivos" class="display" style="padding: 0px; width:100%; font-size:75%; overflow-y: hidden;"></table>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="jumbotron">
+                        <h1 class="display-4">Aprovação - {{IntegracaoForm.AreaIntegracao.value}}</h1>
+                        <h5 class="display-12">Aprovador, selecione o status do item para sua disciplina abaixo, também é possível fazer uma observação ou adicionar um anexo</h5>
+                        <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Observação do Integrador</span>
+                                </div>
+                                <textarea id="ObservacaoAprovador" class="form-control" aria-label="With textarea">{%if IntegracaoForm.ObservacaoIntegrador.value %}{{IntegracaoForm.ObservacaoIntegrador.value }}{%endif%}</textarea>
+                            </div>
+                         <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" style="height: 38px" for="StatusItemIntegracao">Status:</label>
+                                </div>
+                                <select class="custom-select" id="StatusItemIntegracao">
+
+                                    {% for valor in IntegracaoForm.StatusIntegracao %}
+                                    {%if valor %}
+                                    {{ valor }}
+                                    {%endif%}
+                                    {% endfor %}
+                                </select>
+
+                             <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <span style="height: 38px" class="input-group-text">{{IntegracaoForm.Arquivo.label_tag}}</span>
+                                  </div>
+                                  <div class="custom-file">
+                                    <input type="file" class="custom-file-input" name= "Arquivo" id="id_NomeDoArquivoIn" aria-describedby="inputGroupFileAddon01">
+                                    <label class="custom-file-label" name="NomeDoArquivolbl" id="id_NomeDoArquivolbl">{{IntegracaoForm.NomeArquivo.value}}</label>
+                                      <input hidden type="text" name="NomeDoArquivo" id="id_NomeDoArquivo">
+
+                                </div>
+                                                    <div id="progress-box"></div>
+
+            <a id="DownloadA">
+                         <button type="button" style="height:32px; font-size:75%; margin-left: 15px" id="BotaoDownload"
+                        class="subscribe btn btn-warning  rounded-pill shadow-sm flex-item" id="download">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                         class="bi bi-download" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"></path>
+                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"></path>
+                    </svg>
+                    Download
+                </button></a>
+
+
+                              </div>
+
+                            <div style="width: 100%">
+
+                                 <button type="button" style="width: 100%" class="subscribe btn btn-warning  rounded-pill"
+                                              onclick="SalvarAprovacao()">Salvar Aprovação</button>
+                                  <div class="loader" id="loaderSalvarIntegracao" style="height: 50px; width:50px; display: none"></div>
+                                <div id="ResultadoSalvar"></div>
+                             </div>
+
+
+
+
+                        <div id="Integracoes">
+
+
+                        </div>
+
+
+                    </div>
+
+
+                        {%if OutrasDisciplinas%}
+
+                         <h3 class="display-6">Demais Disciplinas</h3>
+                         <table id="Tabela">
+                                <tr>
+
+                                    <th>Área</th>
+                                    <th>Status</th>
+
+
+                                </tr>
+
+
+                          {% for valor in OutrasDisciplinas %}
+                                 <tr>
+                                    <td>{{valor.DisciplinaIntegracao}}</td>
+                                    <td>{{valor.StatusIntegracao}}</td>
+                                  </tr>
+
+                          {% endfor %}
+                              </table>
+                        {%endif%}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<script src="{% static 'js/civil/ScriptsItemIntegracao.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/civil/jquery.dataTables.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/a1civ.css' %}"/>
+<script src="{% static 'js/civil/scriptsGerais.js' %}"></script>
+
+
+{% else %}
+<h1>Você não tem permissão</h1>
+
+</button>
+{% endif %}
+{%endblock%}

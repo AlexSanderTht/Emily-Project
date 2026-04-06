@@ -1,0 +1,181 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | DIAGRAMA DE INTERLIGAÇÃO </title>
+{% endblock %}
+
+{% block main %}
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/GerarTipicosDoc.js' %} "></script>
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/GeraDiagInter.js' %}"></script>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/eletrica/bobinas.css' %}"/>
+
+<div class="text-justify m-3">
+        <button class="btn btn-primary btn-warning" onclick="window.history.go(-1)">Voltar</button>
+        <div class="mini-glass" id="anao-info-os">
+
+    </div>
+    </div>
+    <div class="row d-flex justify-content-center mt-2">
+        <h3>Gerar Diagrama de Interligação - Documentos</h3>
+    </div>
+
+    <div class="container-fluid d-flex justify-content-center">
+        <div class="os-glass content-gerar-tipicos-doc mt-4 p-3 mx-2 d-flex flex-column align-items-center" style="width: 40%; height: 115px;">
+        <div class="w-100 text-center">
+            <label for="painels_origem" class="mb-2"><b style="font-weight: 640;">SELECIONE O PAINEL DE ORIGEM</b></label>
+            <select class="form-control w-50 mx-auto" id="painels_origem">
+                 <option value="0">---</option>
+                 <option disabled="true" class="bg-warning">PAINEL (TIPO PN)</option>
+                 {% for id_pk, name  in lista_mo_pn%}
+                    <option class="bg-warning" onclick="ShowDestinos({{id_pk}})" value="{{id_pk}}" > {{name}}</option>
+                 {% endfor %}
+                <option class="bg-warning" onclick="ShowDestinos({{id_pk}})" value="{{id_pk}}" > {{name}}</option>
+                {% for id_pk, name in lista_pna%}
+                    <option class="bg-info"  value="{{id_pk}}" > {{name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        </div>
+
+
+    <div class="os-glass content-gerar-tipicos-doc mt-4 p-3 mx-2 d-flex flex-column align-items-center" style="width: 20%; height: 10%;">
+        <div class="mb-2 w-100 d-flex justify-content-center">
+            <button type="button" class="btn btn-success w-75" onclick="ShowScreenPainelDiagInter()">Dados Documentos</button>
+        </div>
+        <div class="mt-2 w-100 d-flex justify-content-center">
+            <button type="button" class="btn btn-primary w-75" data-target="#gera_caderno" onclick="GeraCadernoDiagInter(document.getElementById('painels_origem').value, document.getElementById('painels_origem').selectedOptions[0].text);">Gerar Caderno</button>
+        </div>
+        </div>
+
+    <div class="os-glass content-gerar-tipicos-doc mt-4 p-3 mx-2 d-flex flex-column align-items-center" style="width: 10%; min-height: 15%;">
+            <div class="col-lg-12 mt-3">
+            <!-- Barra de progresso -->
+            <div id='progress-bar-list-cabos' class='progress-bar h-50' role="progressbar" style="width: 0%;">&nbsp;</div>
+            <!-- Mensagem do progresso -->
+            <div id="progress-bar-message-list-cabos">
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%;">
+                <span style="font-size: 0.8em;">PROGRESSO N/A</span>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid d-flex justify-content-center">
+    <div class="d-flex flex-column align-items-center" style="width: 40%; max-height: 700px;">
+    <div class="os-glass content-gerar-tipicos-doc mt-3 p-2 mx-2 d-flex flex-column align-items-center" style="width: 95%; min-height: 80px; max-height: 400px; overflow-y: auto;">
+        <div class="d-flex justify-content-center">
+        <label class="mb-1">
+            <b id="destino-label" style="font-weight: 540; white-space: nowrap;">Selecione um painel para ver os destinos</b>
+        </label>
+        <button type="button" class="btn btn-secondary btn-sm rounded-circle ms-50" data-toggle="tooltip" data-placement="top" title="Selecione quais destinos deseja gerar o detalhe típico." style="margin-left: 10px;">
+        ?
+        </button>
+        </div>
+
+        <div class="w-100 d-flex flex-column align-items-center">
+            <button id="btn-marcar" class="btn btn-primary" onclick="marcarTodos()" style="display: none;">Marcar/desmarcar todos</button>
+            <div id="checklist-container" class="w-30 text-left align-items-center">
+            </div>
+        </div>
+        </div>
+        </div>
+
+
+        <div class="d-flex flex-column align-items-center" style="width: 40%; max-height: 700px;">
+            <div class="os-glass content-gerar-tipicos-doc mt-3 p-3 mx-2 d-flex flex-column align-items-center" style="width: 95%; overflow-y: auto;">
+                <div class="col-2 d-flex justify-content-center">
+                    <button class="btn btn-warning" type="button" data-toggle="collapse" data-target="#ListaNaoConsolidada" aria-expanded="false" aria-controls="CargaColapseMenuCarga" style="width: 200px; height: 50px; font-size: 16px;">
+                        Lista não Consolidada
+                    </button>
+                    <div id="spinner-wrapper"></div>
+                </div>
+
+                <div class="collapse" id="ListaNaoConsolidada">
+                    <div class="card card-body mt-4 os-glass" id="infoConsolidada"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Cria o Shadow DOM
+    debugger;
+    const wrapper = document.getElementById('spinner-wrapper');
+    const shadowRoot = wrapper.attachShadow({ mode: 'open' });
+
+    // Adiciona o estilo do Bootstrap ao Shadow DOM
+    const bootstrapStyle = document.createElement('link');
+    bootstrapStyle.rel = 'stylesheet';
+    bootstrapStyle.href = "{% static 'bootstrap-5.3.3-dist/css/bootstrap.css' %}";
+
+    // Adiciona o HTML do spinner ao Shadow DOM
+    const spinnerDiv = document.createElement('div');
+    spinnerDiv.innerHTML = `
+        <div class="spinner-border text-warning" role="status" style="margin-left: 10px;  margin-top: 10px;">
+            <span class="sr-only"></span>
+        </div>
+    `;
+
+    // Adiciona o estilo e o HTML ao Shadow DOM
+    shadowRoot.appendChild(bootstrapStyle);
+    shadowRoot.appendChild(spinnerDiv);
+</script>
+
+<script>
+    document.getElementById('painels_origem').addEventListener('change', function () {
+    debugger;
+    const dropdown = this;
+    const textoSelecionado = dropdown.options[dropdown.selectedIndex].text;
+    const label = document.getElementById('destino-label');
+    const checklist = document.getElementById('checklist-container');
+    const botaoMarcar = document.getElementById('btn-marcar'); // Selecionando pelo id
+
+    if ((textoSelecionado !== '') && (textoSelecionado !== '---')) {
+        label.innerHTML = `DESTINOS DO PAINEL <b>${textoSelecionado}</b>`;
+        checklist.style.display = 'block'; // Mostra o checklist
+        botaoMarcar.style.display = 'block'; // Mostra o botão
+    } else {
+        label.innerHTML = `Selecione um painel para ver os destinos`;
+        checklist.style.display = 'none'; // Esconde o checklist
+        botaoMarcar.style.display = 'none'; // Esconde o botão
+    }
+});
+
+ function getCookie(name) {
+        const esc = name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1');
+        const m = document.cookie.match(new RegExp('(?:^|; )' + esc + '=([^;]*)'));
+        return m ? decodeURIComponent(m[1]) : null;
+        }
+
+        // uso
+        console.log('Area =', getCookie('Area') ?? '—');
+
+        (function(){
+            var el = document.getElementById('anao-info-os');
+            if (!el) return;
+
+            var area = getCookie('Area') || getCookie('area') || '';
+            var osCtx = '{{ os_num|default:""|escapejs }}';
+            var os = getCookie('OS') || getCookie('os') || osCtx;
+
+            if (os && area) {
+                el.textContent = 'OS: ' + os + ' | Área: ' + area;
+            } else if (os) {
+                el.textContent = 'OS: ' + os;
+            } else if (area) {
+                el.textContent = 'Área: ' + area;
+            } else {
+                el.textContent = 'OS: —';
+            }
+        })();
+
+</script>
+
+{% include './ModalDadosDocumento.html' %}
+{% include './ModalLoadCelery.html' %}
+{% endblock %}

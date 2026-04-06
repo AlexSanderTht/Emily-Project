@@ -1,0 +1,43 @@
+<div class="modal fade" id="fabricantes_bobinas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Fabricantes</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6 border-right">
+            <div class="col-12">
+              <label for="nome_fabricante">Nome:</label>
+              <input type="text" class="form-control" id="nome_fabricante">
+            </div>
+
+            <div class="col-12 mt-2">
+              <label for="desc_fabricante">Descrição:</label>
+              <input type="text" class="form-control" id="desc_fabricante">
+            </div>
+
+          </div>
+
+          <div class="col-6">
+            <div class="col-12">
+              <label for="fabricantes_existentes">Existentes:</label>
+              <select class="form-control" id="fabricantes_existentes" onchange="ChangeFabGeral()">
+                <option value="0">---</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-dismiss="modal">Fechar</button>
+        <button type="button" class="btn btn-warning" onclick="RequestDatasFabGeral()">Adicionar/Alterar</button>
+        <button type="button" class="btn btn-warning" onclick="DeleteFabGeral()">Excluir</button>
+        <button type="button" class="btn btn-warning" onclick="FillFormsFabricantesGeral({'nome': '', 'desc': ''});$('#fabricantes_existentes').val('0')">Limpar</button>
+      </div>
+    </div>
+  </div>
+</div>

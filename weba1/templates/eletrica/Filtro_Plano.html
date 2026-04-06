@@ -1,0 +1,77 @@
+    <div style="display:grid; gap:24px; grid-template-columns:repeat(auto-fit, minmax(0, 1fr)); align-items:start; width:100%; box-sizing:border-box;">   
+    
+    <div class="text-center">
+        <label for="codigo_bobina">CÓDIGO:</label>
+    <input type="search" class="form-control" id="{{ prefix|default:'' }}busca_geral" placeholder="Buscar bobinas...">
+
+    </div>
+
+
+
+    <div class="text-center">
+        <label for="cl_isolacao_bobina">CL.ISOLAÇÃO:</label>
+<select class="form-control" id="{{ prefix|default:'' }}cl_isolacao_bobina" onchange="OnClickFiltroIsolacao(this.value)">
+    <option value="0">Selecione uma Classe</option>
+    {% for isolacao in lista_chave_filtro.ISOLAÇÃO %}
+        {% if isolacao.1 %}
+        <option value="{{isolacao.0}}">{{isolacao.1}}</option>
+        {% endif %}
+    {% endfor %}
+</select>
+</div>
+
+
+    <div class="text-center">
+        <label for="formacao_bobina">FORMAÇÃO:</label>
+<select class="form-control" id="{{ prefix|default:'' }}formacao_bobina" onchange="OnClickFiltroFormacao(this.value)">
+    <option value="0">Selecione uma Formação</option>
+    {% for formacao in lista_chave_filtro.FORMAÇÃO %}
+    {% if formacao.0 %}
+    <option value="{{formacao.0}}">{{formacao.0}}</option>
+    {% endif %}
+    {% endfor %}
+</select>
+    </div>
+
+
+    <div class="text-center">
+        <label for="secao_bobina">SEÇÃO (mm²):</label>
+<select class="form-control" id="{{ prefix|default:'' }}secao_bobina" onchange="OnClickFiltroSecao(this.value)">
+    <option value="0">Selecione uma Seção</option>
+    {% for secao in lista_chave_filtro.CLASSEISOLAÇÃO %}
+    {% if secao.1 %}
+    <option value="{{secao.0}}">{{secao.1}} mm²</option>
+    {% endif %}
+    {% endfor %}
+</select>
+    </div>
+
+
+    <div class="text-center">
+        <label for="origem_bobina">ORIGEM:</label>
+<select class="form-control" id="{{ prefix|default:'' }}origem_bobina" onchange="OnClickFiltroOrigem(this.value)">
+    <option value="0">Selecione uma Origem</option>
+    {% for tipo in lista_chave_filtro.TIPO_FORMAÇÃO %}
+    {% if tipo.1 %}
+    <option value="{{tipo.0}}">{{tipo.1}}</option>
+    {% endif %}
+    {% endfor %}
+</select>
+    </div>
+
+    <div class="text-center">
+        <label for="descricao_bobina">CABOS</label>
+    <input type="search" class="form-control" id="{{ prefix|default:'' }}descricao_bobina" placeholder="Buscar Descrição...">
+
+    </div>
+
+
+    <div class="text-center">
+        <label>&nbsp;</label>
+        <button class="btn btn-warning btn-sm" onclick="limparFiltros()" style="width: 100%;">
+            Limpar os Filtros
+        </button>
+    </div>
+
+
+</div>

@@ -1,0 +1,567 @@
+{% block setup %}
+    <div class="modal-header">
+        <h5 class="modal-title text-center w-100" id="setupLabel">Setup Sinais e Acessórios </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <br>
+    <!--------------------Inicio da Interface-------------------->
+    <div class="row modal-body">
+        <!-------------------- Início Campo Acessório -------------------->
+        <div class="col-lg-6 border-right">
+            <div class="row mx-0">
+                <!-------------------- Início Acessórios -------------------->
+                <div class="col-lg-5 pr-0">
+                    <div class="form-group">
+                        <label class="form-check-label" for="Acessorio-List">Acessórios</label>
+                        <select id="Acessorio-List" multiple required class="form-control HeigthCard"></select>
+                    </div>
+                </div><!-------------------- Fim Acessórios -------------------->
+
+                <!-------------------- Início campo preenchimento Acessórios -------------------->
+                <div class="col-sm-4 col-lg-7">
+                    <div class="form-group">
+                        <label class="form-check-label" for="acessorio_selecionado">Acessórios</label>
+                        <input type="text" class="form-control" id="acessorio_selecionado" placeholder="Acessório" required readonly>
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <textarea id="descricao_acessorio" required class="form-control Heigth_180" placeholder="descrição do Acessório" readonly></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <input name="TypeFormacaoAcess" value="MULTICONDUTORES" type="radio" id="ac_multicondutores" onchange="FilterTypeFormacao(this.value, 'Formacao-List-Acessorio')">
+                        <label class="form-check-label" for="ac_multicondutores">Multicondutores</label><br>
+                        <input name="TypeFormacaoAcess" value="MULTIPARES" type="radio" id="ac_multipares" onchange="FilterTypeFormacao(this.value, 'Formacao-List-Acessorio')">
+                        <label class="form-check-label" for="ac_multipares">Multipares</label><br>
+                        <input name="TypeFormacaoAcess" value="MULTITERNAS" type="radio" id="ac_multiternas" onchange="FilterTypeFormacao(this.value, 'Formacao-List-Acessorio')">
+                        <label class="form-check-label" for="ac_multiternas">Multiternas</label>
+                        <input name="TypeFormacaoAcess" value="ALL" type="radio" id="all_acessorios" onchange="FilterTypeFormacao('all', 'Formacao-List-Acessorio')">
+                        <label class="form-check-label" for="all_acessorios">Todos</label>
+                    </div>
+                </div><!-------------------- Fim campo preenchimento Acessórios -------------------->
+
+                <!-------------------- Início Fomulário Formação -------------------->
+                <div class="col-sm-5 col-lg-9">
+                    <div class="form-group">
+                        <label class="mb-0" for="Formacao-List-Acessorio">Formação</label>
+                        <select class="form-control" id="Formacao-List-Acessorio" required></select>
+                    </div>
+                </div><!-------------------- Fim Fomulário Formação -------------------->
+
+                <!-------------------- Início Fomulário Secção -------------------->
+                <div class="col-sm-5 col-lg-3">
+                    <div class="form-group">
+                        <label class="mb-0" for="Secao-List-Acessorio">Seção</label>
+                        <select class="form-control" id="Secao-List-Acessorio" required></select>
+                    </div>
+                </div><!-------------------- Fim Fomulário Secção -------------------->
+
+                <!-------------------- Início Fomulário Isolação -------------------->
+                <div class="col-sm-5 col-lg-12">
+                    <div class="form-group">
+                        <label class="mb-0" for="ac_isol">Isolação</label>
+                        <select class="form-control" id="ac_isol" required></select>
+                    </div>
+                </div><!-------------------- Fim Fomulário Isolação -------------------->
+
+                <!-------------------- Início Fomulário Classe Isolação -------------------->
+                <div class="col-sm-5 col-lg-12">
+                    <div class="form-group ">
+                        <label class="mb-0" for="ac_cl_isol">Classe de Isolação</label>
+                        <select class="form-control" id="ac_cl_isol" required></select>
+                    </div>
+                </div><!-------------------- Fim Fomulário Classe Isolação -------------------->
+
+                <!-------------------- Início Botões Acessórios -------------------->
+                <div class="col-sm-10 col-lg-12 d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary" onclick="AtualizaAcessorio()">Atualizar</button>
+                </div><!-------------------- Fim Botões Acessórios -------------------->
+
+                <!------------------ Início Modal Mensagem Submit ------------------>
+                <div class="modal fade" id="modal_aces_success" data-backdrop="static">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title text-center text-success w-100">Atenção</h4>
+                                <button type="button" class="close" id="closeModalAcess"><span>×</span></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <p><b>Acessório atualizado com sucesso!</b></p>
+                            </div>
+                        </div>
+                    </div>
+                </div><!------------------ Fim Modal Mensagem Submit ------------------>
+
+            </div>
+        </div><!-------------------- Fim Campo Acessório -------------------->
+
+        <!-------------------- Início Campo Sinais -------------------->
+        <div class="col-lg-6">
+            <div class="row mx-0">
+                <!-------------------- Início Sinais de Controle -------------------->
+                <div class="col-lg-5 pr-0">
+                    <div class="form-group">
+                        <label class="form-check-label" for="Sinais-List">Sinais de Controle</label>
+                        <select id="Sinais-List" multiple required class="form-control HeigthCard"></select>
+                    </div>
+                </div><!-------------------- Fim Sinais de Controle -------------------->
+
+                <!-------------------- Início campo preenchimento Sinal -------------------->
+                <div class="col-sm-4 col-lg-7">
+                    <div class="form-group">
+                        <label class="form-check-label" for="sinal_selecionado">Sinal</label>
+                        <input type="text" placeholder="Sinal" class="form-control" id="sinal_selecionado" required readonly>
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <textarea required class="form-control Heigth_180" id="descricao_sinal" placeholder="Descrição do Sinal" readonly></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="radio" name="TypeFormacaoSinal" value="MULTICONDUTORES" id="sin_multicondutores" onchange="FilterTypeFormacao(this.value, 'Formacao-List-Sinal')">
+                        <label class="form-check-label" for="sin_multicondutores">Multicondutores</label><br>
+                        <input type="radio" name="TypeFormacaoSinal" value="MULTIPARES" id="sin_multipares" onchange="FilterTypeFormacao(this.value, 'Formacao-List-Sinal')">
+                        <label class="form-check-label" for="sin_multipares">Multipares</label><br>
+                        <input type="radio" name="TypeFormacaoSinal" value="MULTITERNAS" id="sin_multiternas" onchange="FilterTypeFormacao(this.value, 'Formacao-List-Sinal')">
+                        <label class="form-check-label" for="sin_multiternas">Multiternas</label>
+                        <input type="radio" name="TypeFormacaoSinal" value="ALL" id="all_sinais" onchange="FilterTypeFormacao('all', 'Formacao-List-Sinal')">
+                        <label class="form-check-label" for="all_sinais">Todos</label>
+                    </div>
+
+                </div><!-------------------- Fim campo preenchimento Sinais -------------------->
+
+                <!-------------------- Início Formulário Formação -------------------->
+                <div class="col-sm-5 col-lg-9">
+                    <div class="form-group">
+                        <label class="mb-0" for="Formacao-List-Sinal">Formação</label>
+                        <select class="form-control" id="Formacao-List-Sinal" required></select>
+                    </div>
+                </div><!-------------------- Fim Formulário Formação -------------------->
+
+                <!-------------------- Início Fomulário Secção -------------------->
+                <div class="col-sm-5 col-lg-3">
+                    <div class="form-group">
+                        <label class="mb-0" for="Secao-List-Sinal">Seção</label>
+                        <select class="form-control" id="Secao-List-Sinal" required></select>
+                    </div>
+                </div><!-------------------- Fim Fomulário Secção -------------------->
+
+                <!-------------------- Início Fomulário Isolação -------------------->
+                <div class="col-sm-5 col-lg-12">
+                    <div class="form-group">
+                        <label class="mb-0" for="sin_isol">Isolação</label>
+                        <select class="form-control" id="sin_isol" required></select>
+                    </div>
+                </div><!-------------------- Fim Fomulário Isolação -------------------->
+
+                <!-------------------- Início Fomulário Classe Isolação -------------------->
+                <div class="col-sm-5 col-lg-12">
+                    <div class="form-group">
+                        <label class="mb-0" for="sin_cl_isol">Classe de Isolação</label>
+                        <select class="form-control" id="sin_cl_isol" required></select>
+                    </div>
+                </div><!-------------------- Fim Fomulário Classe Isolação -------------------->
+
+                <!-------------------- Início Botões Acessórios -------------------->
+                <div class="col-sm-10 col-lg-12 d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary" onclick="AtualizaSinal()">Atualizar</button>
+                </div><!-------------------- Fim Botões Acessórios -------------------->
+
+                <!------------------ Início Modal Mensagem Submit ------------------>
+                <div class="modal fade" id="modal_sin_success" data-backdrop="static">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title text-center text-success w-100">Atenção</h4>
+                                <button type="button" class="close" id="closeModalSinal"><span>×</span></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <p><b>Sinal atualizado com sucesso!</b></p>
+                            </div>
+                        </div>
+                    </div>
+                </div><!------------------ Fim Modal Mensagem Submit ------------------>
+            </div>
+        </div><!-------------------- Fim Campo Sinais -------------------->
+    </div><!--------------------Fim da Interface-------------------->
+    <br>
+    <br>
+    {% endblock %}
+    {% block end %}
+    <script>
+
+        // --------------------- Função GET traz dados para o Modal Setup ---------------------//
+        // var array_formacao = '';
+
+        async function DataPageSetup(){
+            // Get Dados Sinais e acessórios.
+            const num_os = $('#pro-os').val();
+            if (num_os === 'none'  || num_os === ''){
+                alert("Por Favor selecione uma OS!!")
+            } else {
+                $('#setup').modal('show');
+                set_cookies('OS', num_os, 1)
+                $.ajax({
+                    type: "GET",
+                    url: "SetupAcessorios/",
+                    dataType: 'json',
+                    success: function (data) {
+                        Acessorios(data['Acessorio'])
+                        Formacao(data['Formacao'])
+                        Sinais(data['Sinais'])
+                        Secao(data['Secao'])
+                        Isolacao(data['Isolacao'])
+                        ClasseIsolacao(data['ClasseIsolacao'])
+                        CheckCheckboxSinalAcess('TypeFormacaoSinal', 'ALL')
+                        CheckCheckboxSinalAcess('TypeFormacaoAcess', 'ALL')
+                        ClearFormsSinalAcess('Acess')
+                        ClearFormsSinalAcess('Sinais')
+                    },
+                })
+            }
+        }
+
+        function CheckCheckboxSinalAcess(ElementsName, ValueChecked){
+            var AllCheckBox = document.querySelectorAll("[name=" + ElementsName + "]")
+            for (let i = 0; i < AllCheckBox.length; i++){
+                if(AllCheckBox[i].value == ValueChecked){
+                    AllCheckBox[i].checked = true
+                }
+                else{
+                    AllCheckBox[i].checked = false
+                }
+            }
+        }
+
+        // --------------------- Função adiciona lista de acessórios vindo do GET (DataPageSetup) ---------------------//
+        function Acessorios(data){
+            let acessorio_container = document.getElementById('Acessorio-List');
+            let item_values = [];
+            let name_acess = [];
+            let id_acess = [];
+            let desc_acess = [];
+            let index_acess = 0;
+            let index_acess_id = 1;
+            let index_acess_desc = 2;
+            let adiciona_acessorio = '';
+            for (let item = 0; item < data.length; item++) {
+                item_values = data[item];
+                name_acess = item_values[index_acess]
+                id_acess = item_values[index_acess_id]
+                desc_acess = item_values[index_acess_desc]
+                let lista_acessorio = `<option value="${id_acess}" title="${desc_acess}" onclick="FilterAcessorio(${id_acess});ItemAcessorio();">${name_acess}</option>`;
+                adiciona_acessorio += lista_acessorio
+            }
+            acessorio_container.innerHTML = adiciona_acessorio;
+        }
+
+        // --------------------- Função acessorio selecionado com descrição ---------------------//
+        function ItemAcessorio(){
+            let select_option_acessorio = document.getElementById('Acessorio-List').selectedOptions[0].text;
+            let title_option_acessorio = document.getElementById('Acessorio-List').selectedOptions[0].title;
+            document.getElementById('acessorio_selecionado').value= select_option_acessorio;
+            document.getElementById('descricao_acessorio').value= title_option_acessorio;
+        }
+
+        // --------------------- Função filtra acessorio selecionado ---------------------//
+        async function FilterAcessorio(id_acess){
+            const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
+            $.ajax({
+                url: "/app/eletrica/a1pro/SetupAcessorios/", // Caminho do Ajax
+                type: "POST", // http method
+                dataType: "json",
+                headers:{'X-CSRFToken':csrf},
+                data: {'OptionSelecionado': JSON.stringify(id_acess)}, // Envia dados pela solicitação do POST
+                success: function (data) {
+                    SobrescreveDadosAcessorio(data['DadosAcessorio'])
+                },
+                failure: function () {
+                    alert('Algo deu errado! verifique e tente novamente.')
+                }
+            });
+        }
+
+        // --------------------- Função traz dados filtrados do acessorio selecionado (GETFilterAcessorio) ---------------------//
+        function SobrescreveDadosAcessorio(data){
+            if(data['Form']!=null){
+                $('#Formacao-List-Acessorio').val(data['Form'])
+                $('#Secao-List-Acessorio').val(data['Sec'])
+                $('#ac_isol').val(data['Isol'])
+                $('#ac_cl_isol').val(data['ClassIsol'])
+                FilterTypeFormacao(data['TypeForm'], 'Formacao-List-Acessorio')
+                CheckCheckboxSinalAcess('TypeFormacaoAcess', data['TypeForm'])
+            }
+            else{
+                $('#Formacao-List-Acessorio').val("none")
+                $('#Secao-List-Acessorio').val("none")
+                $('#ac_isol').val("none")
+                $('#ac_cl_isol').val("none")
+                FilterTypeFormacao('all', 'Formacao-List-Acessorio')
+                CheckCheckboxSinalAcess('TypeFormacaoAcess', 'ALL')
+            }
+        }
+
+        // --------------------- Função altera form acessorio conforme checkbox ---------------------//
+
+        function FilterTypeFormacao(Value, IdFormacao){
+            var OptionsFormacao = document.getElementById(IdFormacao).children
+            for (let item = 0; item < OptionsFormacao.length; item++){
+                if(Value!='all'){
+                    if(OptionsFormacao[item].title==Value){
+                        OptionsFormacao[item].hidden = false
+                    }
+                    else{
+                        OptionsFormacao[item].hidden = true
+                    }
+                }
+                else{
+                    OptionsFormacao[item].hidden = false
+                }
+            }
+        }
+
+        function VerifyAndGetDataSinal(){
+            var Errors = []
+            let acessorio_select = $('#Sinais-List').val()
+            let formacao_select = $('#Formacao-List-Sinal').val()
+            let secao_select = $('#Secao-List-Sinal').val()
+            let isol_select = $('#sin_isol').val()
+            let cl_isol_select = $('#sin_cl_isol').val()
+            if(acessorio_select.length==0){
+                Errors.push('Selecione um Sinal!!')
+            }
+            if(formacao_select == "none"){
+                Errors.push('Selecione uma formação')
+            }
+            if(secao_select == "none"){
+                Errors.push('Selecione uma seção')
+            }
+            if(isol_select == "none"){
+                Errors.push('Selecione um material de isolação')
+            }
+            if(cl_isol_select == "none"){
+                Errors.push('Selecione uma classe de isolação')
+            }
+
+            if(Errors.length>0){
+                return Errors.join(', ')
+            }
+            else{
+                return {'IDSinal': acessorio_select[0], 'IDFormacao': formacao_select, 'IDSecao': secao_select, 'IDIsol': isol_select,
+                        'IDClasseIsol': cl_isol_select}
+            }
+        }
+
+        function VerifyAndGetDataAcess(){
+            var Errors = []
+            let acessorio_select = $('#Acessorio-List').val()
+            let formacao_select = $('#Formacao-List-Acessorio').val()
+            let secao_select = $('#Secao-List-Acessorio').val()
+            let isol_select = $('#ac_isol').val()
+            let cl_isol_select = $('#ac_cl_isol').val()
+            if(acessorio_select.length==0){
+                Errors.push('Selecione um Acessório!!')
+            }
+            if(formacao_select == "none"){
+                Errors.push('Selecione uma formação')
+            }
+            if(secao_select == "none"){
+                Errors.push('Selecione uma seção')
+            }
+            if(isol_select == "none"){
+                Errors.push('Selecione um material de isolação')
+            }
+            if(cl_isol_select == "none"){
+                Errors.push('Selecione uma classe de isolação')
+            }
+
+            if(Errors.length>0){
+                return Errors.join(', ')
+            }
+            else{
+                return {'IDAcessorio': acessorio_select[0], 'IDFormacao': formacao_select, 'IDSecao': secao_select, 'IDIsol': isol_select,
+                        'IDClasseIsol': cl_isol_select}
+            }
+        }
+        // --------------------- Função atualiza dados Acessorio na tabela tb_setup_acessorios ---------------------//
+        function AtualizaAcessorio(){
+            var DatasAcess = VerifyAndGetDataAcess()
+            if(typeof DatasAcess == "string"){
+                return alert(DatasAcess)
+            }
+            const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
+            $.ajax({
+                url: "/app/eletrica/a1pro/AtualizaAcessorio/", // Caminho do Ajax
+                type: "POST", // http method
+                dataType: "json",
+                headers:{'X-CSRFToken':csrf},
+                data: {'UpdateAcessorio': JSON.stringify(DatasAcess)}, // Envia dados pela solicitação do POST
+                success: function () {
+                    $("#modal_aces_success").modal('show');
+
+                    $("#closeModalAcess").on("click", function(){
+                        $("#modal_aces_success").modal('hide');
+                    });
+                },
+                failure: function () {
+                    alert('Algo deu errado! verifique e tente novamente.')
+                }
+            });
+        }
+
+        // --------------------- Função atualiza dados Sinais na tabela tb_setup_sinais ---------------------//
+        function AtualizaSinal(){
+            var DatasSinal = VerifyAndGetDataSinal()
+            if(typeof DatasSinal == "string"){
+                return alert(DatasSinal)
+            }
+            const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
+            $.ajax({
+                url: "/app/eletrica/a1pro/AtualizaSinal/", // Caminho do Ajax
+                type: "POST", // http method
+                dataType: "json",
+                headers:{'X-CSRFToken':csrf},
+                data: {'UpdateSinais': JSON.stringify(DatasSinal)}, // Envia dados pela solicitação do POST
+                success: function () {
+                    $("#modal_sin_success").modal('show');
+
+                    $("#closeModalSinal").on("click", function(){
+                        $("#modal_sin_success").modal('hide');
+                    });
+                },
+                failure: function () {
+                    alert('Algo deu errado! verifique e tente novamente.')
+                }
+            });
+        }
+
+        // --------------------- Função adiciona lista de sinais vindo do GET ---------------------//
+        function Sinais(data){
+            let sinais_container = document.getElementById('Sinais-List');
+            let all_sin = document.getElementById("all_sinais");
+            let dados_array = Object.values(data);
+            let item_values = [];
+            let index_sinal = 0;
+            let index_sinal_id = 1;
+            let index_sinal_desc = 2;
+            let name_sinal = [];
+            let id_sinal = [];
+            let desc_sinal = [];
+            let adiciona_sinais = '';
+
+            for (let item = 0; item < dados_array.length; item++) {
+                item_values = dados_array[item];
+                id_sinal = item_values[index_sinal_id];
+                name_sinal = item_values[index_sinal]
+                desc_sinal = item_values[index_sinal_desc];
+                let lista_sinais = `<option value="${id_sinal}" title="${desc_sinal}" onclick="FilterSinal(${id_sinal});ItemSinal()">${name_sinal}</option>`;
+                adiciona_sinais += lista_sinais
+            }
+            sinais_container.innerHTML = adiciona_sinais;
+            all_sin.checked = true;
+        }
+
+        // --------------------- Função Sinal selecionado com descrição ---------------------//
+        function ItemSinal(){
+            let select_option_sinal = document.getElementById('Sinais-List').selectedOptions[0].text;
+            let title_option_sinal = document.getElementById('Sinais-List').selectedOptions[0].title;
+            document.getElementById('sinal_selecionado').value= select_option_sinal;
+            document.getElementById('descricao_sinal').value= title_option_sinal;
+        }
+
+        // --------------------- Função filtra sinal selecionado ---------------------//
+        function FilterSinal(id_sinal){
+            const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
+            $.ajax({
+                url: "/app/eletrica/a1pro/SetupSinais/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrf},
+                dataType: "json",
+                data: {'SinalSelecionado': JSON.stringify(id_sinal)}, // Envia dados pela solicitação do POST
+                success: function (data) {
+                    SobrescreveDadosSinal(data['DadosSinal'])
+                },
+                failure: function () {
+                    alert('Algo deu errado! verifique e tente novamente.')
+                }
+            });
+        }
+
+        function ClearFormsSinalAcess(SinalAcess){
+            var word = ''
+            if(SinalAcess == 'Acess'){
+                word = 'acessorio'
+            }
+            else{
+                word = 'sinal'
+            }
+            document.getElementById(word+'_selecionado').value = ''
+            document.getElementById('descricao_'+word).value = ''
+        }
+
+        // --------------------- Função traz dados filtrados do sinal selecionado (POSTFilterSinal) ---------------------//
+        function SobrescreveDadosSinal(data){
+            if(data['Form']!=null){
+                $('#Formacao-List-Sinal').val(data['Form'])
+                $('#Secao-List-Sinal').val(data['Sec'])
+                $('#sin_isol').val(data['Isol'])
+                $('#sin_cl_isol').val(data['ClassIsol'])
+                FilterTypeFormacao(data['TypeForm'], 'Formacao-List-Sinal')
+                CheckCheckboxSinalAcess('TypeFormacaoSinal', data['TypeForm'])
+            }
+            else{
+                $('#Formacao-List-Sinal').val("none")
+                $('#Secao-List-Sinal').val("none")
+                $('#sin_isol').val("none")
+                $('#sin_cl_isol').val("none")
+                FilterTypeFormacao('all', 'Formacao-List-Sinal')
+                CheckCheckboxSinalAcess('TypeFormacaoSinal', 'ALL')
+            }
+        }
+
+        // --------------------- Função adiciona lista de Formação de acessorios vindo do banco conforme checkbox selecionada ---------------------//
+        function Formacao(data){
+            var options_formacao = `<option value="none" selected>---</option>`
+            for (let item = 0; item < data.length; item++){
+                options_formacao += `<option value="${data[item]['id']}" title="${data[item]['tipo']}">${data[item]['desc']}</option>`
+            }
+            $('#Formacao-List-Acessorio').html(options_formacao)
+            $('#Formacao-List-Sinal').html(options_formacao)
+        }
+
+        // --------------------- Função adiciona lista de Seção vindo do banco ---------------------//
+        function Secao(data){
+            var options_secao = `<option value="none" selected>---</option>`
+            for (let item = 0; item < data.length; item++) {
+                options_secao += `<option value="${data[item]['id']}">${data[item]['desc']}</option>`
+            }
+            $('#Secao-List-Acessorio').html(options_secao)
+            $('#Secao-List-Sinal').html(options_secao)
+        }
+
+        // --------------------- Função adiciona lista de Isolações vindo do banco ---------------------//
+        function Isolacao(data){
+            var options_isol = `<option value="none" selected>---</option>`
+            for (let item = 0; item < data.length; item++) {
+                options_isol += `<option value="${data[item]['id']}">${data[item]['material']}</option>`
+            }
+            $('#ac_isol').html(options_isol)
+            $('#sin_isol').html(options_isol)
+        }
+
+        // --------------------- Função adiciona lista de Classe de isolações vindo do banco ---------------------//
+        function ClasseIsolacao(data){
+            var options_ci = `<option value="none" selected>---</option>`
+            for (let item = 0; item < data.length; item++){
+                options_ci += `<option value="${data[item]['id']}">${data[item]['desc']}</option>`
+            }
+            $('#ac_cl_isol').html(options_ci)
+            $('#sin_cl_isol').html(options_ci)
+        }
+
+        // --------------------- Função atualiza dados Sinais na tabela tb_setup_sinais ---------------------//
+
+    </script>
+{% endblock %}

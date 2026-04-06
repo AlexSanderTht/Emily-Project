@@ -1,0 +1,870 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | LISTA DE METERIAIS</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+
+<div class="text-justify m-3">
+    <button type="button" style="z-index: 1000" class="btn btn-primary btn-warning position-absolute" onclick="window.history.go(-1)">Voltar</button>
+</div>
+
+
+<div class="container-fluid mt-3">
+    <div class="row d-flex justify-content-center">
+        <h3>Lista de Materiais - Suportes e Bandejas</h3>
+    </div>
+
+    <div class="row d-flex justify-content-center">
+        <b class="mr-1">OS:</b> {{OS}}
+    </div>
+
+    <div class="row d-flex justify-content-center">
+        <b class="mr-1">N° Doc:</b> <div id="num_doc_id"></div>
+    </div>
+
+    <div class="container-fluid d-flex justify-content-center mt-2">
+        <div class="size_contentlst_mat_a1pro radius_10 shadow border border-success">
+            <div class="row h-100">
+                <div class=" os-gl col-8 border-right border-success pr-0">
+                     <div class="col-12 mt-1 text-center font_size_headers_lst_mat">
+                        Campos Adicionais da Lista de Materiais:
+                     </div>
+
+                    <div class="row mt-1 ml-5">
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <label class="switch_toggle mb-0 mt-1">
+                                    <input type="checkbox" name="cols_config_proj_bt" id="num_client_lst_mat">
+                                    <span class="slider_switch round"></span>
+                                </label>
+                                <p class="ml-2 mb-0">Número do Cliente</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <label class="switch_toggle mb-0 mt-1">
+                                    <input type="checkbox" name="cols_config_proj_bt" id="cod_forn_lst_mat">
+                                    <span class="slider_switch round"></span>
+                                </label>
+                                <p class="ml-2 mb-0">Código do Fornecedor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row mt-1 ml-5">
+                        <div class="col-12">
+                            <div class="d-flex align-items-center">
+                                <p class="ml-2 mb-2 col-6">Tipo de tampa para Leito</p>
+                                <select  id="tipo_material_tampa_bandeja">
+                                    <option value="0">---</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="d-flex align-items-center">
+                                <p class="ml-2 mb-0 col-6">Tipo de tampa para Eletrocalha</p>
+                                <select id="tipo_material_tampa_eletrocalha">
+                                    <option value="0">---</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-1 text-center font_size_headers_lst_mat">
+                    </div>
+
+
+                    <div class="col-12 mt-2">
+                        Relatório de bandejas - E3D:
+                    </div>
+                     <div class="row card_dropzone_green px-0 mx-3 animate__animated animate__fadeIn mt-2 scroll_dropzones_lst_mat" id="dropzone_xlsx_lst_mat">
+                        <div class="text-center w-100" id="xlsx">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte o arquivo (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx,.csv" class="hidden" type="file" id="arquivo_xlsx_lst_mat" onchange="DropFileInLstMat('dropzone_xlsx_lst_mat', this.id, 'FilesSemTampa')"/>
+                                <i class="fa-solid fa-upload"></i> Import XLSX
+                            </label>
+                        </div>
+                     </div>
+
+                    <div class="col-12 mt-2">
+                        Relatório de bandejas (Apenas P/ Tampas) - E3D:
+                    </div>
+                     <div class="row card_dropzone_green px-0 mx-3 animate__animated animate__fadeIn mt-2 scroll_dropzones_lst_mat" id="dropzone_xlsx_tampa_lst_mat">
+                        <div class="text-center w-100" id="xlsx_tampa">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte o arquivo (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx,.csv" class="hidden" type="file" id="arquivo_xlsx_tampa_lst_mat" onchange="DropFileInLstMat('dropzone_xlsx_tampa_lst_mat', this.id, 'FilesComTampa')"/>
+                                <i class="fa-solid fa-upload"></i> Import XLSX
+                            </label>
+                        </div>
+                     </div>
+
+                    <div class="col-12 mt-2">
+                        Relatório de Suportes (Perfis) - E3D:
+                    </div>
+                     <div class="row card_dropzone_green px-0 mx-3 animate__animated animate__fadeIn mt-2 scroll_dropzones_lst_mat" id="dropzone_xlsx_perfis_lst_mat">
+                        <div class="text-center w-100" id="xlsx_perfis">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte o arquivo (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx,.csv" class="hidden" type="file" id="arquivo_xlsx_perfis_lst_mat" onchange="DropFileInLstMat('dropzone_xlsx_perfis_lst_mat', this.id, 'FilesPerfis', null, 1)"/>
+                                <i class="fa-solid fa-upload"></i> Import XLSX
+                            </label>
+                        </div>
+                     </div>
+
+                    <div class="col-12 mt-1 text-center font_size_headers_lst_mat">
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        Arquivos de Detalhes Típicos (DWG):
+                    </div>
+                     <div class="row card_dropzone_blue px-0 mx-3 animate__animated animate__fadeIn mt-2 scroll_dropzones_lst_mat" id="dropzone_dwg_lst_mat">
+                        <div class="text-center w-100" id="dwg">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-primary">Arraste e solte o arquivo (*.dwg) ou</span><br>
+                            <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                <input multiple="multiple" accept=".dwg,.DWG" class="hidden" type="file" id="arquivo_dwg_lst_mat" onchange="DropFileInLstMat('dropzone_dwg_lst_mat', this.id, 'FilesDWG', null, 2)"/>
+                                <i class="fa-solid fa-upload"></i> Import DWG
+                            </label>
+                        </div>
+                     </div>
+
+
+                    <div class="col-12 mt-2 mt-3 mb-3 justify-content-center"  style="display: flex">
+                        <button type="button" class="btn btn-warning mb-2" onclick="SendFileXlsxLstMat()">Enviar</button>
+                    </div>
+                </div>
+
+                <div hidden >
+                    <label for="lst_mat_band_ele_checkbox">Input escondido para salvar estado, bandeja ou eletrocalha</label>
+                    <input id="lst_mat_band_ele_checkbox">
+                </div>
+
+                <div class=" os-gl col-4">
+                    <div class="justify-content-center mt-3 mb-3"  style="display: flex">
+                        <button type="button" class="tablinks btn btn-warning mr-2" onclick="$('#modal_dados_documento_gerar_lista_material').modal('show')">Dados Documentos</button>
+                    </div>
+                    <div class="mt-3 mb-3 justify-content-center" style="display: flex">
+                        CADASTRO DE TALAS - PARA OS
+                    </div>
+                    <div class="row d-flex justify-content-center mt-1 mx-2 mr-4 border-bottom">
+                        <div class="col-5 p-0 d-flex align-items-center mb-1">
+                            Tipo de Material
+                        </div>
+                        <div class="col-5 mb-1">
+                            <select class="form-control" id="lst_mat_tipos_mat">
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-secondary mb-1" onclick="ShowModalTiposMateriais()">...</button>
+
+                    </div>
+
+                    <div class="col-12 mt-3 d-flex justify-content-center font_size_headers_lst_mat">
+                        LEITO
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-9">
+                            JUNÇÃO ARTICULADA:
+                        </div>
+                        <div class="col-2">
+                            <button type="button" class="btn btn-secondary" onclick="ShowModalTalasLstMat('ARTICULADA', 'BANDEJA')">...</button>
+                        </div>
+                    </div>
+
+                    <div class="row mt-1">
+                        <div class="col-9">
+                            JUNÇÃO RETA 90°:
+                        </div>
+
+                        <div class="col-2">
+                            <button type="button" class="btn btn-secondary" onclick="ShowModalTalasLstMat('RETA', 'BANDEJA')">...</button>
+                        </div>
+                    </div>
+
+                    <div class="row mt-1 mb-2">
+
+                        <div class="col-9">
+                            JUNÇÃO SIMPLES:
+                        </div>
+
+                        <div class="col-2">
+                            <button type="button" class="btn btn-secondary" onclick="ShowModalTalaSimplesLstMat('BANDEJA')">...</button>
+                        </div>
+                    </div>
+
+
+                    <div class="col-12 d-flex justify-content-center font_size_headers_lst_mat">
+                        ELETROCALHA
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-9">
+                            JUNÇÃO ARTICULADA:
+                        </div>
+                        <div class="col-2">
+                            <button type="button" class="btn btn-secondary" onclick="ShowModalTalasLstMat('ARTICULADA', 'ELETROCALHA')">...</button>
+                        </div>
+                    </div>
+
+                    <div class="row mt-1">
+                        <div class="col-9">
+                            JUNÇÃO RETA 90°:
+                        </div>
+
+                        <div class="col-2">
+                            <button type="button" class="btn btn-secondary" onclick="ShowModalTalasLstMat('RETA', 'ELETROCALHA')">...</button>
+                        </div>
+                    </div>
+
+                    <div class="row mt-1 mb-2">
+
+                        <div class="col-9">
+                            JUNÇÃO SIMPLES:
+                        </div>
+
+                        <div class="col-2">
+                            <button type="button" class="btn btn-secondary" onclick="ShowModalTalaSimplesLstMat('ELETROCALHA')">...</button>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <div class="row">
+                            <div class="col-9" style="justify-content: flex-start; display: flex; padding: 0">Filtro para Recho Reto 6m</div>
+                                <div class="col-3 checkbox-wrapper-51" type="button" style="justify-content: flex-end; display: flex">
+                                  <input id="cbx-51" type="checkbox">
+                                  <label class="toggle" for="cbx-51" onclick="hide_or_show()">
+                                    <span>
+                                      <svg viewBox="0 0 10 10" height="10px" width="10px">
+                                        <path d="M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z"></path>
+                                      </svg>
+                                    </span>
+                                  </label>
+                                </div>
+                        </div>
+                    </div>
+
+                    <div id="filtro-recho" class="row mt-1" hidden="">
+<!--                        <div class="col-9 mt-3">-->
+<!--                            Filtro para Recho Reto 6m-->
+<!--                        </div>-->
+
+                        <div class="col-9">
+                            <input id="filtro_trecho_6m" class="font_size_headers_lst_mat" value="JLTR|JDTR">
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-3 d-flex justify-content-center font_size_headers_lst_mat">
+                        CADASTRO DE TAMPAS - GLOBAL
+                    </div>
+
+                    <div class="row d-flex justify-content-center mt-1 mx-2 mr-4 border-bottom">
+                        <div class="col-5 p-0 d-flex align-items-center mb-1">
+                            Tipos de Tampa
+                        </div>
+                        <div class="col-5 mb-1">
+                            <select class="form-control" id="lst_mat_tipos_tampa">
+                                <option value="0">---</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-secondary mb-1" onclick="ShowModalTiposTampas()">...</button>
+                    </div>
+
+
+                    <div class="row mt-1">
+                        <div class="col-9 mt-3">
+                            TAMPA E FIXAÇÃO PARA LEITO:
+                        </div>
+
+                        <div class="col-2 mt-3">
+                            <button type="button" class="btn btn-secondary" onclick="ShowModalDeParaLstMat('BANDEJA')">...</button>
+                        </div>
+
+                        <div class="col-9">
+                            TAMPA E FIXAÇÃO PARA ELETROCALHA:
+                        </div>
+
+                        <div class="col-2 mt-3">
+                            <button type="button" class="btn btn-secondary" onclick="ShowModalDeParaLstMat('ELETROCALHA')">...</button>
+                        </div>
+
+                        <div class="col-12 mt-3 d-flex justify-content-center font_size_headers_lst_mat">
+                            Copiar da Os
+                        </div>
+
+                        <div class="row mt-3 ml-3 mb-3 font_size_headers_lst_mat">
+                            <div class="col3">
+                                <select  class="form-control " id="copy_materiais">
+                                    <option value="0">---</option>
+                                    {% for i in list_os%}
+                                    <option value="{{i.pk}}"> {{i.tb_os_p_num}}</option>
+                                    {% endfor%}
+                                </select>
+                            </div>
+
+                            <div class="col-2 ">
+                                <button type="button" class="btn btn-secondary" onclick="copy_os_material()">Copiar</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade bd-example-modal-lg" id="modal_dados_documento_gerar_lista_material" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title " id="exampleModalLabel"  style="display: flex">Dados do Documento p/ Lista Material</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-3 text-right p-0">
+                        <label>N° Documento A1:</label>
+                    </div>
+                    <div class="col-8">
+                        <select  class="form-control" id="n_doc_dados_doc_a1_lista_material" onchange="getDadosDocListaMaterial()">
+                            <option disabled="true" selected>---</option>
+                            {% for pk, name_doc_a1 in list_num_docs %}
+                                <option value="{{pk}}">{{name_doc_a1}}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" class="form-control" id="n_doc_dados_doc_a1_lista_material_input" hidden>
+                    </div>
+                    <div class="col-1">
+                        <button type="button" class="btn btn-warning" id="dados_doc_btn_adc_new_num" onclick="ShowFormNewDocNum(); clear_fields_lista_material()">+</button>
+                        <button type="button" class="btn btn-warning" id="dados_doc_btn_save_new_num" onclick="ClickBtnOkNewDocNum()" style="width: 37px;" hidden>-</button>
+                    </div>
+                </div>
+
+                <div class="row mt-1">
+                    <div class="col-3 text-right p-0">
+                        <label for="n_doc_dados_doc_cliente_lista_material">N° Documento Cliente:</label>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" class="form-control" id="n_doc_dados_doc_cliente_lista_material">
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-3 text-right p-0">
+                        <label for="n_rev_dados_doc_a1_lista_material">Rev. A1:</label>
+                    </div>
+                    <div class="col-3">
+                        <input type="number" class="form-control" id="n_rev_dados_doc_a1_lista_material">
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-3 text-right p-0">
+                        <label for="n_rev_dados_doc_cliente_lista_material">Rev. Cliente:</label>
+                    </div>
+                    <div class="col-3">
+                        <input type="number" class="form-control" id="n_rev_dados_doc_cliente_lista_material">
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-3 text-right p-0">
+                        <label for="file_dados_doc_lista_material_capa">Capa:</label>
+                    </div>
+                    <div class="col-7">
+                        <input class="form-control form-control-lg" id="file_dados_doc_lista_material_capa" type="file" accept=".xlsx">
+                        <!-- File Status -->
+                        <small id="status_capa" class="text-muted">Sem Arquivos.</small>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-3 text-right p-0">
+                        <label for="file_dados_doc_lista_material_template">Template:</label>
+                    </div>
+                    <div class="col-8">
+                        <input class="form-control form-control-lg" id="file_dados_doc_lista_material_template" type="file" accept=".xlsx">
+                        <!-- File Status -->
+                        <small id="status_template" class="text-muted">Sem Arquivos.</small>
+                    </div>
+                </div>
+
+                <div class="row mt-1">
+                    <div class="col-3 text-right p-0">
+                        <label for="file_dados_doc_lista_material_template_abas">Template C/ Abas:</label>
+                    </div>
+                    <div class="col-8">
+                        <input class="form-control form-control-lg" id="file_dados_doc_lista_material_template_abas" type="file" accept=".xlsx">
+                        <!-- File Status -->
+                        <small id="status_template_abas" class="text-muted">Sem Arquivos.</small>
+                    </div>
+                </div>
+
+                <br>
+                <br>
+
+                <div class="modal-footer">
+                    <div class="d-flex">
+                        <button type="button" class="btn btn-success" onclick="window.open('/app/eletrica/gerar_tipicos/TemplateListaMaterialCapa', '_self')">
+                            <i class="fa-solid fa-download pr-2"></i>Capa
+                        </button>
+                    </div>
+                    <div class="d-flex">
+                        <button type="button" class="btn btn-success" onclick="window.open('/app/eletrica/gerar_tipicos/TemplateListaMaterialTemp', '_self')">
+                            <i class="fa-solid fa-download pr-2"></i>Template
+                        </button>
+                    </div>
+                    <div class="d-flex">
+                        <button type="button" class="btn btn-success" onclick="window.open('/app/eletrica/gerar_tipicos/TemplateListaMaterialTempAbas', '_self')">
+                            <i class="fa-solid fa-download pr-2"></i>Abas
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-warning" onclick="validateAndSendDadosDoc()">Salvar</button>
+                    <button type="button" class="btn btn-warning" onclick="$('#modal_dados_documento_gerar_lista_material').modal('hide');">Fechar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% include './ModalFilterCodeLstMat.html' %}
+{% include './ModalTalaSimplesLstMat.html' %}
+{% include './ModalTipoMateriais.html' %}
+{% include './ModalTipoTampa.html' %}
+{% include './ModalDeParaTampasLstMat.html' %}
+{% include './ModalLoadCelery.html' %}
+
+<script src="{% static 'js/eletrica/A1Pro/ListaMateriais.js' %}"></script>
+<script>
+    let formFileLstMat = new FormData();
+
+    function copy_os_material(){
+        let select_material = document.getElementById('copy_materiais').selectedOptions[0]
+        let id_os = 0
+        if (select_material.value === 0){
+            SwitchAlertLstMat('É necessário selecionar uma OS!')
+        }else{
+            id_os = select_material.value
+            $.ajax({
+                type: "GET",
+                headers: {'X-CSRFToken': csrftokenlst_mat},
+                url: "CopyMateriaisLltMat/",
+                dataType: 'json',
+                data: {'datas_front': JSON.stringify({
+                        'id_os': id_os,
+                    })},
+                success: function (data) {
+                    SwitchAlertLstMat(data['return'])
+                },
+                failure: function (error) {
+                },
+            });
+        }
+    }
+    function DropFileInLstMat(id_dropzone, id_input, key_form_data, files_event=null, dwg_or_xlsx=0){
+        /// dwg_or_xlsx = 0 para cair na regra dos 3 ou 6 metros, 1 para cair na regra do xlsx simples e 2 para cair na regra do dwg
+        let container_drop_file = document.getElementById(id_dropzone)
+        let input_file = document.getElementById(id_input)
+        let files = files_event === null ? input_file.files:files_event.files
+        for (let i = 0; i <files.length;i++){
+            let file = files[i]
+            let error_file = false
+            let name_file_splited = file.name.split('.')
+            let extension = name_file_splited[name_file_splited.length - 1]
+            extension = extension.toUpperCase()
+            console.log(extension, dwg_or_xlsx)
+            if((extension === 'XSLX' || extension === 'CSV') && (dwg_or_xlsx !== 0 && dwg_or_xlsx !== 1)){
+                error_file = true
+            }
+            if ((dwg_or_xlsx !== 2) && (extension === 'DWG')){
+                error_file = true
+            }
+
+            if(!error_file){
+                formFileLstMat.append(key_form_data, file)
+                if(dwg_or_xlsx === 0){
+
+                     container_drop_file.innerHTML += `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown" title="${file.name}">
+                                                                <div class="input-group-prepend my-auto px-1">
+                                                                    <img src="{% static 'img/XLS.png' %}" style="height:20px">
+                                                                </div>
+                                                                <span class="col-6 my-1 text-truncate" type="text">${file.name}</span>
+                                                                <div class="col-4">
+                                                                    <label class="switch_list_material align-middle my-1">
+                                                                        <input type="checkbox">
+                                                                        <div class="slider_list_material round">
+                                                                            <div id="toggle-on" class="on" type="button">
+                                                                                <span class="d-inline">
+                                                                                    <span>6 metros</span>
+                                                                                </span>
+                                                                            </div>
+                                                                            <div id="toggle-off" class="off" type="button">
+                                                                                <span class="d-inline">
+                                                                                    <span>3 metros</span>
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="input-group-append ml-auto">
+                                                                    <button class="btn btn-outline-danger rounded-pill px-2 border-0" type="button" onclick="DeleFileXlsxLstMat(this)">
+                                                                        <i class="fas fa-times-circle fa-lg"></i>
+                                                                    </button>
+                                                                </div>
+
+                                                        </div>
+                                                   </div>`
+                }
+                else if(dwg_or_xlsx === 1){
+                    container_drop_file.innerHTML += `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown" title="${file.name}">
+                                                        <div class="input-group-prepend my-auto px-1">
+                                                            <img class="" src="{% static 'img/XLS.png' %}" style="height:20px">
+                                                        </div>
+                                                        <span type="text" title="${file.name}" class="col border-0 input-group-text bg-white text-truncate">${file.name}</span>
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="DeleFileXlsxLstMat(this)">
+                                                                <i class="fas fa-times-circle fa-lg"></i>
+                                                            </button>
+                                                        </div>
+                                                   </div>`
+                }
+                else{
+                    container_drop_file.innerHTML += `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown" title="${file.name}">
+                                    <div class="input-group-prepend my-auto px-1">
+                                        <img class="" src="{% static 'img/DWG.png' %}" style="height:20px">
+                                    </div>
+                                    <span type="text" title="${file.name}" class="col border-0 input-group-text bg-white text-truncate">${file.name}</span>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="DeleFileXlsxLstMat(this)">
+                                            <i class="fas fa-times-circle fa-lg"></i>
+                                        </button>
+                                    </div>
+                               </div>`
+                }
+            }
+            else{
+                formFileLstMat.delete(key_form_data)
+                return SwitchAlertLstMat(file.name + ': Extensão de arquivo inválida!!', true)
+            }
+        }
+        input_file.value = ''
+    }
+    function limit_string(string = '') {
+        if(string.length > 15)
+            return string.substring(0, 10) + '...'
+        else
+            return string
+    }
+
+    jQuery(document).ready(function($) {
+
+        document.getElementById('lst_mat_table_de_para').addEventListener('paste', function(event) {
+          var clipboardData = event.clipboardData || window.clipboardData;
+          var pastedText = clipboardData.getData('text');
+          TransformPasteInTable(pastedText)
+        });
+
+        $('#dropzone_xlsx_lst_mat').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover-blue');
+        })
+
+        $('#dropzone_xlsx_lst_mat').on('drop', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+          let files = event_2.originalEvent.dataTransfer;
+          console.log(files)
+          // A função abaixo altera o conteudo do campo dropdown
+          DropFileInLstMat('dropzone_xlsx_lst_mat', 'arquivo_xlsx_lst_mat', 'FilesSemTampa', files)
+        })
+
+        $('#dropzone_xlsx_lst_mat').on('dragleave', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+        })
+
+
+
+        $('#dropzone_xlsx_tampa_lst_mat').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover-blue');
+        })
+
+        $('#dropzone_xlsx_tampa_lst_mat').on('drop', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+          let files = event_2.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropFileInLstMat('dropzone_xlsx_tampa_lst_mat', 'arquivo_xlsx_tampa_lst_mat', 'FilesComTampa', files)
+        })
+
+        $('#dropzone_xlsx_tampa_lst_mat').on('dragleave', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+        })
+
+ //////////////////////////////////////////////////////////////////////////////////////////////////////
+        $('#dropzone_xlsx_perfis_lst_mat').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover-blue');
+        })
+
+        $('#dropzone_xlsx_perfis_lst_mat').on('drop', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+          let files = event_2.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropFileInLstMat('dropzone_xlsx_perfis_lst_mat', 'arquivo_xlsx_perfis_lst_mat', 'FilesPerfis', files,1)
+        })
+
+        $('#dropzone_xlsx_perfis_lst_mat').on('dragleave', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+        })
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        $('#dropzone_dwg_lst_mat').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover-blue');
+        })
+
+        $('#dropzone_dwg_lst_mat').on('drop', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+          let files = event_2.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropFileInLstMat('dropzone_dwg_lst_mat', 'arquivo_dwg_lst_mat', 'FilesDWG', files, 2)
+        })
+
+        $('#dropzone_dwg_lst_mat').on('dragleave', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+        })
+    });
+
+    function getDadosDocListaMaterial() {
+        let num_doc = getNumDocumento()
+        document.getElementById('num_doc_id').innerHTML = num_doc
+        $.ajax({
+            url: "/app/eletrica/a1pro/DadosDocumentosListaMaterial/",
+            type: "GET",
+            data: {
+                'num_doc': num_doc
+            },
+            dataType: "json",
+            success: function (data) {
+                // Call function to render data
+                renderDadosDocListaMaterial(data);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+            }
+        });
+        }
+
+    function getNumDocumento(){
+        let input = document.getElementById('dados_doc_btn_save_new_num').hidden
+        let selection_list = document.getElementById('dados_doc_btn_adc_new_num').hidden
+        let num_doc
+        if (selection_list === false){
+            num_doc = document.getElementById('n_doc_dados_doc_a1_lista_material').selectedOptions[0].innerText
+        }
+        if (input === false){
+            num_doc = document.getElementById('n_doc_dados_doc_a1_lista_material_input').value.trim()
+        }
+        return num_doc
+    }
+
+    function ShowFormNewDocNum(){
+        document.getElementById('dados_doc_btn_adc_new_num').hidden = true
+        document.getElementById('dados_doc_btn_save_new_num').hidden = false
+        document.getElementById('n_doc_dados_doc_a1_lista_material_input').hidden = false
+        document.getElementById('n_doc_dados_doc_a1_lista_material').hidden = true
+
+    }
+
+    function ClickBtnOkNewDocNum(){
+        document.getElementById('dados_doc_btn_adc_new_num').hidden = false
+        document.getElementById('dados_doc_btn_save_new_num').hidden = true
+        document.getElementById('n_doc_dados_doc_a1_lista_material_input').hidden = true
+        document.getElementById('n_doc_dados_doc_a1_lista_material').hidden = false
+    }
+
+    function clear_fields_lista_material(){
+        document.getElementById("status_template_abas").classList.remove('text-success', 'font-weight-bold')
+        document.getElementById("status_template_abas").classList.add('text-muted')
+        document.getElementById("status_capa").classList.remove('text-success', 'font-weight-bold')
+        document.getElementById("status_capa").classList.add('text-muted')
+        document.getElementById("status_template").classList.remove('text-success', 'font-weight-bold')
+        document.getElementById("status_template").classList.add('text-muted')
+
+        document.getElementById("n_doc_dados_doc_a1_lista_material").value = '';
+        document.getElementById("n_doc_dados_doc_cliente_lista_material").value  = '';
+        document.getElementById("n_rev_dados_doc_a1_lista_material").value = '';
+        document.getElementById("n_rev_dados_doc_cliente_lista_material").value = '';
+        document.getElementById("status_capa").innerText = 'Sem Arquivos.';
+        document.getElementById("status_template").innerText = 'Sem Arquivos.';
+        document.getElementById("status_template_abas").innerText = 'Sem Arquivos.';
+
+    }
+
+    function validateAndSendDadosDoc() {
+        // Get the input fields
+        const nDocA1 = getNumDocumento();
+
+        const nDocCliente = document.getElementById("n_doc_dados_doc_cliente_lista_material").value.trim();
+        const nRevA1 = document.getElementById("n_rev_dados_doc_a1_lista_material").value.trim();
+        const nRevCliente = document.getElementById("n_rev_dados_doc_cliente_lista_material").value.trim();
+        const capaFile = document.getElementById("file_dados_doc_lista_material_capa").files.length;
+        const templateFile = document.getElementById("file_dados_doc_lista_material_template").files.length;
+        const templateFileAbas = document.getElementById("file_dados_doc_lista_material_template_abas").files.length;
+
+        // Flag to track validation
+        let isValid = true;
+
+        // Clear previous error messages
+        document.querySelectorAll(".input-error").forEach(element => {
+            element.classList.remove("input-error");
+        });
+
+        // Validate inputs
+        if (!nDocA1) {
+            document.getElementById("n_doc_dados_doc_a1_lista_material").classList.add("input-error");
+            isValid = false;
+        }
+
+        // If all fields are valid, send data to the backend
+        if (isValid) {
+            SendDadosDocListaMaterial(); // Call your existing function to send the data
+        } else {
+            swalAlert_DOC_without_reload('Warning', 'Por favor, campos estão faltando', 'warning', false)
+            alert("Por favor, campos estão faltando.");
+        }
+    }
+
+    function SendDadosDocListaMaterial() {
+        const formData = new FormData();
+        const csrf = document.getElementsByName("csrfmiddlewaretoken")[0].value
+        // Collect inputs
+        const nDocA1 = getNumDocumento();
+        const nDocCliente = document.getElementById("n_doc_dados_doc_cliente_lista_material").value.trim();
+        const nRevA1 = document.getElementById("n_rev_dados_doc_a1_lista_material").value.trim();
+        const nRevCliente = document.getElementById("n_rev_dados_doc_cliente_lista_material").value.trim();
+        let capaFile
+        let templateFile
+        let templateFileAbas
+        if (document.getElementById("file_dados_doc_lista_material_capa").files){
+            capaFile =  document.getElementById("file_dados_doc_lista_material_capa").files[0];
+        }else{
+            capaFile = []
+        }
+        if(document.getElementById("file_dados_doc_lista_material_template").files){
+            templateFile = document.getElementById("file_dados_doc_lista_material_template").files[0]
+        }else{
+            templateFile = []
+        }
+        if(document.getElementById("file_dados_doc_lista_material_template_abas").files){
+            templateFileAbas = document.getElementById("file_dados_doc_lista_material_template_abas").files[0]
+        }else{
+            templateFileAbas = []
+        }
+
+
+        // Add inputs to FormData
+        formData.append("n_doc_a1", nDocA1);
+        formData.append("n_doc_cliente", nDocCliente);
+        formData.append("n_rev_a1", nRevA1);
+        formData.append("n_rev_cliente", nRevCliente);
+        formData.append("capa_file", capaFile);
+        formData.append("template_file", templateFile);
+        formData.append("template_file_abas", templateFileAbas);
+
+        // Send AJAX POST request
+        fetch("/app/eletrica/a1pro/DadosDocumentosListaMaterial/", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": csrf, // Include CSRF token
+            },
+        }).then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Failed to save data.");
+                }
+            })
+            .then((data) => {
+                swalAlert_DOC('Sucesso', 'Dados do documento salvo com sucesso.', 'success', false)
+                // alert("Data saved successfully!");
+                // Optionally refresh or clear the form
+            })
+            .catch((error) => {
+                swalAlert_DOC_without_reload('Error', 'Dados do documento salvo com sucesso.', 'error', false)
+                // alert("Error: " + error.message);
+            });
+    }
+
+    function renderDadosDocListaMaterial(data) {
+        document.getElementById("n_doc_dados_doc_a1_lista_material").value = data['data']['num_doc_a1'];
+        document.getElementById("n_doc_dados_doc_cliente_lista_material").value  = data['data']['num_doc_cliente'];
+        document.getElementById("n_rev_dados_doc_a1_lista_material").value = data['data']['num_rev_a1'];
+        document.getElementById("n_rev_dados_doc_cliente_lista_material").value = data['data']['num_rev_cliente'];
+        document.getElementById("status_capa").innerText = data['data']['tb_ddlc_path_capa'] ? 'capa.xlsx': 'Sem Arquivos.';
+        document.getElementById("status_template").innerText = data['data']['tb_ddlc_path_templates'] ? 'Template_os.xlsx': 'Sem Arquivos.';
+        document.getElementById("status_template_abas").innerText = data['data']['tb_ddlc_path_templates'] ? 'Template_abas_os.xlsx': 'Sem Arquivos.';
+        if (data['data']['tb_ddlc_path_capa'] === true){
+            document.getElementById("status_capa").classList.remove('text-muted')
+            document.getElementById("status_capa").classList.add("text-success", "font-weight-bold")
+        }else{
+            document.getElementById("status_capa").classList.remove('text-success', 'font-weight-bold')
+            document.getElementById("status_capa").classList.add('text-muted')
+        }
+        if (data['data']['tb_ddlc_path_templates'] === true){
+            document.getElementById("status_template").classList.remove('text-muted')
+            document.getElementById("status_template").classList.add('text-success', 'font-weight-bold')
+        }else{
+            document.getElementById("status_template").classList.remove('text-success', 'font-weight-bold')
+            document.getElementById("status_template").classList.add('text-muted')
+        }
+
+        if (data['data']['tb_ddlc_path_templates_abas'] === true){
+            document.getElementById("status_template_abas").classList.remove('text-muted')
+            document.getElementById("status_template_abas").classList.add('text-success', 'font-weight-bold')
+        }else{
+            document.getElementById("status_template_abas").classList.remove('text-success', 'font-weight-bold')
+            document.getElementById("status_template_abas").classList.add('text-muted')
+        }
+    }
+
+</script>
+
+{% endblock %}

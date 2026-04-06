@@ -1,0 +1,73 @@
+{% load static %}
+{% block tipo_partida %}
+<div class="modal-header">
+    <h5 class="modal-title" id="tipopartidaLabel">Tipo de Partida</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div id="tipopartida-alert" class="time-trans"></div>
+    <div class="row">
+        <div class="col-6 border-right">
+            <div class="col-12">
+                <div class="form-group mb-4 mt-4">
+                    <label data-toggle="tooltip" title="Inserir codigo">Código</label>
+                    <input type="text" required class="form-control" id="tipo-partida-cod">
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group mb-4">
+                    <label data-toggle="tooltip" title="Inserir a descrição">Descrição</label>
+                    <input type="text" required class="form-control" id="tipo-partida-desc">
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group">
+                    <h6>Critérios</h6>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tipo-partida-options" value="DIRETA">
+                        <label class="form-check-label">Direta</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                       <input class="form-check-input" type="radio" name="tipo-partida-options" value="INVERSOR">
+                        <label class="form-check-label">Inversor</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tipo-partida-options" value="SOFT STARTER">
+                        <label class="form-check-label">Soft Starter</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="col-12 h-100">
+                <div class="form-group h-100">
+                    <div id="tipo_os" class="h-75 pb-3">
+                        <h6>Pesquisa</h6>
+                        <div class="input-group col-lg-12 px-0 mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white borda_filtros">
+                                    <i class="fa-solid fa-magnifying-glass text-secondary" onclick="filter_options('tb_tp', 'tipo-partida-search', 'TPartida/', '#tipopartida', 'tipo-partida', '#tipo-partida-select')"></i>
+                                </span>
+                            </div>
+                            <input type="search" class="form-control border-left-0 border_left" placeholder="Buscar..." id="tipo-partida-search" title="Pesquise aqui seu Tipo de partida" onclick="clean_with_backspace('tipo-partida', 1, 'TPartida/', 'tb_tp', '#tipo-partida-select', '#tipopartida')" onkeyup="filter_options('tb_tp', 'tipo-partida-search', 'TPartida/', '#tipopartida', 'tipo-partida', '#tipo-partida-select')">
+                        </div>
+                        <select id="tipo-partida-select" required class="form-control h-100" multiple></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-success" onclick="adicionarPartida()">Adicionar</button>
+    <button type="button" class="btn btn-primary mr-5" onclick="updateTipoPartida()">Alterar</button>
+    <button type="button" class="btn btn-warning" onclick="clean_all_forms_partida()">Limpar</button>
+    <button type="button" class="btn btn-danger" onclick="delete_partida()">Excluir</button>
+
+</div>
+<script src="{% static 'js/eletrica/A1Pro/TipoPartida.js' %}"></script>
+
+{% endblock %}

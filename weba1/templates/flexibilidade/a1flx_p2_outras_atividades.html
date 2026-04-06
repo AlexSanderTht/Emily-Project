@@ -1,0 +1,968 @@
+{% extends 'geral/base.html' %}
+{% load poll_extras %}
+{% load static %}
+{% block head %}
+<title>Controle - Outras Atividades</title>
+<link rel="stylesheet" href="{% static 'css/flexibilidade/jquery.dataTables.min.css' %}" />
+<style>
+    .mousechange:hover {
+        cursor: pointer;
+    }
+
+    .custom-file-label::after {
+        content: "Pesquisar";
+    }
+
+    .btn-dark {
+        color: #fff !important;
+        background-color: #000080 !important;
+        border-color: #000080 !important;
+    }
+
+        .btn-dark:hover {
+            color: white !important;
+            background-color: #000060 !important;
+            border-color: #000080 !important;
+        }
+
+        .btn-dark:focus, .btn-dark.focus {
+            box-shadow: 0 0 0 .2rem rgba(0,0,128,0.5) !important;
+            background-color: #000080 !important;
+        }
+
+        .btn-dark.disabled, .btn-dark:disabled {
+            color: #fff;
+            background-color: #000080;
+            border-color: #000080
+        }
+
+        .btn-dark:not(:disabled):not(.disabled):active, .btn-dark:not(:disabled):not(.disabled).active, .show > .btn-dark.dropdown-toggle {
+            color: #fff;
+            background-color: #000060;
+            border-color: #000080
+        }
+
+            .btn-dark:not(:disabled):not(.disabled):active:focus, .btn-dark:not(:disabled):not(.disabled).active:focus, .show > .btn-dark.dropdown-toggle:focus {
+                box-shadow: 0 0 0 .2rem rgba(0,90,90,0.5)
+            }
+
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        border-bottom: 1px dotted black;
+    }
+
+    .loadergb {
+        border: 16px solid #A1A1A1;
+        border-top: 16px solid #f6801e;
+        border-radius: 50%;
+        width: 200px;
+        height: 200px;
+        animation: spin 2s linear infinite;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        /* Position the tooltip */
+        position: absolute;
+        z-index: 1;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+    }
+
+    .ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        display: block;
+    }
+
+        .ellipsis.multiline {
+            white-space: normal;
+        }
+
+    .violet {
+        background-color: #aa80ff;
+    }
+
+    .grey_blue {
+        background-color: #80aaff;
+    }
+
+    .yellow {
+        background-color: #ffff1a;
+    }
+
+    .orange {
+        background-color: #ffb84d;
+    }
+
+    .nude {
+        background-color: #ffcc99;
+    }
+
+    .red {
+        background-color: #ff471a;
+    }
+
+    .green {
+        background-color: #5cd65c;
+    }
+
+    .blue {
+        background-color: #4d94ff;
+    }
+
+    /* thead input {
+        width: 100%;
+    }
+
+    .efeito efeito-1 {
+        max-height: 20px;
+        font-size: 12px;
+    }*/
+
+    .TabelaFlex td, .TabelaFlex th {
+        border: 0px solid #ddd;
+        text-align: center;
+    }
+
+    .table-hover thead tr:hover th, .table-hover tbody tr:hover td {
+        background-color: #ffc107;
+    }
+
+    .btnHist {
+        max-height: 18px !important;
+        padding: 0 !important;
+        font-size: 85% !important;
+    }
+
+    .btnReports {
+        max-height: 18px;
+        padding: 0;
+        font-size: 85%;
+    }
+
+    .TabelaFlex tr:nth-child(odd) {
+        /*background-color: #f2f2f2;*/
+    }
+
+    .TabelaFlex td:hover {
+        background-color: #ddd;
+    }
+
+    .TabelaFlex th {
+        text-align: center;
+        background-color: #343a40;
+        color: white;
+    }
+
+    .dropdown-filter-item {
+        color: black !important;
+        text-align: left;
+    }
+
+    .table-container {
+        height: 10em;
+    }
+
+    table {
+        display: flex;
+        flex-flow: column;
+        height: 100%;
+        width: 100%;
+    }
+
+        table thead {
+            flex: 0 0 auto;
+            width: calc(100% - 0.02em);
+        }
+
+    .tbodyTab {
+        flex: 1 1 auto;
+        display: block;
+        overflow-y: scroll;
+    }
+
+    table tbody tr {
+        width: 100%;
+        background-color: white
+    }
+
+    .bgIdentificacao {
+        background-color: #1E90FF !important;
+    }
+
+    .Identificacao {
+        display: table-cell;
+    }
+
+    .InputModalIdentificacao {
+        height: 34px;
+        color: white !important;
+        margin-left: 5px;
+    }
+
+    .bgDatas {
+        background-color: #32CD32 !important;
+        color: white !important;
+    }
+
+    .Datas {
+        display: none;
+    }
+
+    .InputModalDatas {
+        height: 34px !important;
+    }
+
+        .InputModalDatas:focus {
+            border-color: #32CD32 !important;
+            box-shadow: 0 0 0 0.2rem rgba(50, 205, 50, 0.25) !important;
+        }
+
+    .bgHoras {
+        background-color: #000080 !important;
+        color: white !important;
+    }
+
+    .Horas {
+        display: none;
+    }
+
+    .InputModalHoras {
+        height: 34px;
+        color: white;
+        margin-left: 5px;
+    }
+
+        .InputModalHoras:focus {
+            border-color: #000080 !important;
+            box-shadow: 0 0 0 0.2rem rgba(0, 0, 128, 0.25) !important;
+        }
+
+    .bgTecnico {
+        background-color: #D2691E !important;
+        color: white !important;
+    }
+
+    .Tecnico {
+        display: none;
+    }
+
+    .InputModalTecnico {
+        height: 34px;
+        color: white;
+        margin-left: 5px;
+    }
+
+        .InputModalTecnico:focus {
+            border-color: #D2691E !important;
+            box-shadow: 0 0 0 0.2rem rgba(210, 105, 30, 0.25) !important;
+        }
+
+    .btnTecnicoModal {
+        background-color: #D2691E !important;
+        color: white !important;
+        border-color: #D2691E !important;
+    }
+
+        .btnTecnicoModal:hover {
+            background-color: #a6551b !important;
+            border-color: #a6551b !important;
+        }
+
+        .btnTecnicoModal:disabled {
+            background-color: #ffa463 !important;
+            border-color: #ffa463 !important;
+        }
+
+        .btnTecnicoModal:active, .btnTecnicoModal:focus {
+            box-shadow: 0 0 0 0.2rem rgba(210, 105, 30, 0.25) !important;
+            background-color: #D2691E !important;
+            border-color: #D2691E !important;
+        }
+
+    .Status {
+        display: table-cell;
+    }
+
+    .InputModalStatus {
+        height: 34px;
+        color: white;
+        margin-left: 5px;
+    }
+
+        .InputModalStatus:focus {
+            border-color: #FF6347;
+            box-shadow: 0 0 0 0.2rem rgba(255, 99, 71, 0.25);
+        }
+
+    .btnStatusModal {
+        background-color: #FF6347;
+        color: white;
+        border-color: #FF6347;
+    }
+
+        .btnStatusModal:hover {
+            background-color: #ff3f1d;
+            border-color: #ff3f1d;
+            color: white;
+        }
+
+        .btnStatusModal:disabled {
+            background-color: #fd9481;
+            border-color: #fd9481;
+        }
+
+        .btnStatusModal:active, .btnStatusModal:focus {
+            box-shadow: 0 0 0 0.2rem rgba(255, 99, 71, 0.25);
+            background-color: #FF6347;
+            border-color: #FF6347;
+        }
+
+    .btnTabela {
+        padding: 5px 10px 5px 10px;
+        box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+        border-radius: 8px;
+        width: 100px
+    }
+
+    .divBtn {
+        padding: 0 !important;
+        margin-top: 5px
+    }
+
+    .InputDisponibilidade3DNAO {
+        background-color: rgba(212, 32, 0, 0.12) !important;
+        color: #d42000 !important;
+        border-color: #d42000 !important;
+    }
+
+        .InputDisponibilidade3DNAO:focus {
+            box-shadow: 0 0 0 0.2rem rgba(212, 32, 0, 0.25) !important;
+            color: #d42000 !important;
+            border-color: #d42000 !important;
+        }
+
+    .InputDisponibilidade3DSIM {
+        background-color: rgba(51, 212, 0, 0.12) !important;
+        color: #1d7401 !important;
+        border-color: #33d400 !important;
+    }
+    .InputDisponibilidade3DSIM:focus {
+        color: #1d7401 !important;
+        border-color: #33d400 !important;
+        box-shadow: 0 0 0 0.2rem rgba(51, 212, 0, 0.25) !important;
+    }
+    .filtrado {
+        color: #343a40 !important;
+        background-color: yellow !important;
+    }
+    #ModalEditarHoras.modal:after { 
+        content: ""; 
+        display: block; 
+        background: rgba(0,0,0, .5); 
+        position: fixed; 
+        top: 0; 
+        bottom: 0; 
+        width: 100%; 
+        z-index: -1; 
+    }
+</style>
+{% endblock %}
+{% block help %}
+
+{% endblock %}
+{% block main %}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+<p hidden id="OS">{{os}}</p>
+<p hidden id="usuarioatual">{{usuarioatual}}</p>
+<div class="row mx-auto" style="margin-top: 1.8rem; height: fit-content">
+    <div class="col-4 mx-auto text-center" style="margin-left: 15px;">
+        <h3 class="display-8" id="tituloos"><b>OS{{ os }}</b></h3>
+    </div>
+    <div class="col" >
+        <div class="row justify-content-end" style="margin-right: 15px;">
+            <button onclick="voltar()" type="button" id="BotaoCadastrarSistemas" class="subscribe btn btn-info" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; height: 34px; margin-top: 2px;">
+                Controle - Sistemas
+            </button>
+        </div>
+    </div>
+</div>
+<form role="form" method="POST" action="/app/flexibilidade/sistemas/" enctype="multipart/form-data" id="form" style="display: none">
+    {% csrf_token %}
+    <br>
+    <input onchange="storage_os(this.val); this.form.submit();" type="submit" id="num_os" class="form-control" style="width: 10vw; justify-self: center; margin: auto; font-size: 16px; text-align: center">
+    <br>
+    <input name="os" id="osenviar" value="aaa" />
+</form>
+<script>
+    function storage_os(id)
+    {
+        const num_os = document.getElementById('num_os').value
+        sessionStorage.setItem('num_os', num_os);
+    }
+</script>
+<center><div class="loadergb" id="loader"></div></center>
+
+<div class="row mx-auto" id="JanelaGeral" style="display: none;">
+    <div class="" style="margin-left: 15px; margin-right: 15px">
+        <div id="nav-tab-card" class="tab-pane fade show active col-12">
+            <div id="nav-tab-card" class="tab-pane fade show active col-12">
+                <div style="color: #343a40; overflow: visible; font-size: 24px; background-color: #c2c8c6; text-align: center; border-left: 2px solid gray; border-right: 2px solid gray; border-top: 2px solid gray; margin-left: -15px; margin-right: -15px "><b>Atividades</b></div>
+            </div>
+            <div id="TabelaAtividades" style="overflow: visible; font-size: 12px; padding: 2px;"></div>
+            <div id="RodapeAtividades" style="margin-left: auto; margin-right: auto; font-size:75%;"></div>
+            <center>
+                <div class="row" style="width: 530px;">
+                    <div class="col divBtn" title="Mostrar/Esconder Identificação"><button class="btnTabela" id="BtnIdentificacao" onclick="MostrarEsconderID(this)">Identificador</button></div>
+                    <div class="col divBtn" title="Mostrar/Esconder Datas"><button class="btnTabela" id="BtnDatas" onclick="MostrarEsconderDatas(this)">Datas</button></div>
+                    <div class="col divBtn" title="Mostrar/Esconder Horas"><button class="btnTabela" id="BtnHoras" onclick="MostrarEsconderHoras(this)">Horas</button></div>
+                    <div class="col divBtn" title="Mostrar/Esconder Técnico"><button class="btnTabela" id="BtnTecnico" onclick="MostrarEsconderTecnico(this)">Técnico</button></div>
+                    <div class="col divBtn" title="Mostrar/Esconder Status"><button class="btnTabela" id="BtnStatus" onclick="MostrarEsconderStatus(this)">Status</button></div>
+                </div>
+                <button onclick="ModalAtividade(this)" type="button" id="BotaoAdicionarAtividade" class="subscribe btn btn-warning" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; height: 34px; margin-top: 10px; margin-bottom: 10px;">
+                    Adicionar Atividade
+                </button>
+            </center>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalAdicionarAtividade" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="width: 100%; max-width: 1250px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="margin-left: 20px;" id="TituloModalAtividade"> Adicionar Atividade</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="input-group mb-3">
+                    <div class="container" style="width: 100% !important; border: 2px inset #1E90FF; margin-right: auto; margin-left: auto" id="modalContainerIdentificacao">
+                        <div class="input-group mb-3" style="padding: 15px 0px 0px 0px; margin-bottom: 0px !important">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bgIdentificacao InputModalIdentificacao " style="width: 65px" id="basic-addon1"><b>Título</b></span>
+                            </div>
+                            <input type="text" id="TituloAtiv" class="form-control" aria-describedby="basic-addon1" style="height: 34px">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bgIdentificacao InputModalIdentificacao " style="width: 85px" id="basic-addon1"><b>Revisão</b></span>
+                            </div>
+                            <input readonly type="text" id="RevisaoAtiv" class="form-control" aria-describedby="basic-addon1" style="height: 34px; max-width: 50px; text-align: center;" value="0">
+                            <button type="button" id="botaoSubirRevisao" class="btn btn-primary bgIdentificacao" title="Subir revisão" style="height: 34px; padding: 5px;" onclick="SubirRevisao()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="currentColor" class="bi bi-shift" viewBox="0 2 16 16">
+                                    <path d="M7.27 2.047a1 1 0 0 1 1.46 0l6.345 6.77c.6.638.146 1.683-.73 1.683H11.5v3a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-3H1.654C.78 10.5.326 9.455.924 8.816L7.27 2.047zM14.346 9.5 8 2.731 1.654 9.5H4.5a1 1 0 0 1 1 1v3h5v-3a1 1 0 0 1 1-1h2.846z" />
+                                </svg>
+                            </button>
+                            <button type="button" id="botaoExcluirAtividade" class="btn btn-danger d-none" title="Excluir atividade" style="height: 34px; padding: 5px; margin-left: 5px;" onclick="ExcluirAtividade()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="input-group mb-3" style="padding: 5px 0px 15px 0px; margin-bottom: 0px !important">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text InputModalIdentificacao bgIdentificacao" style="width: 65px" for="SelectIdentificadorAtiv"><b>Tipo</b></label>
+                            </div>
+                            <select class="custom-select" id="SelectIdentificadorAtiv" style="min-width: 150px; height: 34px;">
+                            </select>
+                        </div>
+                        <div class="loadergb" id="loaderIdentificacao" style="width: 34px; height: 34px; display: none; border: 4px solid #A1A1A1; border-top: 4px solid #f6801e;"></div>
+                        <div id="ErrosIdentificacao"></div>
+                    </div>
+                    <button type="button" id="BotaoSalvarIdentificacao" class="subscribe btn btn-primary" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; border-radius: 0px 25px 25px 0px; color: white; margin-left: 0px; padding-left: 6px; width: 72px; margin-bottom: 1.5px; " onclick="SalvarModalIdentificacao()">
+                        Salvar
+                    </button>
+                    <div class="container" style="border: 2px inset #32CD32; margin-right: 0px; margin-top: 4px; margin-left: 5px" id="containerDatas">
+                        <div class="input-group mb-3" style="padding: 15px 0px 15px 0px; margin-bottom: 0px !important">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text InputModalDatas bgDatas" id="basic-addon1" style="margin-left: 5px"><b>Atividade Iniciada</b></span>
+                            </div>
+                            <input readonly type="text" id="DataA0" class="form-control InputModalDatas mousechange" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; height: 34px;" ondblclick="AlterarData(this)">
+                            <button type="button" id="BotaoSalvarDataA0" class="btn btn-success d-none" title="Salvar nova data" style="height: 34px; padding: 5px; margin-left: 5px;" onclick="SalvarData()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                    <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
+                                </svg>
+                            </button>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text InputModalDatas bgDatas" id="basic-addon1" style="margin-left: 5px"><b>Atividade Finalizada</b></span>
+                            </div>
+                            <input readonly type="text" id="DataA1" class="form-control InputModalDatas mousechange" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; height: 34px;" ondblclick="AlterarData(this)">
+                            <button type="button" id="BotaoSalvarDataA1" class="btn btn-success d-none" title="Salvar nova data" style="height: 34px; padding: 5px; margin-left: 5px;" onclick="SalvarData()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                    <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
+                                </svg>
+                            </button>
+                            <div class="loadergb" id="loaderSalvarData" style="width: 34px; height: 34px; display: none; border: 4px solid #A1A1A1; border-top: 4px solid #f6801e;"></div>
+                        </div>
+                        <div id="ErrosDatas"></div>
+                        <div class="loadergb" id="loaderFinalizarAtividade" style="width: 34px; height: 34px; display: none; border: 4px solid #A1A1A1; border-top: 4px solid #f6801e;"></div>
+                    </div>
+                    <button type="button" id="BotaoFinalizar" class="subscribe btn btn-success" style="flex-wrap: wrap; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; border-radius: 0px 25px 25px 0px; color: white; margin-left: 0px; margin-top: 4px; padding-left: 4px; width: 72px; margin-bottom: 2px" onclick="FinalizarAtividade()">
+                        Finalizar <br />Atividade
+                    </button>
+                    <div class="container" style="border: 2px inset #000080; margin-right: 0px; margin-top: 4px; margin-left: auto" id="ModalHoras">
+                        <div class="input-group mb-3" style="padding: 15px 0px 15px 0px; margin-bottom: 0px !important">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text InputModalHoras bgHoras" id="basic-addon1"><b>Total Horas</b></span>
+                            </div>
+                            <input readonly type="text" id="TotalHorasAtividade" class="form-control InputModalHoras" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; height: 34px;">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text InputModalHoras bgHoras" id="basic-addon1"><b id="IniciaisUsuario"></b></span>
+                            </div>
+                            <input readonly type="text" id="TotalHorasUsuario" class="form-control InputModalHoras" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; height: 34px;">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text InputModalHoras bgHoras" id="basic-addon1"><b>Adicionar Horas</b></span>
+                            </div>
+                            <input type="text" id="HorasAdicionarUsuario" min="0" step="0.25" class="form-control InputModalHoras" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; height: 34px;">
+
+                            <div class="loadergb" id="loaderHoras" style="width: 34px; height: 34px; display: none; border: 4px solid #A1A1A1; border-top: 4px solid #f6801e;"></div>
+                        </div>
+
+                        <div id="ErrosHoras"></div>
+                    </div>
+                    <button type="button" id="BotaoSalvarHoras" class="subscribe btn btn-dark" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; border-radius: 0px 25px 25px 0px; margin-left: 0px; margin-top: 4px; padding-left: 6px; width: 72px; margin-bottom: 1px; " title="Cadastrar Horas no Banco de Dados" onclick="SalvarModalHoras()">
+                        Salvar
+                    </button>
+                    <div class="container" style="border: 2px inset #D2691E; margin-right: auto; margin-top: 4px; margin-left: auto " id="ModalTecnico">
+                        <div class="input-group mb-3" style="padding: 15px 0px 0px 0px; margin-bottom: 0px !important ">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text InputModalTecnico bgTecnico" id="basic-addon1"><b>Hyd(%)</b></span>
+                            </div>
+                            <input type="text" id="HydModal" class="form-control InputModalTecnico" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; height: 34px;">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text InputModalTecnico bgTecnico" id="basic-addon1"><b>Ope(%)</b></span>
+                            </div>
+                            <input type="text" id="OpeModal" class="form-control InputModalTecnico" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; height: 34px; ">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text InputModalTecnico bgTecnico" id="basic-addon1"><b>Sus(%)</b></span>
+                            </div>
+                            <input type="text" id="SusModal" class="form-control InputModalTecnico" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; height: 34px; ">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text InputModalTecnico bgTecnico" id="basic-addon1"><b>Exp(%)</b></span>
+                            </div>
+                            <input type="text" id="ExpModal" class="form-control InputModalTecnico" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; height: 34px; ">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text InputModalTecnico bgTecnico" id="basic-addon1"><b>F1(Hz)</b></span>
+                            </div>
+                            <input type="text" id="F1Modal" class="form-control InputModalTecnico" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; height: 34px; ">
+                            <div class="loadergb" id="loaderTecnico" style="width: 34px; height: 34px; display: none; border: 4px solid #A1A1A1; border-top: 4px solid #f6801e;"></div>
+                        </div>
+                        <div class="input-group mb-3" style="padding: 5px 0px 15px 0px; margin-bottom: 0px !important;">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bgTecnico" id="basic-addon1" style="color: white; margin-left: 5px; word-wrap: break-word; width: 120px; white-space: normal; text-align: left"><b>Comentários Entrada</b></span>
+                            </div>
+                            <textarea id="ModalObs" class="form-control InputModalTecnico" aria-label="With textarea" style="color: #495057; margin-left: 0px; "></textarea>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bgTecnico" id="basic-addon1" style="color: white; margin-left: 5px; word-wrap: break-word; width: 120px; white-space: normal; text-align: left"><b>Comentários Saída</b></span>
+                            </div>
+                            <textarea id="ModalNotes" class="form-control InputModalTecnico" aria-label="With textarea" style="color: #495057; margin-left: 0px; "></textarea>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bgTecnico" id="basic-addon1" style="color: white; margin-left: 5px;"><b>Vínculo</b></span>
+                            </div>
+                            <textarea id="ModalConexao" class="form-control InputModalTecnico" aria-label="With textarea" style="color: #495057; margin-left: 0px;  "></textarea>
+                        </div>
+                        <div id="ErrosTecnico"></div>
+                    </div>
+                    <button type="button" id="BotaoSalvarTecnico" class="subscribe btn btnTecnicoModal" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; border-radius: 0px 25px 25px 0px; color: white; margin-left: 0px; margin-top: 4px; padding-left: 8px; width: 72px; margin-bottom: 2px " onclick="SalvarTecnico()">
+                        Salvar
+                    </button>
+
+                    <div class="modal-footer" style="width: 100%; margin-top: 10px">
+                        <div class="loadergb" id="loaderSalvar" style="height: 50px; width: 50px; display: none; border: 8px solid #A1A1A1; border-top: 8px solid #f6801e;"></div>
+                        <button onclick="SalvarAtividade(this)" type="button" id="BotaoSalvarAtividade" class="subscribe btn btn-warning rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; width: 400px; margin-left: auto; margin-right: auto;">
+                            Salvar Atividade
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalConfirmarFinalizarAtividade" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmação para Finalizar Atividade</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <h5 id="TituloDadosLinhaHist" class="modal-title" style="margin-bottom: 5px"></h5>
+                <div class="input-group mb-3">
+                    <h6 class="modal-title" style="margin-bottom: 20px"><b>Tem certeza que deseja finalizar a atividade?</b></h6>
+                    <div class="modal-footer" style="width: 100%">
+                        <div class="loadergb" id="loaderFinalizarAtiv" style="height: 50px; width: 50px; display: none; border: 8px solid #A1A1A1; border-top: 8px solid #f6801e;"></div>
+                        <button onclick="FinalizarAtividadeConfirmado()" type="button" id="BotaoSimFinalizarAtividade" class="subscribe btn btn-warning rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Sim
+                        </button>
+                        <button onclick="CancelarFinalizarAtividade()" type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Não
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalConfirmarSubirRevisao" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmação para Subir Revisão</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <h5 id="TituloDadosLinhaHist" class="modal-title" style="margin-bottom: 5px"></h5>
+                <div class="input-group mb-3">
+                    <h6 class="modal-title" style="margin-bottom: 20px"><b>Tem certeza que deseja subir a revisão?</b></h6>
+                    <div class="modal-footer" style="width: 100%">
+                        <div class="loadergb" id="loaderSubirRev" style="height: 50px; width: 50px; display: none; border: 8px solid #A1A1A1; border-top: 8px solid #f6801e;"></div>
+                        <button onclick="SubirRevisaoConfirmado()" type="button" id="BotaoSimFinalizarAtividade" class="subscribe btn btn-warning rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Sim
+                        </button>
+                        <button onclick="CancelarSubirRevisao()" type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Não
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalConfirmarExcluirAtividade" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="TituloModalConfirmarExcluirAtividade" class="modal-title">Confirmação para Excluir Atividade</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <h5 id="TituloDadosLinhaHist" class="modal-title" style="margin-bottom: 5px"></h5>
+                <div class="input-group mb-3">
+                    <h6 class="modal-title" style="margin-bottom: 20px"><b>Tem certeza que deseja excluir a atividade?</b></h6>
+                    <div class="modal-footer" style="width: 100%">
+                        <div class="loadergb" id="loaderExcluirAtividade" style="height: 50px; width: 50px; display: none; border: 8px solid #A1A1A1; border-top: 8px solid #f6801e;"></div>
+                        <button onclick="ExcluirAtividadeConfirmado()" type="button" id="BotaoSimFinalizarAtividade" class="subscribe btn btn-warning rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Sim
+                        </button>
+                        <button onclick="CancelarExcluirAtividadeConfirmado()" type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Não
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalConfirmacaoAtividadeExcluida" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="TituloModalConfirmacaoAtividadeExcluida" class="modal-title">Atividade excluída com sucesso</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer" style="width: 100%">
+                <button type="button" class="btn btn-primary rounded-pill shadow-sm mx-auto" data-dismiss="modal" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalConfirmarExcluirArquivo" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmação para Excluir Arquivos</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <h5 id="TituloDadosLinhaHist" class="modal-title" style="margin-bottom: 5px"></h5>
+                <div class="input-group mb-3">
+                    <h6 class="modal-title" style="margin-bottom: 20px"><b>Tem certeza que deseja excluir o arquivo?</b></h6>
+                    <div class="modal-footer" style="width: 100%">
+                        <div class="loadergb" id="loaderExcluir" style="height: 50px; width: 50px; display: none; border: 8px solid #A1A1A1; border-top: 8px solid #f6801e;"></div>
+                        <button onclick="ExcluirArquivoConfirmado(this)" type="button" id="BotaoSimExcluirArquivo" class="subscribe btn btn-warning rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Sim
+                        </button>
+                        <button onclick="CancelarExclusao()" type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Não
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalConfirmarSubstituirReport3D" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmação para Substituir Report 3D</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="input-group mb-3">
+                    <h6 class="modal-title" style="margin-bottom: 20px"><b>Tem certeza que deseja substituir o report 3D?</b></h6>
+                    <div class="modal-footer" style="width: 100%">
+                        <button onclick="SubstituirReport3DConfirmado()" type="button" class="subscribe btn btn-warning rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Sim
+                        </button>
+                        <button onclick="ExcluirArquivoConfirmado(this)" type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Não
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalArquivosAtividades" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document" style="max-width: 1000px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="TituloModalReportSistema" style="margin-left: 20px">Reports do Sistema</h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+
+                <div class="input-group mb-3">
+                    <div id="ModalReport3DSistema" style="margin-bottom: 10px">
+                        <div class="input-group mb-3" style="padding: 15px; margin-bottom: 0px !important">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1" style="height: 34px"><b>Status do Report 3D</b></span>
+                            </div>
+                            <input readonly type="text" id="StatusReport3D" min="0" class="form-control" aria-describedby="basic-addon1" style="height: 34px; max-width: 200px; text-align: center">
+                            <button type="button" class="subscribe btn btn-secondary shadow-sm" id="BotaoAcessarReport3D"
+                                    style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; height: 34px; padding-top: 0px; padding-bottom: 0px; width: 150px; margin-left: 20px">
+                                Acessar
+                            </button>
+                        </div>
+
+                        <div id="nav-tab-card" class="LarguraHead tab-pane fade show active col-12">
+                            <div style="color: #343a40; max-width: 950px; max-height: 82vh; overflow: visible; font-size: 24px; background-color: #c2c8c6; text-align: center; border-left: 2px solid gray; border-right: 2px solid gray; border-top: 2px solid gray; margin-left: 2px; margin-right: 2px"><b>Arquivos</b></div>
+                        </div>
+                        <div id="nav-tab-card" class="tab-pane fade show active col-12">
+                            <div id="ModalReportsSistemaTabela" style="max-width: 950px; max-height: 82vh; overflow: visible; padding: 2px; margin-bottom: 20px; padding-top: 0px"></div>
+                        </div>
+                        <div id="UploadArquivoReport" style="margin-bottom: 10px; width: 950px">
+                            <div class="input-group mb-3" style="margin-left: 18px; margin-bottom: 0px !important ">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="SelectTipoArquivo">Tipo do Arquivo</label>
+                                </div>
+                                <select class="custom-select" id="SelectTipoArquivo" style="margin-right: 20px">
+                                    <option selected value="0">Arquivo Normal</option>
+                                    <option value="1">Arquivo de Report 3D</option>
+                                </select>
+                            </div>
+                            <div class="input-group mb-3" style="margin-left: 18px">
+
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Upload de Arquivo</span>
+                                </div>
+                                <div class="custom-file" style="margin-right: 20px">
+                                    <input type="file" class="custom-file-input" name="ArquivoUpload"
+                                           id="ArquivoUploadInput" aria-describedby="inputGroupFileAddon01" required>
+                                    <label class="custom-file-label" name="NomeDoArquivolbl" id="id_NomeDoArquivolbl">Selecione um arquivo</label>
+                                    <input hidden type="text" name="NomeDoArquivo" id="id_NomeDoArquivo" lang="pt-BR" required>
+                                </div>
+                                <div class="input-group" style="margin-right: 20px" id="IGDescricao">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Descrição</span>
+                                    </div>
+                                    <textarea class="form-control" aria-label="With textarea" id="DescricaoArquivo"></textarea>
+                                </div>
+                            </div>
+                            <center>
+                                <button type="button" class="subscribe btn btn-secondary shadow-sm" onclick="EnviarArquivoReport()" id="BotaoEnviarReport"
+                                        style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; height: 34px; padding-top: 0px; padding-bottom: 0px; width: 400px">
+                                    Enviar Arquivo
+                                </button>
+                                <div id="ErroArquivo" style="margin-left: 20px; margin-top: 10px"></div>
+                            </center>
+                        </div>
+                        <div id="ProgressEnvioArquivo" style="margin-left: auto; margin-right: auto; padding-top: 0px; padding-bottom: 0px; width: 600px"></div>
+                        <div id="ProgressCelery" style="display: none">
+                            <div class='progress-wrapper'>
+                                <div id='progress-bar' class='progress-bar'
+                                     style="background-color: #68a9ef; width: 0%;">
+                                    &nbsp;
+                                </div>
+                            </div>
+                            <br>
+                            <div id="progress-bar-message"></div>
+                        </div>
+                        <div id="ErrorReportsSistemas"></div>
+                        <div class="modal-footer" style="width: 100%">
+                            <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                    data-dismiss="modal">
+                                Fechar
+                            </button>
+                            <div class="loadergb" id="loaderStatus" style="height: 50px; width:50px; display: none"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalVinculosAtividades" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document" style="max-width: 1000px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="TituloModalVinculoAtividades" style="margin-left: 20px">Reports do Sistema</h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <h6 class="modal-title" style="margin-left: 20px">Para vincular esta atividade à algum sistema, selecione abaixo:</h6>
+                <div id="nav-tab-card" class="tab-pane fade show active col-12" style="margin-bottom: 25px">
+                    <div id="ModalVinculosAtividadesTabela" style="max-width: 950px; max-height: 82vh; overflow: visible; padding: 2px; margin-bottom: 20px; padding-top: 0px"></div>
+                </div>
+                <div class="input-group col-12" id="SelectAdicionarVinculo" style="max-width: 950px; margin-bottom: 15px">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text badge-secondary" style="background-color: #343a40" for="SelectOS">Sistema</label>
+                    </div>
+                    <select class="custom-select" id="SelectSistema">
+                    </select>
+                    <button type="button" id="ButtonAdicionarVinculoOS" class="subscribe btn btn-warning" style="height: 35px; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; border-radius: 0px 25px 25px 0px;"
+                            onclick="AdicionarVinculo()">
+                        Vincular
+                    </button>
+                    <div class="loadergb" id="loaderAdicionarVinculo" style=" border: 4px solid #A1A1A1; border-top: 4px solid #f6801e; width: 34px; height: 34px; display: none"></div>
+                </div>
+                <div class="input-group mb-3">
+                    <div id="ErrorReportsSistemas"></div>
+                    <div class="modal-footer" style="width: 100%">
+                        <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                data-dismiss="modal">
+                            Fechar
+                        </button>
+                        <div class="loadergb" id="loaderStatus" style="height: 50px; width:50px; display: none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalEditarHoras">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Horas</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <h5 class="modal-title" style="margin-bottom: 5px"></h5>
+                <div class="input-group mb-3">
+                    <div id="TabelaHorasLancadas" style="margin-bottom: 50px"></div>
+                    <div class="loadergb mx-auto" id="loaderEditarHoras" style="height: 50px; width:50px; display: none"></div>
+                    <div id="ErrosHorasEditadas"></div>
+                    <div class="col-12 text-center my-3">
+                        <button type="button" class="subscribe btn btn-success shadow-sm  mx-auto" onclick="SalvarEditarHoras()" id="BotaoSalvarHorasEditadas" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; height: 34px; padding-top: 0px; padding-bottom: 0px;">
+                            Salvar Horas
+                        </button>
+                    </div>
+                    <div class="modal-footer" style="width: 100%">
+                        <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                data-dismiss="modal">
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/poppder.js/1.14.7/umd/popper.min.js"></script> -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<link rel="stylesheet" href="{% static 'css/flexibilidade/excel-bootstrap-table-filter-style.css' %}" type="text/css" />
+<script src="{% static 'js/a1flx/excel-bootstrap-table-filter-bundle.js' %}"></script>
+<script src="{% static 'js/flexibilidade/a1flx_p2_outras_atividades.js' %}"></script>
+
+
+{% endblock %}
+
+{% block end %}
+
+
+{% endblock %}

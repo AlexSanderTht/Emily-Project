@@ -1,0 +1,49 @@
+{% load static %}
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">UPLOAD ACESSÓRIO</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+          <div class="row px-0 mx-1 animate__animated animate__fadeIn mt-2 scroll_tipicos_doc" id="drop-area-capa_dwg">
+
+            <div class="col-10 card_dropzone_blue text-center" id="capa_dwg_1">
+                <div class="file-dropzone">
+                    <span class="font-italic text-primary">Arraste e solte um arquivo (*.DWG) por vez</span><br>
+                    <span class="font-italic text-primary">ou clique em import para fazer o upload.</span><br>
+                    <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                        <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_1" onchange="DropRelatPdms('uploaded-file-1', this.id, 'FileAcessorio', false, null)"/>
+                        <i class="fa-solid fa-upload"></i> Import DWG
+                    </label>
+                    <div id="uploaded-file-1" class="uploaded-file mt-3"></div>
+                </div>
+            </div>
+            <div class="dashed-line"></div> <!-- Linha Tracejada -->
+          </div>
+
+          <div class="col-12 mt-3">
+            <label for="X">Nome do acessório:</label>
+            <input type="text" class="form-control" id="nome-acessorio"  value="ACESSORIO_">
+
+            <label for="X">Largura X:</label>
+            <input type="number" class="form-control" id="X" step="0.0001" placeholder="0.0000" max="9999.9999" />
+
+            <label for="Y" class="mt-2">Altura Y:</label>
+            <input type="number" class="form-control" id="Y" step="0.0001" placeholder="0.0000" max="9999.9999" />
+          </div>
+
+          <div class="col-12 mt-2 d-flex justify-content-end my-2">
+              <button type="button" class="btn btn-primary w-100" onclick="EnviarDwgAcessorio()" style="margin-top: 20px;">Enviar</button>
+          </div>
+
+
+
+      </div>
+    </div>
+  </div>
+</div>

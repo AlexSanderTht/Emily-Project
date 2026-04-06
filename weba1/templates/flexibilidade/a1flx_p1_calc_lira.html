@@ -1,0 +1,324 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>A1 Liras - Curvas de Expansão</title>
+{% endblock %}
+{% block help %}
+    <h7>Drop List <strong>"Liberar sistema"</strong>> Droplist: Liberar / revisar sistema Finalizar comentários</h7>
+    <br><br>
+    <h7>Opção "Controladoria" Nesta opção você irá revisar somente  listas da controladoria. </h7>
+    <br><br>
+    <h7>Opção "Outra lista" Nesta opção você irá revisar as demais listas. </h7>
+    <br><br>
+    <h7>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas. </h7>
+    <br><br>
+    <h7>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores. </h7>
+    <br><br>
+    <h7> "Chave 2" Neste campo você irá inserir a coluna  sem repetição de valores(caso a primeira tenha repetição). </h7>
+    <br><br>
+    <h7>Botão "Revisar" Neste botão ele realizará a revisão entre os doc. marcando em amarelo o que mudou, mantendo a extensão .xlsx.</h7>
+    <br><br>
+    <h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+
+<style>
+  .calculado {
+    animation: border-animation 5s;
+  }
+  @keyframes border-animation {
+        from {box-shadow: 0 0 0 .2rem rgba(40,167,69,.25); background-color: 0 0 0 .2rem rgba(40,167,69,.25)}
+        to {box-shadow: 0 0 0 .2rem rgba(40, 167, 70, 0); background-color: 0 0 0 .2rem rgba(40, 167, 70, 0)}
+    }
+  .container {
+    position: relative;
+  }
+  .text-block_h {
+  position: absolute;
+  bottom: 200px;
+  right: 124px;
+  padding-left: 20px;
+  padding-right: 20px; 
+  }
+  .text-block_w {
+  position: absolute;
+  bottom: 317px;
+  right: 278px;
+  padding-left: 20px;
+  padding-right: 20px; 
+  }
+  .text-block_carga {
+  position: absolute;
+  bottom: 60px;
+  right: 497px;
+  padding-left: 10px;
+  padding-right: 10px; 
+  }
+  .text-block_carga2 {
+  position: absolute;
+  bottom: 60px;
+  right: 60px;
+  padding-left: 10px;
+  padding-right: 10px; 
+  }
+
+</style>
+
+
+    <div class="container py-5">
+
+      <!-- For demo purpose -->
+      <div class="row mb-4">
+        <div class="col-lg-8 mx-auto text-center">
+          <h1 class="display-4"><b>A1 Liras - Curvas de Expansão</b></h1>
+        </div>
+      </div>
+      <!-- End -->
+
+      <div class="row">
+        <div class="col-lg-12 mx-auto">
+          <div class="bg-white rounded-lg shadow-sm p-5">
+
+
+
+          <!-- Credit card form content -->
+          <div class="tab-content row">
+
+            <!-- credit card info-->
+            <div id="nav-tab-card" class="tab-pane fade show active col-12">
+
+              <div>
+                <form action="{% url 'download' %}" id="auto-download" method="GET" enctype="multipart/form-data">
+                    {% csrf_token %}
+                </form>
+              </div>
+
+              <form role="form" action="{% url 'a1rev' %}" method="POST" enctype="multipart/form-data" id="form">
+                {% csrf_token %}
+              <div class="row">
+                    <div class="col-4 border border-dark" style="padding-top: 15px;border-bottom-width: 0px;border-bottom-style: solid;margin-bottom: 0px;padding-bottom: 15px;">
+                      <div>
+                        <label><h5><b>Dados de Entrada</b></h5></label>
+                      </div>
+                      <!-- Campo 1-->
+                      <!-- linha 1-->
+                      <div class="row">
+                        <div class="form-group col-12">
+                          <label for="temperatura">Temperatura da tubulação (°C)</label>
+                          <input class="form-control" type="number" step="0.1" id="temp"placeholder="21°C - 300°C" onchange="clear_result()">
+                          <div class="invalid-feedback">
+                            Caracteres invalidos
+                          </div>
+                        </div>
+                        <!-- linha 2-->
+                        <div class="form-group col-12">
+                            <label for="material">Material da tubulação</label>
+                            <select class="form-control bg-gray" id="mat" onchange="clear_result()">
+                                {% for i in materiais %}
+                                    <option>{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- linha 3-->
+                        <div class="form-group col-12"><label for="densidade">Fluido</label>
+                            <select class="form-control bg-gray" id="dens" onchange="clear_result()">
+                                {% for i in fluidos %}
+                                    <option>{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                          <!-- linha 4-->
+                        <div class="form-group col-12">
+                            <label for="diametro">NPS (pol)</label>
+                            <select class="form-control bg-gray" id="diam" onchange="clear_result()">
+                                {% for i in diametros %}
+                                <option>{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- linha 5-->
+                        <div class="form-group col-12">
+                            <label for="sch">Schedule da tubulação</label>
+                            <select class="form-control bg-gray" id="sch" onchange="clear_result()">
+                                {% for i in schs %}
+                                <option>{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- linha 5-->
+                        <div class="form-group col-12">
+                          <label for="comprimento">Comprimento "L" - trecho entre ancoragens (m)</label>
+                          <input class="form-control" type="number" id="comp" placeholder="Comprimento em metros" onchange="clear_result()">
+                          <div class="invalid-feedback">
+                            Caracteres invalidos
+                          </div>
+                        </div>
+                        
+                      </div>
+                    </div>
+                    <!-- fim do campo 1 -->
+                    <!-- Campo 2 -->
+                    <div class="col-8 border border-dark" style="padding-top: 15px;padding-bottom: 15px; left: 5px;">
+                          <div class="row">
+                               <div class="form-group marcador col-12">
+                                  <div class=row>
+                                    <div class="col-sm">
+                                      <label style="margin-left: 0px;margin-top: 0px;"><h5><b>Resultados</b></h5></label>
+                                    </div>                                 
+                                    <!-- Carregar os estaticos com load static puxa a referência da pasta -->
+                                    <div style="margin-right: 15px;">
+                                        <button  type="button" class="btn btn-warning" style="background-color: #ffbe47;" data-toggle="dropdown"  ><b>Informações adicionais</b>
+                                        </button>
+                                        <br>
+                                          <div class="dropdown-menu dropdown-menu-right p-0">
+                                            <div class="p-0 shadow-lg m-0">
+                                              <br>
+                                              <div class="form-group col-12">
+                                                <label for="vao_sups">Vão entre suportes (m)</label>
+                                                <input class="form-control" type="text" id="suportes" placeholder="Valor em metros" readonly>
+                                              </div>
+                                              <div class="form-group col-12">
+                                                <label for="num_ap">Número estimado de apoios no trecho reto</label>
+                                                <input class="form-control" type="text" id="apoio" placeholder="Quantidade de apoios" readonly>
+                                              </div>
+                                              <div class="form-group col-12 m-0">
+                                                <label for="carga_ap">Carga vertical em cada apoio (kgf)</label>
+                                                <input class="form-control" type="text" id="carga_apoio" placeholder="Carga em kgf" readonly>
+                                                <br>
+                                              </div>
+                                              <!-- <div class="form-group col-12 m-0">
+                                                <label for="carga_lateral_anc">Carga lateral na ancoragem (kgf)</label>
+                                                <input class="form-control" type="text" id="carga_ancoragem" placeholder="Carga em kgf" readonly>
+                                                <br>
+                                              </div> -->
+                                            </div>
+                                          </div>
+                                    </div>
+                                      <div class="d-inline position-relative">
+                                        <div align="center" class="container">
+                                          <input class="col-sm-2 form-control text-block_h" type="text" id="h_calculado" name="largura" readonly="" style="padding-left: 40px;" placeholder="[m]">
+                                          <input class="col-sm-2 form-control text-block_w" type="text" id="w_calculado" name="largura" readonly="" style="padding-left: 40px;" placeholder="[m]">
+                                          <input class="col-sm-2 form-control text-block_carga" type="text" id="carga_ancoragem" placeholder="Carga em kgf" readonly>
+                                          <input class="col-sm-2 form-control text-block_carga2" type="text" id="carga_ancoragem2" placeholder="Carga em kgf" readonly>
+                                          <img style= "width: 700px;margin-top: 20px;margin-left: 10px;"src="{% static 'img\a1_flex_images\a1_lira_img.png' %}" alt="Lira" >
+                                        </div>
+                                      </div>
+                                  </div>
+                                    <!--fim do bloco de imagem-->
+                                </div>
+                               </div>
+                               <div class="row">
+                                <div class="col-sm">
+                                  <div style="margin-top: 20px;margin-left: 25px;">
+                                  <label for="nota"><b>*Liras 3D também funcionam utilizando<br> o mesmo dimensional lateral</b></label>
+                                  </div>
+                                </div>
+                                <div class="col-sm">
+                                  <div align="right">
+                                    <button onclick="env_lira_ajax()" type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal" style="margin-top: 20px"><b>Calcular Lira</b></button>
+                                  </div>
+                                </div>
+                          </div>
+                    </div>
+                  </div>
+              </div>
+              </form>
+            </div>
+            <!-- End -->
+          </div>
+          <!-- End -->
+          </div>
+        <br>
+      </div>
+    </div>
+  </div>
+
+    <script>
+        function verify_value_num(item_id, lim) {
+          let item_val = parseFloat(document.getElementById(item_id).value);
+          let inf_lim = lim[0];
+          let sup_lim = lim[1];
+
+          if(!(isNaN(item_val))){  // Caso não seja nulo
+            if(typeof(item_val) == 'number'){  //Se o tipo for número
+              if (item_val >= inf_lim && item_val <= sup_lim) {//Só é válido se estiver nesse range
+                  document.getElementById(item_id).classList.remove('is-invalid');
+                  return true
+              }
+            }  
+          }
+          return false
+        } 
+
+        function env_lira_ajax() {
+          let temp = parseFloat(document.getElementById('temp').value);
+          let mat = document.getElementById('mat').value;
+          let dens = document.getElementById('dens').value;
+          let diam = document.getElementById('diam').value;
+          let sch = document.getElementById('sch').value;
+          let comp = parseFloat(document.getElementById('comp').value);
+          let list_ids = ['temp', 'comp'];
+          let list_range = [[21,300], [0,1000000]];
+          var list_err = [];
+          $('#h_calculado').removeClass('calculado');
+          $('#w_calculado').removeClass('calculado');
+          $('#carga_ancoragem').removeClass('calculado');
+          $('#carga_ancoragem2').removeClass('calculado');
+
+        
+          for (idd in list_ids) { if (!(verify_value_num(list_ids[idd], list_range[idd]))) { list_err.push(list_ids[idd]) } }
+          
+          if(list_err.length == 0){  // ctrl == 1, caso esteja correto 
+              $.ajax({
+                  type: "GET",
+                  url: "report",
+                  dataType: 'json',
+                  data: {'diam': diam,'temp': temp, 'mat': mat, 'comp':comp,'sch': sch, 'dens': dens },
+              }).done(function (data) {
+                  if (Object.keys(data).includes('resposta')){
+                      alert(data['resposta'])
+                  } else {
+                      document.getElementById('w_calculado').value = data['comp_lira'];
+                      document.getElementById('h_calculado').value = data['comp_lira'];
+                      //document.getElementById('large').value = document.getElementById('comp').value +' m';
+                      document.getElementById('suportes').value = data['vao_sup'];
+                      document.getElementById('apoio').value = data['n_apoios'];
+                      document.getElementById('carga_apoio').value = data['peso_ap'];
+                      document.getElementById('carga_ancoragem').value = data['carga_lateral_anc'];
+                      document.getElementById('carga_ancoragem2').value = data['carga_lateral_anc'];
+                      //alert("Curva de expansão calculada");
+                      $('#h_calculado').addClass('calculado');
+                      $('#w_calculado').addClass('calculado');
+                      $('#carga_ancoragem').addClass('calculado');
+                      $('#carga_ancoragem2').addClass('calculado');
+                  }
+
+              })
+          } else {
+            for(err in list_err){ document.getElementById(list_err[err]).classList.add('is-invalid') }
+          } 
+        }
+        
+        window.onload = function(){
+          $("#w_calculado").val("")
+          $("#h_calculado").val("")
+          $("#suportes").val("")
+          $("#apoio").val("")
+          $("#carga_apoio").val("")
+          $("#carga_ancoragem").val("")
+          $("#carga_ancoragem2").val("")
+        }
+
+        function clear_result() {
+          $("#w_calculado").val("")
+          $("#h_calculado").val("")
+          $("#suportes").val("")
+          $("#apoio").val("")
+          $("#carga_apoio").val("")
+          $("#carga_ancoragem").val("")
+          $("#carga_ancoragem2").val("")
+        }
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends 'geral/base.html' %}
+{% block head %}
+<title>A1Tip</title>
+{% endblock %}
+{% block help %}
+<h7>Botão "Escolher" Neste botão você irá selecionar doc. com extensão .dwg. </h7>
+<br><br>
+<h7>Botão "Escolher 2 " Neste botão você irá selecionar doc. com extensão .xlsx. </h7>
+<br><br>
+<h7>Opção "Revisão 0 " Nesta opção você irá gerar somente  típico  da Revisão 0. </h7>
+<br><br>
+<h7>Opção "Revisão 1 " Nesta opção você irá gerar somente  típico  da Revisão 1. </h7>
+<br><br>
+<h7>Opção "Revisão 2 " Nesta opção você irá gerar somente  típico  da Revisão 2. </h7>
+<br><br>
+<h7>Opção "Revisão 3 " Nesta opção você irá gerar somente  típico  da Revisão 3. </h7>
+<br><br>
+<h7>Opção "Revisão 4 " Nesta opção você irá gerar somente  típico  da Revisão 4. </h7>
+<br><br>
+<h7>Opção "SAP " Nesta opção você irá gerar doc. com  código do cliente. </h7>
+<br><br>
+<h7>Opção "Referência e fabricante " Nesta opção você irá gerar doc. com  referência e fabricante. </h7>
+<br><br>
+<h7>Botão "Gerar típico" Neste botão ele irá gerar a lista de típico  transformando em extensão .xlsx.</h7>
+<br><br>
+<h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+<div class="container py-5">
+    <!-- For demo purpose -->
+    <div class="row mb-4">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4"><b>A1 Tip</b></h1>
+
+      </div>
+    </div>
+    <!-- End -->
+
+
+    <div class="row">
+      <div class="col-lg-7 mx-auto">
+        <div class="bg-white rounded-lg shadow-sm p-5">
+
+
+          <!-- Credit card form content -->
+          <div class="tab-content">
+
+            <!-- credit card info-->
+            <div id="nav-tab-card" class="tab-pane fade show active">
+
+              <div>
+                <form action="{% url 'download' %}" id="auto-download" method="GET" enctype="multipart/form-data">
+                    {% csrf_token %}
+                </form>
+              </div>
+
+              <form role="form" id="form" action="{% url 'a1tip' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+
+                 <button type="button"  id="bot-folder"  class="btn butof" onclick="clicked('folder')"> Escolher</button>
+                 <input type="file" id="folder" hidden="hidden"  onchange="selectedFolder(event, 'text-folder')" name="path" webkitdirectory mozdirectory msdirectory odirectory directory multiple />
+                 <span id = "text-folder"  class= "label-style">Pasta com os típicos (dwg):</span>
+                 <br>
+                 <br>
+
+                 <button type="button"  id="bot-file" class=" btn butof" onclick="clicked('file')"> Escolher</button>
+                 <input type="file" id="file" hidden="hidden"  onchange="selectedFile(event, 'file')" name="file"/>
+                 <span id = "text-file"  class= "label-style"> Template/revisão (xlsx):</span>
+
+                </div>
+
+                <div class="form-group">
+                    <input type="radio" name="options" value="0"><span class = "label-style"> Revisão 0 </span><br>
+                    <input type="radio" name="options" value="1"><span class = "label-style">  Revisão 1 </span><br>
+                    <input type="radio" name="options" value="2"><span class = "label-style"> Revisão 2</span><br>
+                    <input type="radio" name="options" value="3"><span class = "label-style"> Revisão 3 </span><br>
+                    <input type="radio" name="options" value="4"><span class = "label-style"> Revisão 4</span><br><br>
+                    <input type="checkbox" name="ext1" value="True"><span class = "label-style"> SAP</span><br>
+                    <input type="checkbox" name="ext2" value="True"><span class = "label-style"> Referência e fabricante </span><br>
+                </div>
+                <div class="row">
+                </div>
+              </form>
+              <div style="margin-left: 0px; margin-right: 0px" ><!-- barra de progresso -->
+                {% include 'geral/bar.html' %}
+                {% block bar %}
+                {% endblock %}
+              </div><!-- barra de progresso -->
+
+            </div>
+            <!-- End -->
+            <!-- End -->
+          </div>
+          <!-- End -->
+
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}

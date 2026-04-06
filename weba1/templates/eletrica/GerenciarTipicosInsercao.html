@@ -1,0 +1,743 @@
+{% load static %}
+<div class="container-fluid " id="content_insert_blocks">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 row ">
+        <div class="col-xs-6 col-sm-6  col-md-6 col-lg-6 border-right">
+            <div class="row ">
+                <div class="col-xs-6 col-sm-6  col-md-6 col-lg-6">
+                    <div class="text-center mt-2">
+<!--                        <h5>Bloco de Cabeçalho</h5>-->
+                        <span class="px-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2 fw-bold">Bloco de Cabeçalho:</span>
+                    </div>
+
+                    {% if Blocos.CABEÇALHO %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-2  " >
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 mx-auto mb-3 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown hover_dwgs_gerenciar_tipicos" onclick="ShowDwgInScreen('{{Blocos.CABEÇALHO.id}}')">
+                                <div class="input-group-prepend my-auto px-1">
+                                    <img class="imgdwg" src="{% static 'img/DWG.png' %}" alt="Image XLSX" >
+                                </div>
+                                <span type="text"  class="col border-0 input-group-text bg-white text-truncate">{{Blocos.CABEÇALHO.name_file}}</span>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-danger rounded-pill px-2 my-1 mb-2 border-0" type="button">
+                                        <i class="fas fa-times-circle fa-lg" onclick="DeleteBlock('{{Blocos.CABEÇALHO.id}}')"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 p-4 rounded shadow mx-auto mb-3" >
+
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4  col-md-4 col-lg-4">
+                                        <label>Largura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_cabecalho_larg" value="{{Blocos.CABEÇALHO.larg}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Altura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8  col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_cabecalho_alt" value="{{Blocos.CABEÇALHO.alt}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4  col-md-4 col-lg-4"></div>
+                                    <div class="col-xs-8 col-sm-8  col-md-8 col-lg-8 text-right">
+                                        <button type="button" class="btn btn-primary btn-sm w-100" onclick="SendTamanhosBlocksInsert('{{Blocos.CABEÇALHO.id}}', 'cabecalho')">Salvar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 h-75" id="cardzone_block_header">
+                            <div class="text-center dwgs_insert">
+                                <!------------------ Inicio Message ------------------>
+                                <div class="d-flex flex-column">
+                                    <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>Cabeçalho</b></span>
+                                    <span class="font-italic text-primary">click em import para fazer o upload.</span>
+                                </div>
+                                <!------------------ Fim Message ------------------>
+                                <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                    <input accept=".dwg" class="hidden" type="file" id="arquivo_dwg_header" onchange="DropArquivoGerenciarTipicos(this.id, 'cardzone_block_header', null, 'block_header')"/>
+                                    Upload
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-xs-6 col-sm-6  col-md-6 col-lg-6">
+                    <div class="text-center mt-2">
+<!--                        <h5>Bloco de Celula</h5>-->
+                        <span class="px-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2 fw-bold">Bloco de Celula:</span>
+                    </div>
+                    {% if Blocos.CELULA %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-2">
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10  mx-auto mb-3 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown hover_dwgs_gerenciar_tipicos" onclick="ShowDwgInScreen('{{Blocos.CELULA.id}}')">
+                                <div class="input-group-prepend my-auto px-1">
+                                    <img class="imgdwg" src="{% static 'img/DWG.png' %}" alt="Image XLSX" >
+                                </div>
+                                <span type="text"  class="col border-0 input-group-text bg-white text-truncate">{{Blocos.CELULA.name_file}}</span>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button">
+                                        <i class="fas fa-times-circle fa-lg" onclick="DeleteBlock('{{Blocos.CELULA.id}}')"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 p-4 rounded shadow mx-auto mb-3">
+
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4  col-md-4 col-lg-4">
+                                        <label>Largura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8  col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_celula_larg" value="{{Blocos.CELULA.larg}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4  col-md-4 col-lg-4">
+                                        <label>Altura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8  col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_celula_alt" value="{{Blocos.CELULA.alt}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4  col-md-4 col-lg-4"></div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 text-right">
+                                        <button type="button" class="btn btn-primary btn-sm w-100" onclick="SendTamanhosBlocksInsert('{{Blocos.CELULA.id}}', 'celula')">Salvar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 h-75" id="cardzone_block_celula">
+                            <div class="text-center dwgs_insert">
+                                <!------------------ Inicio Message ------------------>
+                                <div class="d-flex flex-column">
+                                    <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>Celula</b></span>
+                                    <span class="font-italic text-primary">click em import para fazer o upload.</span>
+                                <div class="d-flex flex-column">
+                                <!------------------ Fim Message ------------------>
+                                <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                    <input accept=".dwg" class="hidden" type="file" id="arquivo_dwg_celula" onchange="DropArquivoGerenciarTipicos(this.id, 'cardzone_block_celula', null, 'block_celula')"/>
+                                    Upload
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-2 ">
+                <div class="col-xs-6 col-sm-6  col-md-6 col-lg-6">
+                    <div class="text-center mt-2">
+<!--                        <h5>Bloco Tag</h5>-->
+                        <span class="px-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2 fw-bold">Bloco Tag:</span>
+                    </div>
+
+                    {% if Blocos.TAG %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-2 ">
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 mx-auto mb-3 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown hover_dwgs_gerenciar_tipicos" onclick="ShowDwgInScreen({{Blocos.TAG.id}})">
+                                <div class="input-group-prepend my-auto px-1">
+                                    <img class="imgdwg" src="{% static 'img/DWG.png' %}" alt="Image XLSX" >
+                                </div>
+                                <span type="text"  class="col border-0 input-group-text bg-white text-truncate">{{Blocos.TAG.name_file}}</span>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button">
+                                        <i class="fas fa-times-circle fa-lg" onclick="DeleteBlock('{{Blocos.TAG.id}}')"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 p-4 rounded shadow mx-auto mb-3">
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Largura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8  col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_tag_larg" value="{{Blocos.TAG.larg}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4  col-md-4 col-lg-4">
+                                        <label>Altura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_tag_alt" value="{{Blocos.TAG.alt}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4"></div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 text-right">
+                                        <button type="button" class="btn btn-primary btn-sm w-100" onclick="SendTamanhosBlocksInsert('{{Blocos.TAG.id}}', 'tag')">Salvar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 h-75" id="cardzone_block_tag">
+                            <div class="text-center dwgs_insert">
+                                <!------------------ Inicio Message ------------------>
+                                <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>TAG</b></span><br>
+                                <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                                <!------------------ Fim Message ------------------>
+                                <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                    <input accept=".dwg" class="hidden" type="file" id="arquivo_dwg_tag" onchange="DropArquivoGerenciarTipicos(this.id, 'cardzone_block_tag', null, 'block_tag')"/>
+                                    Upload
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-xs-6 col-sm-6  col-md-6 col-lg-6">
+                    <div class="text-center mt-2">
+<!--                        <h5>Bloco Linha</h5>-->
+                        <span class="px-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2 fw-bold">Bloco Linha:</span>
+                    </div>
+
+                    {% if Blocos.LINHA %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-2">
+                            <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 mx-auto mb-3 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown hover_dwgs_gerenciar_tipicos" onclick="ShowDwgInScreen({{Blocos.LINHA.id}})">
+                                <div class="input-group-prepend my-auto px-1">
+                                    <img class="imgdwg" src="{% static 'img/DWG.png' %}" alt="Image XLSX" >
+                                </div>
+                                <span type="text"  class="col border-0 input-group-text bg-white text-truncate">{{Blocos.LINHA.name_file}}</span>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button">
+                                        <i class="fas fa-times-circle fa-lg" onclick="DeleteBlock('{{Blocos.LINHA.id}}')"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 p-4 rounded shadow mx-auto mb-3">
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Largura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_linha_larg" value="{{Blocos.LINHA.larg}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Altura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_linha_alt" value="{{Blocos.LINHA.alt}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4"></div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 text-right">
+                                        <button type="button" class="btn btn-primary btn-sm w-100" onclick="SendTamanhosBlocksInsert('{{Blocos.LINHA.id}}', 'linha')">Salvar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 h-75" id="cardzone_block_linha">
+                            <div class="text-center dwgs_insert">
+                                <!------------------ Inicio Message ------------------>
+                                <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>TAG</b></span><br>
+                                <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                                <!------------------ Fim Message ------------------>
+                                <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                    <input accept=".dwg" class="hidden" type="file" id="arquivo_dwg_linha" onchange="DropArquivoGerenciarTipicos(this.id, 'cardzone_block_linha', null, 'block_linha')"/>
+                                    Upload
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-2 ">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <div class="text-center mt-2">
+<!--                        <h5>Bloco de Corpo</h5>-->
+                        <span class="px-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2 fw-bold">Bloco de Corpo:</span>
+                    </div>
+
+                    {% if Blocos.CORPO %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-2">
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 mx-auto mb-3 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown hover_dwgs_gerenciar_tipicos" onclick="ShowDwgInScreen({{Blocos.CORPO.id}})">
+                                <div class="input-group-prepend my-auto px-1">
+                                    <img class="imgdwg" src="{% static 'img/DWG.png' %}" alt="Image XLSX">
+                                </div>
+                                <span type="text"  class="col border-0 input-group-text bg-white text-truncate">{{Blocos.CORPO.name_file}}</span>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button">
+                                        <i class="fas fa-times-circle fa-lg" onclick="DeleteBlock('{{Blocos.CORPO.id}}')"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 p-4 rounded shadow mx-auto mb-3">
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Largura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_corpo_larg" value="{{Blocos.CORPO.larg}}" >
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Altura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_corpo_alt" value="{{Blocos.CORPO.alt}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4"></div>
+                                    <div class="col-8 text-right">
+                                        <button type="button" class="btn btn-primary btn-sm w-100" onclick="SendTamanhosBlocksInsert('{{Blocos.CORPO.id}}', 'corpo')">Salvar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 h-75" id="cardzone_block_corpo">
+                            <div class="text-center dwgs_insert">
+                                <!------------------ Inicio Message ------------------>
+                                <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>CORPO</b></span><br>
+                                <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                                <!------------------ Fim Message ------------------>
+                                <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                    <input accept=".dwg" class="hidden" type="file" id="arquivo_dwg_corpo" onchange="DropArquivoGerenciarTipicos(this.id, 'cardzone_block_corpo', null, 'block_corpo')"/>
+                                    Upload
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-xs-6 col-sm-6  col-md-6 col-lg-6">
+                    <div class="text-center mt-2">
+                        <span class="px-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2 fw-bold">Bloco de Indicador:</span>
+                    </div>
+
+                    {% if Blocos.INDICADOR %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-2">
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 mx-auto mb-3 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown hover_dwgs_gerenciar_tipicos" onclick="ShowDwgInScreen({{Blocos.INDICADOR.id}})">
+                                <div class="input-group-prepend my-auto px-1">
+                                    <img class="imgdwg" src="{% static 'img/DWG.png' %}" alt="Image XLSX">
+                                </div>
+                                <span type="text"  class="col border-0 input-group-text bg-white text-truncate">{{Blocos.INDICADOR.name_file}}</span>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button">
+                                        <i class="fas fa-times-circle fa-lg" onclick="DeleteBlock('{{Blocos.INDICADOR.id}}')"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 p-4 rounded shadow mx-auto mb-3">
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4  col-md-4 col-lg-4">
+                                        <label>Largura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_indicador_larg" value="{{Blocos.INDICADOR.larg}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Altura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8  col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_indicador_alt" value="{{Blocos.INDICADOR.alt}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4  col-md-4 col-lg-4"></div>
+                                    <div class="col-xs-8 col-sm-8  col-md-8 col-lg-8 text-right">
+                                        <button type="button" class="btn btn-primary btn-sm w-100" onclick="SendTamanhosBlocksInsert('{{Blocos.INDICADOR.id}}', 'indicador')">Salvar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 h-75" id="cardzone_block_indicador">
+                            <div class="text-center dwgs_insert">
+                                <!------------------ Inicio Message ------------------>
+                                <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>INDICADOR</b></span><br>
+                                <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                                <!------------------ Fim Message ------------------>
+                                <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                    <input accept=".dwg" class="hidden" type="file" id="arquivo_dwg_indicador" onchange="DropArquivoGerenciarTipicos(this.id, 'cardzone_block_indicador', null, 'block_indicador')"/>
+                                    Upload
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-2 ">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <div class="text-center mt-2">
+<!--                        <h5>Cabeçalho da Tabela Chumbador</h5>-->
+                        <span class="px-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2 fw-bold">Cabeçalho da Tabela Chumbador:</span>
+                    </div>
+
+                    {% if Blocos.CHUMB_CABECALHO %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-2">
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 mx-auto mb-3 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown hover_dwgs_gerenciar_tipicos" onclick="ShowDwgInScreen({{Blocos.CHUMB_CABECALHO.id}})">
+                                <div class="input-group-prepend my-auto px-1">
+                                    <img class="imgdwg" src="{% static 'img/DWG.png' %}" alt="Image XLSX">
+                                </div>
+                                <span type="text"  class="col border-0 input-group-text bg-white text-truncate">{{Blocos.CHUMB_CABECALHO.name_file}}</span>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button">
+                                        <i class="fas fa-times-circle fa-lg" onclick="DeleteBlock('{{Blocos.CHUMB_CABECALHO.id}}')"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 p-4 rounded shadow mx-auto mb-3">
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Largura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_tabela_chumb_larg" value="{{Blocos.CHUMB_CABECALHO.larg}}" >
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Altura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_tabela_chumb_alt" value="{{Blocos.CHUMB_CABECALHO.alt}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4"></div>
+                                    <div class="col-8 text-right">
+                                        <button type="button" class="btn btn-primary btn-sm w-100" onclick="SendTamanhosBlocksInsert('{{Blocos.CHUMB_CABECALHO.id}}', 'tabela_chumb')">Salvar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 h-75" id="cardzone_block_chumbador">
+                            <div class="text-center dwgs_insert">
+                                <!------------------ Inicio Message ------------------>
+                                <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>CABECALHO do Chumbador</b></span><br>
+                                <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                                <!------------------ Fim Message ------------------>
+                                <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                    <input accept=".dwg" class="hidden" type="file" id="arquivo_dwg_chumbador" onchange="DropArquivoGerenciarTipicos(this.id, 'cardzone_block_chumbador', null, 'block_chumbador')"/>
+                                    Upload
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-xs-6 col-sm-6  col-md-6 col-lg-6">
+                    <div class="text-center mt-2">
+<!--                        <h5>Bloco de Linha do chumbador</h5>-->
+                        <span class="px-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2 fw-bold">Bloco de Linha do chumbador:</span>
+                    </div>
+
+                    {% if Blocos.CHUMB_LINHA %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-2">
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 mx-auto mb-3 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown hover_dwgs_gerenciar_tipicos" onclick="ShowDwgInScreen({{Blocos.CHUMB_LINHA.id}})">
+                                <div class="input-group-prepend my-auto px-1">
+                                    <img class="imgdwg" src="{% static 'img/DWG.png' %}" alt="Image XLSX">
+                                </div>
+                                <span type="text"  class="col border-0 input-group-text bg-white text-truncate">{{Blocos.CHUMB_LINHA.name_file}}</span>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button">
+                                        <i class="fas fa-times-circle fa-lg" onclick="DeleteBlock('{{Blocos.CHUMB_LINHA.id}}')"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 p-4 rounded shadow mx-auto mb-3">
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4  col-md-4 col-lg-4">
+                                        <label>Largura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_chumb_linha_larg" value="{{Blocos.CHUMB_LINHA.larg}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Altura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8  col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_chumb_linha_alt" value="{{Blocos.CHUMB_LINHA.alt}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4  col-md-4 col-lg-4"></div>
+                                    <div class="col-xs-8 col-sm-8  col-md-8 col-lg-8 text-right">
+                                        <button type="button" class="btn btn-primary btn-sm w-100" onclick="SendTamanhosBlocksInsert('{{Blocos.CHUMB_LINHA.id}}', 'chumb_linha')">Salvar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 h-75" id="cardzone_block_chumb_linha">
+                            <div class="text-center dwgs_insert">
+                                <!------------------ Inicio Message ------------------>
+                                <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>Linha do chumbador</b></span><br>
+                                <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                                <!------------------ Fim Message ------------------>
+                                <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                    <input accept=".dwg" class="hidden" type="file" id="arquivo_dwg_chumb_linha" onchange="DropArquivoGerenciarTipicos(this.id, 'cardzone_block_chumb_linha', null, 'block_chumb_linha')"/>
+                                    Upload
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-2 ">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <div class="text-center mt-2">
+<!--                        <h5>Bloco da linha do índice</h5>-->
+                        <span class="px-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2 fw-bold">Bloco da linha do índice:</span>
+                    </div>
+
+                    {% if Blocos.INDICE_LINHA %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-2">
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 mx-auto mb-3 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown hover_dwgs_gerenciar_tipicos" onclick="ShowDwgInScreen({{Blocos.INDICE_LINHA.id}})">
+                                <div class="input-group-prepend my-auto px-1">
+                                    <img class="imgdwg" src="{% static 'img/DWG.png' %}" alt="Image XLSX">
+                                </div>
+                                <span type="text"  class="col border-0 input-group-text bg-white text-truncate">{{Blocos.INDICE_LINHA.name_file}}</span>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button">
+                                        <i class="fas fa-times-circle fa-lg" onclick="DeleteBlock('{{Blocos.INDICE_LINHA.id}}')"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 p-4 rounded shadow mx-auto mb-3">
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Largura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_indice_linha_larg" value="{{Blocos.INDICE_LINHA.larg}}" >
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Altura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_indice_linha_alt" value="{{Blocos.INDICE_LINHA.alt}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4"></div>
+                                    <div class="col-8 text-right">
+                                        <button type="button" class="btn btn-primary btn-sm w-100" onclick="SendTamanhosBlocksInsert('{{Blocos.INDICE_LINHA.id}}', 'indice_linha')">Salvar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 h-75" id="cardzone_block_indice_linha">
+                            <div class="text-center dwgs_insert">
+                                <!------------------ Inicio Message ------------------>
+                                <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>indice linha de insercao</b></span><br>
+                                <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                                <!------------------ Fim Message ------------------>
+                                <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                    <input accept=".dwg" class="hidden" type="file" id="arquivo_dwg_indice_linha" onchange="DropArquivoGerenciarTipicos(this.id, 'cardzone_block_indice_linha', null, 'block_indice_linha')"/>
+                                    Upload
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-xs-6 col-sm-6  col-md-6 col-lg-6" hidden>
+                    <div class="text-center mt-2">
+                        <h5>Bloco de Indicador</h5>
+                    </div>
+
+                    {% if Blocos.AUX %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-2">
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 mx-auto mb-3 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown hover_dwgs_gerenciar_tipicos" onclick="ShowDwgInScreen({{Blocos.AUX.id}})">
+                                <div class="input-group-prepend my-auto px-1">
+                                    <img class="imgdwg" src="{% static 'img/DWG.png' %}" alt="Image XLSX">
+                                </div>
+                                <span type="text"  class="col border-0 input-group-text bg-white text-truncate">{{Blocos.AUX.name_file}}</span>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button">
+                                        <i class="fas fa-times-circle fa-lg" onclick="DeleteBlock('{{Blocos.AUX.id}}')"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-10 col-sm-10  col-md-10 col-lg-10 p-4 rounded shadow mx-auto mb-3">
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4  col-md-4 col-lg-4">
+                                        <label>Largura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_aux_larg" value="{{Blocos.AUX.larg}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                        <label>Altura:</label>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8  col-md-8 col-lg-8">
+                                        <input class="form-control" type="text" id="gt_insert_aux_alt" value="{{Blocos.AUX.alt}}">
+                                    </div>
+                                </div>
+
+                                <div class="row col-xs-12 col-sm-12  col-md-12 col-lg-12 mt-1">
+                                    <div class="col-xs-4 col-sm-4  col-md-4 col-lg-4"></div>
+                                    <div class="col-xs-8 col-sm-8  col-md-8 col-lg-8 text-right">
+                                        <button type="button" class="btn btn-primary btn-sm w-100" onclick="SendTamanhosBlocksInsert('{{Blocos.AUX.id}}', 'aux')">Salvar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 h-75" id="cardzone_block_aux">
+                            <div class="text-center dwgs_insert">
+                                <!------------------ Inicio Message ------------------>
+                                <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>INDICADOR</b></span><br>
+                                <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                                <!------------------ Fim Message ------------------>
+                                <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                    <input accept=".dwg" class="hidden" type="file" id="arquivo_dwg_aux" onchange="DropArquivoGerenciarTipicos(this.id, 'cardzone_block_aux', null, 'block_aux')"/>
+                                    Upload
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <div class="col-6">
+            <div class="col-12 text-center mt-2">
+<!--                <h5>Visualização do Bloco</h5>-->
+                <h4 class="px-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">Visualização do Bloco <i class="ms-2 fa-solid fa-eye"></i></h4>
+            </div>
+            <div class="container-fluid w-100 h-75 p-0">
+                <img src="" id="img_dwg" class="shadow" style="border-radius: 10px;">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var FilesInsert = new FormData()
+
+    function DropArquivoGerenciarTipicos(id_input, id_drop, arquivo, key_form_data){
+        let drop_container = document.getElementById(id_drop);
+        let file = document.getElementById(id_input);
+        let form;
+        let name_file;
+        let name_title;
+        let drop = '';
+
+        // Caso não seja dropado o arquivo é recebido via id
+        if (arquivo !== null) {
+            form = arquivo.files[0];
+        } else {
+            form = file.files[0];
+        }
+        console.log(key_form_data)
+        ClearDropzonesInsert(id_drop)
+        FilesInsert.append(key_form_data, form)
+        name_file = form.name
+        name_title = name_file
+        let extension = name_file.split('.')[1]
+        if(extension === 'dwg'){
+            drop = `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown" title="${name_title}">
+                        <div class="input-group-prepend my-auto px-1">
+                            <img class="imgdwg" src="{% static 'img/DWG.png' %}" alt="Image XLSX">
+                        </div>
+                        <span type="text" title="${name_title}" class="col border-0 input-group-text bg-white text-truncate">${name_file}</span>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button">
+                                <i class="fas fa-times-circle fa-lg" onclick="DeleteFileDwg(this, '${id_input}')"></i>
+                            </button>
+                        </div>
+                    </div>`
+            drop_container.innerHTML += drop;
+            SendFileBlock(FilesInsert, key_form_data)
+        }
+        else{
+            return swal({
+                        title: "Atenção!",
+                        text: 'Só é aceito arquivos DWG!!',
+                        icon: "warning",
+                        button: "Fechar",
+                    })
+        }
+
+    }
+
+    jQuery(document).ready(function($) {
+        let parametros = ParametrosEventDropzones()
+        for (let i = 0; i <parametros.length; i++){
+            $('#'+parametros[i].key_id_dropzone).on('dragover', function(event_2) {
+              event_2.preventDefault();
+              event_2.stopPropagation();
+              $(this).addClass('upload-hover');
+            })
+
+
+            $('#'+parametros[i].key_id_dropzone).on('dragleave', function(event) {
+              event.preventDefault();
+              event.stopPropagation();
+              $(this).removeClass('upload-hover');
+            })
+
+            $('#'+parametros[i].key_id_dropzone).on('drop', function(event) {
+              event.preventDefault();
+              event.stopPropagation();
+              $(this).removeClass('upload-hover');
+              let file_dwg = event.originalEvent.dataTransfer;
+              // A função abaixo altera o conteudo do campo dropdown
+              DropArquivoGerenciarTipicos(parametros[i].key_id_file, parametros[i].key_id_dropzone, file_dwg, parametros[i].key_formdata)
+            })
+        }
+    })
+</script>

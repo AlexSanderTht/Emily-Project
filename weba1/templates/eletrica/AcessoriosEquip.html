@@ -1,0 +1,42 @@
+{% load static %}
+{% block acess_equip %}
+
+<div class="modal fade" id="ModalAcessEquip" tabindex="-1" role="dialog" aria-labelledby="TituloModalLongoExemplo" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="TituloModalLongoExemplo">Acessórios do Equipamento</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+            <div class="col-lg-6">
+                <label for="AllAcessInEquip">Todos Acessórios:</label>
+                <select class="form-control" id="AllAcessInEquip" multiple>
+                </select>
+            </div>
+
+            <div class="col-lg-6">
+                <label for="AcessInEquip">Acessórios do equipamento:</label>
+                <select class="form-control" id="AcessInEquip" multiple ondragover="changecolor_gerents(event, 'gray', this.id)" ondrop="DropAdcAcess(event);" ondragleave="changecolor_gerents(event, 'white', this.id)">
+                </select>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-lg-12 text-right">
+              <button type="button" class="btn btn-secondary" id="BtnTrashAcessEquip" ondragover="changecolor_gerents(event, 'white', this.id)" ondrop="DropAcessForTrash(event)" ondragleave="changecolor_gerents(event, 'gray', this.id)">🗑️</button>
+            </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

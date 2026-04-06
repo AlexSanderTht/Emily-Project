@@ -1,0 +1,74 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>A1HUB PowerBI</title>
+{% endblock %}
+{% block help %}
+<h7> É necessário ter o powerbi pro para acessar a visualização do relatório. </h7>
+{% endblock %}
+{% block main %}
+<!-- For demo purpose -->
+<div class="row mb-4">
+  <div class="col-lg-8 mx-auto text-center">
+    <h1 class="display-4"><b>A1HUB PowerBI</b></h1>
+
+  </div>
+</div>
+<!-- End -->
+
+<div class="row" >
+  <div class="col-lg-10 mx-auto" >
+    <div class="bg-white rounded-lg shadow-sm" style="height:50vh">
+      <!-- Credit card form content -->
+      <div class="tab-content">
+
+        <!-- credit card info-->
+        <div id="nav-tab-card" class="tab-pane fade show active">
+            <iframe width="100%" height="100%" src="https://app.powerbi.com/reportEmbed?reportId=d724d14c-4e73-4875-98ef-9c97baa1b087&autoAuth=true&ctid=b6c58a64-12ff-432d-aead-a065accfee5a&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLWJyYXppbC1zb3V0aC1yZWRpcmVjdC5hbmFseXNpcy53aW5kb3dzLm5ldC8ifQ%3D%3D%22"
+                    frameborder="0" allowFullScreen="true"></iframe>
+        </div>
+        <!-- End -->
+        <!-- End -->
+      </div>
+      <!-- End -->
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block end %}
+<script src="assets/demo/chart-area-demo.js"></script>
+<script src="assets/demo/chart-bar-demo.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+
+    function clicked(name){
+    $(`#${name}`).click();
+    }
+
+    function selectedFile(e, label) {
+        var theFile = e.target.files;
+        console.log(theFile[0].name);
+        if (1) {
+            $(`#text-` + label).text(label + ": " + theFile[0].name);
+        } else {
+            $(`#text-` + label).innerHTML = "Selecione o arquivo da revisão " + label + ":";
+        }
+    }
+
+    {% if task_id %}
+        console.log('task')
+        var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
+        function customResult(resultElement, result) {
+        document.getElementById('auto-download').submit();
+        $( resultElement ).append(
+        $('<p>').text('Sum of all seconds is ' + result)
+        );
+        }
+
+        CeleryProgressBar.initProgressBar(progressUrl, {
+            onResult: customResult,
+        })
+    {% endif %}
+</script>
+{% endblock %}

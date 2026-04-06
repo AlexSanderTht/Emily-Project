@@ -1,0 +1,80 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Calculos de Vasos Sujeito a Pressão Externa - Proposta 01</title>
+{% endblock %}
+{% block help %}
+    <h7><strong>Validação dos resultados: </strong>Esta página contém uma tabela de validação dos resultados, comparando
+      os resultados obtidos através do programa do A1 Pro com um relatório obtido através do PV Elite, para
+      cálculos de pressão externa.</h7>
+    <br><br>
+    <h7><strong>N.C</strong> = Não Converge.</h7>
+    <br>
+    <h7>Alguns resultados não convergem, pois extrapolam o alcance das tabelas.</h7>
+    <br><br>
+    <h7>Todas as análises foram realizadas com os valores de distâncias entre reforços de <strong>l = 100000 mm</strong>.</h7>
+    <br><br>
+    <h7>O vácuo absoluto foi considerado em todas as análises com um valor de pressão externa de <strong>P = 103,42 KPa</strong>.</h7>
+    <br><br>
+    <h7>Todas as diferenças negativas implicam em um resultado mais conservativo que o obtido do PV Elite.</h7>
+    <br>
+    <hr style="background-color:#000000;">
+    <h7>Ferramenta criada pelo time de Flexibilidade.</h7>
+    <br>
+    <h7>Agradecimentos a todos do time, <strong>JB</strong>, <strong>LAC</strong>, <strong>FHT</strong>,
+      em especial ao <strong>GB</strong> e <strong>RSI</strong> que ajudaram no código e na implementação
+      da ferramenta.</h7>
+    <br>
+    <h7>Autor: <strong>BCH</strong>.</h7>
+
+{% endblock %}
+{% block main %}
+<style>
+    .loadergb {
+          border: 8px solid #A1A1A1;
+          border-top: 8px solid #f6801e;
+          border-radius: 50%;
+          width: 50px;
+          height: 50px;
+          animation: spin 2s linear infinite;
+           display: block;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+    .scrollbar{
+        overflow:scroll;
+        background-color:red;
+    }
+    .th{
+        text-align: center;
+    }
+</style>
+<table class="table table-bordered scrollbars" align="center">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col" style="text-align: center">SPEC</th>
+      <th scope="col" align="center">DN (mm)</th>
+      <th scope="col" align="center">Espessura (mm)</th>
+      <th scope="col" align="center">Tempetura (°C)</th>
+      <th scope="col" style="text-align: center" class="col-1">Material (ASTM)</th>
+      <th scope="col" align="center">PV Elite Pressão (KPa)</th>
+      <th scope="col" align="center">Python Pressão (KPa)</th>
+      <th scope="col" align="center">Diferença de Pressão (%)</th>
+      <th scope="col" align="center">PV Elite Espessura (mm)</th>
+      <th scope="col" align="center">Python Espessura (mm)</th>
+      <th scope="col" align="center">Diferença de Espessura (%)</th>
+      <th scope="col" align="center">PV Elite Comprimento (mm)</th>
+      <th scope="col" align="center">Python Comprimento (mm)</th>
+      <th scope="col" align="center">Diferença de Comprimento (%)</th>
+    </tr>
+  </thead>
+  <tbody id="dados" align="center"></tbody>
+</table>
+<div id="Loader" class="loadergb"></div>
+    <script src="{% static 'js/a1flx/P1_vaso_press_ext_validacao.js' %}"></script>
+{% endblock %}

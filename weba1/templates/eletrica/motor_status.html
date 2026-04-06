@@ -1,0 +1,46 @@
+{% load static %}
+<div class="modal-header border-0">
+    <h5 class="modal-title font-weight-bold mt-2 p-1" id="motorstatusLabel">Motor Status</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-6">
+            <form>
+                <div class="form-group ">
+                     <label class="col-form-label" data-toggle="tooltip" title="Inserir codigo">Código</label>
+                     <input type="text" required class="form-control input-a1style" id="motor-status-cod" >
+                </div>
+                <div class="form-group ">
+                    <label class="col-form-label" placeholder="Digite aqui"  data-toggle="tooltip"  title="Inserir a descrição">Descrição</label>
+                    <input type="text"  required class="form-control input-a1style" id="motor-status-desc">
+                </div>
+            </form>
+        </div>
+        <div class="col-6">
+            <form>
+                <div class="form-group ">
+                    <label class="col-form-label">Pesquisa</label>
+                    <input type="search" class="form-control" placeholder="Buscar..." id="motor-status-search" title="Pesquise aqui seu Status" onclick="clean_with_backspace('motor-status', 0, 'MotorStatus/', 'tb_stt', '#motor-status-select', '#motorstatus')" onkeyup="filter_options('tb_stt', 'motor-status-search', 'MotorStatus/', '#motorstatus', 'motor-status', '#motor-status-select')"/>
+                </div>
+                <div class="form-group mt-2 ">
+                    <select id="motor-status-select" required class="form-control input-a1style pe-auto" multiple></select>
+                    <datalist id="motor-status-type-list"></datalist>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-success" onclick="what_up_or_create('motor-status', 'MotorStatus/', 'ManiStatus/', 'tb_stt', 0, '#motor-status-select', '#motorstatus')">Adicionar</button>
+    <button type="button" class="btn btn-primary" onclick="atualiza('motor-status', 'MotorStatus/', 'ManiStatus/', 'tb_stt', 0, '#motor-status-select', '#motorstatus')">Alterar</button>
+    <button type="button" class="btn btn-dark"  data-toggle="modal" data-target="#statussmotor">Import/Export</button>
+    <button type="button" class="btn btn-warning" onclick="reset_forms('motor-status', 0, 'MotorStatus/', 'tb_stt', '#motor-status-select', '#motorstatus')">Limpar</button>
+    <button type="button" class="btn btn-danger" onclick="del_tp_ms('ManiStatus/', '#motor-status-select', 'motor-status', 0, 'MotorStatus/', 'tb_stt', '#motorstatus')">Excluir</button>
+
+
+</div>
+

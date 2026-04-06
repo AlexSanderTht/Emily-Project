@@ -1,0 +1,660 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>A1Gerenciamento Tasks</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<div class="container mt-5">
+    {% csrf_token %}
+    <div class="container row justify-content-center animate__animated animate__pulse">
+        <div class="col-sm-12 col-md-12 col-lg-12 bordas py-3 bg-white border shadow animate__animated animate__pulse">
+            <h1 class="text-center">A1Gerenciamento de Tasks</h1>
+            <p class="text-center h6">Ferramenta necessária para controlar e acompanhar a
+                execução das tasks do CELERY_BEAT_SCHEDULE.</p>
+            <hr class="my-4">
+
+            <div id="carousel_tasks" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#carousel_tasks" data-slide-to="0" class="active p-1 rounded-pill"></li>
+                    <li data-target="#carousel_tasks" data-slide-to="1" class="p-1 rounded-pill"></li>
+                    <li data-target="#carousel_tasks" data-slide-to="2" class="p-1 rounded-pill"></li>
+                </ol>
+                <div class="carousel-inner bordas">
+                    <div class="carousel-item active p-5 bg-secondary">
+                        <div class="d-flex justify-content-around animate__animated animate__pulse">
+                            <!---------------- Início card aniversariantes ---------------->
+                            <div class="card col-lg-3 position-relative shadow bordas">
+                                {% if aniversario_rh.status == 'SUCCESS' %}
+                                    <span title="Status task" class="text-success border border-success align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-check pb-1"></i> Success
+                                    </span>
+                                {% endif %}
+                                {% if aniversario_rh.status != 'SUCCESS' %}
+                                    <span title="Status task" class="text-danger border border-danger align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-xmark pb-1"></i> Failure
+                                    </span>
+                                {% endif %}
+
+                                <div class="text-center mt-3">
+                                    <img class="w-50" src="{% static 'img/img_celery_beat/birthday.png' %}">
+                                </div>
+                                <div class="card-body px-0">
+                                    <h5 class="card-title text-center font-weight-bold">Aniversariantes RH</h5>
+                                    <p class="text-center text-secondary">Esta task tem por função elaborar e enviar o e-mail de aniversariantes diariamente.</p>
+                                    <div class="d-flex justify-content-start py-2 border-top border-bottom">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-regular fa-clock fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Última atualização</span>
+                                            <span class="text-secondary">{{ aniversario_rh.data }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-start py-2">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-solid fa-computer fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Worker</span><br>
+                                            <span class="text-secondary">{{ aniversario_rh.worker }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center pt-2">
+                                        <a href="#" class="btn btn-dark rounded-pill" onclick="OpeModalParameter('aniversario_rh')">
+                                            <i class="fa-solid fa-gear"></i> Set parâmetros</a>
+                                    </div>
+                                </div>
+                            </div><!---------------- Fim card aniversariantes ---------------->
+
+                            <!---------------- Início card Manage aniversariantes ---------------->
+                            <div class="card col-lg-3 position-relative shadow bordas">
+                                {% if aniversario_sche.status == 'SUCCESS' %}
+                                    <span title="Status task" class="text-success border border-success align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-check pb-1"></i> Success
+                                    </span>
+                                {% endif %}
+                                {% if aniversario_sche.status != 'SUCCESS' %}
+                                    <span title="Status task" class="text-danger border border-danger align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-check pb-1"></i> Failure
+                                    </span>
+                                {% endif %}
+
+                                <div class="text-center mt-3">
+                                    <img class="w-50" src="{% static 'img/img_celery_beat/id-verified.png' %}">
+                                </div>
+                                <div class="card-body px-0">
+                                    <h5 class="card-title text-center font-weight-bold">Aniversariantes Schedule</h5>
+                                    <p class="text-center text-secondary">Esta task atualiza os novos usuários configurados na tb_aniver_schedule.</p>
+                                    <div class="d-flex justify-content-start py-2 border-top border-bottom">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-regular fa-clock fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Última atualização</span>
+                                            <span class="text-secondary">{{ aniversario_sche.data }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-start py-2">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-solid fa-computer fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Worker</span><br>
+                                            <span class="text-secondary">{{ aniversario_sche.worker }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center pt-2">
+                                        <a href="#" class="btn btn-primary rounded-pill" onclick="ReiniciarTask('aniversario_sche')">
+                                            <i class="fa-solid fa-rotate-right"></i> Reiniciar task</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!---------------- Início card Logs VPN ---------------->
+                            <div class="card col-lg-3 position-relative shadow bordas">
+                                {% if logs_vpn.status == 'SUCCESS' %}
+                                    <span title="Status task" class="text-success border border-success align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-check pb-1"></i> Success
+                                    </span>
+                                {% endif %}
+                                {% if logs_vpn.status != 'SUCCESS' %}
+                                    <span title="Status task" class="text-danger border border-danger align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-xmark pb-1"></i> Failure
+                                    </span>
+                                {% endif %}
+
+                                <div class="text-center mt-3">
+                                    <img class="w-50" src="{% static 'img/img_celery_beat/workstation.png' %}">
+                                </div>
+                                <div class="card-body px-0">
+                                    <h5 class="card-title text-center font-weight-bold">Logs VPN</h5>
+                                    <p class="text-center text-secondary">Esta pega os dados do Graylog e cadastra no banco do a1hub na tb_logs_vpn.</p>
+                                    <div class="d-flex justify-content-start py-2 border-top border-bottom">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-regular fa-clock fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Última atualização</span>
+                                            <span class="text-secondary">{{ logs_vpn.data }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-start py-2">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-solid fa-computer fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Worker</span><br>
+                                            <span class="text-secondary">{{ logs_vpn.worker }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center pt-2">
+                                        <a href="#" class="btn btn-dark rounded-pill" onclick="OpeModalParameter('logs_vpn')">
+                                            <i class="fa-solid fa-gear"></i> Set parâmetros</a>
+                                    </div>
+                                </div>
+                            </div><!---------------- Fim card Logs Pfsense ---------------->
+
+                        </div><!---------------- Fim card cg person ---------------->
+                    </div>
+                    <div class="carousel-item p-5 bg-secondary">
+                        <div class="d-flex justify-content-around animate__animated animate__pulse">
+                            <!---------------- Início card os to OS ---------------->
+                            <div class="card col-lg-3 position-relative shadow bordas">
+                                {% if os_to_so.status == 'SUCCESS' %}
+                                    <span title="Status task" class="text-success border border-success align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-check pb-1"></i> Success
+                                    </span>
+                                {% endif %}
+                                {% if os_to_so.status != 'SUCCESS' %}
+                                    <span title="Status task" class="text-danger border border-danger align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-xmark pb-1"></i> Failure
+                                    </span>
+                                {% endif %}
+
+                                <div class="text-center mt-3">
+                                    <img class="w-50" src="{% static 'img/img_celery_beat/send-file.png' %}">
+                                </div>
+                                <div class="card-body px-0">
+                                    <h5 class="card-title text-center font-weight-bold">Os to SO</h5>
+                                    <p class="text-center text-secondary">Esta pega os dados da intranet na tabela tb_os e cadastra na
+                                        tb_service_order.</p>
+                                    <div class="d-flex justify-content-start py-2 border-top border-bottom">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-regular fa-clock fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Última atualização</span>
+                                            <span class="text-secondary">{{ os_to_so.data }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-start py-2">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-solid fa-computer fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Worker</span><br>
+                                            <span class="text-secondary">{{ os_to_so.worker }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center pt-2">
+                                        <a href="#" class="btn btn-primary rounded-pill" onclick="ReiniciarTask('os_to_so')">
+                                            <i class="fa-solid fa-rotate-right"></i> Reiniciar task</a>
+                                    </div>
+                                </div>
+                            </div><!---------------- Fim card os to OS ---------------->
+
+                            <!---------------- Início card dump DB ---------------->
+                            <div class="card col-lg-3 position-relative shadow bordas">
+                                {% if backup_dbs.status == 'SUCCESS' %}
+                                    <span title="Status task" class="text-success border border-success align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-check pb-1"></i> Success
+                                    </span>
+                                {% endif %}
+                                {% if backup_dbs.status != 'SUCCESS' %}
+                                    <span title="Status task" class="text-danger border border-danger align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-xmark pb-1"></i> Failure
+                                    </span>
+                                {% endif %}
+
+                                <div class="text-center mt-3">
+                                    <img class="w-50" src="{% static 'img/img_celery_beat/send-file.png' %}">
+                                </div>
+                                <div class="card-body px-0">
+                                    <h5 class="card-title text-center font-weight-bold">Dump DB</h5>
+                                    <p class="text-center text-secondary">Faz backup de todos os bancos do a1pro dentro do a1hub.</p>
+                                    <div class="d-flex justify-content-start py-2 border-top border-bottom">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-regular fa-clock fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Última atualização</span>
+                                            <span class="text-secondary">{{ backup_dbs.data }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-start py-2">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-solid fa-computer fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Worker</span><br>
+                                            <span class="text-secondary">{{ backup_dbs.worker }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center pt-2">
+                                        <a href="#" class="btn btn-primary rounded-pill" onclick="ReiniciarTask('backup_dbs')">
+                                            <i class="fa-solid fa-rotate-right"></i> Reiniciar task</a>
+                                    </div>
+                                </div>
+                            </div><!---------------- Fim card DUMP DB ---------------->
+
+                            <!---------------- Início card clear temp ---------------->
+                            <div class="card col-lg-3 position-relative shadow bordas">
+                                {% if clear_temp.status == 'SUCCESS' %}
+                                    <span title="Status task" class="text-success border border-success align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-check pb-1"></i> Success
+                                    </span>
+                                {% endif %}
+                                {% if clear_temp.status != 'SUCCESS' %}
+                                    <span title="Status task" class="text-danger border border-danger align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-xmark pb-1"></i> Failure
+                                    </span>
+                                {% endif %}
+
+                                <div class="text-center mt-3">
+                                    <img class="w-50" src="{% static 'img/img_celery_beat/broom.png' %}">
+                                </div>
+                                <div class="card-body px-0">
+                                    <h5 class="card-title text-center font-weight-bold">Clear Temp</h5>
+                                    <p class="text-center text-secondary">Esta task é utilizada caso deseje limpar a pasta temporária do a1pro.</p>
+                                    <div class="d-flex justify-content-start py-2 border-top border-bottom">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-regular fa-clock fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Última atualização</span>
+                                            <span class="text-secondary">{{ clear_temp.data }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-start py-2">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-solid fa-computer fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Worker</span><br>
+                                            <span class="text-secondary">{{ clear_temp.worker }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center pt-2">
+                                        <a href="#" class="btn btn-dark rounded-pill" onclick="OpeModalParameter('clear_temp')">
+                                            <i class="fa-solid fa-gear"></i> Set parâmetros</a>
+                                    </div>
+                                </div>
+                            </div><!---------------- Fim card clear temp ---------------->
+                        </div>
+                    </div>
+                    <div class="carousel-item p-5 bg-secondary">
+                        <div class="d-flex justify-content-around animate__animated animate__pulse">
+                            <!---------------- Início card Dashboard GLPI ---------------->
+                            <div class="card col-lg-3 position-relative shadow bordas">
+                                {% if dash_glpi.status == 'SUCCESS' %}
+                                    <span title="Status task" class="text-success border border-success align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-check pb-1"></i> Success
+                                    </span>
+                                {% endif %}
+                                {% if dash_glpi.status != 'SUCCESS' %}
+                                    <span title="Status task" class="text-danger border border-danger align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-xmark pb-1"></i> Failure
+                                    </span>
+                                {% endif %}
+
+                                <div class="text-center mt-3">
+                                    <img class="w-50" src="{% static 'img/img_celery_beat/send-file.png' %}">
+                                </div>
+                                <div class="card-body px-0">
+                                    <h5 class="card-title text-center font-weight-bold">Dashboard GLPI</h5>
+                                    <p class="text-center text-secondary">Esta task gera um dashboard de chamados do GLPI e satisfação dos usuários.</p>
+                                    <div class="d-flex justify-content-start py-2 border-top border-bottom">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-regular fa-clock fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Última atualização</span>
+                                            <span class="text-secondary">{{ dash_glpi.data }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-start py-2">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-solid fa-computer fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Worker</span><br>
+                                            <span class="text-secondary">{{ dash_glpi.worker }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center pt-2">
+                                        <a href="#" class="btn btn-dark rounded-pill" onclick="OpeModalParameter('dash_glpi')">
+                                            <i class="fa-solid fa-gear"></i> Set parâmetros</a>
+                                    </div>
+                                </div>
+                            </div><!---------------- Fim card Dashboard GLPI ---------------->
+
+                            <!---------------- Início card cg person ---------------->
+                            <div class="card col-lg-3 position-relative shadow bordas">
+                                {% if cg_to_per.status == 'SUCCESS' %}
+                                    <span title="Status task" class="text-success border border-success align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-check pb-1"></i> Success
+                                    </span>
+                                {% endif %}
+                                {% if cg_to_per.status != 'SUCCESS' %}
+                                    <span title="Status task" class="text-danger border border-danger align-middle rounded-pill px-2 py-0 position-absolute" style="right:10px;top:10px;z-index: 1;">
+                                        <i class="fa-regular fa-circle-check pb-1"></i> Failure
+                                    </span>
+                                {% endif %}
+
+                                <div class="text-center mt-3">
+                                    <img class="w-50" src="{% static 'img/img_celery_beat/id-verified.png' %}">
+                                </div>
+                                <div class="card-body px-0">
+                                    <h5 class="card-title text-center font-weight-bold">Cg to Person</h5>
+                                    <p class="text-center text-secondary">Esta pega os dados da intranet na tb_cadastro_geral e cadastra na
+                                        tb_person.</p>
+                                    <div class="d-flex justify-content-start py-2 border-top border-bottom">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-regular fa-clock fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Última atualização</span>
+                                            <span class="text-secondary">{{ cg_to_per.data }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-start py-2">
+                                        <div class="my-auto mr-3">
+                                            <i class="fa-solid fa-computer fa-xl text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <span>Worker</span><br>
+                                            <span class="text-secondary">{{ cg_to_per.worker }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center pt-2">
+                                        <a href="#" class="btn btn-primary rounded-pill" onclick="ReiniciarTask('cg_to_per')">
+                                            <i class="fa-solid fa-rotate-right"></i> Reiniciar task</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="carousel-control-prev pr-5" href="#carousel_tasks" role="button" data-slide="prev">
+                    <span class="bg-white p-3 rounded-circle"><i class="fa-solid fa-angles-left fa-2xl text-dark" aria-hidden="true"></i></span>
+                    <span class="sr-only">Anterior</span>
+                </a>
+                <a class="carousel-control-next pl-5" href="#carousel_tasks" role="button" data-slide="next">
+                    <span class="bg-white p-3 rounded-circle"><i class="fa-solid fa-angles-right fa-2xl text-dark" aria-hidden="true"></i></span>
+                    <span class="sr-only">Próximo</span>
+                </a>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!------------------ Início Modal Parametros ------------------>
+    <div class="modal fade" id="modal_parameter_task">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bordas">
+                <div class="modal-header">
+                    <h4 class="modal-title text-center w-100" id="titulo_modal_task"></h4>
+                    <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div id="container_checkbox" hidden>
+                        <p class="text-center">Selecione a checkbox caso queira executar a task em modo DEBUG.</p>
+                        <div class="row pb-2">
+                            <div class="col-lg-3 pr-0 d-flex justify-content-end">
+                                <label class="switch_toggle mb-0 mt-1">
+                                    <input id="task_check_debug" type="checkbox" value="off"
+                                           onchange="ChangeEmail('{{ email_user }}')">
+                                    <span class="slider_switch round"></span>
+                                </label>
+                            </div>
+                            <span id="span_text_email" class="col-lg-9 ">Modo DEBUG - {{ email_user }}</span>
+
+                            <div class="col-lg-12 pt-3" id="container_checkbox_aniv">
+                                <p class="text-center">Altere a data caso queira reenviar emails retroativos.</p>
+                                <div class="form-row justify-content-center">
+                                    <div class="form-group col-lg-4">
+                                        <input type="date" id="date_aniv" class="form-control rounded-pill" value="{{ date_now }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="container_size" hidden>
+                        <p class="text-center">Selecione o tamanho máximo dos arquivos a serem deletados.</p>
+                        <form>
+                            <div class="form-group row justify-content-center mx-2">
+                                <div class="col-lg-4 pl-0">
+                                    <input type="number" value="1" min="1" step="1" class="form-control" id="size_parameter" oninput="this.value = Math.round(this.value);">
+                                </div>
+                                <select id="size_unidade_parameter" class="col-lg-2 form-control text-center">
+                                    <option selected>Bytes</option>
+                                    <option>kB</option>
+                                    <option>MB</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="container_days" hidden>
+                        <p class="text-center">Selecione a quantidade de dias para a TASK ser reiniciada.</p>
+                        <form>
+                            <div class="form-group row justify-content-center mx-2">
+                                <div class="col-lg-9 pl-0">
+                                    <input type="range" value="1" min="1" step="1" max="30" class="form-control-range" id="day_parameter" oninput="$('#rangeval').html($(this).val()>1?$(this).val()+' dias':$(this).val()+' dia')">
+                                </div>
+                                <span class="col-lg-3 border border-primary rounded-pill text-primary text-center" id="rangeval">1 dia<!-- Valor padrão --></span>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="d-flex justify-content-center pt-2">
+                        <a href="#" class="btn btn-primary rounded-pill" id="send_values_modal_task">
+                            <i class="fa-solid fa-rotate-right"></i> Reiniciar task</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim Modal Parametros ------------------>
+</div>
+{% endblock %}
+{% block end %}
+<script>
+    // --------------------- Função altera o Texto de email ao clicar na checkbox ---------------------//
+    function ChangeEmail(email) {
+        let span = document.getElementById('span_text_email')
+        let checkbox = document.getElementById('task_check_debug')
+        if (checkbox.checked){
+            span.innerHTML='Modo DEBUG - geral@a1.ind.br';
+        } else {
+            span.innerHTML='Modo DEBUG - '+ email;
+        }
+    }
+
+    // --------------------- Função abre modal de seleção ---------------------//
+    function OpeModalParameter(task) {
+        // Complementa título do modal
+        document.getElementById('titulo_modal_task').innerHTML = 'Parâmetros Tasks - ' + task;
+
+        // Adiciona o atributo onclick ao botao reiniciar task
+        document.getElementById('send_values_modal_task').setAttribute("onclick" ,"$('#modal_parameter_task').modal('hide');ReiniciarTask('"+ task +"')");
+
+        if (task === 'clear_temp'){ // Caso seja task clear_temp exibe input com o tamanho e input de dias
+            document.getElementById('container_size').hidden = false;
+            document.getElementById('container_days').hidden = false;
+            document.getElementById('container_checkbox').hidden = true;
+        } else if (task === 'logs_vpn'){ // Caso seja task logs_vpn exibe input de dias
+            document.getElementById('container_size').hidden = true;
+            document.getElementById('container_days').hidden = false;
+            document.getElementById('container_checkbox').hidden = true;
+        } else if (task === 'dash_glpi'){ // Caso seja task dash_glpi exibe input checkbox
+            document.getElementById('container_size').hidden = true;
+            document.getElementById('container_days').hidden = true;
+            document.getElementById('container_checkbox_aniv').hidden = true;
+            document.getElementById('container_checkbox').hidden = false;
+             document.getElementById('task_check_debug').checked = false;
+        } else { // Caso seja task aniversario_rh exibe input checkbox e data
+            document.getElementById('container_size').hidden = true;
+            document.getElementById('container_days').hidden = true;
+            document.getElementById('container_checkbox_aniv').hidden = false;
+            document.getElementById('container_checkbox').hidden = false;
+             document.getElementById('task_check_debug').checked = false;
+        }
+
+        // Exibe modal de parâmetros
+        $('#modal_parameter_task').modal('show')
+    }
+
+    // --------------------- Função reinicia task e recarrega a página ---------------------//
+    function ReiniciarTask(task) {
+        let size = document.getElementById('size_parameter').value
+        let days = document.getElementById('day_parameter').value;
+        let checkbox = document.getElementById('task_check_debug').checked;
+        let date_aniv = document.getElementById('date_aniv').value;
+        let dict_set = {}
+        // Verifica se a task é a clear_temp e pega tamanho e dia
+        if (task === 'clear_temp') {
+            let select = document.getElementById('size_unidade_parameter').selectedOptions[0].value;
+            let result = select === 'MB'? size*1000000:select === 'kB'? size*1000:size
+            dict_set['size'] = result;
+            dict_set['days'] = days;
+
+        // Caso seja logs_vpn pega somente o dia
+        } else if (task === 'logs_vpn') {
+            dict_set['days'] = days;
+
+        // Caso seja aniversario_rh pega somente o valor da checkbox
+        } else if (task === 'aniversario_rh' || task === 'dash_glpi') {
+            dict_set['checkbox'] = checkbox;
+            dict_set['date_aniv'] = (date_aniv.split('-').reverse()).join('-');
+        }
+
+        // Exibe modal de notificação de cadastro
+        swal({
+            title: task,
+            text: "Por favor aguarde, reiniciando a task...",
+            button: false,
+            icon: "{% static 'img/check_file.gif' %}",
+            closeOnClickOutside: false,
+            allowOutsideClick: false,
+        })
+        $('div.swal-modal').addClass('bordas')
+        $('div.swal-icon').addClass('mt-3 w-75')
+        $('div.swal-title').addClass('h4')
+        $('div.swal-text').addClass('text-center')
+
+        // Envia os dados para o backend via AJax
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url: "/app/a1hub/manage_tasks/", // Caminho do Ajax
+            type: "POST", // http method
+            headers:{'X-CSRFToken':csrftoken},
+            dataType: "json",
+            data: {'Tarefa': JSON.stringify([task, dict_set])}, // Envia dados pela solicitação do POST
+            success: function (data) {
+                let interval = setInterval(
+                    ()=>{
+                    $.getJSON('/celery-progress/' + data["id_task"], (e) => {
+                        if (e.complete){
+                            if (e.success) {
+                                clearInterval(interval) // Para a chamada por intervalo
+
+                                setTimeout(()=> {
+                                    // Exibe modal de notificação de cadastro
+                                    swal({
+                                        text: "Task - "+ task +" - reiniciada com sucesso!",
+                                        button: false,
+                                        icon: "success",
+                                    })
+                                    $('div.swal-modal').addClass('bordas')
+                                    $('div.swal-title').addClass('h4')
+                                    $('div.swal-text').addClass('text-center')
+                                }, 1000);
+                                setTimeout(()=>{swal.close()
+                                    window.location.reload(); // Recarrega a página
+                                }, 4000); // Após 4 segundos fecha o alert
+                            } else if (e.error) {
+                                clearInterval(interval) // Para a chamada por intervalo
+                                setTimeout(()=> {
+                                    // Exibe modal de notificação de cadastro
+                                    swal({
+                                        text: "Erro ao reiniciar a task - "+ task,
+                                        button: "Fechar",
+                                        icon: "error",
+                                    })
+                                    $('div.swal-modal').addClass('bordas')
+                                    $('div.swal-title').addClass('h4')
+                                    $('button.swal-button').addClass('btn btn-danger px-5 rounded-pill')
+                                    $('div.swal-text').addClass('text-center')
+                                    $('div.swal-footer').addClass('d-flex justify-content-center')
+                                }, 1000);
+                                setTimeout(()=>{swal.close()
+                                    window.location.reload(); // Recarrega a página
+                                }, 6000); // Após 6 segundos fecha o alert
+
+                            } else {
+                                clearInterval(interval) // Para a chamada por intervalo
+                                setTimeout(()=> {
+                                    // Exibe modal de notificação de cadastro
+                                    swal({
+                                        text: "Erro ao reiniciar a task - "+ e.result,
+                                        button: "Fechar",
+                                        icon: "error",
+                                    })
+                                    $('div.swal-modal').addClass('bordas')
+                                    $('div.swal-title').addClass('h4')
+                                    $('button.swal-button').addClass('btn btn-danger px-5 rounded-pill')
+                                    $('div.swal-text').addClass('text-center')
+                                    $('div.swal-footer').addClass('d-flex justify-content-center')
+                                }, 1000);
+                                setTimeout(()=>{swal.close()
+                                    // window.location.reload(); // Recarrega a página
+                                }, 6000); // Após 6 segundos fecha o alert
+                            }
+                        }
+                    })}
+                , 500);
+            },
+            error: function() {
+                // Exibe modal de notificação de cadastro
+                swal({
+                    text: "Erro ao reiniciar TASK, por favor tente novamente!",
+                    button: false,
+                    icon: "error",
+                })
+                $('div.swal-modal').addClass('bordas')
+                $('div.swal-title').addClass('h4')
+                $('div.swal-text').addClass('text-center')
+                setTimeout(()=>{swal.close()}, 4000)
+            },
+        });
+    }
+
+
+</script>
+{% endblock %}

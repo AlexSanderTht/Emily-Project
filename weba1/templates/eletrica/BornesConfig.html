@@ -1,0 +1,150 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1pro</title>
+{% endblock %}
+
+{% block main %}
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/GerarTipicosDoc.js' %} "></script>
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/PainelDiagInter.js' %}"></script>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+<div class="container-fluid h-100">
+    <div class="text-justify m-3">
+        <button class="btn btn-primary btn-warning" onclick="window.history.go(-1)">Voltar</button>
+    </div>
+    <div class="row d-flex justify-content-center mt-2">
+        <h3>CONFIGURAÇÃO DOS TERMINAIS</h3>
+    </div>
+</div>
+
+<div class="container-fluid d-flex justify-content-center">
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4" style="width: 70%;">
+        <div class="card-header border-bottom-0 bg-white d-flex justify-content-center">
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link" id="nav-informacoes-tab" data-toggle="tab" href="#nav-informacoes" role="tab" aria-controls="nav-informacoes" aria-selected="false"><i class="fa-solid fa-bolt pr-3"></i>INFORMAÇÕES</a>
+                    <a class="nav-item nav-link" id="nav-dados-bornes-tab" data-toggle="tab" href="#nav-dados-bornes" role="tab" aria-controls="nav-dados-bornes" aria-selected="false"><i class="fa-solid fa-bolt pr-3"></i>CONFIGURAÇÃO</a>
+                    <a class="nav-item nav-link" id="nav-bloco-tab" data-toggle="tab" href="#nav-bloco" role="tab" aria-controls="nav-bloco" aria-selected="false"><i class="fa-solid fa-bolt pr-3"></i>BLOCO DWG</a>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade" id="nav-informacoes" role="tabpanel" aria-labelledby="nav-informacoes-tab">
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO ABA INFORMAÇÕES -------------------->
+            1
+        </div> <!-------------------- FIM CAMPO CONFIGURAÇÕES -------------------->
+    </div>
+    <div class="tab-pane fade" id="nav-dados-bornes" role="tabpanel" aria-labelledby="nav-dados-bornes-tab">
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO ABA CONFIGURAÇÕES -------------------->
+            <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPDOWN FUNÇÃO O.S -------------------->
+                <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+                    <div class="form-group row">
+                        <div class="col-12 text-center">
+                            <label class="objte col-lg-12 col-form-label" for="funcao-nome-os-borne">
+                                <h5> Função </h5>
+                            </label>
+                            <select class="form-control" id="funcao-nome-os-borne" style="width: 500px;" >
+                                <option value="0">---</option>
+                                <option disabled="true" class="bg-warning">Motores</option>
+                                {% for name, id_pk in lista_names_funcao_os_mo%}
+                                    <option class="bg-warning" onclick="IndicaSistemaFuncaoOs({{id_pk}}, 'borne')" value="{{id_pk}}" > {{name}}</option>
+                                {% endfor %}
+                                <option disabled="true" class="bg-info">Paineis</option>
+                                {% for name, id_pk in lista_names_funcao_os_pn%}
+                                    <option class="bg-info" onclick="IndicaSistemaFuncaoOs({{id_pk}}, 'borne')" value="{{id_pk}}" > {{name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-------------------- FIM DROPDOWN BORNE  -------------------->
+        </div> <!-------------------- FIM CAMPO CONFIGURAÇÕES -------------------->
+
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BLOCO SISTEMA FUNÇÃO FORMAÇÃO BORNE -------------------->
+            <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <label class="objte col-form-label" for="sistema">Sistema</label>
+                            <input type="text" required class="form-control mt-2" id="sistema" readonly style="text-align: center;">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <label class="objte col-form-label" for="tipo-funcao">Tipo função</label>
+                            <input type="text" required class="form-control mt-2" id="tipo-funcao" readonly style="text-align: center;">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <label class="objte col-form-label" for="formacao-cabo">Formação cabo</label>
+                            <input type="text" required class="form-control mt-2" id="formacao-cabo" readonly style="text-align: center;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-------------------- FIM BLOCO SISTEMA FUNÇÃO FORMAÇÃO BORNE -------------------->
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BLOCO INSERÇÃO VALORES BORNE -------------------->
+            <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+                <table id="table-borne" class="table table-sm text-center border">
+
+                <thead>
+                  <tr class="table-primary">
+                    <th colspan="2" class="text-primary border">ORIGEM</th>
+                    <th colspan="2" class="text-primary border">DESTINO</th>
+                  </tr>
+                  <tr class="table-primary">
+                    <th colspan="2" class="text-primary border">RÉGUA: <input type="text" class="form-control"></th>
+                    <th colspan="2" class="text-primary border">RÉGUA: <input type="text" class="form-control"></th>
+                  </tr>
+                  <tr class="table-secondary">
+                    <th class="border">BORNES</th>
+                    <th class="border">VEIAS</th>
+                    <th class="border">BORNES</th>
+                    <th class="border">VEIAS</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                </tbody>
+                </table>
+
+            </div>
+        </div> <!-------------------- FIM BLOCO INSERÇÃO VALORES BORNE -------------------->
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BLOCO INSERÇÃO VALORES BORNE -------------------->
+            <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="tab-pane fade" id="nav-bloco" role="tabpanel" aria-labelledby="nav-bloco-tab">
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO ABA BLOCO -------------------->
+            3
+        </div> <!-------------------- FIM CAMPO BLOCO -------------------->
+    </div>
+</div>
+
+{% include './ModalDadosDocumento.html' %}
+{% include './ModalLoadCelery.html' %}
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}ultra lite x 2021
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | EQUIPAMENTOS</title>
+
+{% endblock %}
+
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<div class="text-justify border-bottom m-3">
+    <button class="btn btn-primary btn-warning position-absolute" onclick="window.history.go(-1)">Voltar</button>
+    <!--------------- Cabeçalho --------------->
+    <h3 class="text-center" id="cargasLabel">Equipamentos</h3>
+    <h4 class="text-center" id="OS" title="{{OS}}">Os: {{OS}}</h4>
+    <h4 class="text-center" id="Area" title="{{Area}}">Area: {{Area}}</h4>
+    <!--------------- Fim do Cabeçalho --------------->
+</div>
+
+
+<div class="container-fluid mt-4" data-keyboard="false">
+    <div class="row justify-content-center">
+        <!--------------- Botões superiores --------------->
+        <div class="col-lg-12 row justify-content-center">
+            <div class="col-lg-4 px-0">
+                <button type="button" class="tablinks btn btn-secondary" name="btn-type-eqp" id="btn-motor-eqp" onclick="BtnTypeEqpChecked(this.id, 'btn-type-eqp', 'dark', 'secondary');FillSearchEquip('Motores', 'Cargas');countItems()">Motores</button>
+                <button type="button" class="tablinks btn btn-secondary" name="btn-type-eqp" id="btn-transf-eqp" onclick="BtnTypeEqpChecked(this.id, 'btn-type-eqp', 'dark', 'secondary');FillSearchEquip('Transformadores', 'Cargas');countItems()">Transformadores</button>
+                <button type="button" class="tablinks btn btn-secondary" name="btn-type-eqp" id="btn-paineis-eqp" onclick="BtnTypeEqpChecked(this.id, 'btn-type-eqp', 'dark', 'secondary');FillSearchEquip('Paineis', 'Cargas');BtnTypeEqpChecked('type-painel-btn-prin', 'type-painel-btn', 'secondary', 'warning');countItems()">Paineis</button>
+                <button type="button" class="tablinks btn btn-secondary my-1" name="btn-type-eqp" id="btn-caux-eqp" onclick="BtnTypeEqpChecked(this.id, 'btn-type-eqp', 'dark', 'secondary');FillSearchEquip('CargasAuxiliares', 'Cargas');countItems()">Cargas Auxiliares</button>
+                <button type="button" class="tablinks btn btn-secondary my-1" name="btn-type-eqp" id="btn-berra-eqp" onclick="BtnTypeEqpChecked(this.id, 'btn-type-eqp', 'dark', 'secondary');FillSearchEquip('Barramento', 'Cargas');countItems()">Barramento</button>
+                <button type="button" class="tablinks btn btn-secondary my-1" name="btn-type-eqp" id="btn-tx-id-equip" onclick="BtnExportTxtIdEquip(this.id)">TXT ID</button>
+            </div>
+
+            <div class="col-lg-5 px-4">
+                <div class="row"  id="btn-adc-tipo-ali">
+                    <div class="col-lg-4">
+                        <button type="button" class="tablinks btn btn-warning my-1" onclick="OnclickButtonAdcTipoAli(true)">+Tipos de Alimentação</button>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="rectangle-types-ali mx-0 pb-1" id="btns-aux-exist">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--------------- Fim Botões superiores --------------->
+
+        <!--------------- Campo de pesquisa --------------->
+        <div class="col-lg-4">
+            <!--------------- Campo text cargas --------------->
+            <div class="w-100">
+                <div id="Cargas" class="tabcontent">
+                    <br>
+                    {% with id_select='CargasSearch' %}
+                    {% include "eletrica/cad_carga/pesquisa_e_dados.html"%}
+                    {% endwith %}
+                </div>
+            </div><!--------------- Campo text cargas --------------->
+
+            <div class="label_total" id="total_eqp">
+              Total: <label id="itemCount"></label>
+            </div>
+
+            <!--------------- Botões inferiores Campo de pesquisa --------------->
+
+            <button type="button" class="btn btn-success my-0" id="btn-eqp-adc" onclick="SendDatasEqp('Novo')">Adicionar</button>
+            <button type="button" class="btn btn-primary my-0" id="btn-eqp-alterar" onclick="SendDatasEqp('Alterar')">Alterar</button>
+            <button type="button" class="btn btn-dark" id="btn-eqp-import" data-toggle="modal" data-target="#CadastroDeCargas">Import/Export</button>
+            <button type="button" class="btn btn-warning my-1" onclick="ClearFieldsEquip(true);BtnTypeEqpChecked('not-id', 'btn-type-eqp', 'dark', 'secondary');BtnTypeEqpChecked('not-id', 'type-painel-btn', 'secondary', 'warning');working_buttons_types_paineis(true);">Limpar</button>
+            <button type="button" class="btn btn-danger my-0" id="btn-eqp-excluir" onclick="OpenModalAreYouSureExclude()">Excluir</button>
+            <button type="button" class="btn btn-warning my-1" onclick="ShowModalConvertTemplate()">Template Convert</button>
+            <!--------------- Fim Botões inferiores Campo de pesquisa  --------------->
+            <br>
+
+        </div><!--------------- Fim Campo de pesquisa e Botões --------------->
+
+        <!--------------- Início formulários dropdown expansível --------------->
+        <div class="col-lg-5 mt-lg-3">
+            <div class="col-12" id="eqps_content_eqp">
+                {% include "eletrica/cad_carga/info_carga.html"%}
+            </div>
+            <div class="col-12" id="eqps_content_motor" hidden>
+                {% include "eletrica/cad_carga/info_motor.html"%}
+            </div>
+
+
+            <div class="col-12" id="eqps_content_trafo" hidden>
+                <div class="nome_origem">
+                    <button  class="btn_mais" data-toggle="collapse" href="#CargaColapseMenuMotor" role="button" aria-expanded="false" aria-controls="CargaColapseMenuMotor" >
+                        +
+                    </button>Saidas
+                </div>
+
+                <div class="collapse" id="CargaColapseMenuMotor">
+                    <div class="card card-body bg-gray" id="CargaInforMotor" >
+                        <div class="origem">
+                            <h6 > Saidas </h6>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 border-right">
+                                <div class="col-12 text-center">
+                                    <h5>Nova Saida</h5>
+                                </div>
+                                <div class="col-12 row">
+                                    <div class="col-9">
+                                        <label for="eqps_tensao_nova_saida">Tensão</label>
+                                        <input type="number" class="form-control" id="eqps_tensao_nova_saida" >
+                                    </div>
+                                    <div class="col-3 d-flex align-items-end">
+                                        <button type="button" class="btn btn-warning" onclick="AddSaidaInTrafo()">Adicionar</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="col-12 text-center">
+                                    <h5>Saidas Existentes</h5>
+                                </div>
+                                <div class="row mx-2 d-flex justify-content-center" id="eqps_all_saidas_exists">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!--------------- Fim formulários dropdown expansível --------------->
+
+        <!------------------ Início Modal Tabela ------------------>
+        <div class="modal" id="Modal_Import_Carga">
+            <div class="modal-dialog mt-5 w-75 mw-100">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div id="tabela_verificacao_carga"></div>
+                    </div>
+                </div>
+            </div>
+        </div><!------------------ Fim Modal Tabela ------------------>
+
+        <!------------------ Início Modal Load ------------------>
+        <div class="modal" id="Modal_Load_Import_Carga">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        <div class="mx-auto">
+                            <img class="w-100" src="{% static 'img/sheet_graph.gif' %}">
+                        </div>
+                        <p class="pb-3"><b>Carregando Tabela por favor aguarde...</b></p>
+                    </div>
+                </div>
+            </div>
+        </div><!------------------ Fim Modal Load ------------------>
+    </div>
+    {% include "eletrica/LoadWheelModal.html"%}
+    {% include "eletrica/modal_warning.html"%}
+    {% include "eletrica/AcessoriosEquip.html"%}
+    {% include "eletrica/AdicionaTipAli.html"%}
+</div>
+<script src="{% static 'js/eletrica/A1Pro/a1pro_ctrl.js' %}"></script>
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/cad_carga/eqp_ctrl.js' %}"></script>
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/a1procontrolusers.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        onload_page_eqp();
+    });
+</script>
+{% with nome_id='CadastroDeCargas' nome_app='eletrica/a1pro' nome_url_download_template='DownloadTemplateCargas' nome_url_enviar_arquivo='TelaCarga/UploadExcelCargas' nome_url_download_arquivo='TelaCarga/DownloadExcelCargas'%}
+{% include "eletrica/ImportExportBase.html"%}
+{% endwith %}
+{% include "eletrica/ModalTemplateConvert.html"%}
+{% include "eletrica/LoadWheelModal.html"%}
+{% include "eletrica/SimNaoModal.html"%}
+{% endblock %}

@@ -1,0 +1,56 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="acessoriosLabel">Acessórios de Motor </h5>
+</div>
+<br>
+<!--Inicio da Interface-->
+
+<div class="row">
+  
+  <!--Inicio da barra -->
+  <div style="border-right: 2px solid rgb(161, 158, 158); float: left ; padding-right:30px;">
+    <div>
+      <div class="col-sm-5" >
+        <div class="form-group mb-4">Acessórios(Geral)
+          <td><select multiple style="width: 150px" required class="form-control " id="acess-list" onclick="select_path(this.value)">
+            <option value="P:">P:</option>
+            <option value="Q:">Q:</option>
+            </select>
+          </td>
+        </div>
+      </div>
+    </div>    
+  </div>
+  <!--Fim da barra --> 
+
+  <!--Inicio campo acessorios do motor -->
+  <div class="col-sm-5">
+    <div class="form-group mb-4">
+      <div class="acss1">Acessórios do Motor
+        <td  >
+          <textarea required class="form-control" > </textarea>
+        </td>
+      </div>
+    </div>
+  </div>
+  <!--Fim campo acessorios do motor -->
+
+  <!--Inicio Bandeja do cabo -->
+  <div class="col-sm-4" >
+    <div class="form-group mb-5">
+      <td placeholder="Digite aqui"  data-toggle="tooltip"  title="Inserir">Bandeja do Cabo
+        <input type="text"  required class="form-control" id="acess-bandeja-cabo" onkeypress="get_path(this.value)">
+      </td>
+      <br>
+      <button type="button"class="tablinks btn btn-secondary" onclick="openTool(event, 'Motores')">Atualizar </button>
+    </div>
+  </div>
+  <!--Fim Bandeja do cabo -->
+
+  <!--Fim da Interface--> 
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-success" >Adicionar/Alterar</button>
+  <button type="button" class="btn btn-warning">Limpar</button>
+  <button type="button" class="btn btn-danger" >Excluir</button>
+</div>
+

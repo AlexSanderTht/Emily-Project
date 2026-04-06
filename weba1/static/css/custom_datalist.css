@@ -1,0 +1,19 @@
+
+/*  atributos que são o modelo da tabela de n"os  */
+
+.custom-datalist{
+    max-height: 600px;
+    overflow-y: auto;
+    width: 100%;
+    z-index: 1000;
+    scrollbar-color: #11100f #ffffff;
+    scrollbar-width: thin;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.25);
+    padding: 5px;
+}
+
+.custom-option-datalist:hover{
+    background-color: #5a5a5a !important;
+    cursor: pointer;
+}

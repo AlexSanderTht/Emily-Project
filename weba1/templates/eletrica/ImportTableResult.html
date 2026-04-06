@@ -1,0 +1,122 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <link href="{% static 'js/bootstrap.min.css' %}">
+</head>
+
+<style>
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-5">
+
+    {% csrf_token %}
+
+    <div class="card mb-4" style="width: 100rem">
+
+        <div class="row p-2">
+            <div class="col-6 d-flex justify-content-start">
+                <button class="mr-auto p-2 bd-highlight btn btn-warning" onclick=" relocate_requests()">
+                    Voltar
+                </button>
+            </div>
+
+            <div class="col-6 d-flex justify-content-end">
+                <button class="btn btn-success" onclick="window.open('/app/eletrica/a1pro/ExportTableResultLig/{{task_id}}/', '_self')">
+                    Exportar
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body  col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Lista de documentos enviados pelo usuário</b></h2>
+        </div>
+
+        <div class="card-body container mx-auto col-12">
+            <div class="table-responsive" style="overflow-y: scroll; overflow-x: scroll">
+                <table id="TabelaDados" class="table">
+                    {{ table | safe }}
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+    function relocate_requests()
+    {
+         history.back()
+    }
+
+    function exportTable(taskId){
+        $.ajax({
+          type: "GET",
+          url: "A1ProDebug/",
+          dataType: 'json',
+          data: {},
+          success: function (data){
+                var progressUrl = `/celery-progress/${data["task_id"]}/`
+                CeleryProgressBar.initProgressBar(progressUrl, {
+                  progressBarId: 'progress-bar-modal-load',
+                  progressBarMessageId: 'progress-bar-message-modal-load',
+                  onSuccess: customSucess,
+                  onError: customError,
+                  onProgress: customProgress,
+                })
+
+                function customSucess(progressBarElement, progressBarMessageElement, result){
+                    progressBarElement.style.backgroundColor = '#76ce60';
+                    progressBarMessageElement.innerHTML = result
+                    setTimeout(()=> {document.getElementById('modal-load-a1pro-content-celery').hidden = true}, 2000)
+                    $('#modal-load-a1pro').modal('hide')
+                    if(result['status']){
+                        swal({
+                            title: "Sucesso!",
+                            text: result['return'],
+                            icon: "success",
+                            button: "Fechar!",
+                        })
+                    }
+                    else{
+                        window.open('/app/eletrica/a1pro/A1ProDownloadDebugFile/' + data['task_id'] + '/', '_self')
+                    }
+                }
+
+                function customError(progressBarElement, progressBarMessageElement, excMessage){
+                    progressBarElement.style.backgroundColor = '#dc4f63';
+                    progressBarMessageElement.innerHTML = "Houve um erro inesperado. Entre em contato com o SEA e informe o número da tarefa: "
+                    + progressUrl;
+                    setTimeout(()=> {document.getElementById('modal-load-a1pro-content-celery').hidden = true}, 1000)
+                    $('#modal-load-a1pro').modal('hide')
+                }
+
+                function customProgress(progressBarElement, progressBarMessageElement, progress){
+                    document.getElementById('modal-load-a1pro-content-celery').hidden = false
+                    progressBarElement.style.backgroundColor = '#68a9ef';
+                    progressBarElement.style.width = progress.percent + "%";
+                    var description = progress.description || "";
+                    progressBarMessageElement.innerHTML = description
+                }
+           }
+        });
+    }
+
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'english_platform/base.html' %}
+
+{% block title %}Painel do Aluno | Emily English Studio{% endblock %}
+
+{% block content %}
+<section class="dashboard-grid">
+    <article class="panel-card">
+        <p class="eyebrow">Area do aluno</p>
+        <h1>Seu painel</h1>
+        <p>Bem-vindo(a), {{ user.first_name|default:user.username }}.</p>
+        <h2>Solicitar nova aula</h2>
+        <form method="post" action="{% url 'english_platform:book_lesson' %}" class="auth-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-primary">Solicitar horario</button>
+        </form>
+    </article>
+
+    <article class="panel-card">
+        <h2>Minhas aulas</h2>
+        {% if bookings %}
+            <ul class="booking-list">
+                {% for booking in bookings %}
+                    <li>
+                        <strong>{{ booking.scheduled_at|date:'d/m/Y H:i' }}</strong>
+                        <span>{{ booking.get_level_display }} | {{ booking.get_status_display }}</span>
+                        <p>{{ booking.goals }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Voce ainda nao possui aulas agendadas. Use o formulario ao lado para solicitar seu primeiro horario.</p>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}

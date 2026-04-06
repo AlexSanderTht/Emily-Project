@@ -1,0 +1,174 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>New Codes</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+<div class="container mt-5">
+    <!------------------ Cabeçalho da ferramenta de gerar tipicos ------------------>
+    <div class="row justify-content-center animate__animated animate__backInRight">
+        <div class="col-lg-12 text-center">
+            <h1>A1New Codes</h1>
+        </div>
+        <div class="col-lg-12 text-center">
+            <h5>Ferramenta útil para cadastrar suportes primários.</h5>
+        </div>
+    </div>
+    <!------------------ Fim do cabeçalho ------------------>
+
+    <div class="container row justify-content-center animate__animated animate__pulse">
+        <div class="col-sm-12 col-md-10 col-xl-8 bordas py-3 bg-white border shadow">
+            <!------------------ Inicio Dropzone ------------------>
+            <div class="col-lg-12" id="form">
+                {% csrf_token %}
+                <div class="form-row">
+                    <!------------------ Inicio Dropzone TXT ------------------>
+                    <div class="col-sm-12 col-md-12 col-lg-12 card_dropzone_blue row align-items-center py-3 ml-0 px-0" id="drop-area-txt">
+                        <div class="text-center w-100 my-5" id="txt">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-primary">Arraste e solte o arquivo (*.txt) ou</span><br>
+                            <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                <input multiple="multiple" accept=".txt" class="hidden" type="file" id="arquivo_txt" onchange="DropArquivo('arquivo_txt','drop-area-txt','txt',null)"/>
+                                <i class="fa-solid fa-upload"></i> Import TXT
+                            </label>
+                        </div>
+                    </div><!------------------ Fim Dropzone TXT ------------------>
+                </div>
+            </div><!------------------ Fim Dropzone ------------------>
+        </div>
+    </div>
+</div>
+<script>
+    let formFileCodesPrimario = new FormData();
+
+    // --------------------- Função envia os dados para função de cadastro no backend ---------------------//
+    function SendValuesToRegistration() {
+        const csrf = document.getElementsByName("csrfmiddlewaretoken")
+        $.ajax({
+            url: "/app/engenharia/a1newcodes/", // Caminho do Ajax
+            type: "POST", // http method
+            headers:{'X-CSRFToken':csrf[0].value},
+            dataType: "json",
+            data: formFileCodesPrimario, // Envia form pela solicitação do POST
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                swal({
+                    title: data['response'],
+                    text: 'cadastrados com sucesso!',
+                    icon: "success",
+                    button: 'Fechar'
+                })
+                $('div.swal-modal').addClass('bordas')
+                $('div.swal-title').addClass('h5')
+                $('div.swal-text').addClass('h5 text-muted ')
+                $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                $('div.swal-text').addClass('text-center')
+                $('div.swal-footer').addClass('d-flex justify-content-center')
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        })
+
+    }
+
+    // --------------------- Função para converter o tamanho para bytes ---------------------//
+    function FormatNumberToBytes(bytes, decimal = 2) {
+        if (!+bytes) return '0 Bytes'
+        const k = 1024
+        const dm = decimal < 0 ? 0 : decimal
+        const tamanho = ['Bytes', 'KB', 'MB', 'GB']
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${tamanho[i]}`
+    }
+
+    // --------------------- Função adiciona campo visual nos dropzones ---------------------//
+    function DropArquivo(id_input,id_drop,campo,arquivo) {
+        let drop_container = document.getElementById(campo);
+        let file = document.getElementById(id_input);
+        let form;
+        let name_file;
+        let drop = '';
+        let itens = $('#'+id_drop)[0].children
+
+        // Caso não seja dropado o arquivo é recebido via id
+        if (arquivo !== null) {
+            form = arquivo.files;
+        } else {
+            form = file.files;
+        }
+
+        for (let i = 0; i <form.length;i++){
+            name_file = form[i].name
+            let extension = name_file.split('.').pop();
+            if (extension === campo){
+                if (campo === 'txt'){
+                    if (itens.length === 1) {
+                        let tamanho = FormatNumberToBytes(form[i].size) //Recebe o tamanho para o formato em bytes
+                        if (name_file.split(' ').length <= 1){
+                            name_file = name_file.match(/.{1,18}/g).join(' ') //Caso o nome do arquivo seja maior que 18 caracteres a string é quebrada
+                        }
+
+                        formFileCodesPrimario.append('fileTXT', form[i]);
+                        drop = `<div class="col-3 bordas mx-auto my-1 input-group border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown position-relative">
+                            <button onclick="window.location.reload(true)" title="Remove arquivo" class="btn btn-outline-danger rounded-pill px-2 border-0 position-absolute" type="button" style="right:0px;top:0px;z-index: 1;">
+                                <i class="fas fa-times-circle fa-xl"></i>
+                            </button>
+                            <img class="my-2 w-75 mx-auto" src="{% static 'img/txt.png' %}" alt="Image TXT">
+                            <span type="text" title="${name_file}" class="py-2 w-100 border-bottom font-weight-bold">${tamanho}</span>
+                            <span type="text" title="${name_file}" class="py-2 mx-2 text-center">${name_file}</span>
+                            <button onclick="SendValuesToRegistration()" type="button" class="btn btn-primary rounded-pill my-2 mx-auto w-75">
+                                <i class="fa-solid fa-paper-plane pr-2"></i>Enviar
+                            </button>
+                        </div>`
+
+                        drop_container.innerHTML = drop;
+                    }
+                }
+            } else {
+                swal({
+                    title: "Extensão do campo diferente de (.txt)!",
+                    icon: "error",
+                    button: 'Fechar'
+                })
+                $('div.swal-modal').addClass('bordas')
+                $('div.swal-title').addClass('h5')
+                $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                $('div.swal-text').addClass('text-center')
+                $('div.swal-footer').addClass('d-flex justify-content-center')
+            }
+        }
+    }
+
+    jQuery(document).ready(function($) {
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-area-txt').on('dragover', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).addClass('upload-hover-blue');
+        })
+
+        // Ao retirar o cursor com arquivo sobre o campo dropzone as bordas diminuem
+        $('#drop-area-txt').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+        })
+
+        // Ao soltar o arquivo sobre o campo chama a função DropArquivo passando os parâmetros
+        $('#drop-area-txt').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+          let file_txt = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivo('arquivo_txt','drop-area-txt','txt',file_txt)
+        })
+    });
+</script>
+{% endblock %}

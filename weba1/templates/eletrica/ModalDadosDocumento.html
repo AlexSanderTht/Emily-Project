@@ -1,0 +1,219 @@
+<div class="modal fade bd-example-modal-lg" id="modal_dados_documento" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Dados do Documento</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" onclick="FillSelectAllNumDocs('num_doc')">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12">
+
+            <div class="row mt-1">
+                <div class="col-3 text-right">
+                    <label for="dados_doc_tipo_doc">Tipo de Doc:</label>
+                </div>
+                <div class="col-9">
+                    <select class="form-control" id="dados_doc_tipo_doc">
+                        <option value="0">Selecione uma Tipo de Documento</option>
+                        {% for value in tipos_doc %}
+                            <option value="{{value}}">{{value}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-3 text-right p-0">
+                    <label for="dados_doc_desc_doc">Descrição do Documento:</label>
+                </div>
+                <div class="col-9">
+                    <input type="text" class="form-control" id="dados_doc_desc_doc">
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col-3 text-right p-0">
+                    <label for="dados_doc_desc_tipo">Tipo de Documento:</label>
+                </div>
+                <div class="col-9">
+                    <input type="text" class="form-control" id="dados_doc_desc_tipo">
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col-3 text-right p-0">
+                    <label for="dados_doc_desc_area">Descrição da Área:</label>
+                </div>
+                <div class="col-9">
+                    <input type="text" class="form-control" id="dados_doc_desc_area">
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col-3 text-right">
+                    <label for="dados_doc_num_doc_a1">N°doc.A1:</label>
+                </div>
+                <div class="col-8">
+                    <select class="form-control" id="dados_doc_num_doc_a1" onchange="ChangeNumDoc(this)" style="width: 540px;">
+                        <option value="0">---</option>
+                    </select>
+                    <input type="text" class="form-control" id="dados_doc_adc_new_num" style="width: 540px;" hidden>
+                    <input type="text" class="form-control" id="dados_doc_edit_num" title="" style="width: 540px;" hidden>
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-warning" id="dados_doc_btn_adc_new_num" onclick="ShowFormAdcNewDocNum()">+</button>
+                    <button type="button" class="btn btn-warning" id="dados_doc_btn_save_new_num" onclick="ClickBtnOkAdcNewDocNum()" style="width: 37px;" hidden>OK</button>
+                <div class="row">
+                    <button type="button" class="btn btn-warning" id="dados_doc_btn_outro" hidden onclick="ClearAllFieldsDadosDoc()">Outro</button>
+                    <button type="button" class="btn btn-warning" id="dados_doc_btn_del" hidden onclick="DeleteDoc()"><i class="fa-regular fa-circle-xmark" style="width: 40px;" ></i></button>
+                </div>
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col-3 text-right">
+                    <label for="dados_doc_num_cliente">N° Cliente:</label>
+                </div>
+                <div class="col-9">
+                    <input type="text" class="form-control" id="dados_doc_num_cliente">
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col-3 text-right">
+                    <label>Notas:</label>
+                </div>
+                <div class="col-9">
+                    <div class="notas_dados_doc shadow rounded d-flex flex-wrap justify-content-center" id="dados_doc_all_notas">
+                    </div>
+                    <div class="row mt-1" id="dados_doc_content_adc_nota" hidden>
+                        <div class="col-7">
+                            <input type="text" class="form-control" id="dados_doc_adc_nota" placeholder="Adicionar Nota...">
+                        </div>
+                        <div class="col-4 p-0">
+                            <button type="button" class="btn btn-warning" onclick="SaveNotasInDoc()">Salvar</button>
+                            <button type="button" class="btn btn-warning" onclick="HideShowDatasNotas(true)">Esconder <i class="fa-solid fa-caret-down"></i></button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-warning mt-2" onclick="HideShowDatasNotas(false)">Adicionar Nota <i class="fa-solid fa-caret-up"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="col-12">
+                <h5>Índice de Revisões</h5>
+            </div>
+            <div class="col-12 border rounded py-2">
+                <div class="row mb-3 ml-2">
+                    <button type="button" class="btn btn-warning" id="consolida-suporte" onclick="">Consolidação</button>
+                </div>
+                <div class="row">
+                    <div class="col-2 text-right">
+                        <label for="dados_doc_num_rev_a1">Revisão A1:</label>
+                    </div>
+                    <div class="col-2">
+                        <select class="form-control" id="dados_doc_num_rev_a1">
+                            {% for rev in nums_rev %}
+                                <option value="{{rev}}">{{rev}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-2 text-right p-0">
+                        <label for="dados_doc_num_rev_cliente">Revisão Cliente:</label>
+                    </div>
+                    <div class="col-2">
+                        <select class="form-control" id="dados_doc_num_rev_cliente">
+                            {% for rev in nums_rev %}
+                                <option value="{{rev}}">{{rev}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-1 text-right">
+                        <label for="dados_doc_data">Data:</label>
+                    </div>
+                    <div class="col-3">
+                        <input type="date" class="form-control" id="dados_doc_data">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-2 text-right p-0">
+                        <label for="dados_doc_desc_rev">Descrição Rev:</label>
+                    </div>
+                    <div class="col-10">
+                        <input type="text" class="form-control" id="dados_doc_desc_rev">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-2 text-right">
+                        <label for="dados_doc_status">Status:</label>
+                    </div>
+                    <div class="col-4">
+                        <select class="form-control" id="dados_doc_status">
+                            <option value="0">---</option>
+                            {% for id, value in all_status.items %}
+                                <option value="{{id}}">{{value}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-2 text-right">
+                        <label for="dados_doc_status">Finalidade:</label>
+                    </div>
+                    <div class="col-4">
+                        <select class="form-control" id="dados_doc_finalidade">
+                            <option value="0">---</option>
+                            {% for id, value in all_finalidades.items %}
+                                <option value="{{id}}">{{value}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-2 text-right">
+                        <label for="dados_doc_elaborado">Elaborado:</label>
+                    </div>
+                    <div class="col-2">
+                        <input type="text" class="form-control" id="dados_doc_elaborado" onchange="VerifyIniciasPerson(this)" onkeyup="UpperText(this)" title="">
+                    </div>
+                    <div class="col-2 text-right">
+                        <label for="dados_doc_verificado">Verificado:</label>
+                    </div>
+                    <div class="col-2">
+                        <input type="text" class="form-control" id="dados_doc_verificado" onchange="VerifyIniciasPerson(this)" onkeyup="UpperText(this)" title="">
+                    </div>
+                    <div class="col text-right">
+                        <label for="dados_doc_aprovado">Aprovado:</label>
+                    </div>
+                    <div class="col-2">
+                        <input type="text" class="form-control" id="dados_doc_aprovado" onchange="VerifyIniciasPerson(this)" onkeyup="UpperText(this)" title="">
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" onclick="SendDadosDoc()">Salvar</button>
+        <button type="button" class="btn btn-warning" onclick="$('#modal_dados_documento').modal('hide');FillSelectAllNumDocs('num_doc')">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    function BotaoConsolidacao() {
+        document.getElementById('consolida-suporte').hidden = true
+        let tipo_doc = document.getElementById('tipo_doc').value
+        if (tipo_doc == "SUPORTES E BANDEJAS") {
+            document.getElementById('consolida-suporte').hidden = false
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById('dados_doc_tipo_doc').addEventListener('change', function() {
+            var selectedOption = this.options[this.selectedIndex].text;
+            var inputDescricao = document.getElementById('dados_doc_desc_doc');
+            if (selectedOption === 'SUPORTES E BANDEJAS' || selectedOption === 'SUPORTES E BANDEJAS') {
+                inputDescricao.value = 'DETALHES TÍPICOS DE ELÉTRICA'
+            } else {
+                inputDescricao.value = 'DETALHES TÍPICOS DE ' + selectedOption;
+            }
+        });
+    });
+</script>

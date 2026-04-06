@@ -1,0 +1,50 @@
+{% load static %}
+
+<script type="text/javascript" src="{% static 'js/eletrica/PainelAcessorio.js' %}"></script>
+<div class="modal-xl modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document" style="margin-right: auto; margin-left: 30%; max-width: 80%;">
+    <div class="modal-content">
+      <div class="modal-header">
+      </div>
+
+      <div class="modal-body">
+
+          <div class="container-fluid w-100 h-100 p-1">
+                <img src="" id="img_dwg_template" class="shadow" style="width: 100%; height: auto; cursor: zoom-in;">
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="{% static 'js/eletrica/PainelAcessorio.js' %}"></script>
+
+<script>
+  const img = document.getElementById('img_dwg_template');
+  let zoomLevel = 1; // Inicialmente sem zoom
+
+  img.addEventListener('click', function (event) {
+    // Verifica o nível de zoom
+    const maxZoom = 2; // Zoom máximo ajustado para 2x
+    const minZoom = 1; // Zoom mínimo
+    const zoomIncrement = 0.5; // Intensidade aumentada
+
+    // Calcula a posição do clique
+    const rect = img.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left; // Posição X relativa
+    const offsetY = event.clientY - rect.top;  // Posição Y relativa
+
+    // Ajusta o zoom (aumenta ou reseta)
+    if (zoomLevel === minZoom) {
+      zoomLevel += zoomIncrement;
+      img.style.transformOrigin = `${(offsetX / rect.width) * 100}% ${(offsetY / rect.height) * 100}%`;
+      img.style.cursor = 'zoom-out';
+    } else {
+      zoomLevel = minZoom;
+      img.style.cursor = 'zoom-in';
+    }
+
+    // Aplica o zoom com uma transição suave
+    img.style.transform = `scale(${zoomLevel})`;
+    img.style.transition = 'transform 0.3s ease, transform-origin 0.3s ease';
+  });
+</script>

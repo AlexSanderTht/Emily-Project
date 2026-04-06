@@ -1,0 +1,570 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+
+{% block head %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>A1Calc</title>
+
+<style>
+body {
+    background: linear-gradient(rgba(0, 0, 0, 0.225), rgba(0, 0, 0, 0.225)), url("/static/img/Espaço Inovação.jpg") center center/cover no-repeat fixed;
+    -webkit-font-smoothing: antialiased;
+}
+
+    .panel-login {
+        background: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(9,30,56,0.6)), url("/static/img/Espaço Inovação.jpg") center center/cover no-repeat;
+        background-blend-mode: overlay;
+        border-color: rgba(255,255,255,.18);
+    }
+    @media (max-width: 768px) {
+        .panel-login { background-attachment: scroll; }
+    }
+
+    .card_filter_calc { width: 18rem; z-index: 0; max-width: 36rem; }
+    .card #ButtonCalulate { left: -4.7rem; top: 2rem; transform: rotate(270deg); }
+    .card #ButtonCalulate1 { left: -4.7rem; top: 2rem; transform: rotate(270deg); }
+
+    .move { z-index: 0; right: 39.5rem; transition: right 0.40s; 
+            background: rgba(255,255,255,.32);
+            backdrop-filter: blur(16px) saturate(140%);
+            -webkit-backdrop-filter: blur(16px) saturate(140%);
+            border: 1px solid rgba(255,255,255,.45);
+            box-shadow: 0 10px 30px rgba(0,0,0,.12);
+            color:#0f172a;}
+    .move_hover { right: 58.3rem; transition: right 0.5s; }
+    .opaco { opacity: 0; transition: opacity 0.5s; }
+    .opaco_hover { opacity: 1; transition: opacity 0.5s; }
+</style>
+
+{% endblock %}
+
+{% block main %}
+<style>
+        .os-gl{
+            width: 700px;
+            height: 1400px;
+            padding: 18px;
+            border-radius: 22px;
+            background: rgba(255,255,255,.32);
+            backdrop-filter: blur(16px) saturate(140%);
+            -webkit-backdrop-filter: blur(16px) saturate(140%);
+            border: 1px solid rgba(255,255,255,.45);
+            box-shadow: 0 10px 30px rgba(0,0,0,.12);
+            color:#0f172a;
+        }
+        .os-title{font-size:26px;font-weight:800;margin:0 0 12px;}
+        .kv{display:grid;grid-template-columns:110px 1fr;column-gap:12px;row-gap:6px;font-size:14px;}
+        .kv .k{color:#475569;}
+        .kv .v{font-weight:600;color:#111827;}
+        .os-divider{border:0;border-top:1px solid rgba(255,255,255,.6);margin:14px 0;}
+        .os-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+        .overlay {
+            min-height: 100%;
+            background: rgba(0, 0, 0, 0.45);
+          
+        }
+
+
+
+
+
+    #listCustomDatalist {
+    background: var(--cd-bg);
+    color: var(--cd-text);
+    border: var(--cd-border);
+    padding: 8px;
+    border-radius: 6px;
+    max-height: 150px;
+    overflow-y: auto;
+    transition: .25s ease;
+}
+
+
+
+/* fonte e layout do bloco */
+#tab-switcher {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, sans-serif;
+}
+
+/* estilo base de TODOS os botões da coluna */
+#tab-switcher .btn-orange {
+  border-radius: 999px;         /* pill */
+  border: none;
+  background: #222;             /* cinza bem escuro */
+  color: #fff;
+  padding: 0.75rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 400;
+  text-align: center;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.225);
+  cursor: pointer;
+
+  transition: transform 0.2s ease,
+              box-shadow 0.2s ease,
+              background 0.2s ease,
+              opacity 0.2s ease;
+}
+
+/* hover dos botões escuros */
+#tab-switcher .btn-orange:hover:not(.btn-config) {
+  background: #2d2d2d;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.55);
+}
+
+/* botão laranja principal (PAINEL CONFIG) */
+#tab-switcher .btn-config {
+  background: #ff9200;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* hover do laranja */
+#tab-switcher .btn-config:hover {
+  background: #f27f00;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.6);
+}
+#tab-switcher .btn-orange.active,
+#tab-switcher .btn-orange[aria-selected="true"] {
+    background: #ff7a00 !important;
+    color: #fff;
+}
+
+
+</style>
+
+<div id="tab-switcher" class="d-flex flex-column mb-3" role="tablist" aria-label="Alternar abas" style="max-width: 300px; margin-top: 20px;">
+    <button id="btnTabA" type="button" class="btn-orange w-100 mb-2 active" data-target="#tabA" role="tab" aria-selected="true">Baixa Tensão</button>
+    <button id="btnTabB" type="button" class="btn-orange w-100 mb-2" data-target="#tabB" role="tab" aria-selected="false">Média Tensão</button>
+    <button id="btnTabD" type="button" class="btn-orange w-100 mb-2" data-target="#tabD" role="tab" aria-selected="false">Corrente Contínua</button>
+    <button id="btnTabC" type="button" class="btn-orange w-100 mb-2" data-target="#tabC" role="tab" aria-selected="false">PAINEL CONFIG</button>
+</div>
+
+<!-- Conteúdos das abas -->
+<div id="tabA" data-tab-group="main-tabs" class="mb-3">
+      <div class="container mt-5">
+
+        <!-- Cabeçalho da ferramenta de calculo de Cabos -->
+        <div class="row justify-content-center animate__animated animate__backInRight"  style="margin-top: -280px;">
+            <div class="col-lg-12 text-center">
+                <h1>A1Calc</h1>
+            </div>
+            <div class="col-lg-12 text-center">
+                <h5>Ferramenta para cálculo de cabos</h5>
+            </div>
+        </div>
+        <!-- Fim do cabeçalho -->
+
+        <div class="row justify-content-center text-center position-relative animate__animated animate__pulse mb-5">
+            <!--------------------- Início campo filtro projeto e tabela -------------------->
+          
+                    <!-- Coluna esquerda: filtro/projetos -->
+                     <div class="card card_filter_calc mt-3 move position-absolute" id="procalc_campo_filtro">
+                        <div class="card-body" style="width:268px; max-height:1450px; min-height: 350px;">
+                            <div class="opaco" id="campo_opaco">
+                                    <!--------------------- Início campo projeto -------------------->
+                                    <div class="row">
+                                        <div class="col-12" id="project_select_card_calc_cabos" style="max-height: 1450px;">
+                                            <div class="form-group text-left" >
+                                                <label>Projeto:</label>
+                                                {% with id_input='filter_projects_bt' name_func_change='ChangeProjeto' url_get='all_projects_datalist/' placeholder_input='Filtro de Projeto ...' id_select_get_value_selected='procalc-bt-project' %}
+                                                            {% include 'geral/custom_datalist.html' %}
+                                                {% endwith %}
+                                            </div>
+                                        </div>
+
+                                        <div id="loader_table" class="col-12" hidden>
+                                            <div class="d-flex justify-content-center align-items-center animate__animated animate__fadeIn mb-3">
+                                                <div class="custom-loader-a1"></div>
+                                                <h6 id="cronometroCalcCabos" class="position-absolute font-weight-bold text-secondary">00:00:00</h6>
+                                            </div>
+                                        </div>
+
+                                        <!--------------------- Início tabela -------------------->
+                                        <div id="table_filter_calc_mt" class="col-12" hidden>
+                                              <div class="input-group col-lg-12 px-0 mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-white borda_filtros">
+                                            <i class="fa-solid fa-magnifying-glass text-secondary"></i>
+                                        </span>
+                                    </div>
+                                    <input type="search" class="form-control border-left-0 border_left" id="TextFix"  placeholder="Pesquisar..." onkeyup="filterCalcsInCalcCabos(this.value, 'list_name_calc')" >
+                                </div>
+                                <div class="content_calcs_in_proj font_size_0_8 w-100 animate__animated animate__fadeIn">
+                                    <ul class="list-group w-100" id="select_calcs_in_proj" tabindex="0" onkeyup="handleKeyUp(event, this.id, 'LI')" onkeydown="handleKeyDown(event, this.id, 'LI')"></ul>
+                                </div>
+                                <div class="col-lg-12 px-0 mb-3 text-center mt-3">
+                                    <button type="button" class="btn btn-danger" onclick="DeleteCalcInProj()">Deletar tudo</button>
+                                </div>
+                                    </div>
+                            <!--------------------- Fim tabela -------------------->
+
+                            <!--------------------- Início Botões import/export -------------------->
+                            <div id="botoes_project_cal_cabos" class="col-lg-12">
+                                <div class="mt-lg-2 d-flex justify-content-between">
+                                    <button type="button" class="btn btn-secondary btn-sm flex-fill mr-2" onclick="OpenModalImportCalcsBt()">Import Cargas</button>
+                                    <button type="button" class="btn butof btn-sm flex-fill" onclick="ShowModalSimNao(HideModalSimNao, ExportCalcsBt, 'Certifique-se que você exportou as cargas que você irá exportar os cálculos, deseja continuar ?')">Export Calcs</button>
+                                </div>
+
+                                <div class="mt-lg-2 d-flex justify-content-between">
+                                    <button type="button" class="btn btn-secondary btn-sm flex-fill mr-2" onclick="ShowModalSimNao(HideModalSimNao, ExportCargasBt, 'Tem certeza que deseja exportar as cargas do projeto selecionado ?')">Export Cargas</button>
+                                    <button type="button" class="btn btn-success btn-sm flex-fill mr-2 w-30" style="margin-right: -100px;"   onclick="GeraBookExcel()">Book Excel</button>
+                                </div>
+
+                                <div class="col-lg-12" id="row_load_elements" hidden>
+                                    <img src="{% static 'dashboards/lesma_skate.gif' %}">
+                                    <div id="progress-bar-message" class="w-100 text-center"></div>
+                                </div>
+
+                                <div id="progress-box-calc-cabos-book-excel" class="col-lg-12 mt-3 font_size_0_8" hidden>
+                                    <div id="load_gif_book_excel" style="width: 0%;">
+                                        <img id="gif_progress_load_book" class="float-right" style="height: 40px;" src="{% static 'img/run-sonic.gif' %}" alt="GIF progress-bar">
+                                        <img hidden id="gif_success_load_book" class="float-right" style="height: 40px;" src="{% static 'img/sonic-success.gif' %}" alt="GIF progress-bar">
+                                    </div>
+                                    <div class='progress-wrapper text-center'>
+                                        <div id='progress-bar-calc-cabos-book-excel' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                                    </div><br>
+                                    <div id="progress-bar-message-calc-cabos-book-excel" class="text-center">Aguardando a Inicialização da tarefa ...</div>
+                                </div>
+                           <!--------------------- Fim Botões import/export -------------------->
+                        <!--------------------- Fim campo projeto -------------------->
+                    
+                            
+                        </div>
+                                             
+            </div>
+                            </div>
+
+                    <button id="ButtonCalulate" class="btn butof btn-outline-light p-2 font-weight-bold position-absolute" onclick="MoveCard()">
+                        <i class="fa-solid fa-square-root-variable"></i>
+                        Projetos
+                    </button>
+                </div>
+            </div><!--------------------- Fim campo filtro projeto table -------------------->
+
+            <!-- Conteudo do a1procalc -->
+            <div class="content-a1procalc os-gl mt-3 border animate__animated animate__pulse" id="a1procac" style="z-index: 1;">
+
+                <!-- NavBar Opção de tensão -->
+                <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded-top">
+                  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a class="nav-item nav-link active" href="#" id="procalc-element-bt-nav-menu">Baixa Tensão</a>
+                    </div>
+                  </div>
+                </nav>
+                <!-- Fim NavBar Opção de tensão -->
+
+                {% include "./CalcBt.html" %}
+                <!-- Fim Conteudo do a1procalc -->
+            </div>
+
+
+            <div class="col-lg-2 mt-3 img_format_cabo_calccabos position-absolute" id="a1calcformat" >
+                <div class="row ml-1 p-2 bg-white border rounded" id ="descritivo_modo_instalacao" hidden>
+                    <img class="col" id="imagem" src="/app/calc_cabos/load_img_bt/2">
+                    <label for="numero_metodo_instalacao">Número modo de instalação:</label>
+                    <input class="col" id="numero_metodo_instalacao" readonly>
+                    <label for="texto_modo_instalacao">Descrição modo de instalação:</label>
+                    <textarea class="col" id="texto_modo_instalacao" readonly></textarea>
+                </div>
+
+                <div class="card mt-4 d-flex-without-important bg-info ml-2" id="card_warning_eletroduto" hidden>
+                    <div class="card-body font-italic">
+                        Considerado resistividade térmica do solo <b>2,5 K.m/W</b>
+                    </div>
+                </div>
+
+                <div class="container-fluid bg-secondary rounded ml-2 mt-2" hidden id="card_datas_calc">
+                    <div class="col-12">
+                        <div class="col font-italic text-white">
+                            Seção calculada:
+                        </div>
+                        <div class="col" id="card_sec_calc"></div>
+                    </div>
+
+                    <div class="col-12 mt-1">
+                        <div class="col font-italic text-white">
+                            Quantidade de cabos:
+                        </div>
+                        <div class="col" id="card_qnt_calc"></div>
+                    </div>
+                </div>
+                <div class="container-fluid bg-secondary rounded ml-2 mt-2" hidden id="card_datas_criterio_dimen">
+                    <div class="col-12" style="padding: 0">
+                        <div class="col font-italic text-white">
+                            Critério de Dimensionamento:
+                        </div>
+                    </div>
+                    <div class="col-12 mt-1">
+                        <div class="col font-italic" id="card_sec_criterio_dimen"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!------------------ Início Modal Mensagem Load ------------------>
+    <div class="modal fade" id="modal_import_capa">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center w-100">Selecione a Capa</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input accept=".pdf" type="file" class="custom-file-input" id="BookArquivoUpload" onchange="DropFileCapaBook()">
+                            <label class="custom-file-label text-left" for="BookArquivoUpload" id="TextInputFileBook">Selecione o PDF</label>
+                        </div>
+                        <button type="button" class="btn butof px-3 ml-2" onclick="GeraBookProjeto($('#procalc-bt-project').val(), 'BT')">Enviar</button>
+                    </div>
+
+                    <div id="progress-box-book">
+                        <div class="mx-auto px-3" id="div_bar_task_book" hidden>
+                            <div class="rounded-lg p-1 w-100">
+                                <div class="tab-content">
+                                    <div id="nav-tab-card" class="tab-pane fade show active">
+                                        <div class='progress-wrapper'>
+                                            <div id='progress-bar' class='bordas progress-bar progress-bar-striped progress-bar-animated'>&nbsp;</div>
+                                        </div>
+                                        <div id="progress-bar-message-book"><br><span>Aguardando Inicialização da tarefa ...</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim Modal Mensagem Submit ------------------>
+</div>
+<div id="tabB" data-tab-group="main-tabs" class="mb-3 d-none">
+     <div class="container mt-5">
+
+        <!-- Cabeçalho da ferramenta de calculo de Cabos -->
+        <div class="row justify-content-center animate__animated animate__backInRight"  style="margin-top: -280px;">
+            <div class="col-lg-12 text-center">
+                <h1>A1CalcMT</h1>
+            </div>
+            <div class="col-lg-12 text-center">
+                <h5>Ferramenta para cálculo de cabos - Média Tensão</h5>
+            </div>
+        </div>
+        <!-- Fim do cabeçalho -->
+
+        <div class="row justify-content-center text-center position-relative animate__animated animate__pulse mb-5">
+            <!--------------------- Início campo filtro projeto e tabela -------------------->
+            <div class="card card_filter_calc mt-3 move position-absolute" id="procalc_campo_filtro1">
+                <div class="card-body" style="width:268px; max-height:850px; min-height: 350px;">
+                    <div class="opaco" id="campo_opaco1">
+                        <!--------------------- Início campo projeto -------------------->
+                        <div class="row">
+                            <div class="col-12" id="project_select_card_calc_cabos1" style="max-height: 350px;">
+
+                                <div class="form-group text-left">
+                                    <label>Projeto:</label>
+                                    {% with id_input='filter_projects_mt' name_func_change='ChangeProjetoMt' url_get='/app/calc_cabos/a1calccabos/all_projects_datalist/' placeholder_input='Filtro de Projeto ...' id_select_get_value_selected='procalc-mt-project' %}
+                                        {% include 'geral/custom_datalist.html' %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+
+                            <div id="loader_table" class="col-lg-12" hidden>
+                                <div class="d-flex justify-content-center align-items-center animate__animated animate__fadeIn mb-3">
+                                    <div class="custom-loader-a1"></div>
+                                    <h6 id="cronometroCalcCabos" class="position-absolute font-weight-bold text-secondary">00:00:00</h6>
+                                </div>
+                            </div>
+
+                            <!--------------------- Início tabela -------------------->
+                            <div id="table_filter_calc_mt" class="col" hidden>
+                                <div class="input-group col-lg-12 px-0 mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-white borda_filtros">
+                                            <i class="fa-solid fa-magnifying-glass text-secondary"></i>
+                                        </span>
+                                    </div>
+                                    <input type="search" class="form-control border-left-0 border_left" id="TextFix"  placeholder="Pesquisar..." onkeyup="filterCalcsInCalcCabos(this.value, 'list_name_calc')" >
+                                </div>
+                                <div class="content_calcs_in_proj font_size_0_8 w-100 animate__animated animate__fadeIn">
+                                    <ul class="list-group w-100" id="select_calcs_in_proj_mt" tabindex="0" onkeyup="handleKeyUp(event, this.id, 'LI')" onkeydown="handleKeyDown(event, this.id, 'LI')"></ul>
+                                </div>
+                                <div class="col-lg-12 px-0 mb-3 text-center mt-3">
+                                    <button type="button" class="btn btn-danger" onclick="DeleteCalcMt()">Deletar tudo</button>
+                                </div>
+                            </div>
+                            <!--------------------- Fim tabela -------------------->
+
+                            <!--------------------- Início Botões import/export -------------------->
+                            <div id="botoes_project_cal_cabos" class="col-lg-12">
+                                <div class="mt-lg-2 d-flex justify-content-between p-0">
+                                    <button type="button" class="btn btn-secondary btn-sm flex-fill mr-2" onclick="OpenModalImportCalcsMt()">Import Cargas</button>
+                                    <button type="button" class="btn butof btn-sm flex-fill" onclick="ShowModalSimNao(HideModalSimNao, ExportCalcsMt, 'Certifique-se que você exportou as cargas que você irá exportar os cálculos, deseja continuar ?')">Export Calcs</button>
+                                </div>
+
+                                <div class="mt-lg-2 d-flex justify-content-between">
+                                    <button type="button" class="btn btn-secondary btn-sm flex-fill mr-2" onclick="ShowModalSimNao(HideModalSimNao, ExportCargasMt, 'Tem certeza que deseja exportar as cargas do projeto selecionado ?')">Export Cargas</button>
+                                    <button type="button" class="btn btn-success btn-sm flex-fill mr-2 w-30" onclick="GeraBookExcel(bt=false)">Book Excel</button>
+                                </div>
+
+                                <div class="col-lg-12" id="row_load_elements" hidden>
+                                    <img src="{% static 'dashboards/lesma_skate.gif' %}">
+                                    <div id="progress-bar-message" class="w-100 text-center"></div>
+                                </div>
+
+                                <div id="progress-box-calc-cabos-book-excel" class="col-lg-12 mt-3 d-flex-without-important flex-column font_size_0_8" hidden>
+                                    <div id="load_gif_book_excel" style="width: 0%;">
+                                        <img id="gif_progress_load_book" class="float-right" style="height: 40px;" src="{% static 'img/run-sonic.gif' %}" alt="GIF progress-bar">
+                                        <img hidden id="gif_success_load_book" class="float-right" style="height: 40px;" src="{% static 'img/sonic-success.gif' %}" alt="GIF progress-bar">
+                                    </div>
+                                    <div class='progress-wrapper text-center'>
+                                        <div id='progress-bar-calc-cabos-book-excel' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                                    </div>
+                                    <div id="progress-bar-message-calc-cabos-book-excel" class="text-center w-100">Aguardando a Inicialização da tarefa ...</div>
+                                </div>
+                            </div><!--------------------- Fim Botões import/export -------------------->
+                        </div><!--------------------- Fim campo projeto -------------------->
+                    </div>
+                    <button id="ButtonCalulate1" class="btn butof btn-outline-light p-2 font-weight-bold position-absolute" onclick="MoveCard1()">
+                        <i class="fa-solid fa-square-root-variable"></i>
+                        Projetos
+                    </button>
+                </div>
+            </div><!--------------------- Fim campo filtro projeto table -------------------->
+
+            <!-- Conteudo do a1procalc -->
+            <div class="content-a1procalc os-gl  mt-3 border animate__animated animate__pulse" id="a1procac" style="z-index: 1;">
+
+                <!-- NavBar Opção de tensão -->
+                <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded-top">
+                  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a class="nav-item nav-link active" href="#" id="procalc-element-bt-nav-menu">Média Tensão</a>
+                    </div>
+                  </div>
+                </nav>
+                <!-- Fim NavBar Opção de tensão -->
+
+                {% include "./CalcMt.html" %}
+            <!-- Fim Conteudo do a1procalc -->
+            </div>
+        </div>
+    </div>
+
+     <!------------------ Início Modal Mensagem Load ------------------>
+    <div class="modal fade" id="modal_import_capa">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center w-100">Selecione a Capa</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input accept=".pdf" type="file" class="custom-file-input" id="BookArquivoUpload" onchange="DropFileCapaBook()">
+                            <label class="custom-file-label text-left" for="BookArquivoUpload" id="TextInputFileBook">Selecione o PDF</label>
+                        </div>
+                        <button type="button" class="btn butof px-3 ml-2" onclick="GeraBookProjeto($('#procalc-mt-project').val(), 'MT')">Enviar</button>
+                    </div>
+
+                    <div id="progress-box-book">
+                        <div class="mx-auto px-3" id="div_bar_task_book" hidden>
+                            <div class="rounded-lg p-1 w-100">
+                                <div class="tab-content">
+                                    <div id="nav-tab-card" class="tab-pane fade show active">
+                                        <div class='progress-wrapper'>
+                                            <div id='progress-bar' class='bordas progress-bar progress-bar-striped progress-bar-animated' >&nbsp;</div>
+                                        </div>
+                                        <div id="progress-bar-message-book mt-3"><br><span>Aguardando Inicialização da tarefa ...</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim Modal Mensagem Submit ------------------>
+    
+    {% with nivel_tensao='MT' %}
+        {% include "./modal_import_calcs.html" %}
+    {% endwith %}
+    {% include "geral/modal_sim_nao.html" %}
+    <script src="{% static 'js/calc_cabos/a1calccabosjs.js' %}"></script>
+    <script src="{% static 'js/calc_cabos/calccabosmt.js' %}"></script>
+
+
+<script>
+
+    document.getElementById('filter_input_mt').addEventListener('input', function() {
+        filterOptionsByInput('filter_input_mt', 'procalc-mt-project');
+    });
+
+</script>
+
+</div>
+
+
+
+  
+    <script src="{% static 'js/calc_cabos/a1calccabosjs.js' %}"></script>
+    <script src="{% static 'js/calc_cabos/calccabosbt.js' %}"></script>
+    {% with nivel_tensao='BT' %}
+        {% include "./modal_import_calcs.html" %}
+    {% endwith %}
+    {% include "geral/modal_sim_nao.html" %}
+    <script>
+        $(document).ready(function() {
+            $('.box').hover(function() {
+                $(this).addClass('animate__animated animate__heartBeat');
+            }, function() {
+                $(this).removeClass('animate__animated animate__heartBeat');
+            });
+        });
+
+    (function(){
+        const switcher = document.getElementById('tab-switcher');
+        const buttons = switcher.querySelectorAll('button[data-target]');
+        const contents = document.querySelectorAll('[data-tab-group="main-tabs"]');
+
+        function showTarget(selector, btn) {
+            contents.forEach(c => c.classList.add('d-none'));
+            const target = document.querySelector(selector);
+            if (target) target.classList.remove('d-none');
+
+            buttons.forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-selected', 'false');
+            });
+            if (btn) {
+                btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
+                btn.focus();
+            }
+        }
+
+        buttons.forEach((btn, i) => {
+            btn.addEventListener('click', () => showTarget(btn.getAttribute('data-target'), btn));
+            btn.addEventListener('keydown', e => {
+                // ArrowUp/ArrowDown para navegação vertical
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    const next = e.key === 'ArrowDown' ? (i + 1) % buttons.length : (i - 1 + buttons.length) % buttons.length;
+                    buttons[next].focus();
+                }
+            });
+        });
+
+        if (buttons.length) showTarget(buttons[0].getAttribute('data-target'), buttons[0]);
+    })();
+
+
+    </script>
+
+{% endblock %}

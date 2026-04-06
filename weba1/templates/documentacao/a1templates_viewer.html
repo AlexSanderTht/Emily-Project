@@ -1,0 +1,255 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+{% block head %}
+    <title>Cadastra Templates</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@4/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/cropper.css' %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static 'css/main_crop.css' %}" type="text/css"/>
+    <script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+
+    <style type="text/css">
+        .reset-this {
+            all: initial;
+        }
+
+        .legend-style {
+            color: black;
+            font-size: 20px;
+            font-family: Tahoma;
+            text-transform: uppercase;
+        }
+
+        .label-style {
+            font-size: 15px;
+            font-family: Tahoma;
+            color: black;
+        }
+
+        .custom-button {
+            padding: 2px;
+            color: black;
+            background-color: black;
+            border: 1px solid #000;
+            border-radius: 5px;
+            cursor: pointer;
+            height: 45px;
+            font-size: 15px;
+            font-family: Tahoma;
+        }
+
+        .custom-button:hover {
+            background: #f58c32;
+            color: black
+        }
+
+        .custom-logo {
+            padding: 2px;
+            color: black;
+            background-color: black;
+            border: 1px solid #000;
+            border-radius: 5px;
+            height: 45px;
+        }
+
+        .sortable {
+            padding: 0;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            background-color: white;
+        }
+
+        .sortable li {
+            display: flex;
+            float: left;
+            width: 240px;
+            height: 75px;
+            overflow: hidden;
+            margin: 5px;
+            justify-content: left;
+            align-items: center;
+            background: #eeeeee;
+        }
+
+        .button {
+            width: 100px;
+            height: 30px;
+            background: #ffbe47;
+            color: black;
+        }
+
+        /* The heart of the matter */
+        .testimonial-group > .row {
+            overflow-x: auto;
+            white-space: nowrap;
+            max-width: 100vh;
+        }
+
+        .testimonial-group > .row > .col-xs-4 {
+            display: inline-block;
+            float: none;
+            max-width: 100vh;
+        }
+
+        #image-gallery {
+            width: max-content;
+            max-width: max-content;
+            position: relative;
+            height: 650px;
+            background: #000;
+        }
+
+    </style>
+{% endblock %}
+{% block help %}
+    <h7><strong>"Área de crop"</strong>, use o scrool do mouse para realizar os métodos zoomIn e zoom Out</h7>
+    <br><br>
+    <h7><strong>"Botões de Navegação"</strong> Realizam acesso à partes do documento sem a necessidade de redimensionamento</h7>
+    <br><br>
+    <h7><strong>"Tabela de crops"</strong> Armazena os crops realizados em função dos atributos e permite remover antigos cortes que estejam equivocados <strong>NÃO É POSSÍVEL EDITAR, APENAS REMOVER</strong> </h7>
+    <br><br>
+    <h7><strong>"Finalizar Cadastro"</strong> Cadastra os dados da tabela de cortes <strong>SE O TEMPLATE MUDAR, CADASTRAR NOVAMENTE COM O MESMO CÓDIGO</strong> </h7>
+    <br><br>
+{% endblock %}
+{% block main %}
+
+    <!--inicio da interface -->
+    <br>
+    <center><h1 class="display-4" style="font-size: 28px"><b>A1 Templates</b></h1></center>
+    <br>
+    <div style="margin-left: 15em;">
+        <button class="button btn-outline-danger" onclick="history.back()">Go Back</button>
+    </div>
+    <div class="container testimonial-group" style="max-width: 87vw; width: max-content; height: 70vh; alignment: center; margin-left: 2px; margin-right: 10px; overflow: hidden">
+        <div id="image-gallery" class="img-container">
+            <img id="cropbox1" src="data:image/png;base64,{{ image }}">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" title="Move Left" onclick="cropper.move(30,0)">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="Mover para esquerda">
+                      <span class="fa fa-arrow-left"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" onclick="cropper.move(-30,0)" title="Move Right">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="Mover para direita">
+                      <span class="fa fa-arrow-right"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" onclick="cropper.move(0,30)" title="Move Up">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="Mover para Cima">
+                      <span class="fa fa-arrow-up"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" onclick="cropper.move(0,-30)" title="Move Down">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="Mover para baixo">
+                      <span class="fa fa-arrow-down"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br>
+    <table id="crop_table" class="table" data-toggle="table" data-mobile-responsive="true" data-pagination="true" data-height="460"></table>
+    <br>
+    <center>
+
+    </center>
+    <br>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Index</th>
+                <th scope="col">Nome do campo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for index, nome in list_crops%}
+            <tr>
+
+                <th scope="row">{{index}}</th>
+                <td>{{nome}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script src="https://unpkg.com/bootstrap@4/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous" type="application/javascript"></script>
+    <script src="https://fengyuanchen.github.io/shared/google-analytics.js" crossorigin="anonymous" type="application/javascript"></script>
+    <script src="{% static 'js/cropper.js' %}"></script>
+
+    <script>
+        var campos = [];
+        var num_campo = [];
+        var dict_cords = {}; // Dicionário com as coordenadas
+        var coords = []; /* Variável em lista que armazena as coordenadas */
+        var prev_crop = 0;  //Variável com o índice da última linha do crop
+        var aux_crop = 0;
+        var list_atributos = '';
+        var options = '';
+        var Cropper = window.Cropper;
+        var container = document.querySelector('.img-container');
+        var image = container.getElementsByTagName('img').item(0);
+        var dataX = 0;
+        var dataY = 0;
+        var dataHeight = 0;
+        var dataWidth = 0;
+        var imgHeight = 0;
+        var imgWidth = 0;
+        var dataScaleX = 1;
+        var dataScaleY = 1;
+        var zoom_now = 1;
+        var cropper = '';
+        var aux_coord = [];
+        var prev_preview = '';
+        let table = document.getElementById('crop_table');
+
+        table.insertAdjacentHTML('afterbegin', `<thead>
+                                                  <tr>
+                                                    <th style="text-align: left">Atributo</th>
+                                                    <th style="text-align: left">Área selecionada</th>
+                                                    <th style="text-align: left">Adicionar/Remover Atributo</th>
+                                                  </tr>
+                                                </thead>`);
+
+        function nw_crop(preview) {
+            'use strict';
+
+            if (prev_crop !== 0) { cropper.destroy() }
+
+            Cropper = window.Cropper;
+            container = document.querySelector('.img-container');
+            image = container.getElementsByTagName('img').item(0);
+
+            options = {
+                aspectRatio: NaN,
+                preview: document.getElementById(preview),
+                viewMode: 2,
+                crop: function (e) {
+                    var data = e.detail;
+                    dataX = ((data.x > 0) ? parseInt(data.x) : 0);
+                    dataY = ((data.y > 0) ? parseInt(data.y) : 0);
+                    dataHeight = ((data.height > 0) ? parseInt(data.height) : 0);
+                    dataWidth = ((data.width > 0) ? parseInt(data.width) : 0);
+                    coords = [dataX, dataY, dataX + dataWidth, dataY + dataHeight];
+                }
+            };
+            cropper = new Cropper(image, options);
+
+        }
+
+        //#cria_linha(); // Cria a primeira linha ao iniciar a tela
+        nw_crop(`prev_${prev_crop}`);
+
+    </script>
+
+{% endblock %}

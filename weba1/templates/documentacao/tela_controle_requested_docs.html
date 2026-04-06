@@ -1,0 +1,175 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+    <link href="{% static 'js/bootstrap.min.css' %}">
+</head>
+
+<style>
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+</style>
+{% endblock %}
+
+{% block main %}
+
+<div class="d-flex justify-content-center row p-5">
+    {% csrf_token %}
+    <div class="card mb-4" style="width: 100rem">
+
+
+        <div class="card-body  col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Controle de Requisições de documentos</b></h2>
+        </div>
+        <div class="card-body container mx-auto">
+            <div class="col-12">
+                <table class="table table-bordered" id="table_templates">
+                    <thead>
+                          <tr>
+                              <th scope="col" class="text-center" >Index</th>
+                              <th scope="col" class="text-center">Requerente</th>
+                              <th scope="col" class="text-center">Data</th>
+                              <th scope="col" class="text-center">Status</th>
+                              <th scope="col" class="text-center">Aprovação</th>
+                              <th scope="col" class="text-center">Ações</th>
+                          </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for i in items %}
+                        <tr>
+                            <th scope="row"  class="text-center" >{{i.pk}}</th>
+                            <td class="text-center">{{i.tb_req_d_id_person.tb_per_name}}</td>
+                            <td class="text-center">{{i.tb_req_d_datetime_send}}</td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-toggle"  data-toggle="buttons">
+                                    {% if i.tb_req_d_status == 'NÃO VERIFICADO' %}
+                                    <label class="btn btn-secondary  btn-outline-warning" >
+                                        <input type="radio" name="opt_${id_template}"  autocomplete="off" >NÃO VERIFICADO
+                                    </label>
+                                    {% elif i.tb_req_d_status == 'APROVADO' %}
+                                    <label class="btn btn-secondary  btn-outline-light bg-success">
+                                        <input type="radio" name="opt_${id_template}"  autocomplete="off" >APROVADO
+                                    </label>
+                                    {% else %}
+                                    <label class="btn btn-secondary  btn-outline-light bg-danger" >
+                                        <input id="opt_inp_act_${id_template}" type="radio" name="opt_${id_template}"  autocomplete="off" readonly>REPROVADO
+                                    </label>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-success" title="Aprovar" style="color: white" onclick="SendAprToRobodoc('{{i.pk}}', true)" {% if  i.tb_req_d_status == 'APROVADO' or i.tb_req_d_status == 'REPROVADO' %} disabled {% endif %}><i class="fa fa-thumbs-up" ></i></button>
+                                <button type="button" class="btn btn-danger" title="Reprovar" style="color: white" onclick="SendAprToRobodoc('{{i.pk}}', false)" {% if  i.tb_req_d_status == 'APROVADO' or i.tb_req_d_status == 'REPROVADO' %} disabled {% endif %}><i class="fa fa-thumbs-down"></i></button>
+                            </td>
+                            <td  class="text-center">
+                                <button type="button" class="btn btn-success" ><a href="/app/documentacao/tela_controle_docs_requested/{{i.pk}}/"><i class="far fa-edit"></i></a></button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if items.has_other_pages %}
+                <nav>
+                    <ul class="pagination">
+                        {% if items.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ items.previous_page_number }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for page_num in page_range %}
+                            {% if page_num == current_page %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">{{ page_num }} <span class="sr-only">(current)</span></a>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if items.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ items.next_page_number }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+            <!------------------ Início Modal Mensagem Submit ------------------>
+    <div class="modal fade hidden" id="modal_submit">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="bordas border bg-white">
+                <div class="modal-header">
+                    <h4 id="titulo" class="modal-title text-center text-success w-100">Atenção</h4>
+                    <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p><b id="mensagem_load"></b></p>
+                    <div id="progress-box">
+                        {% include "eletrica/BaseProgressBar.html"%}
+                    </div>
+                    <hr>
+                    <div class="">
+                        <img id="image_load" class="w-100">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim Modal Mensagem Submit ------------------>
+
+</html>
+
+<script>
+
+
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+
+
+    function SendAprToRobodoc(id_doc_req, aprovacao){
+        let aprov = aprovacao === true ? '1': 0
+        $.ajax({
+            type: 'POST',
+            url: `/app/documentacao/aprovar_request/${id_doc_req}/${aprov}/`,
+            enctype: 'multipart/form-data',
+            data: {'data': ``, 'csrfmiddlewaretoken': csrf[0].value},
+        }).done(function (data) {
+            if(data['status']){
+                swal({
+                    text: data['data'],
+                    icon: "success",
+                    button: 'Fechar'
+                })
+                location.reload()
+            }else{
+                swal({
+                    text: data['data'],
+                    icon: "error",
+                    button: 'Fechar'
+                })
+            }
+        })
+
+
+    }
+
+</script>
+{% endblock %}

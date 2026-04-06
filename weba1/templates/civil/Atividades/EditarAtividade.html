@@ -1,0 +1,602 @@
+
+{%extends 'geral/base.html'%}
+
+{% load static %}
+
+{%block head %}<title> Editar Atividade</title>{%endblock%}
+
+{%block main %}
+
+{% csrf_token %}
+<style>
+
+
+        label
+        {
+            margin-bottom: 0px;
+        }
+.input-group-text{
+    background-color: gray;// #343A40;
+    color: white;
+}
+</style>
+{% load poll_extras %}
+{% verify_tool as user_info %}
+{% if user_info.A1CIVAtividades %}
+<h1> <center>Editar Atividade</center> </h1>
+<p hidden id="DataEstudo">{{form.DataEstudo.value|date:'Y-m-d' }}</p>
+<p hidden id="DataCalculo">{{form.DataCalculo.value|date:'Y-m-d' }}</p>
+<p hidden id="DataModelo">{{form.DataModelagem.value|date:'Y-m-d' }}</p>
+<p hidden id="DataDocumento">{{form.DataDocumento.value|date:'Y-m-d' }}</p>
+<p hidden id="DataVerificacao">{{form.DataVerificacao.value|date:'Y-m-d' }}</p>
+
+
+ <div class="col-lg-7 mx-auto">
+           <div class="bg-white rounded-lg shadow-sm p-5" style="width: 100%">
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+                         <div id="FormularioCadastroAtividades">
+                             <div id="FormAtividades">
+
+
+                                 <div hidden class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_os">{{form.OS.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_os" name="{{ form.OS.html_name }}" {%if form.OS.field.required%} required {%endif%}>
+
+                                       {% for valor in form.OS %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+                                </div>
+                                 {% if form.OS.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.OS.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+
+                                  <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_disciplina">{{form.Disciplina.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_disciplina" name="{{ form.Disciplina.html_name }}" {%if form.Disciplina.field.required%} required {%endif%}>
+
+                                       {% for valor in form.Disciplina %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+                                </div>
+                                 {% if form.Disciplina.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.Disciplina.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+
+                                   <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_status">{{form.Status.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_status" name="{{ form.Status.html_name }}" {%if form.Status.field.required%} required {%endif%}>
+
+                                       {% for valor in form.Status %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+                                </div>
+                                 {% if form.Status.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.Status.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+                                 <div class="input-group mb-3" >
+                                      <div class="input-group-prepend" >
+                                        <span style="height:34px" class="input-group-text" id="{{ form.CodigoDocumento.id_for_label }}" >{{form.CodigoDocumento.label_tag}}</span>
+                                      </div>
+                                      <input type="text" id="id_cod_documento" name="{{ form.CodigoDocumento.html_name }}" class="form-control" {% if form.CodigoDocumento.value %} value="{{form.CodigoDocumento.value }}" {%endif%} aria-describedby="{{ form.CodigoDocumento.id_for_label }}" {%if form.CodigoDocumento.field.required%} required {%endif%}>
+                                    </div>
+                                 {% if form.CodigoDocumento.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.CodigoDocumento.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+                                  <div class="input-group mb-3" >
+                                      <div class="input-group-prepend" >
+                                        <span style="height:34px" class="input-group-text" id="{{ form.Revisao.id_for_label }}" >{{form.Revisao.label_tag}}</span>
+                                      </div>
+                                      <input type="text" id="id_revisao"  name="{{ form.Revisao.html_name }}" class="form-control" {% if form.Revisao.value %} value="{{form.Revisao.value }}" {%endif%} aria-describedby="{{ form.Revisao.id_for_label }}" {%if form.Revisao.field.required%} required {%endif%}>
+                                    </div>
+                                 {% if form.Revisao.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.Revisao.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+                                  <div class="input-group mb-3" >
+                                      <div class="input-group-prepend" >
+                                        <span style="height:34px" class="input-group-text" id="{{ form.QtdDesenhos.id_for_label }}" >{{form.QtdDesenhos.label_tag}}</span>
+                                      </div>
+                                      <input type="number" id="id_qtd_doc" name="{{ form.QtdDesenhos.html_name }}" class="form-control" {% if form.QtdDesenhos.value %} value="{{form.QtdDesenhos.value }}" {%endif%} aria-describedby="{{ form.QtdDesenhos.id_for_label }}" {%if form.QtdDesenhos.field.required%} required {%endif%}>
+                                    </div>
+                                 {% if form.QtdDesenhos.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.QtdDesenhos.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+
+                                   <div class="input-group mb-3" >
+                                      <div class="input-group-prepend" >
+                                        <span style="height:34px" class="input-group-text" id="{{ form.Tag.html_name }}" >{{form.Tag.label_tag}}</span>
+                                      </div>
+                                      <input type="text" id ="id_tag" name="{{ form.Tag.html_name }}" class="form-control" {% if form.Tag.value %} value="{{form.Tag.value }}" {%endif%} aria-describedby="{{ form.Tag.id_for_label }}" {%if form.Tag.field.required%} required {%endif%}>
+                                    </div>
+                                 {% if form.Tag.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.Tag.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+                                     <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_coment_client">{{form.ComentarioCliente.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_coment_client" name="{{ form.ComentarioCliente.html_name }}" {%if form.ComentarioCliente.field.required%} required {%endif%}>
+                                           {%if form.ComentarioCliente.value == True%}
+                                            <option value=False>Não</option>
+                                            <option selected value=True>Sim</option>
+                                            {%else%}
+                                            <option selected value=False>Não</option>
+                                            <option value=True>Sim</option>
+                                            {%endif%}
+                                  </select>
+                                </div>
+                                 {% if form.ComentarioCliente.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.ComentarioCliente.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+                                   <div class="input-group mb-3" >
+                                      <div class="input-group-prepend" >
+                                        <span style="height:34px" class="input-group-text" id="{{ form.StatusPDMSEngVolumetrica.id_for_label }}" >{{form.StatusPDMSEngVolumetrica.label_tag}}</span>
+                                      </div>
+                                      <input type="text" id="id_status_pdms_eng" name="{{ form.StatusPDMSEngVolumetrica.html_name }}" class="form-control" {% if form.StatusPDMSEngVolumetrica.value %} value="{{form.StatusPDMSEngVolumetrica.value }}" {%endif%} aria-describedby="{{ form.StatusPDMSEngVolumetrica.id_for_label }}" {%if form.StatusPDMSEngVolumetrica.field.required%} required {%endif%}>
+                                    </div>
+                                 {% if form.StatusPDMSEngVolumetrica.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.StatusPDMSEngVolumetrica.errors }}
+                                      </div>
+                                 {%endif%}
+
+                                   <div class="input-group mb-3" >
+                                      <div class="input-group-prepend" >
+                                        <span style="height:34px" class="input-group-text" id="{{ form.AreaCorrespondente.id_for_label }}" >{{form.AreaCorrespondente.label_tag}}</span>
+                                      </div>
+                                      <input type="text" id="id_area_corresp" name="{{ form.AreaCorrespondente.html_name }}" class="form-control" {% if form.AreaCorrespondente.value %} value="{{form.AreaCorrespondente.value }}" {%endif%} aria-describedby="{{ form.AreaCorrespondente.id_for_label }}" {%if form.AreaCorrespondente.field.required%} required {%endif%}>
+                                    </div>
+                                 {% if form.AreaCorrespondente.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.AreaCorrespondente.errors }}
+                                      </div>
+                                 {%endif%}
+
+                                  <div class="input-group mb-3" >
+                                      <div class="input-group-prepend" >
+                                        <span style="height:34px" class="input-group-text" id="{{ form.Descricao.html_name }}" >{{form.Descricao.label_tag}}</span>
+                                      </div>
+                                      <textarea type="text" id="id_descricao" name="{{ form.Descricao.html_name }}" class="form-control"  aria-describedby="{{ form.Descricao.id_for_label }}" {%if form.Descricao.field.required%} required {%endif%}>{% if form.Descricao.value %}{{form.Descricao.value }}{%endif%}</textarea>
+                                    </div>
+                                 {% if form.Descricao.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.Descricao.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+                                       <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_doc_tipo">{{form.TipoDocumento.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_doc_tipo" name="{{ form.TipoDocumento.html_name }}" {%if form.TipoDocumento.field.required%} required {%endif%}>
+
+                                       {% for valor in form.TipoDocumento %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+                                </div>
+                                 {% if form.TipoDocumento.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.TipoDocumento.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+                                       <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_finalidade">{{form.Finalidade.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_finalidade" name="{{ form.Finalidade.html_name }}" {%if form.Finalidade.field.required%} required {%endif%}>
+
+                                       {% for valor in form.Finalidade %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+                                </div>
+                                 {% if form.Finalidade.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.Finalidade.errors }}
+                                      </div>
+                                 {%endif%}
+                                <hr/>
+
+                                      <div class="input-group mb-3" >
+                                  <div class="input-group-prepend" >
+                                    <span style="height:34px" class="input-group-text" id="{{ form.DataEstudo.id_for_label }}" >{{form.DataEstudo.label_tag}}</span>
+                                  </div>
+                                  <input type="date" id="id_data_estudo" name="{{ form.DataEstudo.html_name }}" class="form-control" {% if form.DataEstudo.value %} value="{{form.DataEstudo.value|date:'Y-m-d' }}" {%endif%} aria-describedby="{{ form.DataEstudo.id_for_label }}" {%if form.DataEstudo.field.required%} required {%endif%}>
+                                </div>
+                              {%if form.DataEstudo.errors %}
+                              <div class="alert alert-danger" role="alert">
+                                    {{ form.DataEstudo.errors }}
+                              </div>
+                              {%endif%}
+                                        <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_resp_estudo">{{form.ResponsavelEstudo.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_resp_estudo" name="{{ form.ResponsavelEstudo.html_name }}" {%if form.ResponsavelEstudo.field.required%} required {%endif%}>
+
+                                       {% for valor in form.ResponsavelEstudo %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+
+                                </div>
+                                 {% if form.ResponsavelEstudo.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.ResponsavelEstudo.errors }}
+                                      </div>
+                                 {%endif%}
+                                      <hr/>
+                                          <div class="input-group mb-3" >
+                                  <div class="input-group-prepend" >
+                                    <span style="height:34px" class="input-group-text" id="{{ form.DataCalculo.id_for_label }}" >{{form.DataCalculo.label_tag}}</span>
+                                  </div>
+                                  <input type="date" id="id_data_calculo" name="{{ form.DataCalculo.html_name }}" class="form-control" {% if form.DataCalculo.value %} value="{{form.DataCalculo.value|date:'Y-m-d' }}" {%endif%} aria-describedby="{{ form.DataCalculo.id_for_label }}" {%if form.DataCalculo.field.required%} required {%endif%}>
+                                </div>
+                              {%if form.DataCalculo.errors %}
+                              <div class="alert alert-danger" role="alert">
+                                    {{ form.DataCalculo.errors }}
+                              </div>
+                              {%endif%}
+
+                                   <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_resp_calc">{{form.ResponsavelCalculo.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_resp_calc" name="{{ form.ResponsavelCalculo.html_name }}" {%if form.ResponsavelCalculo.field.required%} required {%endif%}>
+
+                                       {% for valor in form.ResponsavelCalculo %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+                                </div>
+                                 {% if form.ResponsavelCalculo.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.ResponsavelCalculo.errors }}
+                                      </div>
+                                 {%endif%}
+
+                                      <hr/>
+                                                 <div class="input-group mb-3" >
+                                  <div class="input-group-prepend" >
+                                    <span style="height:34px" class="input-group-text" id="{{ form.DataModelagem.id_for_label }}" >{{form.DataModelagem.label_tag}}</span>
+                                  </div>
+                                  <input type="date" id="id_data_model" name="{{ form.DataModelagem.html_name }}" class="form-control" {% if form.DataModelagem.value %} value="{{form.DataModelagem.value|date:'Y-m-d' }}" {%endif%} aria-describedby="{{ form.DataModelagem.id_for_label }}" {%if form.DataModelagem.field.required%} required {%endif%}>
+                                </div>
+                              {%if form.DataModelagem.errors %}
+                              <div class="alert alert-danger" role="alert">
+                                    {{ form.DataModelagem.errors }}
+                              </div>
+                              {%endif%}
+
+                                        <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_resp_model">{{form.ResponsavelModelagem.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_resp_model" name="{{ form.ResponsavelModelagem.html_name }}" {%if form.ResponsavelModelagem.field.required%} required {%endif%}>
+
+                                       {% for valor in form.ResponsavelModelagem %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+                                </div>
+                                 {% if form.ResponsavelModelagem.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.ResponsavelModelagem.errors }}
+                                      </div>
+                                 {%endif%}
+                                      <hr/>
+                                                 <div class="input-group mb-3" >
+                                  <div class="input-group-prepend" >
+                                    <span style="height:34px" class="input-group-text" id="{{ form.DataDocumento.id_for_label }}" >{{form.DataDocumento.label_tag}}</span>
+                                  </div>
+                                  <input type="date" id="id_data_document" name="{{ form.DataDocumento.html_name }}" class="form-control" {% if form.DataDocumento.value %} value="{{form.DataDocumento.value|date:'Y-m-d' }}" {%endif%} aria-describedby="{{ form.DataDocumento.id_for_label }}" {%if form.DataDocumento.field.required%} required {%endif%}>
+                                </div>
+                              {%if form.DataDocumento.errors %}
+                              <div class="alert alert-danger" role="alert">
+                                    {{ form.DataDocumento.errors }}
+                              </div>
+                              {%endif%}
+
+                                        <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_resp_document">{{form.ResponsavelDocumento.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_resp_document" name="{{ form.ResponsavelDocumento.html_name }}" {%if form.ResponsavelDocumento.field.required%} required {%endif%}>
+
+                                       {% for valor in form.ResponsavelDocumento %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+                                </div>
+                                 {% if form.ResponsavelDocumento.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.ResponsavelDocumento.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+                                      <hr/>
+                                                 <div class="input-group mb-3" >
+                                  <div class="input-group-prepend" >
+                                    <span style="height:34px" class="input-group-text" id="{{ form.DataVerificacao.id_for_label }}" >{{form.DataVerificacao.label_tag}}</span>
+                                  </div>
+                                  <input type="date" id="id_data_verif" name="{{ form.DataVerificacao.html_name }}" class="form-control" {% if form.DataVerificacao.value %} value="{{form.DataVerificacao.value|date:'Y-m-d' }}" {%endif%} aria-describedby="{{ form.DataVerificacao.id_for_label }}" {%if form.DataVerificacao.field.required%} required {%endif%}>
+                                </div>
+                              {%if form.DataVerificacao.errors %}
+                              <div class="alert alert-danger" role="alert">
+                                    {{ form.DataVerificacao.errors }}
+                              </div>
+                              {%endif%}
+
+                                        <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_resp_vefif">{{form.ResponsavelVerificacao.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_resp_vefif" name="{{ form.ResponsavelVerificacao.html_name }}" {%if form.ResponsavelVerificacao.field.required%} required {%endif%}>
+
+                                       {% for valor in form.ResponsavelVerificacao %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+                                </div>
+                                 {% if form.ResponsavelVerificacao.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.ResponsavelVerificacao.errors }}
+                                      </div>
+                                 {%endif%}
+                                      <hr/>
+
+                                                      <div class="input-group mb-3" >
+                                  <div class="input-group-prepend" >
+                                    <span style="height:34px" class="input-group-text" id="{{ form.DataPrazoIntegracao.id_for_label }}" >{{form.DataPrazoIntegracao.label_tag}}</span>
+                                  </div>
+                                  <input type="date" id="id_data_integra" name="{{ form.DataPrazoIntegracao.html_name }}" class="form-control" {% if form.DataPrazoIntegracao.value %} value="{{form.DataPrazoIntegracao.value|date:'Y-m-d' }}" {%endif%} aria-describedby="{{ form.DataPrazoIntegracao.id_for_label }}" {%if form.DataPrazoIntegracao.field.required%} required {%endif%}>
+                                </div>
+                              {%if form.DataPrazoIntegracao.errors %}
+                              <div class="alert alert-danger" role="alert">
+                                    {{ form.DataPrazoIntegracao.errors }}
+                              </div>
+                              {%endif%}
+
+                                          <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_resp_integra">{{form.ResponsavelIntegracao.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_resp_integra" name="{{ form.ResponsavelIntegracao.html_name }}" {%if form.ResponsavelIntegracao.field.required%} required {%endif%}>
+
+                                       {% for valor in form.ResponsavelIntegracao %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+                                </div>
+                                 {% if form.ResponsavelIntegracao.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.ResponsavelIntegracao.errors }}
+                                      </div>
+                                 {%endif%}
+
+
+                                  <hr/>
+                                    <div class="input-group mb-3" >
+                                  <div class="input-group-prepend" >
+                                    <span style="height:34px" class="input-group-text" id="{{ form.DataPrazoEmissao.id_for_label }}" >{{form.DataPrazoEmissao.label_tag}}</span>
+                                  </div>
+                                  <input type="date" id="id_data_prazo_emi" name="{{ form.DataPrazoEmissao.html_name }}" class="form-control" {% if form.DataPrazoEmissao.value %} value="{{form.DataPrazoEmissao.value|date:'Y-m-d' }}" {%endif%} aria-describedby="{{ form.DataPrazoEmissao.id_for_label }}" {%if form.DataPrazoEmissao.field.required%} required {%endif%}>
+                                </div>
+                              {%if form.DataPrazoEmissao.errors %}
+                              <div class="alert alert-danger" role="alert">
+                                    {{ form.DataPrazoEmissao.errors }}
+                              </div>
+                              {%endif%}
+                                           <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <label class="input-group-text" for="id_resp_emissao">{{form.ResponsavelEmissaoFrm.label_tag}}</label>
+                                  </div>
+                                  <select class="custom-select" id="id_resp_emissao" name="{{ form.ResponsavelEmissaoFrm.html_name }}" {%if form.ResponsavelEmissaoFrm.field.required%} required {%endif%}>
+
+                                       {% for valor in form.ResponsavelEmissaoFrm %}
+                                            {%if valor %}
+                                                {{ valor }}
+                                            {%endif%}
+                                       {% endfor %}
+                                  </select>
+                                </div>
+                                 {% if form.ResponsavelEmissaoFrm.errors %}
+                                      <div class="alert alert-danger" role="alert">
+                                            {{ form.ResponsavelEmissaoFrm.errors }}
+                                      </div>
+                                 {%endif%}
+                                 <label class="text-danger text-center" style="width:100%">{{error}}</label>
+                                 <input style="width: 100%" onclick="EnvForm()" class="subscribe btn btn-warning  rounded-pill shadow-sm" value="Salvar">
+                             </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<div class="modal fade" id="AvisoAtividades" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="TituloConfirmacao">Confirmação de Modificação</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+
+                            {% csrf_token %}
+
+                            <div class="input-group mb-3">
+                                <p id="AvisoErroAtividades"></p>
+                            </div>
+                            <div id="resultsComentarios"></div>
+                            <div class="modal-footer" id="FooterContinuarEnvio">
+
+                                <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm"
+                                        data-dismiss="modal">Não
+                                </button>
+                                <button type="submit" class="subscribe btn btn-warning  rounded-pill shadow-sm" onclick="ContinuarEnvioAtividade()">Sim
+                                </button>
+
+                            </div>
+                            <div class="modal-footer" id="FooterErro">
+
+                                <button type="button" class="subscribe btn btn-warning  rounded-pill shadow-sm"
+                                        data-dismiss="modal">OK
+                                </button>
+
+
+                            </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+{% else %}
+    <h1> Acesso não permitido </h1>
+{% endif %}
+
+
+
+<script src="{% static 'js/civil/EditarAtividades.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/civil/jquery.dataTables.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/a1civ.css' %}"/>
+<script src="{% static 'js/civil/scriptsGerais.js' %}"></script>
+<script src="{% static 'js/cookies.js' %}"></script>
+
+<script>
+
+    function EnvForm(){
+
+    const csrftoken = getCookie('csrftoken');
+
+    const data = {}
+    data['OS'] = document.getElementById("id_os").value;
+    data['Disciplina'] = document.getElementById("id_disciplina").value;
+    data['Status'] = document.getElementById("id_status").value;
+    data['ComentarioCliente'] = document.getElementById("id_coment_client").value;
+    data['TipoDocumento'] = document.getElementById("id_doc_tipo").value;
+    data['Finalidade'] = document.getElementById("id_finalidade").value;
+    data['QtdDesenhos'] = document.getElementById('id_qtd_doc').value;
+    data['Tag'] = document.getElementById('id_tag').value;
+    data['StatusPDMSEngVolumetrica'] = document.getElementById('id_status_pdms_eng').value;
+    data['AreaCorrespondente'] = document.getElementById('id_area_corresp').value;
+    data['Descricao'] = document.getElementById('id_descricao').value;
+
+    data['DataEstudo'] = document.getElementById('id_data_estudo').value;
+    data['RespEstudo'] = document.getElementById('id_resp_estudo').value;
+
+    data['DataCalculo'] = document.getElementById('id_data_calculo').value;
+    data['RespCalculo'] = document.getElementById('id_resp_calc').value;
+
+    data['DataModelo'] = document.getElementById('id_data_model').value;
+    data['RespModelo'] = document.getElementById('id_resp_model').value;
+
+    data['DataVerificacao'] = document.getElementById('id_data_verif').value ;
+    data['Respverificacao'] = document.getElementById('id_resp_vefif').value;
+
+    data['DataIntegracao'] = document.getElementById('id_data_integra').value;
+    data['RespIntegracao'] = document.getElementById('id_resp_integra').value;
+
+
+    data['DataEmissao'] = document.getElementById('id_data_prazo_emi').value;
+    data['RespEmissao'] = document.getElementById('id_resp_emissao').value;
+
+    data['DataDoc'] = document.getElementById('id_data_document').value;
+    data['RespDoc'] = document.getElementById('id_resp_document').value;
+
+    console.log(data);
+
+    $.ajax({
+              type: "POST",
+              headers:{'X-CSRFToken':csrftoken},
+              url: "",
+              dataType: 'json',
+              data: {'info_data': JSON.stringify(data)},
+            }).done(function (data) {
+              if(data['verif']===true){
+
+                  if(confirm(data['data'] + ', você será redirecionado!')){
+                      history.go(-1);
+                  }
+            }
+    });
+}
+
+</script>
+
+{%endblock%}

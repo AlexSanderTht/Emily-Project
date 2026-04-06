@@ -1,0 +1,94 @@
+
+{%extends 'geral/base.html'%}
+
+{% load static %}
+{% block head %}
+<title>Upload de modelo</title>
+{%endblock%}
+{%block 'titulo'%}Carregar Report 3D{%endblock%}
+
+{%block main %}
+
+<div class="col-lg-7 mx-auto">
+        <div>
+            <div class="tab-content">
+                <div id="nav-tab-card-detalhes" class="tab-pane fade show active" style="background-color: #DDDADA; box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9)!important;">
+                   <div class="docheadFilho">
+                            <span class="dheadFilho">Envio do Modelo</span>
+                        </div>
+                        <div class="dcontent">
+                            <div class="dcontent">
+                             </div>
+                            </div>
+                            <div class='progress-wrapper'>
+                                <div id='progress-bar' class='progress-bar'
+                                     style="background-color: #68a9ef; width: 0%;">&nbsp;
+                                </div>
+                            </div>
+                            <div id="progress-bar-message"></div>
+                            </br>
+
+                         </div>
+                        </div>
+
+                        </br>
+                </div>
+            </div>
+        </div>
+    </div>
+ </br>
+
+ <link rel="stylesheet" href="{% static "css/a1flx.css" %}"/>
+ <script src="{% static 'js/celery_progress/celery_progress.js' %}"></script>
+
+<p hidden id="tid">{{task_id}}</p>
+<p hidden id="OS">{{os}}</p>
+<p hidden id="Sistema">{{sistema}}</p>
+<p hidden id="Rev">{{revisao}}</p>
+<script>
+
+ document.getElementById('progress-bar-message').innerHTML = (
+        "Inicializando..."
+        );
+
+var task_id1 = document.getElementById('tid').innerHTML;
+var OS = document.getElementById('OS').innerHTML;
+var Sistema = document.getElementById('Sistema').innerHTML;
+var Rev = document.getElementById('Rev').innerHTML;
+
+ var progressUrl = `/celery-progress/${task_id1}/`;
+
+        CeleryProgressBar.initProgressBar(progressUrl, {
+     onSuccess: processResult,
+     onProgress: customProgress
+   });
+
+document.getElementById('progress-bar-message').innerHTML = (
+        "Inicializando..."
+        );
+
+function processResult(resultElement, result) {
+	 document.getElementById('progress-bar-message').innerHTML = (
+        "Processo Concluído!"
+        );
+        window.location.replace('/app/flexibilidade/DetalhesSistema/'+OS+'/'+Sistema+"/"+Rev);
+	}
+
+
+function customProgress(progressBarElement, progressBarMessageElement, progress) {
+    progressBarElement.innerHTML = progress.percent + '%';
+    progressBarMessageElement.innerHTML = (
+     progress.description
+    );
+    progressBarElement.style.width = progress.percent + "%";
+}
+
+
+
+
+</script>
+
+
+
+
+{%endblock%}

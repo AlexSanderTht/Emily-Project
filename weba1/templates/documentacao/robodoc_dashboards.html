@@ -1,0 +1,413 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>DashBoards-Robodoc</title>
+{% endblock %}
+{% block help %}
+{% endblock %}
+{% block main %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4"><b>Robodoc DashBoards</b></h1>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <form action="{% url 'robodoc_dashboards' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="card mb-4" style="background: #f5f5f5; border: none">
+                <div class="row">
+                    <div class="col-6 col-sm-2">
+                        <div class="form-group mb-4" style= "align-items: left; text-align: left;">
+                            <label for="dia-inicial">Data Inicial:</label><br>
+                            <input type="date" id="dia-inicial" name="dia_inicial" style="width: 120px; margin-left: 1px">
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-2">
+                        <div class="form-group" style= "align-items: left; text-align: left">
+                            <label for="dia-final">Data Final:</label><br>
+                            <input type="date" id="dia-final" name="dia_final" style="width: 120px; margin-left: 1px">
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-2">
+                        <div class="form-group"style= "align-items: center; text-align: left;">
+                            <label for="os"> Ordem de Serviço: </label>
+                            <select id="os" name="os" class="form-control" style="width: 120px; margin-left: 1px ">
+                                <option value="">Todas</option>
+                                {% for x in list_os %}
+                                    <option value={{ x }}>{{ x }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-3">
+                        <div class="form-group"style= "align-items: left; text-align: left;">
+                            <label for="disc"> Disciplina: </label><br>
+                            <select id="disc" name="disc" class="form-control" style="width: 250px; margin-left: 1px ">
+                                <option value="">Todas</option>
+                                {% for x in list_disc %}
+                                    <option value="{{ x }}">{{ x }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-2">
+                        <div class="form-group"style= "align-items: left; text-align: left;">
+                            <label for="description"> Função: </label><br>
+                            <select id="description" name="description" class="form-control" style="width: 180px; margin-left: 1px ">
+                                <option value="">Todas</option>
+                                {% for x in list_func %}
+                                    <option value="{{ x }}">{{ x }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-3">
+                        <div class="form-group"style= "align-items: left; text-align: left; ">
+                            <label for="tipo_doc"> Tipo de documento: </label>
+                            <input type="text" list="tipo_docs" name="tipo_doc" id="tipo_doc" class="form-control" style="width: 250px; margin-left: 1px ">
+                            <datalist id="tipo_docs">
+                                <option value="">Todas</option>
+                                {% for x in list_type %}
+                                    <option value="{{ x }}">{{ x }}</option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-2">
+                        <br>
+                        <div class="form-group">
+                            <button type="submit" style="background-color:#F58C32; color: #ffff" id="bot-anterior"  class=" btn   ">Consultar</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+        <div class="card mb-4"><!-- inicio Área-->
+            <div class="card-header">
+                <i class="fas fa-chart-area mr-1"></i>
+                Documentos Processados Semanalmente
+            </div>
+
+            <div class="card-body"><canvas id="myAreaChart" width="100%" height="30"></canvas></div>
+        </div><!-- fim Área-->
+
+        <div class="row">
+            <div class="col-lg-6"><!-- inicio barra-->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar mr-1"></i>
+                        Falhas Semanais Encontradas
+                    </div>
+                    <div class="card-body"><canvas id="myBarChart" width="100%" height="50"></canvas></div>
+                </div>
+            </div><!-- fim barra-->
+
+            <div class="col-lg-6"><!-- inicio pizza-->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie mr-1"></i>
+                        Acumulado de Documentos por Disciplina
+                    </div>
+                    <div class="card-body"><canvas id="myPieChart" width="100%" height="50"></canvas></div>
+                </div>
+            </div><!-- fim pizza-->
+
+        </div>
+
+        <div class="card mb-4"><!-- inicio barra2 -->
+            <div class="card-header">
+                <i class="fas fa-chart-bar mr-1"></i>
+                Relatório Acumulado Semanal
+            </div>
+            <div class="card-body"><canvas id="myBarChart2" width="100%" height="50"></canvas></div>
+        </div><!-- fim barra2 -->
+
+
+        <div class="card mb-4"><!-- inicio barra3-->
+            <div class="card-header">
+                <i class="fas fa-chart-bar mr-1"></i>
+                Relatório Acumulado Mensal
+            </div>
+            <div class="card-body"><canvas id="myBarChart3" width="100%" height="50"></canvas></div>
+        </div><!-- fim barra3-->
+    </div>
+</div>
+{% endblock %}
+{% block end %}
+
+<script src="{% static 'vendor/chartjs/Chart.bundle.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'src/assets/demo/chart-area-demo.js' %}"></script>
+<script type="text/javascript" src="{% static 'src/assets/demo/chart-bar-demo.js' %}"></script>
+<script type="text/javascript">
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#292b2c';
+
+    // Area Chart Example
+
+    var week_list = [];
+    {% for x in area_week %}
+        week_list.push("{{ x }}")
+    {% endfor %}
+
+    var ctx = document.getElementById("myAreaChart");
+    var myLineChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: week_list,
+        datasets: [{
+          label: "Documentos",
+          lineTension: 0.3,
+          backgroundColor: "rgba(2,117,216,0.2)",
+          borderColor: "rgba(2,117,216,1)",
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(2,117,216,1)",
+          pointBorderColor: "rgba(255,255,255,0.8)",
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgba(2,117,216,1)",
+          pointHitRadius: 50,
+          pointBorderWidth: 2,
+          data: {{ area_data }},
+        }],
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            type: 'category',
+            gridLines: {
+              display: false
+            },
+            ticks: {
+              maxTicksLimit: 7
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: {{ max_area }},
+              maxTicksLimit: 5
+            },
+            gridLines: {
+              color: "rgba(0, 0, 0, .125)",
+            }
+          }],
+        },
+        legend: {
+          display: false
+        }
+      }
+    });
+
+</script>
+<script type="text/javascript">
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#292b2c';
+
+    // Bar Chart Example
+    var week_list = [];
+    {% for x in err_week %}
+        week_list.push("{{ x }}")
+    {% endfor %}
+
+    var ctx = document.getElementById("myBarChart");
+    var myLineChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: week_list,
+        datasets: [{
+          label: "Erros",
+          backgroundColor: "rgba(2,117,216,1)",
+          borderColor: "rgba(2,117,216,1)",
+          data: {{ err_data }},
+        }],
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'month'
+            },
+            gridLines: {
+              display: false
+            },
+            ticks: {
+              maxTicksLimit: 6
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: {{ max_err }},
+              maxTicksLimit: 5
+            },
+            gridLines: {
+              display: true
+            }
+          }],
+        },
+        legend: {
+          display: false
+        }
+      }
+    });
+</script>
+<script>
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#292b2c';
+
+    // Pie Chart Example
+    var ctx = document.getElementById("myPieChart");
+    var myPieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ["A - Automação", "M - Mecânica", "C - Civil/Estrutura Metálica" , "E - Elétrica" , "I - Instrumentação" , "M - Tubulação","S - Suprimentos" , "G - Gerenciamento" , "P - Processo"],
+        datasets: [{
+          data: {{ disc_data }},
+          backgroundColor: ['#f00', '#0f0', '#00f' ,'#ff0', '#28a745' ,'#0ff' , '#f0f' , '#faab05' , '#779ca3'],
+        }],
+      },
+    });
+</script>
+<script type="text/javascript">
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#292b2c';
+
+    // Bar Chart Example
+    var week_list = [];
+    {% for x in bar_week %}
+        week_list.push("{{ x }}")
+    {% endfor %}
+
+    var ctx = document.getElementById("myBarChart3");
+    var myLineChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: week_list,
+        datasets: [{
+          label: "Entradas",
+          backgroundColor: '#ff0',
+          borderColor: '#ff0',
+          data: {{ bar_data_in }},
+        },
+        {
+          label: "Saídas",
+          backgroundColor: '#28a745',
+          borderColor: '#28a745',
+          data: {{ bar_data_out }},
+        },
+        {
+          label: "Pendências",
+          backgroundColor: '#f00',
+          borderColor: '#f00',
+          data: {{ bar_data_dif }},
+        }
+        ],
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'month'
+            },
+            gridLines: {
+              display: false
+            },
+            ticks: {
+              maxTicksLimit: 6
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: {{ max_bar }},
+              maxTicksLimit: 5
+            },
+            gridLines: {
+              display: true
+            }
+          }],
+        },
+        legend: {
+          display: false
+        }
+      }
+    });
+</script>
+<script type="text/javascript">
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#292b2c';
+
+    // Bar Chart Example
+    var week_list = [];
+    {% for x in days %}
+        week_list.push("{{ x }}")
+    {% endfor %}
+
+    var ctx = document.getElementById("myBarChart2");
+    var myLineChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: week_list,
+        datasets: [{
+          label: "Entradas",
+          backgroundColor: '#ff0',
+          borderColor: '#ff0',
+          data: {{ week_data_in }},
+        },
+        {
+          label: "Saídas",
+          backgroundColor: '#28a745',
+          borderColor: '#28a745',
+          data: {{ week_data_out }},
+        },
+        {
+          label: "Pendências",
+          backgroundColor: '#f00',
+          borderColor: '#f00',
+          data: {{ week_data_dif }},
+        }
+        ],
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'month'
+            },
+            gridLines: {
+              display: false
+            },
+            ticks: {
+              maxTicksLimit: 7
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: {{ max_week }},
+              maxTicksLimit: 5
+            },
+            gridLines: {
+              display: true
+            }
+          }],
+        },
+        legend: {
+          display: false
+        }
+      }
+    });
+</script>
+{% endblock %}

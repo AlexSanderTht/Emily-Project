@@ -1,0 +1,40 @@
+{% block cadastro_area %}
+    <div class="modal-body">
+        <form>
+            <div class="form-row">
+                <div class="col-lg-6 border-right pr-3">
+                    <div class="form-row">
+                        <div class="col-sm-12 mb-3">
+                            <label for="area-cod">Código</label>
+                            <input type="text" required class="form-control" id="area-cod" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-sm-12 mb-3">
+                            <label for="area-desc">Descrição</label>
+                            <input type="text"  required class="form-control" id="area-desc" value="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 pl-3">
+                    <div class="form-row">
+                        <div class="col-sm-12 mb-3">
+                            <label for="area-type">Áreas Cadastradas</label>
+                            <select id="area-type" class="form-control" onchange="exec_manipulation_forms()"></select>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-warning rounded-pill" onclick="verify_area_selected()">Sub-Área</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="verify_update()">Adicionar/Alterar</button>
+        <button type="button" class="btn btn-warning" onclick="clean_forms_area()">Limpar</button>
+        <button type="button" class="btn btn-danger" onclick="exec_drop_area()">Excluir</button>
+    </div>
+{% endblock %}

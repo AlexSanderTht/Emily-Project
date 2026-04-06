@@ -1,0 +1,136 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Pesquisa de Sistema Flex</title>
+<style>
+    .loadergb {
+        border: 16px solid #A1A1A1;
+        border-top: 16px solid #f6801e;
+        border-radius: 50%;
+        width: 200px;
+        height: 200px;
+        animation: spin 2s linear infinite;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    .pagination {
+        width: 100%;
+    }
+</style>
+{% endblock %}
+{% block help %}
+<h7>Campo <strong>"OS"</strong>> Insira o código da Ordem de Serviço que se deseja pesquisar, deixe em branco para pesquisar todas.</h7>
+<br>
+<br>
+<h7>Campo <strong>"Sistema"</strong> Insira o Número inteiro do sistema de flexibilidade a ser pesquisado, deixe em branco para pesquisar todos.</h7>
+<br>
+<br>
+<h7>Botão <strong>"Pesquisar"</strong> Envia a requisição ao servidor e retorna o sistema de flexibilidade.</h7>
+{% endblock %}
+{% block main %}
+
+
+<div><h1 style="text-align:center;"> Pesquisar Report 3D </h1></div>
+
+<div class="col-lg-7 mx-auto">
+    <div class="bg-white rounded-lg shadow-sm p-5" style="padding: 20px 20px 20px 20px !important">
+        <div class="tab-content">
+            <div id="nav-tab-card" class="tab-pane fade show active">
+                <div>
+                    <table id="pesquisaSistema" class="pesquisaSistema">
+                        <tr>
+                            <th>OS</th>
+                            <th>Sistema</th>
+                        </tr>
+                        <tr>
+                            <td><input type="text" style="width: 100%" id="PesquisarCampoOS" value="2120" /></td>
+                            <td><input type="text" style="width: 100%" id="PesquisarCampoSistema" value="003" /></td>
+                        </tr>
+                    </table>
+
+                    <br />
+
+                    <button class=" btn " style="background-color:#F58C32;width: 100% ; color: #ffff" id="BotaoPesquisar">Pesquisar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-7 mx-auto">
+    <div class="bg-white rounded-lg shadow-sm p-5" style="padding: 20px 20px 20px 20px !important">
+        <div class="tab-content">
+            <div id="nav-tab-card" class="tab-pane fade show active">
+                <div>
+                    <table id="pesquisaSistemaLinha" class="pesquisaSistema">
+                        <tr>
+                            <th style="padding: 8px">Linha</th>
+
+                        </tr>
+                        <tr>
+                            <td><input type="text" style="width: 100%" id="PesquisarCampoLinha" value="SMP-0001" /></td>
+
+                        </tr>
+                    </table>
+
+                    <br />
+
+                    <button class=" btn " style="background-color:#F58C32;width: 100%; color: #ffff;" id="BotaoPesquisarLinhas">Pesquisar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-7 mx-auto">
+    <div class="bg-white rounded-lg shadow-sm p-5" style="padding: 20px 20px 20px 20px !important">
+        <div class="tab-content">
+            <div id="nav-tab-card" class="tab-pane fade show active">
+                <div>
+                    <table id="pesquisaSistemaSup" class="pesquisaSistema">
+                        <tr>
+                            <th style="padding: 8px">Suporte</th>
+
+                        </tr>
+                        <tr>
+                            <td><input type="text" style="width: 100%" id="PesquisarCampoSuporte" value="351" /></td>
+
+                        </tr>
+                    </table>
+
+                    <br />
+
+                    <button value="Pesquisar" style="background-color:#F58C32; color: #ffff;width: 100%" class=" btn "  id="BotaoPesquisarSuporte">Pesquisar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div><h1 style="text-align:center;"> Resultados: </h1></div>
+<div class="col-lg-7 mx-auto">
+    <div class="bg-white rounded-lg shadow-sm p-5">
+        <div class="tab-content">
+            <div id="nav-tab-card" class="tab-pane fade show active">
+                <div id="ResultadoPesquisa">
+                </div>
+            </div>
+            <div class="loadergb" id="loader" style="display: none"></div>
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'js/a1flx/pesquisar_sistemas.js' %}"></script>
+<link rel="stylesheet" href='{% static "css/a1flx.css" %}' />
+{% endblock %}

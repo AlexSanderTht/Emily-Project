@@ -1,0 +1,76 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Pesquisa de Sistema Flex</title>
+<style>
+.loader {
+  border: 8px solid #A1A1A1;
+  border-top: 8px solid #f6801e;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+   display: block;
+  margin-left: auto;
+  margin-right: auto;
+
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
+{% block help %}
+     <h7>Campo <strong>"Linha"</strong>> Insira o nome parcial da linha que deseja pesquisar, ou deixe em branco para retornar todas.</h7>
+    <br><br>
+
+{% endblock %}
+{% block main %}
+
+
+        <div><h1 style="text-align:center;"> Pesquisar Sistema por Linha </h1></div>
+
+        <div class="col-lg-7 mx-auto">
+            <div class="bg-white rounded-lg shadow-sm p-5">
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+                        <div>
+                            <table id="pesquisaSistema">
+                                <tr>
+                                    <th>Linha</th>
+
+                                </tr>
+                                <tr>
+                                    <td><input type="text" style="width: 100%" id="PesquisarCampoLinha" value="SMP-0001"/></td>
+
+                                </tr>
+                            </table>
+
+                            <br/>
+
+                            <button value="Pesquisar" style="width: 100%" class="subscribe btn btn-warning  rounded-pill shadow-sm" style="background-color:#ffbe47;" id="BotaoPesquisarLinhas">Pesquisar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7 mx-auto">
+            <div class="bg-white rounded-lg shadow-sm p-5">
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+                        <div id="ResultadoPesquisa">
+
+                        </div>
+                        <div class="loader" id="loader"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+         <script src="{% static 'js/a1flx/pesquisar_linhas.js' %}"></script>
+<link rel="stylesheet" href="{% static "css/a1flx.css" %}"/>
+{% endblock %}

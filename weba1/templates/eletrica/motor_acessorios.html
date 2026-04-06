@@ -1,0 +1,48 @@
+{% load static %}
+{% block acessorios %}
+<div class="modal-header">
+    <h5 class="modal-title" id="motoracessoriosLabel">Motor Acessórios</h5>
+</div>
+<div class="modal-body">
+    <!--Inicio da Interface -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="row">
+                <!-- Inicio do campo Código-->
+                <div class="col-lg-6 p-0">
+                    <label for="motor-acess-cod">Código</label>
+                    <input type="text" required class="form-control" id="motor-acess-cod" >
+                </div>
+                <!-- Fim do campo Código-->
+                <!--Inicio do botão Acessórios por OS-->
+                <div class="col-6 d-flex justify-content-end align-items-end p-0">
+                    <button name="bot" type="button" class="subscribe btn btn-warning rounded-pill shadow-sm" data-target="#acessoriosOS" data-toggle="modal" onclick="OnclickButtonAcessOs();">Acessórios por OS</button>
+                </div>
+                <!--Fim do botão Acessórios por OS-->
+            </div>
+
+            <div class="row">
+                <label for="motor-acess-desc">Descrição</label>
+                <input type="text"  required class="form-control" id="motor-acess-desc" >
+            </div>
+        </div>
+        <!-- Inicio do campo Pesquisa -->
+        <div class="col-lg-6">
+            {% with id_select='selectCargas' %}
+                {% include "./BaseSearchBar.html" %}
+            {% endwith %}
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="col-sm">
+        <button type="button" class="btn btn-success" onclick="registerAcessorios()">Adicionar</button>
+        <button type="button" class="btn btn-primary ml-2" onclick="updateAcessorios()">Alterar</button>
+    </div>
+    <button type="button" class="btn btn-warning" onclick="clean_forms_cargas()">Limpar</button>
+    <button type="button" class="btn btn-danger" onclick="deleteAcessorio()">Excluir</button>
+</div>
+<!--Fim da Interface -->
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/CadAcess.js' %}"></script>
+{% endblock acessorios %}
+

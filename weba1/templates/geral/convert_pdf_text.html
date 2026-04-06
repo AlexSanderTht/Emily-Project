@@ -1,0 +1,301 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% load poll_extras %}
+{% block head %}
+<title>PDF para TXT</title>
+
+{% endblock %}
+{% block help %}
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+
+<div class="container mt-5">
+
+    <!------------------ Cabeçalho da ferramenta de converter PDF ------------------>
+    <div class="row justify-content-center">
+        <div class="col-lg-12 text-center">
+            <h1>Conversor PDF</h1>
+        </div>
+        <div class="col-lg-12 text-center">
+            <h5>Ferramenta para leitura de arquivo PDF e leitura de texto.</h5>
+        </div>
+    </div>
+    <!------------------ Fim do cabeçalho ------------------>
+
+    <div class="container row justify-content-center">
+        <div class="col-sm-12 col-md-10 col-xl-8 bordas pb-3 bg-white border shadow">
+            <!------------------ Inicio Dropzone ------------------>
+            <div class="col-lg-12 mb-3" id="form">
+                {% csrf_token %}
+                <div class="form-row mt-4">
+                    <!------------------ Inicio Dropzone PDF ------------------>
+                    <div class="col card_dropzone_pdf row align-items-center py-3 ml-0 " id="drop-area-pdf">
+                        <div class="text-center w-100" id="pdf">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-danger">Arraste e solte o arquivo (*.pdf / *.dwg) ou</span><br>
+                            <span class="font-italic text-danger">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-danger rounded-pill text-white">
+                                <input multiple="multiple" accept=".pdf, .dwg" class="hidden" type="file" id="arquivo_pdf" onchange="DropArquivo('arquivo_pdf','drop-area-pdf',['pdf','dwg'],null)"/>
+                                <i class="fa-solid fa-upload"></i> Import File
+                            </label>
+                        </div>
+                    </div><!------------------ Fim Dropzone PDF ------------------>
+                </div>
+            </div>
+
+            <div class="form-row mx-2">
+                <!------------------ Inicio campo texto orientativos ------------------>
+                <div class="col-lg-6 pr-3 border-right">
+                    <p class="mb-0 font-weight-bold">Orientações:</p>
+                    <p class="pl-3 mb-0">L -> letra</p>
+                    <p class="pl-3 mb-0">N -> número</p>
+                    <p class="pl-3 mb-0">X -> letra ou número</p>
+                    <p class="pl-3 mb-0">qualquer outra letra -> pode ser qualquer caractere,
+                    caracteres especiais permanecem como estão.</p>
+                </div><!------------------ Fim campo texto orientativos ------------------>
+
+                <!------------------ Inicio campo pesquisa e botoes ------------------>
+                <div class="col-lg-6 pl-3">
+                    <div class="form-group">
+                        <label for="codigo">Código para procura:</label>
+                        <input type="text" id="codigo" class="form-control">
+                    </div>
+                    <button type="button" class="btn butof px-3" onclick="SendValuesToDownload()">Enviar</button>
+                    <button type="button" class="btn btn-secondary ml-3 px-3" onclick="document.location.reload(true)">Limpar</button>
+                </div><!------------------ Fim campo pesquisa e botoes ------------------>
+            </div>
+        </div>
+    </div>
+
+    <!------------------ Início Modal Mensagem Submit ------------------>
+    <div class="modal fade hidden" id="modal_submit">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="bordas border bg-white">
+                <div class="modal-header">
+                    <h4 id="titulo" class="modal-title text-center text-success w-100">Atenção</h4>
+                    <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p><b id="mensagem_load"></b></p>
+                    <div id="progress-box">
+                        {% include "eletrica/BaseProgressBar.html"%}
+                    </div>
+
+                    <hr>
+                    <div class="">
+                        <img id="image_load" class="w-100">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim Modal Mensagem Submit ------------------>
+
+</div>
+{% endblock %}
+{% block end %}
+<script type="text/javascript">
+    let formFilePDF = new FormData();
+    let id_task_pdf
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+
+    // --------------------- Verifica preenchimento para fazer o Ajax ---------------------//
+    function SendValuesToDownload() {
+        let pdf = document.getElementById('drop-area-pdf');
+        let codigo = document.getElementById('codigo');
+        let list_id_file = []
+
+        // Percorre arquivos dropados no front e adiciona a lista real
+        for (let i = 0; i <pdf.children.length;i++) {
+            if (pdf.children[i].id !== 'pdf'){
+                list_id_file.push(pdf.children[i].outerText.split('| ')[1])
+            }
+        }
+        // Verifica se código foi preenchido
+        if (pdf.childElementCount !== 1) {
+            // Apenda os arquivos aos formulários respectivamente
+            formFilePDF.append('listID', JSON.stringify(list_id_file));
+            formFilePDF.append('codigo', codigo.value);
+            // Envia dados para função que executa o Ajax
+            // console.log(formFilePDF)
+            AjaxDocs(formFilePDF)
+
+        } else {// Caso não seja preenchido, será exibido modal de alerta
+            document.getElementById('mensagem_load').innerText=''
+            document.getElementById('mensagem_load').innerText = 'Selecione os arquivos PDF para enviar.'
+            document.getElementById('image_load').src = "{% static 'img/alert.gif' %}"
+            document.getElementById('titulo').classList.remove('text-success')
+            document.getElementById('titulo').classList.add('text-danger')
+            $('#modal_submit').modal('show')
+
+        }
+    }
+
+    // --------------------- Função envia os dados para backend e baixa o arquivo ---------------------//
+    function AjaxDocs(formData) {
+        document.getElementById('mensagem_load').innerText = 'Verificando documentos, por favor aguarde!'
+        document.getElementById('image_load').src = "{% static 'img/digitando.gif' %}"
+        document.getElementById('image_load').classList.remove('w-50')
+        document.getElementById('image_load').classList.add('w-100')
+        document.getElementById('titulo').classList.remove('text-danger')
+        document.getElementById('titulo').classList.add('text-success')
+        $('#modal_submit').modal('show')
+        $.ajax({
+            url: "/app/geral/a1pdftotext/", // Caminho do Ajax
+            type: "POST", // http method
+            headers:{'X-CSRFToken':csrf[0].value},
+            dataType: "json",
+            data: formData, // Envia form pela solicitação do POST
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                inti_celery_bar({'task_id': data['task_id']})
+                // set_storage_session('ID_TASK',data['task_id'])
+                id_task_pdf = data['task_id']
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        })
+    }
+
+    // --------------------- Analisador de evento da barra de tarefas em tempo real ---------------------//
+    $('#progress-bar-message').on('DOMSubtreeModified', function(){
+        if ($('#progress-bar-message')[0].innerText === 'Success!'){
+            // console.log($('#progress-bar-message')[0].innerText)
+            let url =  '/app/geral/a1pdftotext{{nome_url_enviar_arquivo}}/' + id_task_pdf + '/'
+            window.open(url, '_self')
+            setTimeout(()=>{document.getElementById('div_bar_taks').hidden = true}, 2000)
+            setTimeout(()=>{$('#modal_submit').modal('hide')}, 3000)
+        }
+    });
+
+    // --------------------- Função pega o tamanho do arquivo e converte pro formato de bytes ---------------------//
+    function FormatBytes(bytes, decimals) {
+        if(bytes === 0) {
+            return "0 Bytes";
+        }
+        var k = 1024
+        var sizes = ["Bytes", "Kb", "Mb", "Gb"]
+        var i = Math.floor(Math.log(bytes) / Math.log(k))
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + " " + sizes[i]
+    }
+
+
+    // --------------------- Função trata o arquivo e adiciona visualmente ao campo drop e form ---------------------//
+    function DropArquivo(id_input,id_drop,campo,arquivo) {
+        let drop_container = document.getElementById(id_drop);
+        let file = document.getElementById(id_input);
+        let form;
+        let name_file;
+        let name_title;
+        let drop = '';
+        let id;
+        let id_rewriten;
+        let itens = $('#'+id_drop)[0].children
+
+        // Caso não seja dropado o arquivo é recebido via id
+        if (arquivo !== null) {
+            form = arquivo.files;
+
+        } else {
+            form = file.files;
+        }
+
+        for (let i = 0; i <form.length;i++){
+            name_file = form[i].name
+            let size_and_name = FormatBytes(form[i].size,0) + ' | ' + name_file
+            name_title = name_file
+            let extension = name_file.substring(name_file.length-3);
+            if (campo.includes(extension)){
+                // Cria o id com base na ultima modificação e tamanho
+                id = form[i].size
+                if (!document.getElementById(id)){
+                    if (extension === 'pdf'){
+                        formFilePDF.append('filesPDF',form[i]);
+                        drop =`<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 opaco" id="${id}">
+                                        <div class="input-group-prepend my-auto px-1">
+                                            <img class="" src="{% static 'img/PDF.png' %}" alt="Image PDF" style="height:22px">
+                                        </div>
+                                        <span type="text" title="${name_title}" class="col border-0 input-group-text bg-white text-truncate">${size_and_name}</span>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-danger rounded-pill px-2 border-0" type="button" onclick="RemoverArquivoPDF(${id});">
+                                                <i class="fas fa-times-circle fa-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>`
+
+                        drop_container.innerHTML += drop;
+                    } else {
+                        formFilePDF.append('filesPDF',form[i]);
+                        drop = `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 opaco" id="${id}">
+                                    <div class="input-group-prepend my-auto px-1">
+                                        <img class="" src="{% static 'img/DWG.png' %}" alt="Image XLS" style="height:22px">
+                                    </div>
+                                    <span type="text" title="${name_title}" class="col border-0 input-group-text bg-white text-truncate">${size_and_name}</span>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="RemoverArquivoPDF(${id});">
+                                            <i class="fas fa-times-circle fa-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>`
+                        drop_container.innerHTML += drop;
+
+                    }
+                }
+            } else {
+                document.getElementById('mensagem_load').innerText=''
+                document.getElementById('mensagem_load').innerText = 'Extensão do arquivo ('+name_file+') diferente do padrão estabelecido!'
+                document.getElementById('image_load').src = "{% static 'img/alert.gif' %}"
+                document.getElementById('titulo').classList.remove('text-success')
+                document.getElementById('titulo').classList.add('text-danger')
+                $('#modal_submit').modal('show')
+            }
+        }
+
+        for (let j = 0; j<itens.length;j++){
+            if (itens[j].id !== campo) {
+                setTimeout(() =>{
+                    document.getElementById(itens[j].id).classList.remove('opaco')
+                    document.getElementById(itens[j].id).classList.add('opaco_hover')
+                },100);
+            }
+        }
+    }
+
+    // ---------------------Função para remover elemento ao clicar no X vermelho---------------------//
+    function RemoverArquivoPDF(elemento) {
+        $('#drop-area-pdf').find('#' + elemento.toString()).remove()
+    }
+
+    // --------------------- Função JQuery para adicionar, ou remover classe,e pegar arquivo ---------------------//
+    jQuery(document).ready(function($) {
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-area-pdf').on('dragover', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).addClass('upload-hover_pdf');
+        })
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-area-pdf').on('dragleave', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover_pdf');
+        })
+
+        // Ao soltar o arquivo sobre o campo a função DropArquivo passa os parâmetros
+        $('#drop-area-pdf').on('drop', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).removeClass('upload-hover_pdf');
+          let file_dwg = event_2.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivo('arquivo_pdf','drop-area-pdf','pdf',file_dwg)
+        })
+    });
+
+
+</script>
+{% endblock %}

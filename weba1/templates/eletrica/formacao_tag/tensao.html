@@ -1,0 +1,37 @@
+{% load static %}
+{% block tensao %}
+<div class="modal modal-sm hidden" id="modal-tensao" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel">CRITÉRIO TENSÃO</h6>
+        <button type="button" class="close" onclick="$('#modal-tensao').modal('hide')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container border tensions-in-ftag">
+            <div class="row mt-2">
+               <div class="col-lg-5 px-0 text-center">
+                  <b>TENSÃO</b>
+               </div>
+              <div class="col-lg-2 px-0 text-center justify-content-center" id="container-buttons-del">
+                  <button type="button" class="btn btn-warning btn-sm " onclick="AddFormsForNewTensions()">+</button>
+              </div>
+              <div class="col-lg-5 px-0 text-center">
+                  <b>CARACTERE</b>
+              </div>
+            </div>
+
+            <div class="container" id="content-forms-tensao">
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="SendTensionsFTagBack()">Atualizar</button>
+        <button type="button" class="btn btn-dark" onclick="$('#modal-tensao').modal('hide')">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,355 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+
+{% block head %}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lista de Materiais</title>
+
+{% endblock head %}
+
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/list_materials.css' %}"/>
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/GerarTipicosDoc.js' %} "></script>
+
+<div class="overlay">
+
+        <div class="container mt-5">
+            <!------------------ Cabeçalho da ferramenta de gerar tipicos ------------------>
+            <div class="row justify-content-center animate__animated animate__backInRight">
+                <div class="col-lg-12 text-center">
+                    <h1>Gerar Lista de Materiais CAD/REVIT</h1>
+                </div>
+                
+            </div>
+            <!------------------ Fim do cabeçalho ------------------>
+
+            <div class="container mt-3 row justify-content-center position-relative animate__animated animate__pulse d-flex align-items-start">
+              
+                <div class="card_filter_tipicos position-absolute" style="margin-top:130px;margin-left:45px;left: 0;">
+                    <div class="fa-rotate-270" style="margin-left: -580px; margin-top: -110px; position: relative;">
+
+                        <button id="button_compare_rev" class="btn btn-outline-secondary p-2 rounded-pill rounded-left font-weight-bold" onclick="ComparaRevTipico(this.id)">
+                        <i class="fa-solid fa-code-compare mr-2"></i>Comparação</button>
+                    </div>
+                </div>
+
+                <!--------------------- Início campo filtro projeto e tabela -------------------->
+                <div class="col-sm-12 col-md-10 col-xl-11
+                 bordas py-8 card border shadow" style="transform: translate(-170px,-20px); width: 100%;">
+                <div class="row mx-1">
+                     <div class="col-lg-6 animate__animated" id="checkbox_config">
+                <div class="row">
+                    <div class="col-6 d-flex align-items-center">
+                        <label class="switch_toggle mb-0 mt-1">
+                            <input type="checkbox" name="cols_config_proj_bt[]" id="num_cliente">
+                            <span class="slider_switch round"></span>
+                        </label>
+                        <p class="ml-2 mb-0">Número do Cliente</p>
+                    </div>
+
+                    <div class="col-6 d-flex align-items-center">
+                        <label class="switch_toggle mb-0 mt-1">
+                            <input type="checkbox" name="cols_config_proj_bt[]" id="cod_fornece">
+                            <span class="slider_switch round"></span>
+                        </label>
+                        <p class="ml-2 mb-0">Código do Fornecedor</p>
+                    </div>
+                </div>
+            </div>
+                    <!-- Conteúdo do card (sem o checkbox_config) -->
+                    <div class="col-6 ml-auto">
+                        <!-- Caixa de seleção e botão na mesma linha -->
+                        <div class="d-flex align-items-center mb-4" style="justify-content:flex-end;">
+                            <select class="form-control mr-2" id="cabecalhos_salvos" style="width: 150px;">
+                                <option>Novo Documento</option>
+                            </select>
+                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#dadosDocumentoModal"
+                                onclick="AberturaModalCabecalho()">
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </button>
+                        </div>
+                        <!-- Botões alinhados abaixo com espaçamento -->
+                    </div>
+
+                </div>
+     <div class="col-lg-6 animate__animated" id="content_select_rev" hidden>
+                            <!------------------ Início Revisao ------------------>
+                            <div class="input-group bordas">
+                                <div class="borda_filtros border border-success border-right-0">
+                                    <button class="btn bg-white rounded-right rounded-pill" type="button"><i class="fa-solid fa-list-ol text-success"></i></button>
+                                </div>
+                                <select id="rev_next" class="border border-success border_left border-left-0 bg-white text-success text-center w-25">
+                                    <option value="a">Revisao</option>
+                                    {% for rev in Rev_tipicos %}
+                                    <option value="{{rev}}">{{rev}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div><!------------------ Fim Revisao ------------------>
+                        </div>
+            </div>
+
+           
+                   
+                        
+                        <div class="col-lg-6 my-auto animate__animated" id="button_send_values_tip_compare" hidden>
+                            <div class="d-flex justify-content-center" style="display: none;">
+                                <button type="button" class="btn butof" onclick="SendValuesCompare()"><i class="fa-solid fa-paper-plane pr-2"></i>Enviar</button>
+                                <button type="button" class="btn btn-secondary ml-2" onclick="document.location.reload(true)"><i class="fa-solid fa-rotate-right pr-2"></i>Limpar</button>
+                                <button type="button" class="btn btn-success ml-2" onclick="window.open('/app/eletrica/gerar_tipicos/TemplateTipicos', '_self')"><i class="fa-solid fa-download pr-2"></i>Template</button>
+                            </div>
+                        </div>
+                  
+
+                        
+                    
+
+                    <div class="d-flex" style="gap:45px">
+                            <div class="col-sm-12 col-md-10 col-xl-8 bordas py-3 border shadow" style="height:340px ;right:175px">
+                                <div class="form-row mt-4" id="form_dropzone_compare_rev" hidden>
+                    <!------------------ Inicio Dropzone XLSX Rev 0 ------------------>
+                    <div class="col card_dropzone py-5 ml-0 px-0 animate__animated animate__fadeIn" id="drop-area-xlsx-rev-0" style="max-width:50%;">
+                        <div class="text-center w-100" id="xlsx-rev-0">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte a <b>Rev. anterior</b> (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xlsx_rev_0" onchange="DropArquivo('arquivo_xlsx_rev_0','drop-area-xlsx-rev-0','xlsx',null, 'compare')"/>
+                                <i class="fa-solid fa-angles-left fa-xl mr-2"></i> Import Previous Rev.
+                            </label>
+                        </div>
+                    </div><!------------------ Fim Dropzone XLSX Rev 0 ------------------>
+                    <div class="col-1"></div>
+                    <!------------------ Inicio Dropzone XLSX Next Rev ------------------>
+                    <div class="col card_dropzone py-5 mr-0 animate__animated animate__fadeIn" id="drop-area-xlsx-rev-next" style="max-width:50%">
+                        <div class="text-center w-100" id="xlsx-rev-next">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte a <b>Rev. posterior</b> (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xlsx_rev_next" onchange="DropArquivo('arquivo_xlsx_rev_next','drop-area-xlsx-rev-next','xlsx',null, 'compare')"/>
+                                Import Next Rev.<i class="fa-solid fa-angles-right fa-xl ml-2"></i>
+                            </label>
+                        </div>
+                    </div><!------------------ Fim Dropzone XLSX Next Rev ------------------>
+                </div>
+                     
+            
+               
+                  </div>
+                    <div class="col-sm-12 col-md-10 col-xl-9 bordas py-3 border shadow" style="height:340px ;right:160px">
+                    <!------------------ Inicio Dropzone ------------------>
+                    <div class="col-lg-12 my-3" id="form">
+                        {% csrf_token %}
+                        <div class="form-row mt-4" id="form_dropzone">
+                            <!------------------ Inicio Dropzone DWG ------------------>
+                   <!------------------ Fim Dropzone DWG ------------------>
+                            <!------------------ Inicio Dropzone XLSX template ------------------>
+                    <!------------------ Fim Dropzone XLSX template ------------------>
+
+                            <div class="col card_dropzone py-5 mr-0 animate__animated animate__fadeIn" id="drop-area-multi" style="max-width:100%; height:250px; overflow:auto;">
+                                <div class="text-center w-100" id="multi" style="transform: translateY(30px);">
+                                    <!-- Mensagem -->
+                                    <span class="font-italic text-success">Arraste e solte o arquivo ou</span><br>
+                                    <span class="font-italic text-success">clique em importar para fazer o upload.</span><br>
+
+                                    <div class="mt-2 d-flex justify-content-center">
+                                        <label class="btn btn-success rounded-pill text-white">
+                                            <input multiple accept=".xlsx,.dwg" class="hidden" type="file" id="arquivo_multi" onchange="DropArquivo('arquivo_multi','drop-area-multi','xlsx',null,null); DropArquivo('arquivo_multi','drop-area-multi','dwg',null,null)"/>
+                                            <i class="fa-solid fa-file-import"></i> Import Arquivos
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <div class="col card_dropzone py-5 mr-0 animate__animated animate__fadeIn" id="dropzone_dwg_lst_mat">
+                        <div class="text-center w-100" id="dwg">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-primary">Arraste e solte o arquivo (*.dwg) ou</span><br>
+                            <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                <input multiple="multiple" accept=".dwg,.DWG" class="hidden" type="file" id="arquivo_dwg_lst_mat" onchange="DropFileInLstMatRevit('dropzone_dwg_lst_mat', this.id, 'FilesDWG', null, 2)"/>
+                                <i class="fa-solid fa-upload"></i> Import DWG
+                            </label>
+                        </div>
+                     </div>
+
+
+
+
+
+
+
+
+                        </div>
+
+                        <div class="form-row mt-4" id="form_dropzone_compare_rev" hidden>
+                            <!------------------ Inicio Dropzone XLSX Rev 0 ------------------>
+                            <div class="col card_dropzone py-5 ml-0 px-0 animate__animated animate__fadeIn" id="drop-area-xlsx-rev-0" style="max-width:50%;">
+                                <div class="text-center w-100" id="xlsx-rev-0">
+                                    <!------------------ Inicio Message ------------------>
+                                    <span class="font-italic text-success">Arraste e solte a <b>Rev. anterior</b> (*.xlsx) ou</span><br>
+                                    <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                                    <!------------------ Fim Message ------------------>
+                                    <label class="mt-2 btn btn-success rounded-pill text-white">
+                                        <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xlsx_rev_0" onchange="DropArquivo('arquivo_xlsx_rev_0','drop-area-xlsx-rev-0','xlsx',null, 'compare')"/>
+                                        <i class="fa-solid fa-angles-left fa-xl mr-2"></i> Import Previous Rev.
+                                    </label>
+                                </div>
+                            </div><!------------------ Fim Dropzone XLSX Rev 0 ------------------>
+                            <div class="col-1"></div>
+                            <!------------------ Inicio Dropzone XLSX Next Rev ------------------>
+                            <div class="col card_dropzone py-5 mr-0 animate__animated animate__fadeIn" id="drop-area-xlsx-rev-next" style="max-width:50%">
+                                <div class="text-center w-100" id="xlsx-rev-next">
+                                    <!------------------ Inicio Message ------------------>
+                                    <span class="font-italic text-success">Arraste e solte a <b>Rev. posterior</b> (*.xlsx) ou</span><br>
+                                    <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                                    <!------------------ Fim Message ------------------>
+                                    <label class="mt-2 btn btn-success rounded-pill text-white"></label>
+                                        <input multiple="multiple" accept=".xlsx" class="hidden" type="file" id="arquivo_xlsx_rev_next" onchange="DropArquivo('arquivo_xlsx_rev_next','drop-area-xlsx-rev-next','xlsx',null, 'compare')"/>
+                                        Import Next Rev.<i class="fa-solid fa-angles-right fa-xl ml-2"></i>
+                                    </label>
+                                </div>
+                            </div><!------------------ Fim Dropzone XLSX Next Rev ------------------>
+                        </div>
+
+                    </div><!------------------ Fim Dropzone ------------------>
+
+                </div>
+
+
+                </div>
+                <!------FINAL DA DIV DO DROPZONE---->
+                
+
+                  <div class="os-glass" style="width:300px; height:495px; margin-left:20px; transform:translate(200px,-150px)">
+                       <style>
+                .os-glass{
+                    padding: 18px;
+                    border-radius: 22px;
+                    background: rgba(61, 61, 61, 0.32);
+                    backdrop-filter: blur(16px) saturate(140%);
+                    -webkit-backdrop-filter: blur(16px) saturate(140%);
+                    border: 1px solid rgba(255,255,255,.45);
+                    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+                    color:#0f172a;
+                    position: relative;
+                    z-index: 2100;
+                }
+                .os-title{font-size:26px;font-weight:800;margin:0 0 12px;}
+                .kv{display:grid;grid-template-columns:110px 1fr;column-gap:12px;row-gap:6px;font-size:14px;}
+                .kv .k{color:#475569;}
+                .kv .v{font-weight:600;color:#111827;}
+                .os-divider{border:0;border-top:1px solid rgba(255,255,255,.6);margin:14px 0;}
+                .os-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+            </style>
+            
+                      <!-- Container onde os arquivos dropados serão exibidos -->
+                      <div id="drop-list-multi" class="drop-list" style="max-height:410px; overflow:auto; padding:8px;">
+                          <!-- arquivos dropados aparecerão aqui -->
+                      </div>
+                  </div>
+            </div>
+            </div>
+
+            <!------------------ Início Modal Mensagem Submit ------------------>
+            <div class="modal fade hidden" id="modal_submit">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="bordas border bg-white">
+                        <div class="modal-header">
+                            <h4 id="titulo" class="modal-title text-center text-success w-100">Atenção</h4>
+                            <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <p><b id="mensagem_load"></b></p>
+                            <div id="progress-box">
+                                {% include "eletrica/BaseProgressBar.html"%}
+                            </div>
+                            <hr>
+                            <div class="">
+                                <img id="image_load" class="w-100">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!------------------ Fim Modal Mensagem Submit ------------------>
+
+    
+        
+        </div>
+                                                    <div class="d-flex justify-content-center">
+                                                        <button type="button" class="btn butof" style="transform: translate(55px,-195px);" onclick="SendValuesToDownload()"><i class="fa-solid fa-paper-plane pr-2"></i>Enviar</button>
+                                                    </div>
+
+</div>
+
+<!------DIV DO MODAL---------------------------------->
+
+<div class="modal fade" id="dadosDocumentoModal" tabindex="-1" role="dialog" aria-labelledby="dadosDocumentoModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header" style="color: #000;">
+            <h5 class="modal-title w-100 text-center">INFORMAÇÕES DE CABEÇALHO</h5>
+        </div>
+            <div class="modal-body">
+              <!--<div class="d-flex justify-content-between">-->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="numero_fornecedor" style="color:#000;">Número A1</label>
+                            <input type="text" class="form-control" id="numero_fornecedor" onchange="PesquisaCabecalho()" style="color:#000;">
+                        </div>
+                    </div>
+                    <div class="col-3">
+                    <!-- Caixa de input para Revisão A1 -->
+                        <div class="form-group">
+                            <label for="revisao_fornecedor" style="color:#000;">Rev. A1</label>
+                            <input type="text" class="form-control" id="revisao_fornecedor">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="numero_cliente" style="color:#000;">Número Cliente</label>
+                            <input type="text" class="form-control" id="numero_cliente">
+                        </div>
+                    </div>
+                    <div class="col-3">
+                    <!-- Caixa de input para Revisão A1 -->
+                        <div class="form-group">
+                            <label for="revisao_cliente" style="color:#000;">Rev. Cliente</label>
+                            <input type="text" class="form-control" id="revisao_cliente">
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+              <!--</div>-->
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" id="botaoSalvar" onclick="SalvarCabecalho()" data-bs-dismiss="modal">Salvar</button>
+            <button type="button" class="btn btn-danger" id="botaoDeletar" onclick="DeletarCabecalho()" data-bs-dismiss="modal" hidden>Excluir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+<script src="{% static 'js/calc_cabos/a1calccabosjs.js' %}"></script>
+<script src="{% static 'js/eletrica/A1Pro/ListaMateriaisRevit.js' %}"></script>
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/GerarTipicosDoc.js' %} "></script>
+
+
+<script src="{% static 'js/eletrica/A1Pro/ListaMateriaisRevit.js' %}"></script>
+<script src="{% static 'js/eletrica/A1Pro/list_materials.js' %}"></script>
+
+
+
+{% endblock main %}

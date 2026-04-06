@@ -1,0 +1,60 @@
+/* Extracted inline styles from a1pro.html
+   Purpose: move embedded styles into external file for maintainability
+*/
+
+/* Layout / container fixes */
+.panel-login-a1 { width: 2900px; height: auto; }
+.panel-login-a1 > .d-flex { gap: 20px; align-items: flex-start; }
+.container-fluid.border.p-2 { border-radius: 10px; }
+#pro-area-desc { height: 38px; padding-top: 6px; padding-bottom: 6px; resize: none; }
+
+/* Historical panel */
+.os-glass[aria-label="Historico da OS"] { display:flex; flex-direction:column; justify-content:center; align-items:center; height:275px; width:auto; position:relative; z-index:1; text-align:center; }
+.os-glass[aria-label="Historico da OS"] .os-title { margin-top: -180px; }
+.os-glass[role="region"][aria-label="Detalhes da OS"] { display:flex; flex-direction:column; justify-content:flex-start; height:200px; position:relative; z-index:1; }
+
+/* Modal sizing (grouped by repeated inline styles) */
+#bookpdf .modal-content,
+#bookexcel .modal-content,
+#booklistamotores .modal-content,
+#motoracessorios .modal-content,
+#funcao .modal-content,
+#sinais .modal-content {
+    width: 700px; margin-top: 115px;
+}
+
+#acessorios .modal-content,
+#caracteristicaos .modal-content {
+    width: 500px; margin-left: 75px; margin-top: 140px;
+}
+
+#cadastrobornes .modal-content { width: 710px; height: 700px; }
+#acessoriosOS .modal-content { width: 600px; margin-left: 42px; margin-top: 125px; }
+#sinais_control .modal-dialog { max-width: 44vw; margin-right: 430px; margin-top: 140px; }
+#gav-cub .modal-dialog { width: 1250px; margin: auto; }
+#isolacao .modal-content { width: 600px; margin-top: 115px; margin-left: 45px; }
+#formacao .modal-content { width: 600px; }
+#tipocabo .modal-content { width: 600px; margin-top: 150px; margin-left: 80px; }
+#resumo .modal-content, #contagemcabos .modal-content { width: 1000px; margin-left: -130px; }
+
+#modal-del .modal-content,
+#modal-del-gav .modal-content,
+#modal_export_memorial .modal-content { left: 14%; width: 550px; }
+
+/* progress / loading modal tweaks */
+#modal_loading_list_material .modal-header .close.position-absolute { right: 5%; }
+#modal_loading_list_material img[alt="digitando"] { width: 460px; height: auto; display: block; }
+#progress-bar-list-material-plan-corte { background-color: #68a9ef; }
+
+/* Dropdown / z-index utilities aligned with main CSS */
+.z-top { position: relative; z-index: 2100; }
+.z-menu { z-index: 2700; }
+.btn-group.dropdown .dropdown-menu.show.z-menu { z-index: 2700; }
+
+/* Pequeno botão de utilities */
+.btn-mini { font-size: 15px; padding: 2px 6px; width: 70px; }
+
+/* Fallbacks de pequenas mudanças de styles*/
+.kv[style] { /* keep existing behaviour when inline present */ }
+
+/* Final dos elementos extraídos */

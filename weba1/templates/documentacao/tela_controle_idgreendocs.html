@@ -1,0 +1,153 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+    <link href="{% static 'js/bootstrap.min.css' %}">
+</head>
+
+<style>
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-5">
+    {% csrf_token %}
+    <div class="card mb-4">
+        <div class="card-body col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Tela de Controle Ids do Greendocs</b></h2>
+        </div>
+        <div class="card-body container mx-auto">
+            <div class="tab_cont p-3">
+                <table class="table table-bordered rounded" id="table">
+                    <thead>
+                    <tr>
+                        <th hidden>ID</th>
+                        <th scope="col">Projeto</th>
+                        <th scope="col">Nome do Campo</th>
+                        <th scope="col">Id do campo</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for id, nome_proj, nome_campo, id_green in RegistrosProjeto %}
+                    <tr>
+                        <td hidden>{{id}}</td>
+                        <td>{{nome_proj}}</td>
+                        <td>{{nome_campo}}</td>
+                        <td>{{id_green}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class=" tab_cont p-3">
+                <div class="form-row">
+                    <div class="form-group col-md-4" hidden>
+                        <label for="doc_green_id">ID</label>
+                        <input id="doc_green_id" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_green_nome">Nome Campo</label>
+                        <input id="doc_green_nome" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_idgreen_codigo">id_green</label>
+                        <input id="doc_idgreen_codigo" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_green_projeto">Projeto</label>
+                        <select id="doc_green_projeto" class="form-control ">
+                            {% for id, nome_proj in Projeto %}
+                            <option title="{{id}}">{{nome_proj}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <button type="button" class="btn butof" onclick="InsertIdGreendocs()">Adicionar\Editar</button>
+                    <button type="button" class="btn btn-primary " onclick="Clear_Idgreen()">Limpar</button>
+                    <button type="button" class="btn btn-primary bg-danger " onclick="DeleteIdGreen()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+
+<script>
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+    $("#table tbody tr").click(function () {
+        $(this).addClass('selected table-primary').siblings().removeClass('selected table-primary');
+        Fill_id_greendocs($(this).find('td:nth-child(1)').html(), $(this).find('td:nth-child(2)').html(), $(this).find('td:nth-child(3)').html(), $(this).find('td:nth-child(4)').html())
+
+    });
+
+    function Fill_id_greendocs(id, nome_proj, nome_campo, id_green) {
+        document.getElementById('doc_green_id').value = id
+        document.getElementById('doc_green_nome').value = nome_campo
+        document.getElementById('doc_idgreen_codigo').value = id_green
+        document.getElementById('doc_green_projeto').value = nome_proj
+    }
+
+    function Clear_Idgreen() {
+        Fill_id_greendocs('', '', '', '')
+        $("#table tbody tr").removeClass('selected table-primary')
+    }
+
+    function InsertIdGreendocs() {
+        let id = document.getElementById('doc_green_id').value
+        let nome_campo = document.getElementById('doc_green_nome').value
+        let id_green = document.getElementById('doc_idgreen_codigo').value
+        let id_proj = document.getElementById('doc_green_projeto').selectedOptions[0].title
+        $.ajax({
+            url: "", // the endpoint
+            type: "POST", // http method
+            dataType: "json",
+            data: {
+                "id": id,
+                "nome_campo": nome_campo,
+                "id_green": id_green,
+                "id_proj": id_proj,
+                'csrfmiddlewaretoken': csrf[0].value
+            } // data sent with the post request
+        }).done(function (data) {
+            swalAlert_DOC('Inserir Registro', data['data'],'warning', 'Fechar')
+            Clear_Idgreen()
+        });
+    }
+
+    function DeleteIdGreen(){
+        let id = document.getElementById('doc_green_id').value
+        if(isNaN(parseInt(id))){
+            swalAlert_DOC('Deletar Registro', 'NÃO foi possivel realizar a deleção, necessário selecionar um registro a ser deletado na tabela!','error', 'Fechar')
+            Clear_Idgreen()
+        }else{
+            $.ajax({
+                url: "", // the endpoint
+                type: "DELETE", // http method
+                headers: {'X-CSRFToken': csrf[0].value},
+                dataType: "json",
+                data: {
+                    "id": id,
+                    'csrfmiddlewaretoken': csrf[0].value
+                 } // data sent with the post request
+        }).done(function (data) {
+                swalAlert_DOC('Deletar Registro', data['data'],'warning', 'Fechar')
+                Clear_Idgreen()
+        });
+        }
+    }
+</script>
+{% endblock %}

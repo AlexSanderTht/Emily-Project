@@ -1,0 +1,89 @@
+
+{%extends 'geral/base.html'%}
+
+{% load static %}
+
+{%block 'titulo'%}Gerenciamento de Acessos {%endblock%}
+
+{%block 'conteudo' %}
+
+
+ <div class="col-lg-7" style="padding: 50px 50px 50px 50px">
+
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+                        <div>
+
+                        <br/>
+                            {% if Admin %}
+                         <div class="document" style="box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.9); border-radius: 25px;">
+                                <div class="docheadFilho" style="border-radius: 5px;">
+                                    <span class="dheadFilho">Usuários Administradores</span>
+                                </div>
+                                <div class="dcontent">
+                                    O acesso de administrador pode cadastrar qualquer função e tem acesso a todas as funcionalidades do sistema.
+                                </div>
+                                <div class="BotaoInfDireito" align="right">
+                                    <button class="subscribe btn btn-warning  rounded-pill shadow-sm" style="background-color:#ffbe47;" onclick="window.location='/GerenciarAcessosAdmin';">Gerenciar Usuários Administradores</button>
+                                </div>
+                               </br>
+                         </div>
+
+                            <br/>
+
+                         <div class="document" style="box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.9); border-radius: 25px;">
+                                <div class="docheadFilho" style="border-radius: 5px;">
+                                    <span class="dheadFilho">Usuários de Cadastros de Atividades</span>
+                                </div>
+                                <div class="dcontent">
+                                    O acesso de cadastro de atividades pode cadastrar novas ordens de serviço e cadastrar atividades.
+                                </div>
+                                <div class="BotaoInfDireito" align="right">
+                                    <button class="subscribe btn btn-warning  rounded-pill shadow-sm" style="background-color:#ffbe47;" onclick="window.location='/GerenciarAcessosCadastroAtividades';">Gerenciar Usuários de Cadastro de Atividades</button>
+                                </div>
+                               </br>
+                           </div>
+
+                        <br/>
+                                {%endif%}
+                            {%if UserCadastroAtividades or Admin %}
+                                 <div class="document" style="box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.9); border-radius: 25px;">
+                                    <div class="docheadFilho" style="border-radius: 5px;">
+                                            <span class="dheadFilho">Usuários de Relatórios</span>
+                                        </div>
+                                        <div class="dcontent">
+                                            Concede acesso aos relatórios do sistema.
+                                        </div>
+                                        <div class="BotaoInfDireito" align="right">
+                                            <button class="subscribe btn btn-warning  rounded-pill shadow-sm" style="background-color:#ffbe47;" onclick="window.location='/GerenciarAcessosRelatorios';">Gerenciar Usuários de Relatórios</button>
+                                        </div>
+                                       </br>
+                                </div>
+                            <br/>
+                              <div class="document" style="box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.9); border-radius: 25px;">
+                                    <div class="docheadFilho" style="border-radius: 5px;">
+                                            <span class="dheadFilho">Usuários Atividades</span>
+                                        </div>
+                                        <div class="dcontent">
+                                            Cadastra os usuários que executarão as atividades.
+                                        </div>
+                                        <div class="BotaoInfDireito" align="right">
+                                            <button class="subscribe btn btn-warning  rounded-pill shadow-sm" style="background-color:#ffbe47;" onclick="window.location='/GerenciarAcessosUserAtividades';">Gerenciar Usuários de Atividades</button>
+                                        </div>
+                                       </br>
+                                </div>
+                            {%endif%}
+
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+
+
+{%endblock%}

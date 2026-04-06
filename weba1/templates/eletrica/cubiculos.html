@@ -1,0 +1,64 @@
+{% load static %}
+{% block cubiculos %}
+  <div class="modal-header">
+    <h5 class="modal-title" id="cadastroLabel">Cubículos</h5>
+  </div>
+    <div class="modal-body">
+        <div class="row"  ><!-- dentro do area-->
+            <div style="border-right: 2px solid rgb(161, 158, 158);  padding-right: 5px; width: 380px;">
+                <div>
+                    <div>
+                        <div class="col-sm-8" >
+                            <div class="form-group mb-4">
+                                <td data-toggle="tooltip" title="Inserir codigo ">Painel
+                                    <select class="form-control" id="select-painel">
+                                        <option value="none">Selecione um Painel</option>
+                                    </select>
+                                </td>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12" >
+                        <div class="form-group mb-4">
+                            <td placeholder="Digite aqui"  data-toggle="tooltip"  title="Inserir a descrição">Cubículo
+                                <input type="text"  required class="form-control" id="area-desc" >
+                            </td>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+
+            <div>
+                <div style="width: 47%; position: absolute;">
+                    <div class="col-sm-9" xmlns="http://www.w3.org/1999/html">
+                        <div class="form-group mb-4">
+                            <td  for="tipo_os">
+                                Pesquisa
+                                <div class="divBuscaAcess">
+                                    <input type="search" class="txtBuscaAcess" placeholder="Buscar..." id="cub-search" title="Pesquise aqui seu Cubículo"/>
+                                </div>
+                                <br>
+                                <select id="cub-select" required class="form-control" multiple>
+                                </select>
+                                <datalist id="cub-type-list">
+                                </datalist>
+                            </td>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-warning"  >Importar arquivo</button>
+        <button type="button" class="btn btn-warning" >Exportar arquivo</button>
+        <button type="button" class="btn btn-warning" >Limpar</button>
+        <button type="button" class="btn btn-warning" >Adicionar/Alterar</button>
+        <button type="button" class="btn btn-warning">Excluir</button>   
+    </div>
+<script>
+
+</script>
+{% endblock %}

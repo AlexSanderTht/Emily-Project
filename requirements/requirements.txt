@@ -1,0 +1,143 @@
+# Redis e Async
+aioredis==2.0.1
+redis==5.2.0
+
+# Celery (atualizado para 5.2.7)
+amqp==5.2.0
+amqplib==1.0.2
+anyjson==0.2.2
+billiard==3.6.4.0
+celery==5.2.7
+celery-progress==0.4
+kombu==5.4.2
+vine==5.1.0
+
+# Django Core (atualizado para 4.2.16)
+Django==4.2.16
+asgiref==3.8.1
+async-timeout==5.0.0
+
+# Django Channels e WebSockets (Django 4.2)
+channels==4.1.0
+channels-redis==4.2.0
+daphne==4.1.2
+
+# Dependências do Channels/Daphne
+Twisted==24.7.0
+autobahn==23.1.2
+txaio==23.1.1
+cffi==1.17.1
+attrs==24.2.0
+hyperlink==21.0.0
+incremental==24.7.2
+zope.interface==7.1.0
+constantly==23.10.4
+Automat==24.8.1
+service-identity==24.1.0
+pyOpenSSL==24.2.1
+cryptography==43.0.3
+pycparser==2.22
+pyasn1-modules==0.4.1
+msgpack==1.1.0
+backports.zoneinfo==0.2.1
+
+# Django Apps
+django-celery==3.1.17
+django-celery-beat==2.7.0
+django-celery-results==2.5.1
+django-cors-headers==3.11.0
+django-environ==0.11.2
+django-pandas==0.6.6
+django-threadlocals==0.10
+django-timezone-field==7.0
+django-windows-tools==0.2.1
+djangorestframework==3.15.2
+
+# HTTP e Requests
+certifi==2021.5.30
+chardet==5.2.0
+charset-normalizer==3.3.2
+requests==2.31.0
+urllib3==2.0.7
+idna==3.6
+
+# Utilitários Python
+colorama==0.4.6
+comtypes==1.1.14
+distro==1.9.0
+six==1.15.0
+packaging==24.1
+tomli==2.0.2
+typing-extensions==4.12.2
+zipp==3.5.0
+importlib-metadata==4.6.4
+tzdata==2024.2
+click==8.1.7
+click-didyoumean==0.3.1
+click-plugins==1.1.1
+click-repl==0.3.0
+prompt_toolkit==3.0.48
+wcwidth==0.2.13
+cron-descriptor==1.4.5
+
+# Banco de Dados
+mysql-connector-python==8.0.22
+mysql-server-has-gone-away==2.0.0
+mysqlclient==2.2.0
+mariadb==1.0.5
+pyodbc==4.0.30
+
+# LDAP
+ldap3==2.7
+pyasn1==0.4.8
+
+# Processamento de Dados
+pandas==1.4.1
+numpy==1.20.1
+openpyxl==3.0.4
+xlrd==1.2.0
+xlwings==0.28.5
+xarray==0.16.2
+natsort==7.1.1
+et-xmlfile==1.1.0
+jdcal==1.4.1
+
+# Processamento de Imagens e PDFs
+opencv-python==4.10.0.84
+opencv-contrib-python==4.9.0.80
+opencv-contrib-python-headless==4.9.0.80
+Pillow==9.1.1
+pdf2image==1.13.1
+pdfrw==0.4
+PyPDF2==1.26.0
+pypdfium2==4.30.0
+pytesseract==0.3.4
+
+# Visualização
+matplotlib==3.6.3
+contourpy==1.1.1
+cycler==0.12.1
+fonttools==4.54.1
+kiwisolver==1.4.7
+pyparsing==2.4.7
+
+# Documentos
+python-docx==0.8.10
+reportlab==3.5.68
+qrcode==7.3.1
+
+# CAD
+ezdxf==0.13
+scikit-build==0.17.6
+
+# Outros
+graypy==2.1.0
+python-crontab==2.5.1
+python-dateutil==2.9.0.post0
+pytz==2024.2
+pywin32==307
+protobuf==5.28.2
+sqlparse==0.4.1
+PySimpleGUI==5.0.8.3
+lxml==4.6.3
+# mod-wsgi==4.9.4  # Comentado - descomente se necessário para produção

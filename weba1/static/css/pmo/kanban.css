@@ -1,0 +1,206 @@
+body {/* corpo o html*/
+    background: url('papers.co-sf92-blue-gray-gradation-blur-1-wallpaper.jpg') no-repeat ; /* Insere a imagem no fundo da página sem deixar que ela se repita*/
+    background-size: cover; /* Ordena que a imagem ocupe o tamanho inteiro da tela */
+  }
+
+
+  
+  .container { /* div pincipal  onde agrupa todos os elementos */
+    width: 70%; /* Tamanho total do container em porcentagem para que o container seja um elemento resposivo  */
+    min-width: 50%; /* Largura minima que deve ter o container */
+    margin: auto; /* Define margens automaticas para o container */
+    display: flex; /* Faz com que os elementos do container fique um do lado do outro com quebras automaticas*/
+    flex-direction: column; /* Faz com que o elemento fique um embaixo do outro*/
+  }
+  
+  hr{
+      color: rgb(206, 206, 206);
+  }
+  
+  .kanban-board {/* div que esta todos os cartões*/
+    display: flex; /* Faz com que os elementos do container fique um do lado do outro com quebras automaticas*/
+    flex-direction: row;/* Faz com que o elemento fique um ao lado do outro*/
+    justify-content: space-between; /* Os itens são distribuídos uniformemente dentro do contêiner de alinhamento ao longo do eixo principal. O espaçamento entre cada par de itens adjacentes é o mesmo. */
+    font-family: 'Poppins', sans-serif;/* estilo da fonte */
+    font-weight: normal; /* fonte sem negrito*/
+  }
+  
+ 
+  .kanban-block,/*div resposaveis pelos cartoes */
+  .create-new-task-block {
+    padding: 1.2rem; /* espaçamento dos elementos*/ 
+    font-family: 'Poppins', sans-serif; /* estilo da fonte  */
+    text-align: center; /* alinhamento do texto */
+    width: 21.0%; /*largura do elemento em porcentagem para que ele fique resposivo */
+    border-radius: 0.1rem; /* Arrendondamento das bordas*/
+  }
+  
+  #add {/*primeiro cratão*/
+    background-color: rgba(255,255,255,0.5); /* fundo do elemento */
+  }
+  
+  #todo {/*primeiro cratão*/
+    background-color: rgba(255,255,255,0.5); /* fundo do elemento */
+  }
+  
+  #inprogress {/*segundo cratão*/
+    background-color: rgba(255,255,255,0.5);/* fundo do elemento */
+    /* display: none; */
+  }
+  
+  #done {/*terceiro cartão*/
+    background-color: rgba(255,255,255,0.5);/* fundo do elemento */
+    /* display: none; */
+  }
+  
+  .task { /* botoes dos cartoes*/
+    background-color: rgba(255,255,255,0.5); /*cor do fundo  */
+    border-radius: 0.3rem; /* Arrendondamento das bordas*/
+    padding: 1.0rem 1.7rem 1.0rem 1.7rem; /* espaçamento do topo , da direta , da esquerda e da base  */
+    margin-top: 15px;
+    width: 82%;
+
+    
+
+  }
+  
+  #task-button {/* botoes dos cartoes*/
+    margin: 0.2rem 0rem 0.1rem 0rem; /* espaçamento do topo , da direta , da esquerda e da base  */
+    background-color:#b4b3b3; /* cor do fundo*/
+    border-radius: 0.2rem; /* arrendondamento das bordas*/
+    width: 50%; /* largura em porcentagem para que ele fique resposivo */
+    border: solid 1px #9b9b9b; /* borda solida com espessura de 1 pixel com cor cinza */
+    padding: 0.9rem 2.7rem 0.9rem 2.7rem; /* espaçamento do topo , da direta , da esquerda e da base  */
+    border-radius: 0.25rem; /* arrendondamento das bordas*/
+    
+    
+  }
+  
+  .create-new-task-block {/*criacao novo cartão*/
+    display: none;  /* Desativa a propriedade do elemento  */
+    /* display: flex; */
+    background-color: rgba(255,255,255,0.5); /* cor de fundo*/
+    width: 64.4%; /*largura do elemento em porcentagem para que ele fique resposivo */
+    flex-direction: column; /* Realiza o alinhamento um embaixo do outro*/
+  }
+  
+  .form-row {/*span criacao novo cartão*/
+    display: inline-block; /* Faz com que os elementos do container fique um do lado do outro com quebras automaticas*/
+    flex-direction: row;  /*Elementos um embaixo do outro*/
+    margin: 0.2rem; /* Espaçamento do topo*/
+    font-family: tahoma;
+    margin-top: 5%;
+   
+  }
+  
+
+  
+  .form-row-input { /* input criacao novo cartão*/
+    display: block;
+    border:none;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 10px;
+	  border-radius: 10px;
+    height: 5px;
+    width: 80%;
+  }
+
+  #task-name{
+
+    width: 15% ;
+  }
+
+  #date-inico{
+    width: 18%;
+    height: 0.1%;
+    display:inline-block ;
+  }
+
+  #date-fim{
+    width: 18%;
+    height: 0.1%;
+    display:inline-block ;
+  }
+
+
+
+  #descricao{
+    height: 50%;
+  }
+  
+  textarea {/*area descrição criacao novo cartão*/
+    resize: none; /*sem redimensão*/
+  }
+  
+  .form-row-buttons {/*botao criacao novo cartão*/
+    display: flex; /* Faz com que os elementos do container fique um do lado do outro com quebras automaticas*/
+    flex-direction: row;/*Elementos um embaixo do outro*/
+    justify-content: space-between; /* Os itens são distribuídos uniformemente dentro do contêiner de alinhamento ao longo do eixo principal. O espaçamento entre cada par de itens adjacentes é o mesmo. */
+    margin: 0.2rem; /*Espaçamento no topo*/
+    width: 82%;
+  }
+  
+  
+  #save-button,
+  #cancel-button {
+    border: none;
+    color: #ffffff;
+    padding: 10px;
+    margin: 10px;
+    font-size: 1rem; /* tamanho da fonte */
+    line-height: 17px;
+    border-radius: 0.3rem; /*arrendodamento da borda*/
+    position: relative;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: all 400ms ease ;
+  }
+
+  .efeito-1{
+    background-color: #ff8b2cf1;
+  }
+
+  .efeito-1:before {
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 0px;
+    height: 37px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 7px;
+    transition: all 2s ease;
+  }
+
+  .efeito-1:hover:before{
+    width: 100%;
+  }
+
+  .efeito-2{
+    background-color: #ff8b2cf1;
+  }
+
+  .efeito-2:before {
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 0px;
+    height: 37px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 7px;
+    transition: all 2s ease;
+  }
+
+  .efeito-2:hover:before{
+    width: 100%;
+  }
+
+
+  
+  #edit-button {/*botao criacao novo cartão*/
+    display: none; /* Desativa a propriedade do elemento  */
+  }
+  

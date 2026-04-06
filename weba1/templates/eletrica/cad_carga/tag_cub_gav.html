@@ -1,0 +1,155 @@
+<!--############################################# Parte de cima da tela ##############################################-->
+
+{%block tag_cub_gav%}
+<div class="nome_origem">
+    <button class="btn_mais" data-toggle="collapse" href="#CargaColapseMenuOrigem" role="button" aria-expanded="false"
+            aria-controls="CargaColapseMenuOrigem">
+        +
+    </button>
+    Destino
+</div>
+
+<div class="collapse" id="CargaColapseMenuOrigem">
+    <div class="card card-body bg-gray" id="CargaInfoTag">
+        <div class="origem">
+            <h6> DESTINO </h6>
+        </div>
+
+        <div class="form-row">
+            <div class="col-sm-10">
+                <div class="">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="CargaCBDest" type="radio" id="CargaCBCargaAuxiliar"
+                               value="CA" onchange="CreateSelectDestino('CA')">
+                        <label class="form-check-label" for="CargaCBCargaAuxiliar">Carga Auxiliar</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="CargaCBDest" type="radio" id="CargaCBPainel"
+                               value="PN" onchange="CreateSelectDestino('PN')">
+                        <label class="form-check-label" for="CargaCBPainel">Painel</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="CargaCBDest" type="radio" id="CargaCBTrafo"
+                               value="TR" onchange="CreateSelectDestino('TR')">
+                        <label class="form-check-label" for="CargaCBTrafo">Transformador</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="CargaCBDest" type="radio" id="CargaCBMotor"
+                               value="MO" onchange="CreateSelectDestino('MO')">
+                        <label class="form-check-label" for="CargaCBMotor">Motor</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="CargaCBDest" type="radio" id="CargaCBBarramento"
+                               value="BR" onchange="CreateSelectDestino('BR')">
+                        <label class="form-check-label" for="CargaCBBarramento">Barramento</label>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="form-row">
+
+                <!--Inicio campo TAG-->
+                <div class="col-sm-2 col-lg-3" id="tag_carga">
+                    <label for="CargaTag">TAG</label>
+                    <select id="CargaTag" class="form-control">
+                        <option value="none">Selecione um Tipo de equipamento!!</option>
+                    </select>
+                </div>
+                <!--Fim campo TAG-->
+
+                <div class="col-sm-2 col-lg-3">
+                    <label for="TipoFuncaoCarga">Tensão</label>
+                    <input type="text" id="TensaoCarga" class="form-control" readonly>
+                </div>
+
+                <!--Inicio campo Funcao-->
+                <div class="col-sm-2 col-lg-3" id="funcao_carga">
+                    <label for="FuncaoCarga">Função</label>
+                    <select onchange="change_function()" id="FuncaoCarga" class="form-control" disabled>
+                        <option value="none">---</option>
+                        {% for i, j, k in ListFuncao%}
+                        <option value="{{k}}" title="{{j}}">{{i}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!--Fim campo Tipo Funcao-->
+
+                <div class="col-sm-2 col-lg-3">
+                    <label for="SinalAcessCarga">Sinal/Acessórios</label>
+                    <select type="text" id="SinalAcessCarga" class="form-control" disabled>
+                    </select>
+                </div>
+
+                <!--Inicio campo Tipo Funcao-->
+                <div class="col-sm-2 col-lg-3" id="Tipofuncao_carga">
+                    <label for="TipoFuncaoCarga">Tipo ligação</label>
+                    <input type="text" name="tipo_tag" id="TipoFuncaoCarga" class="form-control" readonly>
+                </div>
+                <!--Fim campo Tipo Funcao-->
+
+                <!--Inicio do bloco status-->
+                <div class="col-sm-2 col-lg-3">
+                    <label for="CargaStatus">Status </label>
+                    <select type="text" name="tipo_status" id="CargaStatus" class="form-control">
+                        <option value="none">---</option>
+                        {% for i in ListStatus %}
+                        <option value="{{i}}">{{i}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!--Fim do bloco status-->
+
+                <!--Inicio campo CUB-->
+                <div class="col-sm-2 col-lg-3" id="cub_carga">
+                    <label for="CargaCubiculoDest">CUB</label>
+                    <input list="CubDest" type="text" name="tipo_cub" id="CargaCubiculoDest" class="form-control" onclick="FillCubsGavs('Dest', this.value, 'Cub')">
+                    <datalist id="CubDest">
+                        <option></option>
+                    </datalist>
+                </div>
+                <!--Fim campo CUB-->
+
+                <!--Inicio campo GAV-->
+                <div class="col-sm-2 col-lg-3" id="gav_carga">
+                    <label for="CargaGavetaDest">GAV</label>
+                    <input list="GavDest" type="text" id="CargaGavetaDest" class="form-control" onclick="FillCubsGavs('Dest', this.value, 'Gav')">
+                    <datalist id="GavDest">
+                        <option></option>
+                    </datalist>
+                </div>
+                <!--Fim campo GAV-->
+
+                <!--Inicio campo Area-->
+                <div class="col-sm-2 col-lg-3" id="area_carga">
+                    <label for="CargaArea">Area</label>
+                    <select type="text" id="CargaArea" class="form-control" onchange="ChangeArea(this.id, 'CargaSubArea')">
+                        <option value="none">---</option>
+                        {% for i in ListArea %}
+                        <option value="{{i}}">{{i}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!--Fim campo Area-->
+
+                <!--Inicio campo Sub-Area-->
+                <div class="col-sm-2 col-lg-3" id="sub_area_carga">
+                    <label for="CargaSubArea">Sub Area</label>
+                    <select type="text" name="tipo_subarea" id="CargaSubArea" class="form-control" disabled>
+                        <option value="none">---</option>
+                    </select>
+                </div>
+
+                <div class="col-sm-2 col-lg-6 d-flex align-items-end">
+                    <div class="rectangle-types-ali mx-0 pb-1" id="btns-aux-lig">
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+</script>
+{%endblock tag_cub_gav%}

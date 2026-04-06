@@ -1,0 +1,61 @@
+
+{%extends 'geral/base.html'%}
+
+{% load static %}
+{%block head%}
+<title>Gerenciamento de Ordens de Serviço</title>
+{%endblock%}
+{%block main %}
+
+{% load poll_extras %}
+{% verify_tool as user_info %}
+{% if user_info.A1CIVGerenciamento %}
+<h1> <center>Gerenciar Ordens de Serviço</center> </h1>
+
+
+ <div class="col-lg-7 mx-auto">
+           <div class="bg-white rounded-lg shadow-sm p-5" style="width: 100%">
+                <div class="tab-content">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+                         {% if AvisoErro %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ AvisoErro }}
+                                </div>
+                         {% endif %}
+                        <div id="ResultadoPesquisa">
+                            <table id="Tabela">
+                                <tr>
+                                    <th>OS</th>
+                                    <th>Prazo Final</th>
+                                    <th> - </th>
+                                </tr>
+                                 {% for Os in OSs %}
+                                    <tr>
+                                        <td>{{ Os.OS }}</td>
+                                        <td>{{ Os.DataFinalPlanejamento|date:"d/m/Y" }}</td>
+                                        <td> <button value="RemoverOS" class="shadow-sm btn btn-danger btn-sm" style="width: 25px; padding: 0px" onclick="window.location='/app/civil/ApagarOrdemDeServico/{{ Os.id }}'" title="Remover Ordem de Serviço">[X]</button>
+                                         <button value="RemoverOS" class="shadow-sm btn btn-success btn-sm" style="width: 25px; padding: 0px" onclick="window.location='/app/civil/EditarOrdemDeServico/{{ Os.id }}'" title="Editar Ordem de Serviço">[E]</button></td>
+                                    </tr>
+                                 {% endfor %}
+                            </table>
+                            <br/>
+                               <button class=" btn " style="background-color:#F58C32; color: #ffff " onclick="window.location='/app/civil/AdicionarOrdemDeServico';">Adicionar Ordem de Serviço</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<link rel="stylesheet" href="{% static 'css/a1civ.css' %}"/>
+{% else %}
+    <h1> Acesso não permitido </h1>
+{% endif %}
+
+
+
+
+
+
+
+{%endblock%}

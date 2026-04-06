@@ -1,0 +1,1632 @@
+{% extends 'geral/base.html' %}
+{% load poll_extras %}
+<!DOCTYPE html>
+<>
+{% load static %}
+{% block head %}
+<title>Tela de Controle</title>
+{% endblock %}
+{% block help %}
+<h3 style="font-size: 18px"><strong>"Tabela"</strong>> Em formato Excel, ao editar um item aqui, este será editado no banco de dados após confirmação de envio</h3>
+<br>
+<br>
+{% endblock %}
+{% block main %}
+
+<style>
+    .mousechange:hover {
+        cursor: pointer;
+    }
+    .custom-file-label::after {
+        content: "Pesquisar";
+    }
+    .btn-dark {
+        color: #fff;
+        background-color: #000080;
+        border-color: #000080;
+    }
+
+        .btn-dark:hover {
+            color: white;
+            background-color: #000060;
+            border-color: #000080;
+        }
+
+        .btn-dark:focus, .btn-dark.focus {
+            box-shadow: 0 0 0 .2rem rgba(0,0,128,0.5);
+            background-color: #000080;
+        }
+
+        .btn-dark.disabled, .btn-dark:disabled {
+            color: #fff;
+            background-color: #000080;
+            border-color: #000080
+        }
+
+        .btn-dark:not(:disabled):not(.disabled):active, .btn-dark:not(:disabled):not(.disabled).active, .show > .btn-dark.dropdown-toggle {
+            color: #fff;
+            background-color: #000060;
+            border-color: #000080
+        }
+
+            .btn-dark:not(:disabled):not(.disabled):active:focus, .btn-dark:not(:disabled):not(.disabled).active:focus, .show > .btn-dark.dropdown-toggle:focus {
+                box-shadow: 0 0 0 .2rem rgba(0,90,90,0.5)
+            }
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        border-bottom: 1px dotted black;
+    }
+    .loadergb {
+        border: 16px solid #A1A1A1;
+        border-top: 16px solid #f6801e;
+        border-radius: 50%;
+        width: 200px;
+        height: 200px;
+        animation: spin 2s linear infinite;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            /* Position the tooltip */
+            position: absolute;
+            z-index: 1;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+        }
+
+    .ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        display: block;
+    }
+
+        .ellipsis.multiline {
+            white-space: normal;
+        }
+
+    .violet {
+        background-color: #aa80ff;
+    }
+
+    .grey_blue {
+        background-color: #80aaff;
+    }
+
+    .yellow {
+        background-color: #ffff1a;
+    }
+
+    .orange {
+        background-color: #ffb84d;
+    }
+
+    .nude {
+        background-color: #ffcc99;
+    }
+
+    .red {
+        background-color: #ff471a;
+    }
+
+    .green {
+        background-color: #5cd65c;
+    }
+
+    .blue {
+        background-color: #4d94ff;
+    }
+
+    /* thead input {
+        width: 100%;
+    }
+
+    .efeito efeito-1 {
+        max-height: 20px;
+        font-size: 12px;
+    }*/
+
+    .TabelaFlex td, .TabelaFlex th {
+        border: 0px solid #ddd;
+        text-align: center;
+    }
+
+    .table-hover thead tr:hover th, .table-hover tbody tr:hover td {
+        background-color: #ffc107;
+    }
+
+    .btnHist
+    {
+        max-height: 18px;
+        padding: 0;
+        font-size: 85%;
+    }
+
+    .btnReports {
+        max-height: 18px;
+        padding: 0;
+        font-size: 85%;
+    }
+
+    .TabelaFlex tr:nth-child(odd) {
+        /*background-color: #f2f2f2;*/
+    }
+
+    .TabelaFlex td:hover {
+        background-color: #ddd;
+    }
+
+    .TabelaFlex th {
+        text-align: center;
+        background-color: #343a40;
+        color: white;
+    }
+
+    .dropdown-filter-item {
+        color: black !important;
+        text-align: left;
+    }
+
+    .table-container {
+        height: 10em;
+    }
+
+    table {
+        display: flex;
+        flex-flow: column;
+        height: 100%;
+        width: 100%;
+    }
+
+    table thead {
+        flex: 0 0 auto;
+        width: calc(100% - 0.02em);
+    }
+
+    .tbodyTab {
+        flex: 1 1 auto;
+        display: block;
+        overflow-y: scroll;
+    }
+
+    table tbody tr {
+        width: 100%;
+        background-color: white
+    }
+    .bgIdentificacao {
+        background-color: #1E90FF;
+    }
+    .Identificacao {
+        display: table-cell;
+    }
+    .InputModalIdentificacao {
+        height: 34px;
+        color: white;
+        margin-left: 5px;
+    }
+    .bgDatas {
+        background-color: #32CD32;
+    }
+    .Datas {
+        display: none;
+    }
+    .InputModalDatas {
+        height: 34px;
+        color: white;
+        margin-left: 5px;
+    }
+    .InputModalDatas:focus {
+        border-color: #32CD32;
+        box-shadow: 0 0 0 0.2rem rgba(50, 205, 50, 0.25);
+    }
+    .bgHoras {
+        background-color: #000080;
+    }
+    .Horas {
+        display: none;
+    }
+    .InputModalHoras {
+        height: 34px;
+        color: white;
+        margin-left: 5px;
+    }
+    .InputModalHoras:focus {
+        border-color: #000080;
+        box-shadow: 0 0 0 0.2rem rgba(0, 0, 128, 0.25);
+    }
+    .bgTecnico {
+        background-color: #D2691E;
+    }
+    .Tecnico {
+        display: none;
+    }
+    .InputModalTecnico {
+        height: 34px;
+        color: white;
+        margin-left: 5px;
+    }
+
+    .InputModalTecnico:focus {
+        border-color: #D2691E;
+        box-shadow: 0 0 0 0.2rem rgba(210, 105, 30, 0.25);
+    }
+    .btnTecnicoModal {
+        background-color: #D2691E;
+        color: white;
+        border-color: #D2691E;
+    }
+    .btnTecnicoModal:hover {
+        background-color: #a6551b;
+        border-color: #a6551b;
+    }
+    .btnTecnicoModal:disabled {
+        background-color: #ffa463;
+        border-color: #ffa463;
+    }
+    .btnTecnicoModal:active, .btnTecnicoModal:focus {
+        box-shadow: 0 0 0 0.2rem rgba(210, 105, 30, 0.25);
+        background-color: #D2691E;
+        border-color: #D2691E;
+    }
+    .Status {
+        display: table-cell;
+    }
+    .InputModalStatus {
+        height: 35px;
+        color: white;
+        margin-left: 5px;
+    }
+
+        .InputModalStatus:focus {
+            border-color: #FF6347;
+            box-shadow: 0 0 0 0.2rem rgba(255, 99, 71, 0.25);
+        }
+
+    .btnStatusModal {
+        background-color: #FF6347;
+        color: white;
+        border-color: #FF6347;
+    }
+
+        .btnStatusModal:hover {
+            background-color: #ff3f1d;
+            border-color: #ff3f1d;
+            color: white;
+        }
+
+    .btnStatusModal:disabled {
+        background-color: #fd9481;
+        border-color: #fd9481;
+    }
+
+    .btnStatusModal:active, .btnStatusModal:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255, 99, 71, 0.25);
+        background-color: #FF6347;
+        border-color: #FF6347;
+    }
+    .btnTabela {
+        padding: 5px 10px 5px 10px;
+        display: none;
+        box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+        border-radius: 8px;
+        width: 40px
+    }
+    .divBtn {
+        padding: 0;
+        margin-top: 5px;
+        
+    }
+    .InputDisponibilidade3DNAO {
+        background-color: rgba(212, 32, 0, 0.12) !important;
+        color: #d42000;
+        border-color: #d42000;
+    }
+    .InputDisponibilidade3DNAO:focus {
+        box-shadow: 0 0 0 0.2rem rgba(212, 32, 0, 0.25);
+        color: #d42000;
+        border-color: #d42000;
+    }
+    .InputDisponibilidade3DSIM {
+        background-color: rgba(51, 212, 0, 0.12) !important;
+        color: #1d7401;
+        border-color: #33d400;
+    }
+    .InputDisponibilidade3DSIM:focus {
+        color: #1d7401;
+        border-color: #33d400;
+        box-shadow: 0 0 0 0.2rem rgba(51, 212, 0, 0.25);
+    }
+    .filtrado {
+        color: #343a40 !important;
+        background-color: yellow !important;
+    }
+    #ModalEditarHoras.modal:after { 
+        content: ""; 
+        display: block; 
+        background: rgba(0,0,0, .5); 
+        position: fixed; 
+        top: 0; 
+        bottom: 0; 
+        width: 100%; 
+        z-index: -1; 
+    }
+
+</style>
+<p hidden id="OS">{{os}}</p>
+<p hidden id="usuarioatual">{{usuarioatual}}</p>
+<div class="row mx-auto" style="margin-top: 1.8rem; height: fit-content">
+    <div class="col-4 mx-auto text-center" style="margin-left: 15px;">
+        <h3 class="display-8" id="tituloos"><b>OS{{ os }}</b></h3>
+    </div>
+    <div class="col">
+        <div class="row justify-content-end" style="margin-right: 15px;">
+            <a href="/app/flexibilidade/sistemas/admin/{{os}}">
+                <button type="button" id="BotaoAdmin" class="subscribe btn btn-danger" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; margin-right: 5px; height: 34px; margin-top: 2px;display: none;">
+                    Administração
+                </button>
+            </a>
+            <a href="/app/flexibilidade/sistemas/outrasativ/{{os}}">
+                <button type="button" id="BotaoOutrosTiposAtividades" class="subscribe btn btn-info" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; margin-right: 5px; height: 34px; margin-top: 2px;display: none;">
+                    Controle - Outras Atividades
+                </button>
+            </a>
+            <a href="/app/flexibilidade/sistemas/cadastrar/{{os}}">
+                <button type="button" id="BotaoCadastrarSistemas" class="subscribe btn btn-warning" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; height: 34px; margin-top: 2px;display: none;">
+                    Cadastrar Sistemas
+                </button>
+            </a>
+        </div>
+    </div>
+</div>
+<center><div class="loadergb" id="loader"></div></center>
+<div class="row mx-auto" id="LinhaSistemas" style="display: none">
+    <div class="" style="margin-left: 15px; margin-right: 15px">
+        <div id="nav-tab-card" class="tab-pane fade show active col-12">
+            <div id="nav-tab-card" class="tab-pane fade show active col-12">
+                <div style="color: #343a40; max-height: 82vh; overflow: visible; font-size: 24px; background-color: #c2c8c6; text-align: center; border-left: 2px solid gray; border-right: 2px solid gray; border-top: 2px solid gray; margin-left: -15px; margin-right: -15px "><b>Sistemas</b></div>
+            </div>
+            <div id="TabelaSistemas" style="max-height: 82vh; overflow: visible; font-size: 12px; padding: 2px;"></div>
+            <center>
+                <div class="row" style="width: 225px;">
+                    <div class="col divBtn" title="Mostrar/Esconder Identificação"><button class="btnTabela" id="BtnIdentificacao" onclick="MostrarEsconderID(this)">ID</button></div>
+                    <div class="col divBtn" title="Mostrar/Esconder Datas"><button class="btnTabela" id="BtnDatas" onclick="MostrarEsconderDatas(this)">DT</button></div>
+                    <div class="col divBtn" title="Mostrar/Esconder Horas"><button class="btnTabela" id="BtnHoras" onclick="MostrarEsconderHoras(this)">HR</button></div>
+                    <div class="col divBtn" title="Mostrar/Esconder Técnico"><button class="btnTabela" id="BtnTecnico" onclick="MostrarEsconderTecnico(this)">TC</button></div>
+                    <div class="col divBtn" title="Mostrar/Esconder Status"><button class="btnTabela" id="BtnStatus" onclick="MostrarEsconderStatus(this)">ST</button></div>
+                </div>
+            </center>
+        </div>
+    </div>
+</div>
+<!--<div class="container mb-2 mt-2" style="max-width: 85vw; max-height: 82vh; overflow-x: hidden; font-size: 12px; padding: 2px">
+    <table id="ctrl_dt" class="table table-striped table-bordered table-responsive text-nowrap table-sm ctrl_dt" style="width:100%; margin: 0px">-->
+        <!--table-responsive text-nowrap-->
+        <!-- style="width: 100%"> -->
+        <!--<thead class="thead-light">
+            <tr id="header">
+                {% if ordem %}
+                {% for h in ordem %}
+                <th scope="col" style="text-align: center; min-width: 50px;">{{ h|underline_off }}</th>
+                {% endfor %}
+                <th scope="col" style="text-align: center ; min-width: 70px;">Editar</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody id="dados">
+            {% if sis_fl %}
+            {% for rw in sis %}
+            <tr>
+                {% for i, dt in rw %}
+                <td id="{{rw|generate_id:0}}_{{rw|generate_id:-10}}_{{header|generate_id:i}}" title="{{dt}}" style="text-align:center; min-width: 80px; max-width:35vw; max-height: 13px; padding: 0px" class="{{dt|color_by_status}} align-middle">{{dt|limit_string}}</td>
+                {% endfor %}
+                <td scope="col"><button id="{{rw|generate_id:0}}_{{rw|generate_id:-10}}_button" onclick="cria_modal(this.id)" class="efeito efeito-1" data-toggle="modal" data-target="#Modal_Edit_Flex" style="background-color:#ffbe47; align-content: center; max-height: 20px; font-size: 11px; padding: 0px; margin: 0px;" type="button" class="subscribe btn btn-block btn-warning rounded-pill shadow-sm">Editar</button></td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+        <tfoot class="thead-light">
+            <tr id="footer">
+                {% if ordem %}
+                {% for h in ordem %}
+                <th scope="col" style="text-align: center">{{ h|underline_off }}</th>
+                {% endfor %}
+                <th scope="col" style="text-align: center">Editar</th>
+                {% endif %}
+            </tr>
+        </tfoot>
+    </table>
+</div>-->
+<div class="row mx-auto" style="margin-top: 25px; display: none" id="LinhaLinhas">
+    <div class="" style="margin-left: 15px; margin-right: 15px; ">
+        <div id="nav-tab-card" class="tab-pane fade show active col-12">
+            <div style="color: #343a40; max-height: 82vh; overflow: visible; font-size: 24px; background-color: #c2c8c6; text-align: center; border-left: 2px solid gray; border-right: 2px solid gray; border-top: 2px solid gray "><b>Linhas</b></div>
+        </div>
+        <div id="nav-tab-card" class="tab-pane fade show active col-12">
+            <div id="TabelaLinhas" style="max-height: 82vh; overflow: visible; font-size: 12px; padding: 2px"></div>
+        </div>
+    </div>
+</div>
+
+<!--<div class="container mb-2 mt-2" style="max-width: 85vw; max-height: 82vh; overflow-x: hidden; font-size: 12px; padding: 2px">
+    <table id="pipe_plan" class="table table-striped table-bordered table-responsive text-nowrap table-sm pipe_plan" style="width:100%">-->
+        <!--table-responsive text-nowrap-->
+        <!-- style="width: 100%"> -->
+        <!--<thead class="thead-light">
+            <tr id="header_pl_pipe" style="padding: 0px">
+                {% if h_pipe %}
+                {% for h in h_pipe %}
+                <th scope="col" style="text-align: center; min-width: 107px;">{{ h|underline_off }}</th>
+                {% endfor %}
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody id="dados_pl_pipe">
+            {% if plan_pipe %}
+            {% for rw in plan_pipe %}
+            <tr>
+                {% for dt in rw %}
+                <td style="text-align:center; vertical-align: center; padding: 2px; min-width: 107px" class="align-middle">{{dt|limit_string}}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+        <tfoot class="thead-light">
+            <tr id="footer_pl_pipe">
+                {% if h_pipe %}
+                {% for h in h_pipe %}
+                <th scope="col" style="text-align: center">{{ h|underline_off }}</th>
+                {% endfor %}
+                {% endif %}
+            </tr>
+        </tfoot>
+    </table>
+</div>-->
+<div class="modal fade" id="ModalAtualizarRemark" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document" style="width: 100%; max-width: 1250px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Atualização Remark da Linha</h5>
+                
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <h5 class="modal-title" id="TituloDadosLinha" style="margin-bottom: 5px"></h5>
+                <div class="input-group mb-3">
+                    <div class="input-group" style="margin-bottom: 15px">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" style="background-color: #343a40; color: white; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important">Remark</span>
+                        </div>
+                        <textarea class="form-control" aria-label="With textarea" id="RemarkPreencher" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important"></textarea>
+                        <button type="button" id="BotaoAlterarRemark" class="subscribe btn btn-warning" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; border-radius: 0px 25px 25px 0px;"
+                                onclick="SalvarRemark()">
+                            Alterar Remark
+                        </button>
+                    </div>
+                   
+                    <div class="modal-footer" style="width: 100%">
+
+                        <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                data-dismiss="modal">
+                            Fecharhistorico
+                        </button>historico
+
+                        <div class="loadergb" id="loaderUpdateRemark" style="height: 30px; width:30px; display: none"></div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalHistoricoLinha" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document" style="width: 100%; max-width: 1250px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Histórico de Modificações da Linha</h5>
+         
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <h5 id="TituloDadosLinhaHist" class="modal-title" style="margin-bottom: 5px"></h5>
+                <div class="input-group mb-3">
+                    <div id="ModalHistoricoTabela" style="margin-bottom: 50px"></div>
+
+
+                    <div id="ErrorAlteracaoStatus"></div>
+                    <div class="modal-footer" style="width: 100%">
+                        <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                data-dismiss="modal">
+                            Fechar
+                        </button>
+                        <div class="loadergb" id="loaderStatus" style="height: 50px; width:50px; display: none"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalConfirmarExcluirArquivo" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmação para Excluir Arquivos</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <h5 id="TituloDadosLinhaHist" class="modal-title" style="margin-bottom: 5px"></h5>
+                <div class="input-group mb-3">
+                    <h6 class="modal-title" style="margin-bottom: 20px"><b>Tem certeza que deseja excluir o arquivo?</b></h6>
+                    <div class="modal-footer" style="width: 100%">
+                        <div class="loadergb" id="loaderExcluir" style="height: 50px; width: 50px; display: none; border: 8px solid #A1A1A1; border-top: 8px solid #f6801e;"></div>
+                        <button onclick="ExcluirArquivoConfirmado(this)" type="button" id="BotaoSimExcluirArquivo" class="subscribe btn btn-warning rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Sim
+                        </button>
+                        <button onclick="CancelarExclusao()" type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Não
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalConfirmarSubstituirReport3D" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmação para Substituir Report 3D</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="input-group mb-3">
+                    <h6 class="modal-title" style="margin-bottom: 20px"><b>Tem certeza que deseja substituir o report 3D?</b></h6>
+                    <div class="modal-footer" style="width: 100%">                 
+                        <button onclick="SubstituirReport3DConfirmado()" type="button" class="subscribe btn btn-warning rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Sim
+                        </button>
+                        <button onclick="ExcluirArquivoConfirmado(this)" type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                            Não
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalReportsSistema" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document" style="max-width: 1000px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="TituloModalReportSistema" style="margin-left: 20px">Reports do Sistema</h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+               
+                <div class="input-group mb-3">
+                   
+                    <div id="ModalReport3DSistema" style="margin-bottom: 10px">
+                        <ul class="nav nav-tabs w-100" id="myTab" role="tablist">
+                            <li class="nav-item ">
+                                <a class="nav-link active" id="reports-tab" data-toggle="tab" href="#reports" role="tab" aria-controls="reports" aria-selected="true"><b>Arquivos de Report</b></a>
+                            </li>
+                            <li class="nav-item" id="VincPDMSLi">
+                                <a class="nav-link" id="VinculoPDMS-tab" data-toggle="tab" href="#VinculoPDMS" role="tab" aria-controls="VinculoPDMS" aria-selected="false"><b>Vínculo Navisworks</b></a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="reports" role="tabpanel" aria-labelledby="reports-tab">
+                                <div class="input-group mb-3" style="padding: 15px; margin-bottom: 0px !important">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1" style="height: 34px"><b>Status do Report 3D</b></span>
+                            </div>
+                            <input readonly type="text" id="StatusReport3D" min="0" class="form-control" aria-describedby="basic-addon1" style="max-width: 200px; text-align: center">
+                            <button type="button" class="subscribe btn btn-secondary shadow-sm" id="BotaoAcessarReport3D"
+                                    style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; height: 34px; padding-top: 0px; padding-bottom: 0px; width: 150px; margin-left: 20px">
+                                Acessar
+                            </button>
+                        </div>
+
+                        <div id="nav-tab-card" class="LarguraHead tab-pane fade show active col-12">
+                            <div style="color: #343a40; max-width: 950px; max-height: 82vh; overflow: visible; font-size: 24px; background-color: #c2c8c6; text-align: center; border-left: 2px solid gray; border-right: 2px solid gray; border-top: 2px solid gray; margin-left: 2px; margin-right: 2px"><b>Arquivos</b></div>
+                        </div>
+                        <div id="nav-tab-card" class="tab-pane fade show active col-12">
+                            <div id="ModalReportsSistemaTabela" style="max-width: 950px; max-height: 82vh; overflow: visible; padding: 2px; margin-bottom: 20px; padding-top: 0px"></div>
+                        </div>
+                        <div id="UploadArquivoReport" style="margin-bottom: 10px; width: 950px">
+                            <div class="input-group mb-3" style="margin-left: 18px; margin-bottom: 0px !important ">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="SelectTipoArquivo">Tipo do Arquivo</label>
+                                </div>
+                                <select class="custom-select" id="SelectTipoArquivo" style="margin-right: 20px">
+                                    <option selected value="0">Arquivo Normal de Report</option>
+                                    <option value="1">Arquivo de Report 3D</option>
+                                </select>
+                            </div>
+                            <div class="input-group mb-3" style="margin-left: 18px">
+
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Upload de Arquivo</span>
+                                </div>
+                                <div class="custom-file" style="margin-right: 20px">
+                                    <input type="file" class="custom-file-input" name="ArquivoUpload"
+                                           id="ArquivoUploadInput" aria-describedby="inputGroupFileAddon01" required>
+                                    <label class="custom-file-label" name="NomeDoArquivolbl" id="id_NomeDoArquivolbl">Selecione um arquivo</label>
+                                    <input hidden type="text" name="NomeDoArquivo" id="id_NomeDoArquivo" lang="pt-BR" required>
+                                </div>
+                                <div class="input-group" style="margin-right: 20px" id="IGDescricao">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Descrição</span>
+                                    </div>
+                                    <textarea class="form-control" aria-label="With textarea" id="DescricaoArquivo"></textarea>
+                                </div>
+                            </div>
+                            <center>
+                                <button type="button" class="subscribe btn btn-secondary shadow-sm" onclick="EnviarArquivoReport(this)" id="BotaoEnviarReport"
+                                        style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; height: 34px; padding-top: 0px; padding-bottom: 0px; width: 400px">
+                                    Enviar Arquivo
+                                </button>
+                                <div id="ErroArquivo" style="margin-left: 20px; margin-top: 10px"></div>
+                            </center>
+                        </div>
+                        <div id="ProgressEnvioArquivo" style="margin-left: auto; margin-right: auto; padding-top: 0px; padding-bottom: 0px; width: 600px"></div>
+                        <div id="ProgressCelery" style="display: none">
+                            <div class='progress-wrapper'>
+                                <div id='progress-bar' class='progress-bar'
+                                     style="background-color: #68a9ef; width: 0%;">
+                                    &nbsp;
+                                </div>
+                            </div>
+                            <br>
+                            <div id="progress-bar-message"></div>
+                        </div>
+                        <div id="ErrorReportsSistemas"></div>
+                            </div>
+                            <div class="tab-pane fade" id="VinculoPDMS" role="tabpanel" aria-labelledby="VinculoPDMS-tab" style="width: 950px; margin-bottom: 10px;">
+                                <div class="input-group mb-3" style="margin-top: 10px; margin-bottom: 10px;">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" style="height: 34px" id="StatusVinculoPDMSSpan"><b>Status</b></span>
+                                    </div>
+                                    <input disabled type="text" style="font-weight: bold" class="form-control" id="StatusVinculoPDMS" aria-describedby="StatusVinculoPDMSSpan" value="Não Importado">
+                                </div>
+                                <ul class="nav nav-tabs w-100" role="tablist" style="margin-top: 10px">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="ConfGerais-tab" data-toggle="tab" href="#ConfGerais" role="tab" aria-controls="ConfGerais" aria-selected="true">Configurações Gerais</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="DetalhesPrimarios-tab" data-toggle="tab" href="#DetalhesPrimarios" role="tab" aria-controls="profile" aria-selected="false">Detalhes Suportes Primários</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="ConfGerais" role="tabpanel" aria-labelledby="ConfGerais-tab" style="margin-top: 20px">
+                                        <h6 class="card-title">Indique um número de nó do modelo <strong>Caesar II</strong> e as suas coordenadas no <strong>Navisworks</strong> para correto posicionamento</h6>
+                                        <div class="input-group mb-3" style="margin-top: 10px">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" style="height: 34px" id="NohCIISpan"><b>Nó Caesar II</b></span>
+                                            </div>
+                                            <input type="text" class="form-control" style="max-width: 100px" id="NohCII" aria-describedby="NohCIISpan">
+                                        </div>
+                                        <div class="input-group mb-3" style="margin-top: 10px">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" style="height: 34px"><b>Coordenadas NavisWorks</b></span>
+                                            </div>
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" style="height: 34px" id="CoordXNavisSpan"><b>X</b>(mm)</span>
+                                            </div>
+                                            <input type="text" class="form-control" id="CoordXNavis" aria-describedby="CoordXNavisSpan">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" style="height: 34px" id="CoordYNavisSpan"><b>Y</b>(mm)</span>
+                                            </div>
+                                            <input type="text" class="form-control" id="CoordYNavis" aria-describedby="CoordYNavisSpan">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" style="height: 34px" id="CoordZNavisSpan"><b>Z</b>(mm)</span>
+                                            </div>
+                                            <input type="text" class="form-control" id="CoordZNavis" aria-describedby="CoordZNavisSpan">
+                                        </div>
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <label class="input-group-text" for="inputGroupCasoOpe"><b>Definir Caso OPE</b></label>
+                                            </div>
+                                            <select class="custom-select" id="inputGroupCasoOpe">
+                             
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="DetalhesPrimarios" role="tabpanel" aria-labelledby="DetalhesPrimarios-tab">
+                                        <div class="input-group mb-3" style="margin-left: 18px; margin-top: 20px; padding-right: 40px">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><b>Report Excel</b></span>
+                                            </div>
+                                            <div class="custom-file" style="margin-right: 5px">
+                                                <input type="file" class="custom-file-input" name="ArquivoUploadExcelPrimarios"
+                                                       id="ArquivoUploadInputExcelPrimarios" aria-describedby="inputGroupFileAddon01" required>
+                                                <label class="custom-file-label" name="NomeDoArquivolblExcelPrimarios" id="id_NomeDoArquivolblExcelPrimarios">Selecione um arquivo</label>
+                                                <input type="text" name="NomeDoArquivoExcelPrimarios" id="id_NomeDoArquivoExcelPrimarios" lang="pt-BR" required>
+                                            </div>
+                                            <button id="BotaoCarregarExcelReport" type="button" class="btn btn-secondary" style="" onclick="CarregarExcelReport()">Carregar</button>
+                                        </div>
+                                        <div id="ErroArquivoExcelReport"></div>
+                                        <div id="ProgressEnvioArquivoExcelReport" style="margin-left: auto; margin-right: auto; padding-top: 0px; padding-bottom: 0px; width: 600px"></div>
+                                        <div id="TabelaPrimariosSistema"></div>
+                                    </div>
+                                </div>
+                                <div class="tab-content" style="margin-left: auto; margin-right: auto; display: flex; border-top: 1px solid #e9ecef; padding-top: 10px;">
+                                    
+                                    <div class="loadergb" id="loaderAplicarVinculo" style="height: 35px; width: 35px; display: none; border: 8px solid #A1A1A1; border-top: 8px solid #f6801e;"></div>
+                                    <button id="botaoAplicarVincPDMS" type="button" class="btn btn-primary rounded-pill" style="margin-left: auto; margin-right: auto; width: 300px;" onclick="AplicarVinculoPDMS()">Aplicar</button>
+                                    <button id="botaoAgendarVincPDMS" type="button" class="btn btn-success rounded-pill" style="margin-left: auto; margin-right: auto; width: 300px;" onclick="AgendarImportacao()">Agendar Importação</button>
+                                </div>
+                                <div id="ErrosAgendarImportacao"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer" style="width: 100%">
+                            <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                    data-dismiss="modal">
+                                Fechar
+                            </button>
+                            <div class="loadergb" id="loaderStatus" style="height: 50px; width:50px; display: none"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="modal fade" id="ModalSistema" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document" style="width: 100%; max-width: 1250px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="TituloModalSistema" style="margin-left: 14px"></h3>
+                    <div class="dropdown show" style="margin-top: 4px">
+                        <a class="btn btn-outline-dark dropdown-toggle" style="margin-left: 20px; background-color: rgba(0,0,0,0); border-color: rgb(52,58,64); color: rgb(52,58,64); " href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Arquivos Requisição
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" id="linkIsometrico">Isométricos</a>
+                            <a class="dropdown-item" id="linkPD2">Arquivo Neutro</a>
+                        </div>
+                    </div>
+                    <button id="AvancarR0R1" type="button" style="margin-top: 4px; margin-left: 5px;" class="btn btn-outline-dark" title="Avança a revisão para R1 internamente pela flexibilidade utilizando os arquivos da R0" onclick="AvancarDeR0ParaR1(this)">Avançar de R0 para R1</button>
+                    <div class="loadergb" id="loaderTitulo" style="width: 34px; height: 34px; display: none; border: 4px solid #A1A1A1; border-top: 4px solid #f6801e;"></div>
+                    <div id="ErrosTitulo" style="margin-left: 15px"></div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <h5 id="" class="modal-title" style="margin-bottom: 5px"></h5>
+                    <ul class="nav nav-pills mb-3 w-100" id="SistemaTabs" role="tablist" style="margin-left: 5px">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="dados-sistema-tab" data-toggle="tab" href="#dados-sistema" role="tab" aria-controls="home" aria-selected="true"><b>Dados do Sistema</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="vinculos-tab" data-toggle="tab" href="#vinculos" role="tab" aria-controls="vinculos" aria-selected="false"><b>Arquivos de Atividades Vinculadas</b></a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="dados-sistema" role="tabpanel" aria-labelledby="dados-sistema-tab">
+                            <div class="input-group mb-3" style="margin-top: 10px">
+                                <div class="container" style="border: 2px inset #1E90FF; margin-right: 0px; margin-left: 5px">
+                                    <div class="input-group mb-3" style="padding: 15px; margin-bottom: 0px !important">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalIdentificacao bgIdentificacao" id="basic-addon1"><b>Total de Linhas</b></span>
+                                        </div>
+                                        <input readonly type="number" id="QtdTotalLinhasModal" min="0" class="form-control" aria-describedby="basic-addon1" style="max-width: 70px; text-align: center; height: 34px;">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalIdentificacao bgIdentificacao" id="basic-addon1"><b>Linhas Calculadas</b></span>
+                                        </div>
+                                        <input type="number" id="QtdLinhasCalculadasModal" min="1" class="form-control" aria-describedby="basic-addon1" style="max-width: 70px; text-align: center;  height: 34px;">
+                                        <div class="input-group-prepend">
+                                            <label class="input-group-text InputModalIdentificacao bgIdentificacao" for="ProjetoModal"><b>Projeto</b></label>
+                                        </div>
+                                        <select class="custom-select" id="ProjetoModal" style="height: 34px; color: #495057; min-width: 100px; max-width: 100px; ">
+                                        </select>
+                                        <div class="input-group-prepend">
+                                            <label class="input-group-text InputModalIdentificacao bgIdentificacao" for="RespCalculoModal"><b>Cálculo</b></label>
+                                        </div>
+                                        <select class="custom-select" id="RespCalculoModal" style="height: 34px; color: #495057; min-width: 100px; max-width: 100px; ">
+                                        </select>
+                                        <div class="input-group-prepend">
+                                            <label class="input-group-text InputModalIdentificacao bgIdentificacao" for="SelectRetrabalho"><b>Retrabalho</b></label>
+                                        </div>
+                                        <select class="custom-select" id="SelectRetrabalho" style="min-width: 150px; height: 34px;">
+                                        </select>
+                                        <div class="loadergb" id="loaderIdentificacao" style="width: 34px; height: 34px; display: none; border: 4px solid #A1A1A1; border-top: 4px solid #f6801e;"></div>
+                                    </div>
+                                    <div id="ErrosDatas"></div>
+                                </div>
+                                <button type="button" id="BotaoSalvarIdentificacao" class="subscribe btn btn-primary" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; border-radius: 0px 25px 25px 0px; color: white; margin-left: 0px; padding-left: 6px; width: 72px; margin-bottom: 1.5px; " onclick="SalvarModalDatas(this)">
+                                    Salvar
+                                </button>
+                                <div class="container" style="border: 2px inset #32CD32; margin-right: 0px; margin-top: 4px; margin-left: 5px">
+                                    <div class="input-group mb-3" style="padding: 15px; margin-bottom: 0px !important">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalDatas bgDatas" id="basic-addon1"><b>F1</b></span>
+                                        </div>
+                                        <input readonly type="text" id="DataF1" class="form-control InputModalDatas" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px;">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalDatas bgDatas" id="basic-addon1"><b>F2</b></span>
+                                        </div>
+                                        <input readonly type="text" id="DataF2" class="form-control InputModalDatas" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px;">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalDatas bgDatas" id="basic-addon1"><b>F3</b></span>
+                                        </div>
+                                        <input readonly type="text" id="DataF3" class="form-control InputModalDatas" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px;">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalDatas bgDatas" id="basic-addon1"><b>F4</b></span>
+                                        </div>
+                                        <input readonly type="text" id="DataF4" class="form-control InputModalDatas" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px;">
+
+                                    </div>
+
+                                </div>
+                                <div class="container" style="border: 2px inset #000080; margin-right: 0px; margin-top: 4px; margin-left: 5px">
+                                    <div class="input-group mb-3" style="padding: 15px; margin-bottom: 0px !important">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalHoras bgHoras" id="basic-addon1"><b>Horas/Linhas Calculadas do Sistema</b></span>
+                                        </div>
+                                        <input readonly type="text" id="HorasPorLinhaCalculadaSistema" class="form-control InputModalHoras" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; ">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalHoras bgHoras" id="basic-addon1"><b id="IniciaisUsuario"></b></span>
+                                        </div>
+                                        <input readonly type="text" id="TotalHorasUsuario" class="form-control InputModalHoras" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px;">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalHoras bgHoras" id="basic-addon1"><b>Adicionar Horas</b></span>
+                                        </div>
+                                        <input type="text" id="HorasAdicionarUsuario" class="form-control InputModalHoras" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px;">
+
+                                        <div class="loadergb" id="loaderHoras" style="width: 34px; height: 34px; display: none; border: 4px solid #A1A1A1; border-top: 4px solid #f6801e;"></div>
+                                    </div>
+
+                                    <div id="ErrosHoras"></div>
+                                </div>
+                                <button type="button" id="BotaoSalvarHoras" class="subscribe btn btn-dark" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; border-radius: 0px 25px 25px 0px; margin-left: 0px; margin-top: 4px; padding-left: 6px; width: 72px; margin-bottom: 1px; " title="Cadastrar Horas no Banco de Dados" onclick="SalvarModalHoras(this)">
+                                    Salvar
+                                </button>
+                                <div class="container" style="border: 2px inset #D2691E; margin-right: 0px; margin-top: 4px; margin-left: 5px">
+                                    <div class="input-group mb-3" style="padding: 15px; margin-bottom: 0px !important">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalTecnico bgTecnico" id="basic-addon1"><b>Hyd(%)</b></span>
+                                        </div>
+                                        <input type="text" id="HydModal" class="form-control InputModalTecnico" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px;">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalTecnico bgTecnico" id="basic-addon1"><b>Ope(%)</b></span>
+                                        </div>
+                                        <input type="text" id="OpeModal" class="form-control InputModalTecnico" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; ">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalTecnico bgTecnico" id="basic-addon1"><b>Sus(%)</b></span>
+                                        </div>
+                                        <input type="text" id="SusModal" class="form-control InputModalTecnico" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; ">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalTecnico bgTecnico" id="basic-addon1"><b>Exp(%)</b></span>
+                                        </div>
+                                        <input type="text" id="ExpModal" class="form-control InputModalTecnico" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; ">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalTecnico bgTecnico" id="basic-addon1"><b>F1(Hz)</b></span>
+                                        </div>
+                                        <input type="text" id="F1Modal" class="form-control InputModalTecnico" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px; ">
+                                        <div class="loadergb" id="loaderTecnico" style="width: 34px; height: 34px; display: none; border: 4px solid #A1A1A1; border-top: 4px solid #f6801e;"></div>
+                                    </div>
+                                    <div class="input-group mb-3" style="padding: 0 15px 15px 15px; margin-bottom: 0px !important;">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bgTecnico" id="basic-addon1" style="color: white; margin-left: 5px; word-wrap: break-word; width: 120px; white-space: normal; text-align: left"><b>Comentários Entrada</b></span>
+                                        </div>
+                                        <textarea id="ModalObs" class="form-control InputModalTecnico" aria-label="With textarea" style="color: #495057; margin-left: 0px;height: auto; "></textarea>
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bgTecnico" id="basic-addon1" style="color: white; margin-left: 5px; word-wrap: break-word; width: 120px; white-space: normal; text-align: left"><b>Comentários Saída</b></span>
+                                        </div>
+                                        <textarea id="ModalNotes" class="form-control InputModalTecnico" aria-label="With textarea" style="color: #495057; margin-left: 0px;height: auto; "></textarea>
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bgTecnico" id="basic-addon1" style="color: white; margin-left: 5px;"><b>Conexão</b></span>
+                                        </div>
+                                        <textarea id="ModalConexao" class="form-control InputModalTecnico" aria-label="With textarea" style="color: #495057; margin-left: 0px;  height: auto;"></textarea>
+                                    </div>
+                                    <div id="ErrosTecnico"></div>
+                                </div>
+                                <button type="button" id="BotaoSalvarTecnico" class="subscribe btn btnTecnicoModal" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; border-radius: 0px 25px 25px 0px; color: white; margin-left: 0px; margin-top: 4px; padding-left: 8px; width: 72px; margin-bottom: 2px; " onclick="SalvarTecnico(this)">
+                                    Salvar
+                                </button>
+                                <div class="container" style="border: 2px inset #FF6347; margin-right: 0px; margin-top: 4px; margin-left: 5px">
+                                    <div class="input-group mb-3" style="padding: 15px; margin-bottom: 0px !important">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalStatus" id="basic-addon1" style="background-color: #FF6347"><b>Status do Sistema</b></span>
+                                        </div>
+                                        <input readonly type="text" id="StatusSistemaModal" class="form-control InputModalStatus" aria-describedby="basic-addon1" style="text-align: center; color: #495057; margin-left: 0px;">
+
+                                        <div class="loadergb" id="loaderAvancarStatus" style="width: 34px; height: 34px; display: none; border: 4px solid #A1A1A1; border-top: 4px solid #f6801e;"></div>
+                                    </div>
+                                    <div class="input-group mb-3 mousechange" style="padding: 15px; padding-top: 0px; margin-bottom: 0px !important" id="InputsReports">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalStatus" id="basic-addon1" style="background-color: #FF6347"><b>Status do Report 3D</b></span>
+                                        </div>
+                                        <input readonly type="text" id="StatusReport3DSist" min="0" class="form-control" aria-describedby="basic-addon1" style=" text-align: center; height: 34px">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text InputModalStatus" id="basic-addon1" style="background-color: #FF6347;"><b>Status dos Arquivos de Reports</b></span>
+                                        </div>
+                                        <input readonly type="text" id="StatusArquivosReportSist" min="0" class="form-control" aria-describedby="basic-addon1" style="text-align: center; height: 34px;">
+                                    </div>
+                                    <div class="alert alert-warning" role="alert" id="ConfirmacaoR0SemArquivo" style="display: none">
+                                        <h6 class="modal-title" style="margin-bottom: 20px"><b>Confirma que irá subir o status sem anexar relatórios?</b></h6>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="optradio" id="ConfirmacaoR0SemArquivoSim">Sim
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="optradio" id="ConfirmacaoR0SemArquivoNao">Não
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div id="ErrosStatus"></div>
+                                </div>
+                                <button type="button" id="BotaoAvancarStatus" class="subscribe btn btnStatusModal" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;border-radius: 0px 25px 25px 0px; padding-top: 4px; margin-left: 0px; padding-left: 5px; width: 72px; margin-top: 4px;margin-bottom: 2px;" title="Avançar Status do Sistema" onclick="ConfirmacaoAvancarStatus()">
+                                    Avançar<br /> Status
+                                </button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="vinculos" role="tabpanel" aria-labelledby="vinculos-tab">
+                            <div class="input-group mb-3" style="margin-top: 10px">
+                                <div id="nav-tab-card" class="LarguraHead tab-pane fade show active col-12">
+                                    <div style="color: #343a40; max-width: 90vw; max-height: 82vh; overflow: visible; font-size: 24px; background-color: #c2c8c6; text-align: center; border-left: 2px solid gray; border-right: 2px solid gray; border-top: 2px solid gray; margin-left: 2px; margin-right: 2px"><b>Atividades Vinculadas - Arquivos</b></div>
+                                </div>
+                                <div id="nav-tab-card" class="tab-pane fade show active col-12">
+                                    <div id="ModalArquivosAtividadesVinculadasTabela" style="max-width: 90vw; max-height: 82vh; overflow: visible; padding: 2px; margin-bottom: 20px; padding-top: 0px"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="width: 100%; margin-top: 20px">
+                        <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                data-dismiss="modal">
+                            Fechar
+                        </button>
+                        <div class="loadergb" id="loaderStatus" style="height: 50px; width:50px; display: none"></div>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ModalConfirmacaoAvancarStatus" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmação de Avanço de Status</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <h5 id="TituloDadosLinhaHist" class="modal-title" style="margin-bottom: 5px"></h5>
+                    <div class="input-group mb-3">
+                        <h6 class="modal-title" style="margin-bottom: 20px"><b>Tem certeza que deseja avançar o status do sistema?</b></h6>
+                        <br />
+                       
+                        <div class="modal-footer" style="width: 100%">
+                            <div class="loadergb" id="loaderExcluir" style="height: 50px; width: 50px; display: none; border: 8px solid #A1A1A1; border-top: 8px solid #f6801e;"></div>
+                            <button onclick="AvancarStatusSistema(this)" type="button" id="BotaoSimAvancarStatus" class="subscribe btn btn-warning rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                                Sim
+                            </button>
+                            <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;" onclick="AvancarStatusNao()">
+                                Não
+                            </button>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ModalConfirmacaoAvancarR1" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmação de Avanço de Revisão</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <h5 id="TituloDadosLinhaHist" class="modal-title" style="margin-bottom: 5px"></h5>
+                    <div class="input-group mb-3">
+                        <h6 class="modal-title" style="margin-bottom: 20px"><b>Tem certeza que deseja avançar a revisão do sistema?</b></h6>
+                        <div class="modal-footer" style="width: 100%">
+                            <div class="loadergb" id="loaderExcluir" style="height: 50px; width: 50px; display: none; border: 8px solid #A1A1A1; border-top: 8px solid #f6801e;"></div>
+                            <button onclick="AvancarR0ParaR1Confirmado(this)" type="button" id="BotaoSimAvancarRevisao" class="subscribe btn btn-warning rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                                Sim
+                            </button>
+                            <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;" onclick="AvancarRevisaoNao()">
+                                Não
+                            </button>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ModalEditarHoras">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Horas</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <h5 class="modal-title" style="margin-bottom: 5px"></h5>
+                <div class="input-group mb-3">
+                    <div id="TabelaHorasLancadas" style="margin-bottom: 50px"></div>
+                    <div class="loadergb mx-auto" id="loaderEditarHoras" style="height: 50px; width:50px; display: none"></div>
+                    <div id="ErrosHorasEditadas"></div>
+                    <div class="col-12 text-center my-3">
+                        <button type="button" class="subscribe btn btn-success shadow-sm  mx-auto" onclick="SalvarEditarHoras()" id="BotaoSalvarHorasEditadas" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important; height: 34px; padding-top: 0px; padding-bottom: 0px;">
+                            Salvar Horas
+                        </button>
+                    </div>
+                    <div class="modal-footer" style="width: 100%">
+                        <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                data-dismiss="modal">
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal"> </div>
+    <link rel="stylesheet" href="{% static 'css/flexibilidade/jquery.dataTables.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/flexibilidade/excel-bootstrap-table-filter-style.css' %}" type="text/css" />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="{% static 'js/a1flx/excel-bootstrap-table-filter-bundle.js' %}"></script>
+    <script src="{% static 'js/flexibilidade/a1flx_p2_control.js' %}"></script>
+    <script>
+
+
+        //let header = {{ header|safe }};
+        //let equipe = {{ eq|safe }};
+        //let list_init = Object.keys(equipe);
+        //let iniciais = {{ mo|safe }};
+        //let list_n_edit = ['liberado_F1', 'analise_F2', 'calculado_F3', 'tub_ajust_F4'];
+        //let login = {{ logins|safe }};
+        //var nw_data_sis = {};
+        let num_os = sessionStorage.getItem('num_os');
+        //let ordem = {{ ordem|safe }};
+        //let dict_index = {{ dt_in|safe }};
+        //let dict_sis = {{ dict_sis|safe }};
+
+        //$('#ctrl_dt thead tr').clone(true).appendTo( '#ctrl_dt thead' );
+        //$('#ctrl_dt thead tr:eq(1) th').each( function (i) {
+        //    $(this).html( '<input type="text" placeholder="" class="form-control" style="vertical-align: center;max-height: 25px"/>' );
+
+        //    $( 'input', this ).on( 'keyup change', function () {
+        //        if ( table_ctrl.column(i).search() !== this.value ) {
+        //            table_ctrl
+        //                .column(i)
+        //                .search( this.value )
+        //                .draw();
+        //        }
+        //    });
+        //});
+
+        //let table_ctrl = $('#ctrl_dt').DataTable({
+        //    "responsive": true,
+        //    "orderCellsTop": true,
+        //    "fixedHeader": true,
+        //    "language": {
+        //        "lengthMenu": " Apresentar  _MENU_ linhas por página.",
+        //        "zeroRecords": "Não há registros",
+        //        "info": "Mostrando a página _PAGE_ de _PAGES_",
+        //        "infoEmpty": "Mostrado 0 para 0 de 0 entradas",
+        //        "search": "Pesquisar:",
+        //        "paginate": {
+        //            "next": "Próximo",
+        //            "previous": "Anterior",
+        //        },
+        //        "infoFiltered": "(Filtrando de   _MAX_ registros)",
+        //    }
+        //});
+
+
+        ///*
+        //$('.ctrl_dt thead th').each( function (){
+        //    var title = $(this).text();
+        //    var input = document.querySelectorAll('input');
+        //        for(i=0; i<input.length; i++){
+        //            if((input[i].getAttribute('placeholder').length-3)<=0)
+        //                input[i].setAttribute('size',(input[i].getAttribute('placeholder').length-1));
+        //            else
+        //                input[i].setAttribute('size',(input[i].getAttribute('placeholder').length-3));
+        //        }
+        //    $(this).html('<input class="form-control" type="text" placeholder="'+title+'"/>');
+        //});
+
+        //table_ctrl.columns().every( function () {
+        //    var that = this;
+        //    $('input', this.header() ).on( 'keyup change', function () {
+        //        if ( that.search() !== this.value ) {
+        //            that.search( this.value ).draw();
+        //        }
+        //    });
+        //});
+        // */
+
+        //$('#pipe_plan thead tr').clone(true).appendTo( '#pipe_plan thead' );
+        //$('#pipe_plan thead tr:eq(1) th').each( function (i) {
+        //    $(this).html( '<input type="text" class="form-control" style="vertical-align: center;"/>' );
+
+        //    $( 'input', this ).on( 'keyup change', function () {
+        //        if ( table_pipe.column(i).search() !== this.value ) {
+        //            table_pipe
+        //                .column(i)
+        //                .search( this.value )
+        //                .draw();
+        //        }
+        //    } );
+        //} );
+
+
+        //let table_pipe = $('#pipe_plan').DataTable({
+        //    "responsive": true,
+        //    "orderCellsTop": true,
+        //    "fixedHeader": true,
+        //    "language": {
+        //      "lengthMenu": " Apresentar  _MENU_ linhas por página.",
+        //      "zeroRecords": "Não há registros",
+        //      "info": "Mostrando a página _PAGE_ de _PAGES_",
+        //      "infoEmpty": "Mostrado 0 para 0 de 0 entradas",
+        //      "search": "Pesquisar:",
+        //      "paginate":{
+        //      "next": "Próximo",
+        //      "previous":"Anterior",
+        //      },
+        //      "infoFiltered": "(Filtrando de   _MAX_ registros)",
+        //    }
+        //});
+
+        /*
+        $('.pipe_plan thead th').each( function (){
+            var title = $(this).text();
+            var input = document.querySelectorAll('input');
+                for(i=0; i<input.length; i++){
+                    if((input[i].getAttribute('placeholder').length-3)<=0)
+                        input[i].setAttribute('size',(input[i].getAttribute('placeholder').length-1));
+                    else
+                        input[i].setAttribute('size',(input[i].getAttribute('placeholder').length-3));
+                }
+            $(this).html('<input class="form-control" type="text" placeholder="'+title+'"/>');
+        });
+
+        table_pipe.columns().every( function () {
+            var that = this;
+            $('input', this.header() ).on( 'keyup change', function () {
+                if ( that.search() !== this.value ) {
+                    that.search( this.value ).draw();
+                }
+            });
+        });
+         */
+
+
+        function avanca_sys_ajax (sys_rev){
+            let vari = document.getElementById(`${sys_rev}_responsavel_editar`).value;
+            if((vari !== undefined) && (vari !== '')) {
+                $.ajax({
+                    type: "POST",
+                    url: "avancar/",
+                    dataType: 'json',
+                    data: {
+                        'dict_edit_flx': JSON.stringify({'dict_flx': sys_rev, 'os': num_os}),
+                        'csrfmiddlewaretoken': '{{ csrf_token|safe }}'
+                    },
+                    //success: window.location.reload(1),
+                }).done(function (data) {
+                    alert(data['dt']);
+                    location.reload();
+                })
+            }
+            else
+            {
+                alert("Não há uma pessoa atribuida, por favor adicione um responsável antes de avançar o status!")
+            }
+        }
+
+    function cria_modal(idd) {
+            let sis = idd.split('_');
+            let data_sis = dict_sis[`${sis[0]}_${sis[1]}`];
+            var list_ids = [];
+            var txt_div_modal = '';
+            var read_only = '';
+            nw_data_sis = {}; // Reseta a variável
+            var btn_avanco = '';
+
+            for (h in header){
+                nw_data_sis[header[h]] = data_sis[h];
+            }
+
+
+            txt_div_modal = `
+                            <div class="modal fade" id="Modal_Edit_Flex" style="width: 90vw; child-align: middle" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                              <div class="modal-dialog" role="document" style="child-align: middle">
+                                <div class="modal-content" style="width: 180%;">
+                                  <div class="modal-header">
+                                    <h2 class="modal-title" id="exampleModalLabel">OS${num_os} - ${sis[0]} - R${sis[1]}</h2>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                      <div class="form-row">
+                                        <div id="divCheckbox" style="display: none;">
+                                          <input type="integer" name="os" class="form-control" value="${num_os}" />
+                                        </div>
+                                      </div>
+                                      `;
+
+        txt_div_modal += `<div id="ln_01" class="row row-cols-5">`; // Primeira linha
+            var DadosH5 = ['linhas_totais', 'linhas_calculo', 'projeto', 'responsavel']
+            for (h in header) { // Recebe os quatro primeiros elementos
+
+                if (h < 5){  // Primeira linha do formulario
+
+                    if (parseInt(h) === 0 || parseInt(h) === 1 || parseInt(h) === 3){ //
+                        edit = 'readonly';}
+                    else{
+                        edit= '';}
+                    console.log(header[h])
+                    if (DadosH5.includes(header[h]))
+                    {
+                        txt_div_modal += `<div class="form-group col-md">
+                                          <label>${header[h][0].toUpperCase() + header[h].replace('_', ' ').substr(1)}123</label>
+                                          <input id="${sis[0]}_${sis[1]}_${header[h]}_editar" class="form-control" value="${nw_data_sis[header[h]]}" ${edit} />
+                                      </div>`;
+                        list_ids.push(`${sis[0]}_${sis[1]}_${header[h]}_editar`);
+                    }
+                } else if (h == 5) {  // Cria a segunda linha e o primeiro elemento
+                    if ( (nw_data_sis['status']==='Liberado para cálculo (F1)') || (nw_data_sis['status']==='Para revisão (F1)') || (nw_data_sis['status']==='Em análise (F2)') || (nw_data_sis['status']==='Em estudo')){
+                        btn_avanco = `
+                        <div style="padding: 10px; max-width: 7em; vertical-align: baseline">
+                            <br>
+                            <button onclick = "avanca_sys_ajax('${sis[0]}_${sis[1]}')" type="submit" data-dismiss="modal" style="background-color:#ffbe47;" class="subscribe btn btn-block btn-warning rounded-pill shadow-sm">Avançar</button>
+                        </div>`;
+                    }
+                    txt_div_modal += `</div><div id="ln_02" class="row row-cols-5">
+                                              <div class="form-group col-md">
+                                                  <label>Status</label>
+
+                                                  <input id="${sis[0]}_${sis[1]}_status_editar" class="form-control" placeholder="${nw_data_sis['status']}" readonly/>
+                                              </div>
+                                              ${btn_avanco}
+                                              <div class="form-group col-md">
+                                                <label>${header[h][0].toUpperCase() + header[h].replace('_',' ').substr(1)}</label>
+                                                <select id = "${sis[0]}_${sis[1]}_${header[h]}_editar" class="form-control">
+                                                    <option>Não</option>
+                                                    <option>Sim Tub</option>
+                                                    <option>Sim Cliente</option>
+                                                    <option>Sim Flex</option>
+                                                </select>
+                                              </div>`;
+                    list_ids.push(`${sis[0]}_${sis[1]}_status_editar`);
+                    list_ids.push(`${sis[0]}_${sis[1]}_${header[h]}_editar`);
+
+                } else if (h > 5 && h < 10 ){
+                    txt_div_modal += `<div class="form-group col-md">
+                                          <label>${header[h][0].toUpperCase() + header[h].replace('_',' ').substr(1)}</label>
+                                          <input id="${sis[0]}_${sis[1]}_${header[h]}_editar" class="form-control" placeholder="${nw_data_sis[header[h]]}" readonly />
+                                      </div>`;
+                    list_ids.push(`${sis[0]}_${sis[1]}_${header[h]}_editar`);
+                } else if (h == 10){ // Terceira linha
+                    txt_div_modal += `</div><div id="ln_03" class="row row-cols-5">
+                                              <div class="form-group col-md">
+                                                  <label>${header[h][0].toUpperCase() + header[h].replace('_',' ').substr(1)}</label>
+                                                  <input id="${sis[0]}_${sis[1]}_${header[h]}_editar" class="form-control" onchange="translate_decimals('${sis[0]}_${sis[1]}_${header[h]}_editar', 0)" placeholder="${nw_data_sis[header[h]]}" />
+                                              </div>`;
+                    list_ids.push(`${sis[0]}_${sis[1]}_${header[h]}_editar`);
+                } else if (h > 10 && h < 14){
+
+                    var edit = 'readonly';
+                    if (header[h] === 'rev'){ edit = 'readonly'; }  // Apenas para leitura
+                    else{
+                        edit = '';
+                    }
+                    if(header[h] === 'obs'){}
+                    else if(header[h] === 'hyd') {
+                        txt_div_modal += `<div class="form-group col-md">
+                                              <label>${header[h][0].toUpperCase() + header[h].replace('_',' ').substr(1)}</label>
+                                              <input id="${sis[0]}_${sis[1]}_${header[h]}_editar" class="form-control" placeholder="${nw_data_sis[header[h]]}" ${edit} onchange="translate_decimals('${sis[0]}_${sis[1]}_${header[h]}_editar',0)"/>
+                                          </div>`;
+                        list_ids.push(`${sis[0]}_${sis[1]}_${header[h]}_editar`);
+                    }else{
+                        txt_div_modal += `<div class="form-group col-md">
+                                              <label>${header[h][0].toUpperCase() + header[h].replace('_',' ').substr(1)}</label>
+                                              <input id="${sis[0]}_${sis[1]}_${header[h]}_editar" class="form-control" placeholder="${nw_data_sis[header[h]]}" ${edit}/>
+                                          </div>`;
+                        list_ids.push(`${sis[0]}_${sis[1]}_${header[h]}_editar`);
+                    }
+
+                } else if (h == 14){
+                    var edit = '';
+                    if (!(list_init.includes(header[h]))) {  // Se o nome não está na lista de iniciais
+                        edit = 'readonly'; // Deixa editar
+                    } else {
+                       edit = ''
+                    }
+
+                    txt_div_modal += `</div><div id="ln_04" class="row row-cols-5">
+                                              <div class="form-group col-md">
+                                                  <label>${header[h][0].toUpperCase() + header[h].replace('_',' ').substr(1)}</label>
+                                                  <input id="${sis[0]}_${sis[1]}_${header[h]}_editar"  onchange="translate_decimals('${sis[0]}_${sis[1]}_${header[h]}_editar', 1)"  class="form-control" placeholder="${nw_data_sis[header[h]]}" ${edit}/>
+                                              </div>`;
+                    list_ids.push(`${sis[0]}_${sis[1]}_${header[h]}_editar`);
+                } else if(iniciais.includes(header[h])) {
+                    if (Object.keys(equipe).includes(header[h])){  // Se faz parte da equipe, deixa editar
+                        txt_div_modal += `<div class="form-group col-md">
+                                              <label>${header[h][0].toUpperCase() + header[h].replace('_',' ').substr(1)}</label>
+                                              <input id="${sis[0]}_${sis[1]}_${header[h]}_editar"  onchange="translate_decimals('${sis[0]}_${sis[1]}_${header[h]}_editar', 1)" class="form-control" placeholder="${nw_data_sis[header[h]]}" />
+                                          </div>`;
+                        list_ids.push(`${sis[0]}_${sis[1]}_${header[h]}_editar`);
+                    } else {
+                        txt_div_modal += `<div class="form-group col-md">
+                                              <label>${header[h][0].toUpperCase() + header[h].replace('_',' ').substr(1)}</label>
+                                              <input id="${sis[0]}_${sis[1]}_${header[h]}_editar"  class="form-control" placeholder="${nw_data_sis[header[h]]}" readonly />
+                                          </div>`;
+                    }
+                }
+            }
+
+            // Acrescenta mais ids na lista de ids para receber os dados posteriormente
+            list_ids.push(`${sis[0]}_${sis[1]}_sus_editar`);
+            list_ids.push(`${sis[0]}_${sis[1]}_exp_flx_editar`);
+            list_ids.push(`${sis[0]}_${sis[1]}_ope_editar`);
+            list_ids.push(`${sis[0]}_${sis[1]}_freq_editar`);
+            list_ids.push(`${sis[0]}_${sis[1]}_link_editar`);
+            list_ids.push(`${sis[0]}_${sis[1]}_obs_editar`);
+            list_ids.push(`${sis[0]}_${sis[1]}_notes_editar`);
+
+            txt_div_modal += `          </div>
+                                            <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label>Observações (recebidos)</label>
+                                                <textarea id = "${sis[0]}_${sis[1]}_obs_editar" class="form-control" placeholder="${nw_data_sis['obs']}" rows="4" ></textarea>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                            <label>Comentários (enviados)</label>
+                                            <textarea id = "${sis[0]}_${sis[1]}_notes_editar" class="form-control" placeholder="${nw_data_sis['notes']}" rows="4" ></textarea>
+                                            </div>
+                                        </div>
+                                        <button onclick = "atualiza_ajax('${sis[0]}_${sis[1]}','${list_ids}')" type="submit" data-dismiss="modal" style="background-color:#ffbe47;" class="subscribe btn btn-block btn-warning rounded-pill shadow-sm">Atualizar Sistema</button>
+                                    </div>
+                                </div>
+                              </div>
+                            </div>`;
+
+            document.getElementById('modal').innerHTML = txt_div_modal;
+
+                        // Acrescenta dois campos ao final da linha 3
+             document.getElementById('ln_03').insertAdjacentHTML('beforeend',`<div class="form-group col-md">
+                                                                                  <label>SUS</label>
+                                                                                  <input id="${sis[0]}_${sis[1]}_sus_editar" class="form-control" onchange="translate_decimals('${sis[0]}_${sis[1]}_sus_editar', 0)" placeholder="${nw_data_sis['sus']}" />
+                                                                              </div>
+                                                                              <div class="form-group col-md">
+                                                                                  <label>EXP</label>
+                                                                                  <input id="${sis[0]}_${sis[1]}_exp_flx_editar" class="form-control" onchange="translate_decimals('${sis[0]}_${sis[1]}_exp_flx_editar', 0)" placeholder="${nw_data_sis['exp_flx']}" />
+                                                                              </div>
+                                                                              <div class="form-group col-md">
+                                                                                  <label>OPE</label>
+                                                                                  <input id="${sis[0]}_${sis[1]}_ope_editar" class="form-control" onchange="translate_decimals('${sis[0]}_${sis[1]}_ope_editar', 0)" placeholder="${nw_data_sis['ope']}" />
+                                                                              </div>
+                                                                              <div class="form-group col-md">
+                                                                                  <label>Freq</label>
+                                                                                  <input id="${sis[0]}_${sis[1]}_freq_editar" class="form-control" onchange="translate_decimals('${sis[0]}_${sis[1]}_freq_editar', 1)" placeholder="${nw_data_sis['freq']}" />
+                                                                              </div>
+                                                                              <div class="form-group col-md">
+                                                                                  <label>Link</label>
+                                                                                  <input id="${sis[0]}_${sis[1]}_link_editar" class="form-control" placeholder="${nw_data_sis['link']}" />
+                                                                              </div>`);
+
+        }
+
+        function translate_decimals(id, decimal_places){
+            const value = parseFloat(document.getElementById(id).value).toFixed(decimal_places)
+            if (isNaN(value)){
+                document.getElementById(id).value=0;
+            } else {
+                document.getElementById(id).value=(value).toString().replace('.',',') ;
+            }
+        }
+
+        function atualiza_ajax(sis, ids){
+
+           let idds = ids.split(',');
+            var dict_per = {}; //
+            var dict_ajax = {};
+            dict_ajax['per_horas'] = {}
+            var list_n_edit_modify = []
+            var list_init_modify = []
+            var ctrl = 0;
+            for (const i of list_init){
+                list_init_modify.push(`${i}_editar`);
+            }
+            for(const i of list_n_edit){
+                list_n_edit_modify.push(`${i}_editar`);
+            }
+
+            for (ix in idds){
+
+                let key = idds[ix].replace(`${sis}_`,'');  // Chave do docionário com replace do id
+
+                if (!(list_n_edit_modify.includes(key))) { // Se a lista de itens não editáveis não contém a chave em questão
+
+                    if (key ==='responsavel_editar'){ //verifica se é a key do responsável, caso seja tenta achar uma correspondência da sigla inserida dentro do json equipe
+                        if(list_init.includes(value_or_placeholder(`${sis}_${key}`).trim())){
+                            dict_ajax[key.replace('_editar','')] = equipe[value_or_placeholder(`${sis}_${key}`).trim()];
+                        }else{
+                            alert('O usuário não está mais com login ativo, consulte o RH ou insira novas INICIAIS (VÁLIDAS E EM MAIÚSCULO) de um novo responsável');
+                            ctrl= 1;
+                        }
+                    }else if(list_init_modify.includes(key)){ // verifica se a key corresponde a inserção de horas, algum campo foi modificado insere as iniciais e as horas em dict_per
+                        if(document.getElementById(idds[ix]).value !== undefined && document.getElementById(idds[ix]).value !== '') {
+
+                            dict_ajax['per_horas'][equipe[key.replace('_editar','')]] = parseFloat(value_or_placeholder(`${sis}_${key}`));
+                        }
+                    }else{ //outras keys que não cairam nos outros 2 ifs caem aqui!
+                        if(key === 'atividade_sistema_editar'){
+                            dict_ajax[key.replace('_editar','')] = value_or_placeholder(`${sis}_${key}`).trim()
+                        }else {
+                            dict_ajax[key.replace('_editar', '')] = value_or_placeholder(`${sis}_${key}`)
+                        }
+                    }
+
+                }
+            }
+
+            // Acrescenta o dict per ao dicionário a ser enviado por AJAX
+
+            console.log(dict_ajax);
+            if (ctrl === 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "editar/",
+                    dataType: 'json',
+                    data: {
+                        'dict_edit_flx': JSON.stringify({'dict_flx': dict_ajax}),
+                        'csrfmiddlewaretoken': '{{ csrf_token|safe }}'
+                    }
+                }).done(function (data){
+                    alert(data['dt']);}
+                )
+                change_sheet(sis, dict_ajax);
+
+            }
+
+            location.reload();
+        }
+
+
+
+        var time = new Date().getTime();
+        $(document.body).bind("mousemove keypress", function(e) {
+             time = new Date().getTime();
+        });
+
+        function change_sheet(idd, dict_modify){
+            var i;
+            delete dict_modify['per_horas'];
+
+            for(i in dict_modify){
+
+                if (i==='obs' || i ==='notes' || i === 'link')
+                {
+                    document.getElementById(`${idd}_${i}`).innerText = dict_modify[i].toString().substring(0,60) + '...';
+                }else{
+                    document.getElementById(`${idd}_${i}`).innerText = dict_modify[`${i}`];
+
+                }
+                document.getElementById(`${idd}_${i}`).title = dict_modify[`${i}`];
+
+
+            }
+        }
+
+        function value_or_placeholder(id){
+
+            if (document.getElementById(id).value !== undefined && document.getElementById(id).value !== ''){
+                return document.getElementById(id).value;
+            }
+            else{
+                return document.getElementById(id).placeholder;
+            }
+
+        }
+        function refresh() {
+             if(new Date().getTime() - time >= 300000)
+                 location.reload();
+             else
+                 setTimeout(refresh, 300000);
+        }
+
+        //setTimeout(refresh, 300000);
+
+        //$(document).ready(function() {
+        //    $('#ctrl_dt').DataTable( {
+        //        columnDefs: [ {
+        //            targets: [ 0 ],
+        //            orderData: [ 0, 1 ]
+        //        }, {
+        //            targets: [ 1 ],
+        //            orderData: [ 1, 0 ]
+        //        }, {
+        //            targets: [ 4 ],
+        //            orderData: [ 4, 0 ]
+        //        } ]
+        //    } );
+        //} );
+
+
+    </script>
+
+    {% endblock %}

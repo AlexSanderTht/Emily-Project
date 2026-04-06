@@ -1,0 +1,19 @@
+{% extends 'english_platform/base.html' %}
+
+{% block title %}Cadastro | Emily English Studio{% endblock %}
+
+{% block content %}
+<section class="auth-wrap">
+    <p class="eyebrow">Primeiro passo</p>
+    <h1>Crie sua conta e entre na area do aluno</h1>
+    <p>Depois do cadastro voce podera solicitar aulas, acompanhar agenda e manter seu plano de estudos organizado.</p>
+
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-primary">Finalizar cadastro</button>
+    </form>
+
+    <p class="small-link">Ja tem conta? <a href="{% url 'english_platform:login' %}">Entrar agora</a></p>
+</section>
+{% endblock %}

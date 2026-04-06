@@ -1,0 +1,71 @@
+{% block gavetas %}
+  <div class="modal-header">
+    <h5 class="modal-title" id="gavetasLabel">Gavetas</h5>
+  </div>
+    <div class="modal-body">
+        <div class="row"  ><!-- dentro do cadastra_os-->
+            <div style="border-right: 2px solid rgb(161, 158, 158); margin-top:25px; width: 450px; ">
+                <div class="col-sm-7" >
+                    <div class="form-group mb-4">
+                        <td data-toggle="tooltip" title="Inserir número da os"  >Painel
+                            <input type="text" id="os-num" required class="form-control" style="width:80%;" >
+                        </td>
+                    </div>
+                </div>
+        
+                <div class="col-sm-2" >
+                    <div class="form-group ">
+                        <td placeholder="Digite aqui" data-toggle="tooltip"> Cub.
+                            <input type="text" required class="form-control" id="os-sep"  >
+                        </td>
+                    </div>
+                </div>
+                <div style="clear: both;"></div>
+
+                <div>  <!--Inicio campo acessorios do motor -->
+                    <div class="col-sm-5">
+                        <div class="form-group mb-4">
+                            <div class="acss1">Carga(s) na gaveta
+                                <td  >
+                                    <textarea required class="form-control" > </textarea>
+                                </td>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Fim campo acessorios do motor --> 
+
+                    <div class="col-sm-2 " style="margin-left:77px">
+                        <div class="form-group ">
+                            <td placeholder="Digite aqui" data-toggle="tooltip"> Gav.
+                                <input type="text" required class="form-control" id="os-sep"  >
+                            </td>
+                        </div>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+            </div>
+            <div>
+                <div class="col-sm-9" style="float: left;">
+                    <div class="form-group mb-4">
+                        <label style= "margin-top: 20px" for="os-type">Pesquisa OS </label>
+                            <input type="text" list="os-type-list" id="os-type" class="form-control" onclick="list_options(this.id)" onselect="selected_option(this.id, this.value)">
+                            <datalist id="os-type-list"></datalist>
+                        </label>
+                    </div>
+                </div>
+            </div>    
+           
+            <br>
+            <br>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-warning"  >Importar arquivo</button>
+        <button type="button" class="btn btn-warning" >Exportar arquivo</button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" >Limpar</button>
+        <button type="button" class="btn btn-warning" >Adicionar/Alterar</button>
+        <button type="button" class="btn btn-warning">Excluir</button> 
+    </div>
+
+{% endblock %}

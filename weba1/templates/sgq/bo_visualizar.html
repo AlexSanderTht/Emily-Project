@@ -1,0 +1,141 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.min.css' %}"/>
+    <script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.bundle.js' %}"></script>
+    <script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.js' %}"></script>
+</head>
+
+<style>
+    * {
+        font-family: -apple-system, system-ui, BlinkMacSystemFont;
+    }
+    
+    .header {
+        background-color: #fcc298;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: rgba(128, 128, 128, 0.28) 0 0 27px 3px;
+    }
+    
+    .section {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: rgba(128, 128, 128, 0.28) 0 0 27px 3px;
+    }
+    
+    .section-title {
+        border-bottom: 2px solid #fcc298;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+        color: #ff8c42;
+    }
+    
+    .btn-back {
+        background-color: #98fcc7;
+        color: black;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 15px;
+        margin-top: 20px;
+        box-shadow: rgba(128, 128, 128, 0.28) 0 0 27px 3px;
+    }
+    
+    .info-row {
+        display: flex;
+        margin-bottom: 10px;
+    }
+    
+    .info-label {
+        font-weight: bold;
+        min-width: 150px;
+    }
+    
+    .action-item {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        border-left: 4px solid #fcc298;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="container mt-4 mb-5">
+    <div class="header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>B.O. {{ bo.tb_bo_num }}/{{ bo.tb_bo_num_ano }}</h2>
+            <p class="mb-0"><strong>Data de Criação:</strong> {{ bo.tb_bo_data_criacao|date:"d/m/Y" }}</p>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h4 class="section-title">Caracterização do Problema</h4>
+        <div class="info-row">
+            <span class="info-label">Origem:</span>
+            <span>{{ origem.tb_ori_nome }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Solicitante:</span>
+            <span>{{ solicitante.tb_per_name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Responsável:</span>
+            <span>{{ responsavel.tb_per_name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Área:</span>
+            <span>{{ subarea.tb_sub_ar_nome }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">OSOF:</span>
+            <span>{{ bo.tb_bo_osof }}</span>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h4 class="section-title">Descrição do Fato</h4>
+        <p>{{ caracteristica.tb_bo_car_fato }}</p>
+    </div>
+    
+    <div class="section">
+        <h4 class="section-title">Ações Corretivas</h4>
+        {% if acoes_corretivas %}
+            {% for acao in acoes_corretivas %}
+            <div class="action-item">
+                <div class="info-row">
+                    <span class="info-label">Ação:</span>
+                    <span>{{ acao.tb_bo_ac_co_acao }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Prazo:</span>
+                    <span>{{ acao.tb_bo_ac_co_prazo|date:"d/m/Y" }}</span>
+                </div>
+                {% if acao.tb_bo_ac_co_evidencia %}
+                <div class="info-row">
+                    <span class="info-label">Evidência:</span>
+                    <span>{{ acao.tb_bo_ac_co_evidencia }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>Nenhuma ação corretiva registrada.</p>
+        {% endif %}
+    </div>
+    
+    <div class="text-center">
+        <button class="btn-back" onclick="window.location.href='{% url 'menuSgqSol' %}?report_type=BO'">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+    </div>
+</div>
+{% endblock %}

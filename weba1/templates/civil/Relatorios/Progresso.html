@@ -1,0 +1,209 @@
+{%extends 'geral/base.html'%}
+
+{% load static %}
+{% block head %}
+<title>Relatórios de Progresso</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js"  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style>
+        label
+        {
+            margin-bottom: 0px;
+        }
+        .loader {
+          border: 8px solid #A1A1A1;
+          border-top: 8px solid #f6801e;
+          border-radius: 50%;
+          width: 50px;
+          height: 50px;
+          animation: spin 2s linear infinite;
+           display: block;
+          margin-left: auto;
+          margin-right: auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.input-group-text{
+    background-color: gray;// #343A40;
+    color: white;
+}
+.flex {
+  display: flex;
+  justify-content: center;
+    margin-top: 10px;
+}
+
+.flex-item + .flex-item {
+  margin-left: 10px;
+}
+
+.button {
+  margin-top: 15px;
+  background-color: #0066FF;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+
+}
+
+</style>
+{% endblock %}
+{% block main %}
+{% load poll_extras %}
+{% verify_tool as user_info %}
+{% if user_info.A1CIVRelatorioProgresso %}
+
+
+
+
+
+<div class="mx-auto">
+    <div class="bg-white rounded-lg shadow-sm p-5" style="margin-left:50px; margin-right:50px; margin-top: 50px">
+        <div class="tab-content">
+            <div id="nav-tab-card" class="tab-pane fade show active">
+                <div class="jumbotron">
+                    <h1 class="display-4">Relatórios de Progresso da OS</h1>
+                    <p class="lead">Aqui são mostrados gráficos com informações sobre a OS Selecionada.</p>
+                    <hr class="my-4">
+                    <p class="lead">
+
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="SelectOS">Selecione a OS:</label>
+                        </div>
+                        <select class="custom-select" id="SelectOS" disabled="disabled">
+                            {%for os in RelatoriosForm.OSs %}
+                            {{os}}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="loader" id="loaderProgressoEtapas" style="height: 100px; width:100px; display: none"></div>
+                    </p>
+                     <hr class="my-4">
+
+                    <h1 class="display-4">Progresso das Etapas</h1>
+                    <div id="GraficoProgressoEtapas" style="height: 400px; display: inline-block">
+                        <div style="width: 55%;" >
+                            <canvas id="ProgressoEtapasChart"  ></canvas>
+                        </div>
+                    </div>
+                    <hr class="my-4">
+                    <div class="loader" id="loaderEstudos" style="height: 100px; width:100px; display: none"></div>
+                    <h1 class="display-4">Conceito/Estudo</h1>
+                    <div id="GraficoEstudos" style="height: 400px; display: inline-block">
+                        <div style="width: 55%; float: left" >
+                            <canvas id="EstudosChart"  ></canvas>
+                        </div>
+                        <div style="width: 40%; float: right" >
+                            <canvas id="DataEstudosChart" style="width: 50%"></canvas>
+                        </div>
+                    </div>
+
+                     <hr class="my-4">
+                    <div class="loader" id="loaderCalculos" style="height: 100px; width:100px; display: none"></div>
+                    <h1 class="display-4">Cálculo</h1>
+                    <div id="GraficoCalculos" style="height: 400px; display: inline-block">
+                        <div style="width: 55%; float: left" >
+                            <canvas id="CalculosChart"  ></canvas>
+                        </div>
+                        <div style="width: 40%; float: right" >
+                            <canvas id="DataCalculosChart" style="width: 50%"></canvas>
+                        </div>
+
+                    </div>
+
+                     <hr class="my-4">
+                    <div class="loader" id="loaderModelos" style="height: 100px; width:100px; display: none"></div>
+                    <h1 class="display-4">Modelo</h1>
+                    <div id="GraficoModelos" style="height: 400px; display: inline-block">
+                        <div style="width: 55%; float: left">
+                            <canvas id="ModelosChart"  ></canvas>
+                        </div>
+                        <div style="width: 40%; float: right">
+                            <canvas id="DataModelosChart" style="width: 50%"></canvas>
+                        </div>
+
+                    </div>
+
+                        <hr class="my-4">
+                    <div class="loader" id="loaderDocumentos" style="height: 100px; width:100px; display: none"></div>
+                    <h1 class="display-4">Documento</h1>
+                    <div id="GraficoDocumentos" style="height: 400px; display: inline-block">
+                        <div style="width: 55%; float: left">
+                            <canvas id="DocumentosChart"  ></canvas>
+                        </div>
+                        <div style="width: 40%; float: right">
+                            <canvas id="DataDocumentosChart" style="width: 50%"></canvas>
+                        </div>
+
+                    </div>
+
+                         <hr class="my-4">
+                    <div class="loader" id="loaderVerificacoes" style="height: 100px; width:100px; display: none"></div>
+                    <h1 class="display-4">Verificação</h1>
+                    <div id="GraficoVerificacoes" style="height: 400px; display: inline-block">
+                        <div style="width: 55%; float: left">
+                            <canvas id="VerificacoesChart"  ></canvas>
+                        </div>
+                        <div style="width: 40%; float: right">
+                            <canvas id="DataVerificacoesChart" style="width: 50%"></canvas>
+                        </div>
+
+                    </div>
+
+                          <hr class="my-4">
+                    <div class="loader" id="loaderIntegracoes" style="height: 100px; width:100px; display: none"></div>
+                    <h1 class="display-4">Integração</h1>
+                    <div id="GraficoIntegracoes" style="height: 400px; display: inline-block">
+                        <div style="width: 55%; float: left">
+                            <canvas id="IntegracoesChart"  ></canvas>
+                        </div>
+                        <div style="width: 40%; float: right">
+                            <canvas id="DataIntegracoesChart" style="width: 50%"></canvas>
+                        </div>
+
+                    </div>
+
+                            <hr class="my-4">
+                    <div  class="loader" id="loaderEmissoes" style="height: 100px; width:100px; display: none"></div>
+                    <h1  class="display-4">Emissão</h1>
+                    <div  id="GraficoEmissoes" style="height: 400px; display: inline-block">
+                        <div style="width: 55%; float: left">
+                            <canvas id="EmissoesChart"  ></canvas>
+                        </div>
+                        <div style="width: 40%; float: right">
+                            <canvas id="DataEmissoesChart" style="width: 50%"></canvas>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% else %}
+<h1> Acesso não permitido </h1>
+{% endif %}
+
+<link rel="stylesheet" href="{% static 'css/civil/jquery.dataTables.min.css' %}"/>
+<script src="{% static 'js/civil/scriptsGerais.js' %}"></script>
+<script src="{% static 'js/civil/ScriptsRelatorioProgresso.js' %}"></script>
+
+
+
+{%endblock%}

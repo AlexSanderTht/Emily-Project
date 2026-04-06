@@ -1,0 +1,102 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1pro</title>
+<link rel="stylesheet" href="{% static 'css/flexibilidade/jquery.dataTables.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<style>
+    .list-tags-cabo-container{
+        max-height: 400px;
+        overflow-y: scroll;
+        padding-right: 10px;
+        scrollbar-color: #6c757d #d9dadb;
+        scrollbar-width: thin;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="container-fluid h-100">
+    <div class="col-lg-12 mt-4 mb-3">
+        <button class="btn btn-primary btn-warning position-absolute" onclick="window.history.go(-1)">Voltar</button>
+        <h3 class="text-center"><b>Nova Aba Plano de Corte</b></h3>
+    </div>
+
+    <div class="container-fluid d-flex justify-content-center">
+        <div class="bg-white shadow content-bobinas">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="container-fluid mt-3">
+                        <div class="col-12 text-left">
+                            <h4>Bobinas do Plano de Corte</h4>
+                        </div>
+                    </div>
+                    <div class="border p-4 shadow font_size_0_8 mr-3">
+                        <table class="table table-sm table-hover" id="TableBobinas">
+                            <thead>
+                                <tr>
+                                    <th>Isolação</th>
+                                    <th>Classe Isolação</th>
+                                    <th>Formação</th>
+                                    <th>Tipo Formação</th>
+                                    <th>Seção(mm²)</th>
+                                    <th>Fabricante</th>
+                                    <th>Comprimento</th>
+                                    <th>Cód.A1</th>
+                                    <th>Remover</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for obj_bobina in bobinas %}
+                                <tr onclick="OnClickBobinaCadastrada({{obj_bobina.pk}}, this)">
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_id_isol.tb_isol_material}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_id_class_isol.tb_list_ci_desc}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_formacao}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_tipo_formacao}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_id_sec.tb_sec_nc_mm2}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_id_fabg.tb_fabg_nome}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_comprimento}}</td>
+                                    <td class="text-center py-1">{{obj_bobina.tb_bobinas_coda1}}</td>
+                                    <td class="text-center py-1"><i class="fa-solid fa-xmark" onclick="DeleteBobina({{obj_bobina.pk}})"></i></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include './FabricantesInBobinas.html' %}
+{% include './CaracteristicasOsBobinas.html' %}
+
+<script type="text/javascript" src="{% static 'js/datatables 1.10.20/dataTables.bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/datatables 1.10.20/jquery.dataTables.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/Bobinas.js' %}"></script>
+<script>
+    $(document).ready(function (){
+        $('#TableBobinas').DataTable({
+            "sDom": "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6 d-flex justify-content-end form-inline pb-2'l>>" +
+                        "<'row'<'col-sm-12 col-md-12 col-lg-12'tr>>" +
+                        "<'row mt-3'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            "scrollCollapse": true,
+            "scrollY": "485px",
+            "paging": false,
+            "bFilter": true,
+            "info": false,
+            "language": {
+                "emptyTable": "Nenhuma Bobina encontrada",
+                "search": "Pesquisar",
+            },
+        })
+        document.getElementById('TableBobinas_filter').parentElement.classList.add('d-flex')
+        document.getElementById('TableBobinas_filter').parentElement.classList.add('justify-content-start')
+        $('#TableBobinas').removeClass('no-footer')
+        document.getElementById('TableBobinas_filter').firstChild.classList.add('text-left')
+        $('tr').addClass('saidas_existentes')
+    })
+</script>
+{% endblock %}

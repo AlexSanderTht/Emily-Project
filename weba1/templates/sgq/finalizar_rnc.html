@@ -1,0 +1,120 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+
+{% block head %}
+<style>
+    * {
+        font-family: -apple-system, system-ui, BlinkMacSystemFont;
+    }
+
+    .card-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 30px auto;
+    }
+
+    .finalize-card {
+        box-shadow: rgba(128, 128, 128, 0.28) 0 0 27px 3px;
+        border-radius: 30px;
+        padding: 30px;
+        background-color: white;
+    }
+
+    .card-title {
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: bold;
+    }
+
+    .options-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 30px;
+    }
+
+    .option-button {
+        padding: 15px 30px;
+        border-radius: 15px;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: rgba(128, 128, 128, 0.28) 0 0 27px 3px;
+        transition: transform 0.3s ease;
+    }
+
+    .option-button:hover {
+        transform: translateY(-5px);
+    }
+
+    .finalize-button {
+        background-color: #98fcc7;
+        color: black;
+    }
+
+    .create-new-button {
+        background-color: #64a7ff;
+        color: white;
+    }
+
+    .deny-button {
+        background-color: #ff6464;
+        color: white;
+    }
+
+    .report-summary {
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: #f5f5f5;
+        border-radius: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+{% csrf_token %}
+<div class="container">
+    <div class="card-container">
+        <div class="finalize-card">
+            <h3 class="card-title">Finalizar Relatório RNC #{{ rnc.tb_rnc_num }}/{{ rnc.tb_rnc_num_ano }}</h3>
+
+            <div class="report-summary">
+                <h4>Resumo do Relatório</h4>
+                <p><strong>Responsável:</strong> {{ caracterizacao.tb_car_pro_responsavel_id_per.tb_per_name }}</p>
+                <p><strong>Solicitante:</strong> {{ caracterizacao.tb_car_pro_solicitante_id_per.tb_per_name }}</p>
+                <p><strong>Status Atual:</strong> {{ rnc.tb_rnc_status }}</p>
+                <p><strong>Data de Criação:</strong> {{ rnc.tb_rnc_data_criacao|date:"d/m/Y" }}</p>
+                {% if causas_raiz %}
+                <p><strong>Causa Raiz:</strong> {{ causas_raiz.tb_cau_ra_iden_text }}</p>
+                {% endif %}
+            </div>
+
+            <div class="alert alert-info">
+                Selecione uma das opções abaixo para prosseguir:
+            </div>
+
+            <div class="options-container">
+                <form method="post" action="{% url 'finalizar_rnc' rnc_num=rnc.tb_rnc_num %}">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="finalizar" class="option-button finalize-button">
+                        <i class="fas fa-check-circle"></i> Finalizar RNC
+                    </button>
+                </form>
+
+                <form method="post" action="{% url 'finalizar_rnc' rnc_num=rnc.tb_rnc_num %}">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="criar_novo" class="option-button create-new-button">
+                        <i class="fas fa-plus-circle"></i> Criar Novo RNC a partir deste
+                    </button>
+                </form>
+
+                <form method="post" action="{% url 'finalizar_rnc' rnc_num=rnc.tb_rnc_num %}">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="negar" class="option-button deny-button">
+                        <i class="fas fa-times-circle"></i> Negar Relatório
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

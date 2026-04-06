@@ -1,0 +1,49 @@
+{% extends 'geral/base.html' %}
+<!DOCTYPE html>
+<html>
+{% load static %}
+{% block head %}
+<title>Tela de Seleção de Turbinas</title>
+{% endblock %}
+{% block help %}
+    <h7>Drop List <strong>"Selecionar A Turbina da OS {{ os }}"</strong>> Escolha a turbina para abrir seu dashboard</h7>
+    <br><br>
+{% endblock %}
+{% block main %}
+
+    <link href="https://cdn.alloyui.com/3.1.1/aui-css/css/bootstrap.min.css" rel="stylesheet"></link>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <div class="row mb-4">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4"><b>Seleção do Projeto da ENERGIA</b></h1>
+      </div>
+    </div>
+
+    <div class="row mb-4" style="align-items: center">
+        <div class="col-lg-8 mx-auto text-center">
+            <div class="bg-white rounded-lg shadow-sm p-5">
+                <form role="form" method="POST" enctype="multipart/form-data" id="form">
+                    {% csrf_token %}
+                    <h2 for="item">  Selecione A Turbina: Exemplo de Token: {{ token }} </h2>
+                    <br>
+                    <select onchange="storage_os(this.id); this.form.submit();" type="submit" id="turbina" name="turb" class="form-control" style="width: 10vw; justify-self: center; margin: auto; font-size: 16px; text-align: center">
+                            <option value="selecione">Selecione</option>
+                        {% for turb in turbinas %}
+                            <option value={{ turb }}>{{ turb }}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+       function storage_os(id){
+           const turbina = document.getElementById(id).value;
+           sessionStorage.setItem( 'turbina', turbina );
+       }
+    </script>
+
+{% endblock %}

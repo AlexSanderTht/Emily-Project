@@ -1,0 +1,60 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+
+<html>
+<head>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+    <link href="{% static 'js/bootstrap.min.css' %}">
+</head>
+
+<style>
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-5">
+    {% csrf_token %}
+    <div class="card mb-4">
+        <div  class="d-flex justify-content-center card-body col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Seleção da Os para configuração dos templates</b></h2>
+        </div>
+            <div class="container">
+                <div class=" row d-flex justify-content-center">
+                    <div class="row col-5 justify-content-center">
+                        <label for="os_proj">OS:</label>
+                        <select id="os_proj" class="form-control ">
+                            {% for obj in OsListaAtiva %}
+                                <option title="{{obj.pk}}">{{obj.tb_so_num}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="row col-5 justify-content-center">
+                        <button type="button" class="btn butof col-4" onclick="SelectOs()">Editar OS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+
+<script>
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+
+    async function SelectOs() {
+        let os_num = document.getElementById('os_proj').value
+        let id_os = document.getElementById('os_proj').selectedOptions[0].title
+        document.location.href = `/app/documentacao/templates_config/${id_os}/`
+    }
+</script>
+{% endblock %}

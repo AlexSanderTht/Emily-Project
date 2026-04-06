@@ -1,0 +1,25 @@
+{% load static %}
+{% block base_search_bar %}
+<!-- para chamar esse bloco é necessário passar um contexto com o nome de id_select-->
+<div class="" >
+    <div class="form-group mb-4">
+
+        <input type="search" class="form-control mr-sm-2" placeholder="Buscar..." id="{{id_select}}" onkeyup="filterSearch(this.id)" title="Pesquise aqui sua Carga" onclick="clean_form_search()"/>
+        <br>
+
+        <div class="position-relative">
+            <div class="animate__animated d-flex justify-content-center align-items-center position-absolute w-100 h-100" style="z-index: 1;height: 280px;visibility: hidden; display:inline;">
+                <div class="custom-loader-a1"></div>
+            </div>
+
+            <select id="{{id_select}}Select" required class="form-control" style="height: 280px" multiple>
+            </select>
+        </div>
+
+
+    </div>
+</div>
+
+<script src="{% static 'js/eletrica/A1Pro/BaseSearch.js' %}"> </script>
+{% endblock base_search_bar %}
+

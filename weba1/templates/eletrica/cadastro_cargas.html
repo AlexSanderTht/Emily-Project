@@ -1,0 +1,52 @@
+
+<div class="modal-header">
+    <h5 class="modal-title" id="cargasLabel">Motores e Cargas</h5>
+</div>
+<div class="modal-body">
+    <div class="row"  ><!-- dentro do area-->
+        <div class="tab" >
+            <button type="button" class="tablinks btn btn-secondary" onclick="openTool(event, 'Motores')">Motores </button>
+            <button type="button" class="tablinks btn btn-secondary" onclick="openTool(event, 'Transformadores')">Transformadores</button>
+            <button type="button" class="tablinks btn btn-secondary" onclick="openTool(event, 'Paineis')">Paineis</button>
+            <button type="button" class="tablinks btn btn-secondary" onclick="openTool(event, 'Paineis')">Cargas Auxiliares</button>
+        </div>
+
+        <div id= "Motores" class="tabcontent"  >
+            <br>
+
+            <div class="bg-white "  >
+
+            </div>
+        </div>
+    </div>    
+</div>        
+<br>
+<br>
+
+<div id="Transformadores" class="tabcontent"  >
+            
+    {% include './templates.html' %}
+    {% block but %}
+    {% endblock %}
+</div>
+
+<div id="Paineis" class="tabcontent" >
+            
+    {% include './templates.html' %}
+    {% block but2 %}
+    {% endblock %}
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-warning" >Adicionar/Alterar</button>
+    <button type="button" class="btn btn-warning" style="margin-left:70px;">Excluir</button>
+    <button type="button" class="btn btn-warning">Limpar</button>
+</div>
+        
+            
+    
+
+                
+            
+       
+    

@@ -1,0 +1,178 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+    <link href="{% static 'js/bootstrap.min.css' %}">
+</head>
+
+<style>
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+</style>
+{% endblock %}
+
+{% block main %}
+
+<div class="d-flex justify-content-center row p-5">
+    {% csrf_token %}
+
+    <div class="card mb-4" style="width: 100rem">
+        <div class="d-flex bd-highlight mb-2" >
+            <button class="mr-auto p-2 bd-highlight btn btn-warning" onclick=" relocate_docs_req('{{id_req_docs}}')">
+                Voltar
+            </button>
+        </div>
+        <div class="card-body  col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Verificação dos documentos</b></h2>
+        </div>
+        <div id="accordion">
+        {%for pk_id, body_html, field_name_green, status, obs_field in html_body%}
+
+                <div class="card">
+                    <div class="{% if status == 'APROVADO' %} card-header_aprovado  {% elif status == 'REPROVADO' %} card-header_reprovado {% else %} card-header {% endif %}" id="heading_{{pk_id}}">
+                        <h5 class="mb-0">
+                            <div class="d-flex bd-highlight mb-2" >
+                                <button class="mr-auto p-2 bd-highlight btn btn-link" data-toggle="collapse" data-target="#collapse_{{pk_id}}" aria-expanded="false" aria-controls="collapse_{{pk_id}}">
+                                    {{field_name_green}}
+                                </button>
+                                <button  class="p-2 bd-highlight btn btn-success " onclick="AprovarField('{{pk_id}}')" {% if  status == 'APROVADO' or status == 'REPROVADO' %} disabled {% endif %}>
+                                Aprovar
+                                </button>
+                                <button  class="p-2 bd-highlight btn btn-danger" onclick="ReprovarField('{{pk_id}}')" {% if status == 'APROVADO' or status == 'REPROVADO' %} disabled {% endif %}>
+                                Reprovar
+                                </button>
+                            </div>
+                        </h5>
+                    </div>
+
+                    <div id="collapse_{{pk_id}}" class="collapse" aria-labelledby="heading_{{pk_id}}" data-parent="#accordion">
+                        <div class="card-body">
+                            {{body_html|safe}}
+                        </div>
+                        <div class="card-body">
+                            Observação:
+                            <textarea  class="form-control" type="text"  id="input_colapse_{{pk_id}}"  rows="3" {% if  status == 'APROVADO' or status == 'REPROVADO' %} readonly {% endif %}>{{obs_field}}</textarea>
+                            <button  type="button" class="btn btn-success" onclick="SaveObservacaoField('{{pk_id}}')" {% if  status == 'APROVADO' or status == 'REPROVADO' %} disabled {% endif %}>Salvar Obs.</button>
+                            <button  type="button" class="btn btn-danger" onclick="ClearObservacaoField('{{pk_id}}')" {% if  status == 'APROVADO' or status == 'REPROVADO' %} disabled {% endif %}>Limpar Obs.</button>
+                        </div>
+                    </div>
+                </div>
+
+        {% endfor %}
+        </div>
+    </div>
+</div>
+</html>
+
+<script>
+
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+    function relocate_docs_req(id_docs_req){
+         location.href = `/app/documentacao/tela_controle_docs_requested/${id_docs_req}/`
+    }
+    function SaveObservacaoField(id_req_fields){
+        let input_text = $(`#input_colapse_${id_req_fields}`).val()
+        SendObservacaoField(input_text, id_req_fields)
+    }
+
+    function ClearObservacaoField(id_req_fields){
+        let input_text = ''
+        SendObservacaoField(input_text, id_req_fields)
+    }
+
+    function SendObservacaoField(string_obs, id_req_fields){
+        $.ajax({
+            type: 'POST',
+            url: `/app/documentacao/observacao_field/${id_req_fields}/`,
+            enctype: 'multipart/form-data',
+            data: {'data': `${string_obs}`, 'csrfmiddlewaretoken': csrf[0].value},
+        }).done(function (data) {
+
+            swal({
+                text: data['data'],
+                icon: "success",
+                button: 'Fechar'
+            })
+        })
+    }
+
+    function AprovarField(id_req_fields){
+        SendAprovacaoReprovacao(id_req_fields, true)
+    }
+
+    function ReprovarField(id_req_fields){
+        SendAprovacaoReprovacao(id_req_fields, false)
+    }
+
+    function SendAprovacaoReprovacao(id_req_fields, bool_aprova){
+        if (bool_aprova) {
+            bool_aprova = 1
+        }else {
+            bool_aprova = 0
+        }
+        $.ajax({
+            type: 'POST',
+            url: `/app/documentacao/aprovacao_field/${id_req_fields}/${bool_aprova}/`,
+            enctype: 'multipart/form-data',
+            data: {'data': ``, 'csrfmiddlewaretoken': csrf[0].value},
+        }).done(function (data) {
+            let return_back = data['return']
+            swal({
+                text: data['data'],
+                icon: "success",
+                button: 'Fechar'
+            })
+            console.log(return_back)
+            if (return_back === false){
+                location.reload()
+            }else{
+                history.back()
+            }
+        })
+    }
+
+
+</script>
+
+<style>
+
+    .card-header_{
+        padding:.75rem 1.25rem;
+        margin-bottom:0;
+        background-color:rgba(0,0,0,.03);
+        border-bottom:1px solid rgba(0,0,0,.125)
+    }
+    .card-header_:first-child{
+        border-radius:calc(.25rem - 1px) calc(.25rem - 1px) 0 0
+    }
+
+    .card-header_aprovado{
+        padding:.75rem 1.25rem;
+        margin-bottom:0;
+        background-color: rgba(0,255,0,.09);
+        border-bottom:1px solid rgba(0,0,0,.125)
+    }
+    .card-header_aprovado:first-child{
+        border-radius:calc(.25rem - 1px) calc(.25rem - 1px) 0 0
+    }
+
+    .card-header_reprovado{
+        padding:.75rem 1.25rem;
+        margin-bottom:0;
+        background-color:rgba(255,0,0,.09);
+        border-bottom:1px solid rgba(0,0,0,.125)
+    }
+    .card-header_aprovado:first-child{
+        border-radius:calc(.25rem - 1px) calc(.25rem - 1px) 0 0
+    }
+
+</style>
+{% endblock %}

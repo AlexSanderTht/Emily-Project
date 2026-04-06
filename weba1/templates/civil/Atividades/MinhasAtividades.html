@@ -1,0 +1,178 @@
+{%extends 'geral/base.html'%}
+
+{% load static %}
+
+{%block head%}<title>Minhas Atividades</title>{%endblock%}
+
+{%block main %}
+<style>
+
+
+        label
+        {
+            margin-bottom: 0px;
+        }
+        .loader {
+  border: 8px solid #A1A1A1;
+  border-top: 8px solid #f6801e;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+   display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.input-group-text{
+    background-color: gray;// #343A40;
+    color: white;
+}
+.flex {
+  display: flex;
+  justify-content: center;
+    margin-top: 10px;
+}
+
+.flex-item + .flex-item {
+  margin-left: 10px;
+}
+
+.button {
+  margin-top: 15px;
+  background-color: #0066FF;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+.checkbox {
+    width: 100%;
+    margin: 15px auto;
+    position: relative;
+    display: block;
+}
+
+.checkbox input[type="checkbox"] {
+    width: auto;
+    opacity: 0.00000001;
+    position: absolute;
+    left: 0;
+    margin-left: -20px;
+}
+.checkbox label {
+    position: relative;
+}
+.checkbox label:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 4px;
+    width: 22px;
+    height: 22px;
+    transition: transform 0.28s ease;
+    border-radius: 3px;
+    border: 2px solid #7bbe72;
+}
+.checkbox label:after {
+  content: '';
+    display: block;
+    width: 10px;
+    height: 5px;
+    border-bottom: 2px solid #7bbe72;
+    border-left: 2px solid #7bbe72;
+    -webkit-transform: rotate(-45deg) scale(0);
+    transform: rotate(-45deg) scale(0);
+    transition: transform ease 0.25s;
+    will-change: transform;
+    position: absolute;
+    top: 12px;
+    left: 10px;
+}
+.checkbox input[type="checkbox"]:checked ~ label::before {
+    color: #7bbe72;
+}
+
+.checkbox input[type="checkbox"]:checked ~ label::after {
+    -webkit-transform: rotate(-45deg) scale(1);
+    transform: rotate(-45deg) scale(1);
+}
+
+.checkbox label {
+    min-height: 34px;
+    display: block;
+    padding-left: 40px;
+    margin-bottom: 0;
+    font-weight: normal;
+    cursor: pointer;
+    vertical-align: sub;
+}
+.checkbox label span {
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+.checkbox input[type="checkbox"]:focus + label::before {
+    outline: 0;
+}
+</style>
+
+
+
+<p hidden id="IDAtiv">{{ IDAtividade.id }}</p>
+
+<p hidden id="UsuarioCheck">{{ username }}</p>
+
+
+
+
+<div class="mx-auto">
+    <div class="bg-white rounded-lg shadow-sm p-5" style="margin-left:50px; margin-right:50px; margin-top: 50px">
+        <div class="tab-content">
+            <div id="nav-tab-card" class="tab-pane fade show active">
+                <div id="Atividades">
+                        <div class="jumbotron">
+                          <h1 class="display-4">Minhas Atividades</h1>
+                          <p class="lead">Abaixo serão listadas todas as atividades relacionadas com o seu usuário</p>
+                          <hr class="my-4">
+                             <div class="form-check">
+                            <input type="checkbox" checked="checked" class="form-check-input flipswitch" id="RemoverConcluídos">
+                            <span hidden></span>
+                          </div>
+                              <div class="loader" id="LoaderCarregar" style="height: 50px; width:50px; display: none"></div>
+
+                          <div id="TabelaAtivs" style="margin-top: 30px">
+                            <table id="TabelaAtividades" class="display" style=" width:100%; font-size:75%; overflow-y: hidden;"></table>
+                          </div>
+                        </div>
+
+
+
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script src="{% static 'js/civil/ScriptsMinhasAtividades.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/civil/jquery.dataTables.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/a1civ.css' %}"/>
+<script src="{% static 'js/civil/scriptsGerais.js' %}"></script>
+
+
+
+{%endblock%}

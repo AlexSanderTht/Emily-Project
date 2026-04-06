@@ -1,0 +1,79 @@
+/* Style gradiente de div's */
+.os-gl{
+    width: 1050px;
+    padding: 18px;
+    border-radius: 22px;
+    background: rgba(255,255,255,.32);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid rgba(255,255,255,.45);
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    color:#0f172a;
+}
+.os-title{font-size:26px;font-weight:800;margin:0 0 12px;}
+.kv{display:grid;grid-template-columns:110px 1fr;column-gap:12px;row-gap:6px;font-size:14px;}
+.kv .k{color:#475569;}
+.kv .v{font-weight:600;color:#111827;}
+.os-divider{border:0;border-top:1px solid rgba(255,255,255,.6);margin:14px 0;}
+.os-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+
+
+.btn-group.dropdown { width: 24.2%; }
+.btn-group.dropdown .btn,
+.btn-group.dropdown .dropdown-menu { width: 100%; }
+/* utilitários z-index */
+.z-top { position: relative; z-index: 1; }
+.z-menu { z-index: 1; }
+.btn-group.dropdown .dropdown-menu.show.z-menu { z-index: 1; }
+.btn-group.dropdown .dropdown-item { font-size: 14px;  text-align: center; }    
+
+.os-glass{
+    width: 400px;
+    padding: 18px;
+    border-radius: 22px;
+    background: rgba(255,255,255,.32);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid rgba(255,255,255,.45);
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    color:#0f172a;
+    position: relative;
+    z-index: 2100;
+}
+.os-title{font-size:26px;font-weight:800;margin:0 0 12px;}
+.kv{display:grid;grid-template-columns:110px 1fr;column-gap:12px;row-gap:6px;font-size:14px;}
+.kv .k{color:#475569;}
+.kv .v{font-weight:600;color:#111827;}
+.os-divider{border:0;border-top:1px solid rgba(255,255,255,.6);margin:14px 0;}
+.os-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+
+
+.stack-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; 
+    width: 100%;
+/* espaço entre os elementos */
+}
+
+
+
+/* Ensure Bootstrap modals overlay .os-glass (z-index:2100) and dropdowns (z-index:2700) */
+/* Increased values so included modals are rendered above glass cards and dropdowns */
+.modal { z-index: 8000 !important; }
+.modal-backdrop { z-index: 7990 !important; }
+
+/* Notes:
+    - z-index only works on positioned elements (modals are fixed by Bootstrap).
+    - If you prefer to keep modals default, lower .os-glass z-index instead (e.g. 1000).
+*/
+
+
+
+/* Botão miniatura  */
+.btn-mini {
+    font-size: 15px;
+    padding: 2px 6px;
+    width: 70px;
+}
+

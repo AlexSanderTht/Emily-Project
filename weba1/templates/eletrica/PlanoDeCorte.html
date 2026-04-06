@@ -1,0 +1,725 @@
+{% extends 'geral/base_plano.html' %}
+
+{% load static %}
+
+{% block head %}
+
+{% csrf_token %}
+
+<title>A1Pro | PLANO DE CORTE</title>
+
+{% endblock %}
+
+
+
+{% block main %}
+
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/PlanoDeCorte.js' %}"></script>
+
+<script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+
+<link rel="stylesheet" href="/static/css/eletrica/plano_de_corte.css"/>
+<style>
+.cabo-card {
+    background: #f8f9fa;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    text-align: center;
+    min-width: 4rem;
+    box-shadow: 0 1px 4px #0001;
+    display: grid;
+    place-items: left;
+    transition: border 0.2s, background 0.2s;
+    margin-bottom: 0;
+}
+
+.cabo-card.selected {
+    background: #e6fff2;
+    border: 2px solid #009966;
+    font-weight: bold;
+}
+.cabo-card:hover {
+    background: #f0f8ff;
+    cursor: pointer;
+}
+#bobinas-container {
+    display: grid;
+    gap: 10px;
+
+    margin-top: 10px;
+}
+#bobinas-container {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+#bobinas-container1 {
+    display: grid;
+    gap: 10px;
+
+    margin-top: 10px;
+}
+#bobinas-container1 {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.action-card {
+  background: #3b82f6  ;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  padding: 20px;
+  width: 120px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  padding: 16px;
+  min-width: 120px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+}
+
+
+/* Melhor espaçamento no mobile */
+@media (max-width: 768px) {
+  .action-card {
+    min-width: 100%;
+  }
+  .status-card {
+    min-width: 45%;
+  }
+}
+
+
+
+</style>
+<style>
+
+.container-fluid.d-flex.justify-content-center.animate__animated.animate__pulse { position: relative; z-index: 2500; }
+
+</style>
+<input type="hidden" id="rev_consolidado" value="{{ rev_consolidado }}">
+
+
+
+    <div class="text-justify border-bottom m-3">
+
+        <button class="btn btn-primary btn-warning position-absolute" onclick="window.history.go(-1)">Voltar</button>
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+    <!------------------------------------------------------ TÍTULO MÓDULO ------------------------------------------------>
+
+
+        <div class="row justify-content-center">
+
+            <div class="col-auto text-center animate__animated animate__pulse">
+
+                <h3 class="mb-0">PLANO DE CORTE</h3>
+                <p class="text-muted mb-0">REV: {{rev_consolidado}}</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!--------------------------------------------------------------------------------------------------------------------->
+
+
+
+
+
+
+
+
+
+    <!------------------------------------------------------- ABAS NAVEGAÇÃO ---------------------------------------------->
+
+    <div class="container-fluid d-flex justify-content-center">
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4" style="width: 40%; overflow: visible; height: 500;";>
+            <div class="card-header border-bottom-0 bg-white d-flex justify-content-center">
+
+                <nav>
+
+                    <div class="nav nav-tabs" id="nav-tab-pc" role="tablist">
+
+                        <a class="nav-item nav-link" id="nav-inicio-pc-tab" data-toggle="tab" href="#nav-inicio-pc" role="tab" aria-controls="nav-inicio-pc" aria-selected="false">
+
+                            <i class="fa-solid fa-bolt pr-3"></i>GERAÇÃO
+
+                        </a>
+
+                        <a class="nav-item nav-link" id="nav-dados-docs-pc-tab" data-toggle="tab" href="#nav-dados-docs-pc" role="tab" aria-controls="nav-dados-docs-pc" aria-selected="false">
+
+                            <i class="fa-solid fa-bolt pr-3"></i>DADOS DOCUMENTO
+
+                        </a>
+            <!---
+                        <a class="nav-item nav-link" id="nav-teste-tab" data-toggle="tab" href="#nav-teste" role="tab" aria-controls="nav-teste" aria-selected="false">
+
+                            <i class="fa-solid fa-code pr-3"></i>TESTE CLAUDE
+
+                        </a>
+--->
+                        <div class="nav-item dropdown">
+
+                            <a class="nav-link dropdown-toggle" id="nav-bobinas-tab" data-toggle="dropdown" data-boundary="viewport" data-container="body" href="#" role="button" aria-haspopup="true" aria-expanded="false" style="width: auto;">
+
+                                <i class="fa-solid fa-layer-group pr-2"></i>PLANO DE CORTE
+                                <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px; margin-left: 5px;" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M4 6h16v2H4V6zm0 5h12v2H4v-2zm0 5h16v2H4v-2z"/>
+                                </svg>
+                            </a>
+
+
+                            <div  class="dropdown-menu dropdown-menu-left shadow" aria-labelledby="nav-bobinas-tab" style="z-index: 99;">
+
+                                <a class="dropdown-item" id="nav-bobinas-livres-tab" href="#bobinas-livres" data-toggle="tab" tabindex="-1">
+
+                                    <i class="fa-solid fa-file pr-2"></i>BOBINAS LIVRES 
+
+                                </a>
+
+                                <a class="dropdown-item" id="nav-bobinas-consolidadas-tab" href="#bobinas-consolidadas" data-toggle="tab" tabindex="-1">
+
+                                    <i class="fa-solid fa-file pr-2"></i>BOBINAS CONSOLIDADAS
+
+                                </a>
+                               <a class="dropdown-item" id="EXEMPLOS" href="#EXEMPLO" data-toggle="tab" tabindex="-1">
+                                    <button onclick="window.open('http://127.0.0.1:8000/app/eletrica/a1pro/PlanoDeCorteA1/', '_blank')">
+                                       <i class="fa-solid fa-file pr-2"></i>EXEMPLO PEDIDO
+                                    </button>
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </nav>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!--------------------------------------------------------------------------------------------------------------------->
+
+
+    <div class="tab-content" id="nav-tabContent-pc">
+        <!--------------------------------------------   GERAÇÃO  ------------------------------------------------------------->
+     <div class="tab-pane fade" id="nav-inicio-pc" role="tabpanel" aria-labelledby="nav-inicio-pc-tab">
+        <div class="container-fluid mt-4">
+            <div class="row justify-content-center mx-auto" style="max-width: 1200px; margin: 0 auto;">
+                <div class="col-12 col-md-6 mb-3">
+                    <div class="bg-white shadow p-4 pc-card-sm" style="border-radius: 16px;">
+                        <h5 class="text-center mb-3">Gerar plano de corte</h5>
+                        <div class="d-flex flex-column align-items-center" style="gap: 8px;">
+                            <button type="button" class="btn btn-primary" style="background-color: #007bff; border: none; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 600;" onclick="GeneratePlanoDeCorte()">
+                                <i class="fa-solid"></i> Gerar 
+                            </button>
+                            <div class="status-card" style="width: 70%;">
+                                <div id="progress-bar-message-gerar" style="width:100%;">
+                                    <div class="pc-progress-wrapper" style="width:100%;">
+                                        <div class="pc-progress-bar" id="pc-bar-gerar" style="height:10px; width:0%; background: linear-gradient(90deg,#4e9af1,#007bff); border-radius:6px; transition:width .25s ease; box-shadow:0 0 4px #007bff66;"></div>
+                                    </div>
+                                    <div class="pc-progress-info mt-2" style="text-align:center; font-size:0.75rem; font-weight:600; letter-spacing:.5px; color:#555;">
+                                        <span id="pc-bar-gerar-label">AGUARDANDO...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 mb-3" style="z-index: 1;">
+                    <div class="bg-white shadow p-4 pc-card-sm" style="border-radius: 16px; z-index:1 ;">
+                        <h5 class="text-center mb-3">Consolidar plano de corte</h5>
+                        <div class="d-flex flex-column align-items-center" style="gap: 8px;">
+                            <button type="button" class="btn btn-primary" style="background-color: #007bff; border: none; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 600; line-height: 1.2;" onclick="ConsolidarPlanoDeCorte()">
+                                <i class="fa-solid"></i> Consolidar
+                            </button>
+                            <div class="status-card" style="width: 70%;">
+                                <div id="progress-bar-message-download" style="width:100%;">
+                                    <div class="pc-progress-wrapper" style="width:100%;">
+                                        <div class="pc-progress-bar" id="pc-bar-download" style="height:10px; width:0%; background: linear-gradient(90deg,#4e9af1,#007bff); border-radius:6px; transition:width .25s ease; box-shadow:0 0 4px #007bff66;"></div>
+                                    </div>
+                                    <div class="pc-progress-info mt-2" style="text-align:center; font-size:0.75rem; font-weight:600; letter-spacing:.5px; color:#555;">
+                                        <span id="pc-bar-download-label">AGUARDANDO...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="progress-box-plan-corte" class="mt-2 text-muted small" hidden>Processando...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     </div>
+
+
+       <!--------------------------------------------------------------------------------------------------------------------->
+
+
+
+
+
+
+
+        <!-------------------------------------------- DADOS DOCS ------------------------------------------------------------->
+
+        <div class="tab-pane fade" id="nav-dados-docs-pc" role="tabpanel" aria-labelledby="nav-dados-docs-pc-tab">
+            <div class="container-fluid d-flex justify-content-center mt-3">
+
+            <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 ">
+                <div class="row mt-4">
+
+                    <div class="col-3 text-right p-0">
+
+                        <label for="n_doc_dados_doc_a1_lista_cabos">N° Documento A1:</label>
+
+                    </div>
+
+                    <div class="col-8">
+
+                        <input type="text" class="form-control" id="n_doc_dados_doc_a1_lista_cabos">
+
+                    </div>
+
+                </div>
+
+                <div class="row mt-1">
+
+                    <div class="col-3 text-right p-0">
+
+                        <label for="n_doc_dados_doc_cliente_lista_cabos">N° Documento Cliente:</label>
+
+                    </div>
+
+                    <div class="col-8">
+
+                        <input type="text" class="form-control" id="n_doc_dados_doc_cliente_lista_cabos">
+
+                    </div>
+
+                </div>
+
+                <div class="row mt-1">
+
+                    <div class="col-3 text-right p-0">
+
+                        <label for="n_rev_dados_doc_a1_lista_cabos">Rev. A1:</label>
+
+                    </div>
+
+                    <div class="col-3">
+
+                        <input type="number" class="form-control" id="n_rev_dados_doc_a1_lista_cabos">
+
+                    </div>
+
+                </div>
+
+                <div class="row mt-1">
+
+                    <div class="col-3 text-right p-0">
+
+                        <label for="n_rev_dados_doc_cliente_lista_cabos">Rev. Cliente:</label>
+
+                    </div>
+
+                    <div class="col-3">
+
+                        <input type="number" class="form-control" id="n_rev_dados_doc_cliente_lista_cabos">
+
+                    </div>
+
+                </div>
+
+                <div class="row mt-1">
+
+                    <div class="col-3 text-right p-0">
+
+                        <label for="file_dados_doc_lista_cabos_capa">Capa:</label>
+
+                    </div>
+
+                    <div class="col-7">
+
+                        <input class="form-control form-control-lg" id="file_dados_doc_lista_cabos_capa" type="file" accept=".xlsx">
+
+                        <!-- File Status -->
+
+                        <small id="status_capa" class="text-muted">Sem Arquivos.</small>
+
+                    </div>
+
+                </div>
+
+                <div class="row mt-1">
+
+                    <div class="col-3 text-right p-0">
+
+                        <label for="file_dados_doc_lista_cabos_template">Template:</label>
+
+                    </div>
+
+                    <div class="col-8">
+
+                        <input class="form-control form-control-lg" id="file_dados_doc_lista_cabos_template" type="file" accept=".xlsx">
+
+                        <!-- File Status -->
+
+                        <small id="status_template" class="text-muted">Sem Arquivos.</small>
+
+                    </div>
+
+                </div>
+
+                <br>
+
+                <br>
+
+                <div class="modal-footer">
+
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-success" onclick="window.open('/app/eletrica/gerar_tipicos/TemplateListaMaterialCapa', '_self')">
+
+                            <i class="fa-solid fa-download pr-2"></i>Capa
+
+                        </button>
+
+                    </div>
+
+                    <div class="d-flex">
+
+                        <button type="button" class="btn btn-success" onclick="window.open('/app/eletrica/gerar_tipicos/TemplatePlanoDeCorteAbas', '_self')">
+
+                            <i class="fa-solid fa-download pr-2"></i> Temp. plano de corte
+
+                        </button>
+
+                    </div>
+
+                    <button type="button" class="btn btn-warning" onclick="validateAndSendDadosDocPlanoCorte()">Salvar</button>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <!--------------------------------------------------------------------------------------------------------------------->
+        <!-------------------------------------------- ABA TESTE CLAUDE ---------------------------------------
+        <div class="tab-pane fade" id="nav-teste" role="tabpanel" aria-labelledby="nav-teste-tab">
+            <div class="container-fluid mt-4">
+                <div class="row justify-content-center">
+                    <div class="col-12">
+                        <div class="bg-white shadow p-4" style="border-radius: 16px;">
+                            <h4 class="text-center mb-4"><i class="fa-solid fa-code text-primary"></i> Demonstração Claude AI</h4>
+                            <p class="text-center text-muted mb-4">Aqui estão algumas das minhas capacidades de programação:</p>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-primary text-white">
+                                            <h5 class="mb-0"><i class="fa-solid fa-calculator"></i> Calculadora Avançada</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <input type="text" id="calc-input" class="form-control mb-2" placeholder="Digite uma expressão matemática...">
+                                            <button class="btn btn-primary btn-sm" onclick="calcularExpressao()">Calcular</button>
+                                            <div id="calc-result" class="mt-2 p-2 bg-light rounded" style="min-height: 40px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-success text-white">
+                                            <h5 class="mb-0"><i class="fa-solid fa-tools"></i> Gerador de Dados</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <select id="data-type" class="form-control mb-2">
+                                                <option value="names">Nomes Fictícios</option>
+                                                <option value="emails">Emails</option>
+                                                <option value="dates">Datas</option>
+                                                <option value="numbers">Números</option>
+                                            </select>
+                                            <button class="btn btn-success btn-sm" onclick="gerarDados()">Gerar</button>
+                                            <div id="data-result" class="mt-2 p-2 bg-light rounded" style="min-height: 40px; max-height: 150px; overflow-y: auto;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h5 class="mb-0"><i class="fa-solid fa-chart-line"></i> Análise de Texto</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <textarea id="text-input" class="form-control mb-2" rows="3" placeholder="Digite um texto para análise..."></textarea>
+                                            <button class="btn btn-warning btn-sm" onclick="analisarTexto()">Analisar</button>
+                                            <div id="text-analysis" class="mt-2 p-2 bg-light rounded"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-info text-white">
+                                            <h5 class="mb-0"><i class="fa-solid fa-robot"></i> Automação DOM</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <button class="btn btn-info btn-sm mb-2" onclick="animarElementos()">Animar Elementos</button>
+                                            <button class="btn btn-info btn-sm mb-2" onclick="alterarTema()">Alterar Tema</button>
+                                            <div id="automation-demo" class="mt-2 p-2 bg-light rounded">
+                                                <div class="demo-box" style="width: 50px; height: 50px; background: #007bff; margin: 5px; transition: all 0.3s;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-secondary text-white">
+                                            <h5 class="mb-0"><i class="fa-solid fa-code"></i> Gerador de Código</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <select id="code-type" class="form-control mb-2">
+                                                <option value="function">Função JavaScript</option>
+                                                <option value="class">Classe Python</option>
+                                                <option value="sql">Query SQL</option>
+                                                <option value="css">Regra CSS</option>
+                                            </select>
+                                            <button class="btn btn-secondary btn-sm" onclick="gerarCodigo()">Gerar Código</button>
+                                            <pre id="code-result" class="mt-2 p-2 bg-dark text-light rounded" style="font-size: 12px; max-height: 150px; overflow-y: auto;"></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        <strong><i class="fa-solid fa-info-circle"></i> Sobre Claude:</strong>
+                                        Sou um assistente de IA que pode ajudar com programação, análise de código, debugging, 
+                                        arquitetura de software, explicações técnicas e muito mais. Esta aba demonstra apenas 
+                                        uma pequena parte do que posso fazer!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        -------------------------------------------------------------------------------------------------------------------->
+
+        <!-------------------------------------------- PLANO DE CORTE - BOBINAS LIVRES ---------------------------------------->
+
+       <div class="tab-pane fade" id="bobinas-livres" data-valor="1" role="tabpanel" aria-labelledby="nav-bobinas-livres-tab">
+            <div class="container-fluid d-flex mt-1" style="gap: 10px;">
+                <div class="d-flex flex-column justify-content-start mt-3">
+                <div class="d-flex flex-row flex-nowrap align-items-start" style="gap: 12px; overflow-x: auto; width: 70vw;">
+                {% include "eletrica/cad_carga/campo_bobina.html" with prefix="livre_" %}
+                </div>
+                <div class="bg-white shadow p-3 mt-3" style="width: 70vw; border-radius: 8px; min-height: 70vh; display: block;">
+                    <h5 class="text-center mb-3">BOBINAS LIVRES 🧵</h5>
+                    <div style="height: 650px;">
+                    <div id="bobinas-container" style="gap: 12px;">       
+                                {% for id_pk, coil_code, coil_comp, codigo_a1 in list_coils_livres %}
+                        <div class="p-2 bg-light border rounded text-center bobina-item align-items-center" onclick="onclickPlanoC({{id_pk}})" tabindex="0" style="font-size: 14px; display: flex; justify-content: space-around;" rev="LIVRE" data-codigo-a1="{{ codigo_a1 }}">
+                        {{ coil_code }}<br>
+                        <small class="text-muted">Comp. restante: <span class="text-success">{{ coil_comp }}</span></small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    </div>
+                     <div class="mt-3 d-flex justify-content-center gap-2" style="bottom: 0; position: relative">
+                            <button id="prevPage" class="btn btn-outline-primary btn-sm">Anterior</button>
+                            <span id="pageIndicator" class="align-self-center px-2"></span>
+                            <button id="nextPage" class="btn btn-outline-primary btn-sm">Próxima</button>
+                        </div>
+                        <div class="mt-3 d-flex justify-content-end">
+                            <button type="button" class="btn btn-success btn-sm py-1 px-3" onclick="DownloadPlanoDeCorte()">
+                            <i class="fa-solid fa-download"></i> Baixar Plano
+                            </button>
+                        </div>
+                </div>
+
+
+
+                  <div class="bg-white shadow p-3 mt-3" style="width: 70vw; border-radius: 8px; min-height: 10vh; display: block;">
+                    <h5 class="text-center mb-3">FILTRO DAS BOBINAS 🧾 </h5>
+                    {% include 'eletrica/Filtro_Plano.html' with prefix='livre_' %}
+                    </div>
+                </div>
+                
+                    
+                 <div class="bg-white shadow p-3" style="width: 22vw; border-radius: 8px; min-height: 85vh; flex-shrink: 0; margin-top: 15px; display: block;">
+                        <h5 class="text-center mb-3">CABOS DA BOBINA <span id="nomeB"></span></h5>
+                            <!--------------- Campo text cargas --------------->
+
+                           <div style="height: 100%;" >
+                            <div id="cabos-container" style="display: grid; gap: 10px; grid-template-columns: repeat(1, 1fr); margin-top: 10px;">
+                                </div>
+                           </div>
+
+                               
+                                    
+                                
+                                
+
+
+                            <div class="mt-3 d-flex justify-content-center gap-2" style="bottom: 0; position: relative ;bottom:  80px;">
+                            <button id="prevPage2" class="btn btn-outline-secondary btn-sm" disabled>Anterior</button>
+                            <span id="pageIndicator2" class="align-self-center px-2">1 de 1</span>
+                            <button id="nextPage2" class="btn btn-outline-secondary btn-sm" disabled>Próxima</button>
+                             </div>
+
+                     <!-- Campo text cargas -->
+
+                    
+        </div>
+        </div>
+            </div>
+        <!--------------------------------------------------------------------------------------------------------------------->
+
+        <!-------------------------------------------- PLANO DE CORTE - BOBINAS CONSOLIDADAS ---------------------------------->
+
+       <div class="tab-pane fade" id="bobinas-consolidadas" data-valor="2"  role="tabpanel" aria-labelledby="nav-bobinas-consolidadas-tab">
+            <div class="container-fluid d-flex mt-1" style="gap: 10px;">
+                <div class="d-flex flex-column justify-content-start mt-3">
+                <div class="d-flex flex-row flex-nowrap align-items-start" style="gap: 12px; overflow-x: auto; width: 70vw;">
+                {% include "eletrica/cad_carga/campo_bobina.html" with prefix="consolidada_" %}
+                </div> 
+                <div class="bg-white shadow p-3 mt-3" style="width: 70vw; border-radius: 8px; min-height: 70vh; display: block;">
+                    <h5 class="text-center mb-3">BOBINAS CONSOLIDADAS 🧵</h5>
+                    <div style="height: 650px;">
+                    <div id="bobinas-container1" style="gap: 12px;">       
+                                {% for id_pk, coil_code, coil_comp, codigo_a1 in list_coils_consolidado %}
+                        <div class="p-2 bg-light border rounded text-center bobina-item align-items-center" onclick="onclickPlanoC({{id_pk}})" tabindex="0" style="font-size: 14px; display: flex; justify-content: space-around;" rev="CONSOLIDADO" data-codigo-a1="{{ codigo_a1 }}">
+                        {{ coil_code }}<br>
+                        <small class="text-muted">Comp. restante: <span class="text-success">{{ coil_comp }}</span></small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    </div>
+
+                    <div class="mt3- d-flex justify-content-center gap-2" style="bottom: 0; position: relative">
+                        <button id="prevPage1" class="btn btn-outline-primary btn-sm">Anterior</button>
+                        <span id="pageIndicator1" class="align-self-center px-2"></span>
+                    <button id="nextPage1" class="btn btn-outline-primary btn-sm">Próxima</button>
+                    </div>
+
+                    <div class="mt-3 d-flex justify-content-end">
+                        <button type="button" class="btn btn-success btn-sm py-1 px-3" onclick="DownloadPlanoDeCorte()">
+                        <i class="fa-solid fa-download"></i> Baixar Plano
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white shadow p-3 mt-3" style="width: 70vw; border-radius: 8px; min-height: 10vh; display: block;">
+                    <h5 class="text-center mb-3">FILTRO DAS BOBINAS 🧾 </h5>
+                    {% include 'eletrica/Filtro_Plano.html' with prefix='consolidada_' %}
+
+                    </div>
+
+
+                </div>
+                
+                    <div class="bg-white shadow p-3" style="width: 22vw; border-radius: 8px; min-height: 85vh; flex-shrink: 0; margin-top: 15px; display: block;">
+                        <h5 class="text-center mb-3">CABOS DA BOBINA <span id="nomeA"></span></h5>
+                            <!--------------- Campo text cargas --------------->
+
+                           <div style="height: 100%;" >
+                            <div id="cabos-container1" style="display: grid; gap: 10px; grid-template-columns: repeat(1, 1fr); margin-top: 10px;">
+                                </div>
+
+                                </div>
+
+                            <div class="mt-3 d-flex justify-content-center gap-2" style="bottom: 0; position: relative; bottom:  80px;">
+                            <button id="prevPage3" class="btn btn-outline-secondary btn-sm" disabled>Anterior</button>
+                            <span id="pageIndicator3" class="align-self-center px-2">1 de 1</span>
+                            <button id="nextPage3" class="btn btn-outline-secondary btn-sm" disabled>Próxima</button>
+                        </div>
+                            </div><!-- Campo text cargas -->
+
+                    
+                    </div>
+        </div>
+                
+<!--------------------------------------------------------------------------------------------------------------------->
+
+<!-------------------------------------------- PLANO DE CORTE - ABA PEDIDA---------------------------------->
+
+        <div class="tab-pane fade" id="EXEMPLO" role="tabpanel" aria-labelledby="EXEMPLOS">
+              <div class="container-fluid d-flex justify-content-center">
+                <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-1 mx-2 d-flex justify-content-center align-items-center" style="width: 60%; height: 129px;">
+                    EXEMPLO
+                </div>
+
+            </div>
+
+
+
+            <div class="container-fluid d-flex justify-content-center">
+
+                <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-1 mx-2 d-flex justify-content-center align-items-center" style="width: 25%; height: 80px;">
+
+                </div>
+
+                <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-1 mx-2 d-flex justify-content-center align-items-center" style="width: 25%; height: 80px;">
+
+                </div>
+            </div>
+        </div>
+
+
+    <div id="overlay-bloqueio" style="
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+            cursor: wait;
+    ">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: #fff; font-size: 2rem;">
+            Processando...
+        </div>
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% load static %}
+{% block search_bar_func %}
+<div class="col-sm-9">
+    <div class="form-group mb-4">
+        <td  for="tipo_os">
+            Pesquisa
+            <div class="divBuscaAcess">
+                <input type="search" class="txtBuscaAcess" placeholder="Buscar..." id="func-search" onkeyup="FilterFuncaoGeral(this.value)" title="Pesquise aqui sua Carga"/>
+                <img src="{% static 'img/search3.png' %}" id="btnBuscaAcess" alt="Buscar" style="width:20px;height:20px;object-fit:contain;cursor:pointer;" />
+            </div>
+            <br>
+            <select id="func-select" class="form-control" multiple>
+            </select>
+        </td>
+    </div>
+</div>
+<script>
+
+    function clean_all_forms_func(){
+        document.getElementById('func-search').value = ""
+        document.getElementById('func-cod').value = ""
+        document.getElementById('func-desc').value = ""
+        document.getElementById('func-tensao').value = ""
+        $('#func-type').val("none")
+        $('#func-type-cabo').val("none")
+        $('#func-select').val("")
+    }
+
+</script>
+{% endblock search_bar_func %}
+

@@ -1,0 +1,37 @@
+.estl_modal{
+    border-radius: 15px;
+    background: url('img/679.jpg')no-repeat;
+    background-size: 100%;
+    height: 30%;
+}
+.tamanho{
+    width: 110%;
+}
+.efeitbotl{
+  height: 40px;
+  border-radius: 10px;
+}
+.efeitbote{
+  background:#f58c32;
+  color: #FFFFFF;
+  border-radius: 10px ;
+  height: 40px;
+}
+.efeitbote:hover{
+background-color: #ff9320;
+transition: 0.1s;
+}
+
+.input-a1style{
+   cursor: pointer ;
+   border-radius: 10px;
+}
+.input-a1style:hover{
+border-color: #f58c32;
+box-shadow:  #f58c32;
+}
+
+.form-control:focus {
+  border-color: #f58c32;
+  box-shadow: inset 0 1px 1px rgba(0, 255, 140, 0), 0 0 8px rgba(255,127, 80, 1 );
+}

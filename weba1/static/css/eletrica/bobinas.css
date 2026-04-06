@@ -1,0 +1,74 @@
+/* Plano de Corte background — same image used by a1pro (login.css) */
+html, body { height: 100%; margin: 0; }
+html,body {
+    background: url('img/Espaço Inovação.jpg') center center/cover no-repeat fixed;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Barra fixa e pílula ao lado do Voltar */
+.mini-toolbar{
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 1060;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mini-glass{
+    display: inline-flex;
+    align-items: center;
+    height: 31px;            /* altura do btn-sm do Bootstrap */
+    padding: 0 14px;         /* apenas lateral para alinhar com o botão */
+    border-radius: 16px;     /* pílula mais redonda */
+    background: rgba(255,255,255,.32);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border: 1px solid rgba(255,255,255,.5);
+    box-shadow: 0 6px 16px rgba(0,0,0,.14);
+    font-size: 14px;
+    line-height: 1;
+    color: #111827;
+    white-space: nowrap;
+}
+
+.os-glass{
+        /* sem largura fixa para poder usar em qualquer div */
+        padding: 18px;
+        background: rgba(255,255,255,.32);
+        backdrop-filter: blur(16px) saturate(140%);
+        -webkit-backdrop-filter: blur(16px) saturate(140%);
+        border: 1px solid rgba(255,255,255,.45);
+        box-shadow: 0 10px 30px rgba(0,0,0,.12);
+        color:#0f172a;
+        z-index: 1;
+    }
+    /* modificadores opcionais */
+    .os-glass--w-400{ width: 400px; }
+    .os-glass--full{ width: 100%; }
+    .os-glass--tight{ padding: 10px; }
+    .os-glass--no-pad{ padding: 0; }
+    .os-title{font-size:26px;font-weight:800;margin:0 0 12px;}
+    .kv{display:grid;grid-template-columns:110px 1fr;column-gap:12px;row-gap:6px;font-size:14px;}
+    .kv .k{color:#475569;}
+    .kv .v{font-weight:600;color:#111827;}
+    .os-divider{border:0;border-top:1px solid rgba(255,255,255,.6);margin:14px 0;}
+    .os-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+    /* utilidades (fallback p/ Bootstrap 4) */
+    .position-relative{ position: relative !important; }
+    .z-3{ z-index: 3 !important; }
+
+    /* Ensure dropdown menus float above glass panels */
+    .btn-group.dropdown { position: relative; }
+    .btn-group.dropdown .dropdown-menu {
+        position: absolute !important;
+        top: calc(100% + 6px) !important;
+        left: 0 !important;
+        z-index: 5 !important;
+        min-width: 10rem; /* similar to bootstrap default */
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    /* If some parent sets overflow, try to avoid clipping (best effort) */
+    .dropdown.show > .dropdown-menu { display: block; }

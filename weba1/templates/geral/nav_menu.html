@@ -1,0 +1,446 @@
+{% load poll_extras %}
+{% verify_tool as user_info %}
+<div class="l-navbar" id="navbar">
+    <nav class="navsid" >
+        <div>
+            <div class="nav__brand">
+                <a href="/app" class="nav__logo collapse__sublink1" id="home">
+                    <img id="home" src="/static/img/a1teste.png">
+                </a>
+            </div>
+
+            <div class="nav__list" id="nav__list">
+                    {% if user_info.A1RevExcel or user_info.A1RevPdf or user_info.A1MatConsultas %}
+                    <div class="nav__link collapse_nav " id="Geral">
+                        <img src="/static/js/ionicons_5_1_2/src/svg/home-outline.svg" class="nav__icon">
+                        <span class="nav__name">Geral</span>
+                        <ion-icon name="chevron-down-outline" class="collapse__link" id="icon_geral1"></ion-icon>
+                        <ul class="collapse__menu" id="geral1">
+                            {% if user_info.A1RevExcel %}
+                                <a class="collapse__sublink" href="/app/geral/a1rev/" >A1RevExcel</a>
+                            {% endif %}
+                            {% if user_info.A1RevPdf %}
+                                <a class="collapse__sublink" href="/app/geral/a1revpdf/">A1RevPDF</a>
+                                <a class="collapse__sublink" href="/app/geral/a1pdftotext/">A1PDFText</a>
+                            {% endif %}
+                            {% if user_info.A1MatConsultas %}
+                                <a class="collapse__sublink" href="/app/geral/a1matconsulta/">A1MatConsultas</a>
+                            {% endif %}
+                            {% if user_info.A1Aniversariantes %}
+                                <a class="collapse__sublink" href="/app/geral/a1aniversariantes/">Aniversariantes A1</a>
+                            {% endif %}
+                            {% if user_info.A1Layout %}
+                                <a class="collapse__sublink" href="/app/engenharia/a1recognize/1/">Layout A1</a>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+<!--                Ferramenta Comentada por falta de uso e conflitos na implantação do JQuery 3.6.0-->
+<!--                #{% if user_info.A1DashGateway %}-->
+<!--                    <div class="nav__link collapse_nav" id="Dashboard">-->
+<!--                        <ion-icon name="pie-chart-outline" class="nav__icon"></ion-icon>-->
+<!--                        <span class="nav__name">Dashboards</span>-->
+<!--                        <ion-icon name="chevron-down-outline" class="collapse__link" id="icon_dashboard1"></ion-icon>-->
+<!--                        <ul class="collapse__menu" id="dashboard1">-->
+<!--                            #{% if user_info.A1DashGateway %}-->
+<!--                                <a class="collapse__sublink" href="/app/dashboards/a1gateway/">A1 Gateway</a>-->
+<!--                            #{% endif %}-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                #{% endif %}-->
+
+                {% if user_info.A1Listas or user_info.A1MatList or user_info.A1Tip or user_info.ConvertDocs %}
+                    <div class="nav__link collapse_nav " id="Engenharia">
+                        <img src="/static/js/ionicons_5_1_2/src/svg/podium-outline.svg" class="nav__icon">
+                        <span class="nav__name">Engenharia</span>
+                        <ion-icon name="chevron-down-outline" class="collapse__link" id="icon_engenharia1"></ion-icon>
+                        <ul class="collapse__menu" id="engenharia1">
+                            {% if user_info.A1Listas %}
+                                <a class="collapse__sublink" href="/app/engenharia/a1list/" >A1Listas</a>
+                            {% endif %}
+                            {% if user_info.A1MatList %}
+                                <a class="collapse__sublink" href="/app/engenharia/a1mat_list/">A1MatList</a>
+                            {% endif %}
+                            {% if user_info.A1Tip %}
+                                <a class="collapse__sublink" href="/app/engenharia/a1tip/">A1Tip</a>
+                            {% endif %}
+                            {% if user_info.ConvertDocs %}
+                                <a class="collapse__sublink" href="/app/engenharia/convert_docs/">ConvertDoc</a>
+                            {% endif %}
+
+                            {% if user_info.A1Review %}
+                                <a class="collapse__sublink" href="/app/engenharia/review/">A1Review</a>
+                            {% endif %}
+
+                            {% if user_info.A1NewCodes %}
+                                <a class="collapse__sublink" href="/app/engenharia/a1newcodes/">A1NewCodes</a>
+                            {% endif %}
+                            {% if user_info.A1DashLicenca %}
+                                <a class="collapse__sublink" href="/app/dashboards/licenca/">Dashboard</a>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if user_info.A1ArtificialIntelligence %}
+                    <div class="nav__link collapse_nav" id="IAs">
+                        <img src="/static/js/ionicons_5_1_2/src/svg/logo-android.svg" class="nav__icon">
+                        <span class="nav__name">IA's</span>
+                        <ion-icon name="chevron-down-outline" class="collapse__link" id="icon_eletrica1"></ion-icon>
+                        <ul class="collapse__menu" id="IAs1">
+                            <a class="collapse__sublink" href="/app/geral/a1pdfchatbot/">PDF ChatBot</a>
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if user_info.A1SGQ %}
+                    <div class="nav__link collapse_nav" id="sgq">
+                        <img src="/static/js/ionicons_5_1_2/src/svg/checkmark-circle-sharp.svg" class="nav__icon">
+                        <span class="nav__name">SGQ </span>
+                        <ion-icon name="chevron-down-outline" class="collapse__link" id="icon_sgq"></ion-icon>
+                        <ul class="collapse__menu" id="sgq1">
+                            <a class="collapse__sublink" href="/app/sgq/index/menu-responsavel/">SGQ Responsavel</a>
+
+                            {% if user_info.A1SGQAdministrador %}
+                                <a class="collapse__sublink" href="/app/sgq/index/menu-solicitante/">SGQ Solicitante</a>
+                                <a class="collapse__sublink" href="/app/sgq/rnc/explorer">RNC Detalhes</a>
+                                <a class="collapse__sublink" href="/app/sgq/bo/explorer">BO Detalhes</a>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                {% endif %}
+
+                {% if user_info.A1Histogramas %}
+                    <div class="nav__link collapse_nav" id="PMO">
+                        <img src="/static/js/ionicons_5_1_2/src/svg/calendar-outline.svg" class="nav__icon">
+                        <span class="nav__name">PMO</span>
+                        <ion-icon name="chevron-down-outline" class="collapse__link" id="icon_eletrica1"></ion-icon>
+                        <ul class="collapse__menu" id="PMO">
+                            {% if user_info.A1HistAprovacoes %}
+                            <a class="collapse__sublink" href="/app/a1hist/aprovacao_histograma/">Aprovação</a>
+                            {% endif %}
+                            {% if user_info.A1HistControleOS %}
+                            <a class="collapse__sublink" href="/app/a1hist/controle_os/">Controle de OS</a>
+                            {% endif %}
+                            {% if user_info.A1Histogramas %}
+                            <a class="collapse__sublink" href="/app/a1hist/histogramas/">Histogramas</a>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if user_info.A1Pro %}
+                    <div class="nav__link collapse_nav" id="eletrica">
+                        <img src="/static/js/ionicons_5_1_2/src/svg/flash-outline.svg" class="nav__icon">
+                        <span class="nav__name">Elétrica</span>
+                        <ion-icon name="chevron-down-outline" class="collapse__link" id="icon_eletrica1"></ion-icon>
+                        <ul class="collapse__menu" id="eletrica1">
+                            {% if user_info.A1Pro or user_info.GerarTipicos or user_info.PriceCalcCabos or user_info.A1ProUserCtrl or user_info.A1InfoCabos %}
+                                <div class="nav__link1 collapse_nav">
+                                    <img src="/static/js/ionicons_5_1_2/src/svg/file-tray-stacked-outline.svg" class="nav__icon">
+                                    <span class="nav__name">A1Pro</span>
+                                    <ion-icon name="chevron-down-outline" class="collapse__link"></ion-icon>
+                                    <ul class="collapse__menu_t">
+                                        {% if user_info.A1Pro %}
+                                            <a class="collapse__sublink" href="/app/eletrica/a1pro/">A1 Pro</a>
+                                        {% endif %}
+                                        {% if user_info.GerarTipicos %}
+                                            <a class="collapse__sublink" href="/app/eletrica/gerar_tipicos/">Gerar Lista de Materiais</a>
+                                        {% endif %}
+
+                                        {% if user_info.PriceCalcCabos %}
+                                            <a class="collapse__sublink" href="/app/calc_cabos/price_cable/">Preço de Cabos</a>
+                                        {% endif %}
+
+                                        {% if user_info.GerenciarTipicos %}
+                                            <a class="collapse__sublink" href="/app/eletrica/GerenciarTipicos/">Gerenciamento Típicos</a>
+                                        {% endif %}
+
+                                        {% if user_info.A1ProUserCtrl %}
+                                            <a class="collapse__sublink" href="/app/eletrica/ControleUser/redirect">Controle Usuário</a>
+                                        {% endif %}
+
+                                        {% if user_info.A1InfoCabos %}
+                                            <a class="collapse__sublink" href="/app/eletrica/InfoCabos/">InfoCabos</a>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                            {% if user_info.A1CalcCabos or user_info.A1CalcCabosMT or user_info.ProjectControlCalcCabos %}
+                                <div class="nav__link1 collapse_nav">
+                                    <img src="/static/js/ionicons_5_1_2/src/svg/calculator-outline.svg" class="nav__icon">
+                                    <span class="nav__name">Calculadoras</span>
+                                    <ion-icon name="chevron-down-outline" class="collapse__link"></ion-icon>
+                                    <ul class="collapse__menu_t">
+                                        {% if user_info.A1CalcCabos %}
+                                            <a class="collapse__sublink" href="/app/calc_cabos/a1calccabos/">Calculadora BT</a>
+                                        {% endif %}
+
+                                        {% if user_info.A1CalcCabosMT %}
+                                            <a class="collapse__sublink" href="/app/calc_cabos/a1calccabosmt/">Calculadora MT</a>
+                                        {% endif %}
+
+                                        {% if user_info.ProjectControlCalcCabos %}
+                                            <a class="collapse__sublink" href="/app/calc_cabos/projectcontrolcc/">Controle de Projetos</a>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if user_info.A1Energia_ %}
+                    <div class="nav__link collapse_nav" id="energia">
+                        <img src="/static/js/ionicons_5_1_2/src/svg/flash-outline.svg" class="nav__icon">
+                        <span class="nav__name">Energia</span>
+                        <ion-icon name="chevron-down-outline" class="collapse__link" id="icon_energia1"></ion-icon>
+                        <ul class="collapse__menu" id="energia1">
+                            {% if user_info.A1Energia %}
+                            <a class="collapse__sublink" href="/app/energia/a1energia/">A1Energia</a>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if user_info.A1CIVCadastrarAtividade or user_info.A1CIVAtividades or user_info.A1CIVIndicadoresVerificacao or user_info.A1CIVAtividades or user_info.A1CIVNotasAtividades or user_info.A1CIVRelatorioProgresso or user_info.A1CIVGerenciamento %}
+                    <div class="nav__link collapse_nav" id="civil">
+                        <img src="/static/js/ionicons_5_1_2/src/svg/construct-outline.svg" class="nav__icon">
+                        <span class="nav__name">Civil</span>
+                        <ion-icon name="chevron-down-outline" class="collapse__link" id="icon_civil1"></ion-icon>
+                        <ul class="collapse__menu" id="civil1">
+                            {% if user_info.A1CIVCadastrarAtividade or user_info.A1CIVAtividades %}
+                                <div class="nav__link1 collapse_nav">
+                                    <img src="/static/js/ionicons_5_1_2/src/svg/create-outline.svg" class="nav__icon">
+                                    <span class="nav__name">Atividades</span>
+                                    <ion-icon name="chevron-down-outline" class="collapse__link"></ion-icon>
+                                    <ul class="collapse__menu_t">
+                                        {% if user_info.A1CIVCadastrarAtividade %}
+                                        <a class="collapse__sublink" href="/app/civil/CadastrarAtividade/">Cadastrar Atividade</a>
+                                        {% endif %}
+                                        {% if user_info.A1CIVAtividades %}
+                                        <a class="collapse__sublink" href="/app/civil/ListaAtividades/">Lista de Atividades</a>
+                                        {% endif %}
+                                        <a class="collapse__sublink" href="/app/civil/MinhasAtividades/">Minhas Atividades</a>
+                                    </ul>
+                                </div>
+                            {% endif %}
+
+                            {% if user_info.A1CIVIndicadoresVerificacao or user_info.A1CIVAtividades or user_info.A1CIVNotasAtividades or user_info.A1CIVRelatorioProgresso %}
+                                <div class="nav__link1 collapse_nav">
+                                    <img src="/static/js/ionicons_5_1_2/src/svg/file-tray-stacked-outline.svg" class="nav__icon">
+                                    <span class="nav__name">Relatórios</span>
+                                    <ion-icon name="chevron-down-outline" class="collapse__link"></ion-icon>
+                                    <ul class="collapse__menu_t">
+                                        {% if user_info.A1CIVIndicadoresVerificacao %}
+                                            <a class="collapse__sublink" href="/app/civil/IndicadoresVerificacao/">Indicadores Verificação <br>(Gerais)</a>
+                                        {% endif %}
+                                        {% if user_info.A1CIVAtividades %}
+                                            <a class="collapse__sublink" href="/app/civil/IndicadoresVerificacaoPessoal/">Indicadores Verificação <br>(Pessoal)</a>
+                                        {% endif %}
+                                        {% if user_info.A1CIVNotasAtividades %}
+                                            <a class="collapse__sublink" href="/app/civil/NotasAtividades/">Notas das Atividades</a>
+                                        {% endif %}
+                                        {% if user_info.A1CIVRelatorioProgresso %}
+                                            <a class="collapse__sublink" href="/app/civil/RelatoriosProgresso/">Progresso</a>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+
+                            {% if user_info.A1CIVGerenciamento %}
+                                <div class="nav__link1 collapse_nav">
+                                    <img src="/static/js/ionicons_5_1_2/src/svg/settings-outline.svg" class="nav__icon">
+                                    <span class="nav__name">Configurações</span>
+                                    <ion-icon name="chevron-down-outline" class="collapse__link"></ion-icon>
+                                    <ul class="collapse__menu_t">
+                                        <a class="collapse__sublink" href="/app/civil/GerenciarOrdensDeServico/">Gerenciar   <br>Ordens de Serviço</a>
+                                        <a class="collapse__sublink" href="/app/civil/GerenciarLVEVerificacao/">LVEs</a>
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if user_info.A1FlexVao or user_info.A1FlexLira or user_info.A1FlexRigidez or user_info.A1FlexDil or user_info.A1FlexSup or user_info.A1FlexVaso or user_info.A1FlexVasoExt or user_info.A1FlexControleOS or user_info.A1FlexSis or user_info.A1FlexReq or user_info.A1FlexDash or user_info.A1FlexPesquisarSistemas or user_info.A1FlexPesquisarLinhas or user_info.A1FlexPesquisarSuportes or user_info.A1FlexUploadModelo %}
+                    <div class="nav__link collapse_nav" id="flexibilidade">
+                        <img src="/static/js/ionicons_5_1_2/src/svg/git-merge-outline.svg" class="nav__icon">
+                        <span class="nav__name">Análise Estrutural</span>
+                        <ion-icon name="chevron-down-outline" class="collapse__link" id="icon_flexibilidade1"></ion-icon>
+                        <ul class="collapse__menu" id="flexibilidade1">
+                            {% if user_info.A1FlexVao or user_info.A1FlexLira or user_info.A1FlexRigidez or user_info.A1FlexDil or user_info.A1FlexSup or user_info.A1FlexVaso or user_info.A1FlexVasoExt %}
+                            <div class="nav__link1 collapse_nav">
+                                <img src="/static/js/ionicons_5_1_2/src/svg/calculator-outline.svg" class="nav__icon">
+                                <span class="nav__name">Apoio Técnico</span>
+                                <ion-icon name="chevron-down-outline" class="collapse__link"></ion-icon>
+                                <ul class="collapse__menu_t">
+                                    {% if user_info.A1FlexVao %}
+                                        <a class="collapse__sublink" href="/app/flexibilidade/vao/">> Vão de Suportes</a>
+                                    {% endif %}
+                                    {% if user_info.A1FlexLira %}
+                                        <a class="collapse__sublink" href="/app/flexibilidade/lira/">> Liras</a><br>
+                                    {% endif %}
+                                    {% if user_info.A1FlexRigidez %}
+                                        <a class="collapse__sublink" href="/app/flexibilidade/rigidez/">> Rigidez de Bocais</a>
+                                    {% endif %}
+                                    {% if user_info.A1FlexDil %}
+                                        <a class="collapse__sublink" href="/app/flexibilidade/dil/">> Dilatação Térmica</a>
+                                    {% endif %}
+                                    {% if user_info.A1FlexSup %}
+                                        <a class="collapse__sublink" href="/app/flexibilidade/sup/">> Flexíveis</a>
+                                    {% endif %}
+                                    {% if user_info.A1FlexVaso %}
+                                        <a class="collapse__sublink" href="/app/flexibilidade/pi/">> Tubos Pressão Interna</a>
+                                    {% endif %}
+                                    {% if user_info.A1FlexVasoExt %}
+                                        <a class="collapse__sublink" href="/app/flexibilidade/vasoext/">> Vasos Pressão Externa</a>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                            {% if user_info.A1FlexSis or user_info.A1FlexReq or user_info.A1FlexDash %}
+                                <div class="nav__link1 collapse_nav">
+                                    <img src="/static/js/ionicons_5_1_2/src/svg/file-tray-stacked-outline.svg" class="nav__icon">
+                                    <span class="nav__name">Gerenciamento</span>
+                                    <ion-icon name="chevron-down-outline" class="collapse__link" ></ion-icon>
+                                    <ul class="collapse__menu_t">
+                                        {% if user_info.A1FlexControleOS %}
+                                        <a class="collapse__sublink" href="/app/flexibilidade/ControleOS/">> Controle Acesso OS</a>
+                                        {% endif %}
+                                        {% if user_info.A1FlexSis %}
+                                        <a class="collapse__sublink" href="/app/flexibilidade/sistemas/">> Controle de Sistemas</a>
+                                        {% endif %}
+                                        {% if user_info.A1FlexDash %}
+                                            <a class="collapse__sublink" href="/app/flexibilidade/flxdash/">> Dashboards Flex</a>
+                                        {% endif %}
+                                        {% if user_info.A1FlexReq %}
+                                        <a class="collapse__sublink" href="/app/flexibilidade/requisicao/">> Requisições</a>
+                                    {% endif %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                            {% if user_info.A1FlexPesquisarSistemas or user_info.A1FlexPesquisarLinhas or user_info.A1FlexPesquisarSuportes or user_info.A1FlexUploadModelo %}
+                                <div class="nav__link1 collapse_nav">
+                                    <img src="/static/js/ionicons_5_1_2/src/svg/cube-outline.svg" class="nav__icon">
+                                    <span class="nav__name"> Relatórios 3D</span>
+                                    <ion-icon name="chevron-down-outline" class="collapse__link"></ion-icon>
+                                    <ul class="collapse__menu_t">
+                                        {% if user_info.A1FlexPesquisarSistemas %}
+                                            <a class="collapse__sublink" href="/app/flexibilidade/PesquisarSistemas/">> Pesquisar Report 3D</a>
+                                        {% endif %}
+                                        {% if user_info.A1FlexUploadModelo %}
+                                            <a class="collapse__sublink" href="/app/flexibilidade/UploadModelo/">> Upload Sistema</a>
+                                        {% endif %}
+                                        {% if user_info.A1FlexPesquisarSuportes %}
+                                            <a class="collapse__sublink" href="/app/flexibilidade/DefinicaoSuportes/">> Definição Suportes <br> Primários</a>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if user_info.A1ListDoc or user_info.A1ListDocDash or user_info.RoboDoc or user_info.RobodocDash or user_info.A1Templates or user_info.A1DocumentacaoCtrl %}
+                    <div class="nav__link collapse_nav " id="documentacao">
+                        <img src="/static/js/ionicons_5_1_2/src/svg/document-text-outline.svg" class="nav__icon">
+                        <span class="nav__name">Documentação</span>
+                        <ion-icon name="chevron-down-outline" class="collapse__link" id="icon_documentacao1"></ion-icon>
+                        <ul class="collapse__menu" id="documentacao1">
+
+                            {% if user_info.RoboDoc %}
+                                <a class="collapse__sublink" href="/app/documentacao/robodoc/">RoboDoc</a><br>
+
+                            {% endif %}
+                            {% if user_info.A1Templates %}
+                                <a class="collapse__sublink" href="/app/documentacao/robodoc_verified/">RoboDoc Verif. (Teste)</a><br>
+                                <a class="collapse__sublink" href="/app/documentacao/templates_config/">Templates</a>
+                            {% endif %}
+
+                            {% if user_info.A1DocumentacaoCtrl %}
+                            <div class="nav__link1 collapse_nav">
+                                    <img src="/static/js/ionicons_5_1_2/src/svg/file-tray-stacked-outline.svg" class="nav__icon">
+                                    <span class="nav__name">Gerenciamento</span>
+                                    <ion-icon name="chevron-down-outline" class="collapse__link" ></ion-icon>
+                                    <ul class="collapse__menu_t">
+                                        <a class="collapse__sublink" href="/app/documentacao/tela_controle_campos_green/" title="Tela de Controle de Campos Green">• Campos Greendocs Verif.</a>
+                                        <a class="collapse__sublink" href="/app/documentacao/tela_controle_requested_docs/" title="Requisicoes">• Requisições</a>
+                                        <a class="collapse__sublink" href="/app/documentacao/tela_controle_tipo_item/" title="Tipo Item">• Tipo Item</a>
+                                        <a class="collapse__sublink" href="/app/documentacao/tela_controle_projetos/" title="Projetos">• Projetos</a>
+                                        <a class="collapse__sublink" href="/app/documentacao/tela_greendocs_id/" title="Id Greendocs">• ID Greendocs</a>
+                                        <a class="collapse__sublink" href="/app/documentacao/tela_os_projeto/" title="Id Greendocs">• OS Projeto</a>
+                                        {% if user_info.A1ListDoc %}
+                                            <a class="collapse__sublink" href="/app/documentacao/listdoc/">• ListDoc</a><br>
+                                        {% endif %}
+                                        {% if user_info.A1ListDocDash %}
+                                            <a class="collapse__sublink" href="/app/documentacao/listdoc_dashboard/">• ListDoc (DashBoards)</a><br>
+                                        {% endif %}
+                                        {% if user_info.RobodocDash %}
+                                            <a class="collapse__sublink" href="/app/documentacao/robodoc_dashboard/">• RoboDoc (DashBoards)</a><br>
+                                        {% endif %}
+                                    </ul>
+                            </div>
+                            {% endif %}
+
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if user_info.A1HubWorkload or user_info.A1HubDash or user_info.A1HubControleUsuarios %}
+                    <div class="nav__link collapse_nav " id="a1hub">
+                        <img src="/static/js/ionicons_5_1_2/src/svg/stats-chart-outline.svg" class="nav__icon">
+                        <span class="nav__name">A1Hub</span>
+                        <ion-icon name="chevron-down-outline" class="collapse__link" id="icon_a1hub1"></ion-icon>
+                        <ul class="collapse__menu" id="a1hub">
+                            {% if user_info.A1StatisticsFirewall %}
+                            <a class="collapse__sublink" href="/app/a1hub/manage_log_firewall/">A1Logs Firewall</a>
+                            {% endif %}
+                            <a class="collapse__sublink" href="/app/a1hub/manage_tasks/">Gerenciamento Tasks</a>
+                            <a class="collapse__sublink" href="/app/a1hub/manage_name_tasks/">Name Tasks</a>
+                            {% if user_info.A1HubWorkload %}
+                            <a class="collapse__sublink" href="/app/a1hub/hub_workload/">Lançar Workload</a>
+                            {% endif %}
+                            {% if user_info.A1HubDash %}
+                                <a class="collapse__sublink" href="/app/a1hub/hub_dash/">Dashboard Workload</a>
+                            {% endif %}
+                            {% if user_info.A1HubControleUsuarios %}
+                                <a class="collapse__sublink" href="/app/a1hub/controle_usuarios/">Controle Acesso Usuários</a>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if user_info.A1QRCode %}
+                    <div class="nav__link collapse_nav" id="a1qrcode">
+                        <a href="/app/a1hub/gerarqr" id="a1qrcode" >
+                            <span class="nav__name ml-1" >
+                                 <img src="/static/js/ionicons_5_1_2/src/svg/qr-code.svg" class="nav__icon mr-2 ">
+                            QRCode</span>
+                        </a>
+                    </div>
+                {% endif %}
+
+
+                <div class="nav__link collapse_nav " id="manual">
+                    <a href="/app/manual" id="manual">
+                        <span class="nav__name ml-1">
+                            <img src="/static/js/ionicons_5_1_2/src/svg/reader-outline.svg" class="nav__icon mr-2">
+                        Manual</span>
+                    </a>
+                </div>
+
+                <div class="nav__link collapse_nav " id="sair">
+                    <a href="/" onclick="sessionStorage.setItem('chave','')" id="sair">
+                        <span class="nav__name ml-1" id="sair">
+                        <img src="/static/js/ionicons_5_1_2/src/svg/log-out-outline.svg" class="nav__icon mr-2">
+                        Sair</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>    
+

@@ -1,0 +1,305 @@
+<script>
+    async  function getDatainfo(id){
+        await $.ajax({
+            type: "GET",
+            url: "A1Config_a1mat"+id+ "/",
+            dataType:'json',
+            data: {},
+            success: function (data){
+                let datas_returned = data['func']
+                document.getElementById('funcao_os').selectedOptions[0].id;
+                document.getElementById('cabo_unipolar').value = datas_returned['cabo_unipolar']
+                document.getElementById('cabo_bipolar').value = datas_returned['cabo_bipolar']
+                document.getElementById('cabo_tripolar').value = datas_returned['cabo_tripolar']
+                document.getElementById('cabo_tetrapolar').value = datas_returned['cabo_tetrapolar']
+                document.getElementById('cabo_pentapolar').value = datas_returned['cabo_pentapolar']
+                document.getElementById('cabo_shield').value = datas_returned['cabo_shield']
+
+                let data_return_sinais = data['cod']
+                document.getElementById('sinais').selectedOptions[0].id;
+                document.getElementById('cab-sin').value = data_return_sinais['cab-sin']
+
+                let data_return_acessorios = data['acess']
+                document.getElementById('acesso').selectedOptions[0].id;
+                document.getElementById('cab-acess').value = data_return_acessorios['cab-acess']
+
+            }
+        })
+    }
+
+    function PostDatainfo(){
+        let id_cabos_alim =  document.getElementById('funcao_os').selectedOptions[0].id
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url: "/app/eletrica/a1pro/A1Config_a1mat/",
+            type: "POST",
+            headers:{'X-CSRFToken': csrftoken},
+            dataType:"json",
+            data:{'Consulta':id_cabos_alim},
+            success: function(data){
+                InputCod(data['codigos_funcao'])
+            },
+            failure: function () {
+                  alert('Algo deu errado! verifique e tente novamente.')
+            }
+        });
+    }
+
+    function InputCod(data){
+        let unipolar = 0
+        let bipolar = 1
+        let tripolar = 2
+        let tetrapolar = 3
+        let pentapolar = 4
+        let shield = 5
+        document.getElementById('cabo_unipolar').value = data[0][unipolar]
+        document.getElementById('cabo_bipolar').value = data[0][bipolar]
+        document.getElementById('cabo_tripolar').value = data[0][tripolar]
+        document.getElementById('cabo_tetrapolar').value = data[0][tetrapolar]
+        document.getElementById('cabo_pentapolar').value = data[0][pentapolar]
+        document.getElementById('cabo_shield').value = data[0][shield]
+    }
+
+    function salva_cod(){
+        let funcao = document.getElementById('funcao_os').selectedOptions[0].id
+        let unipolar = document.getElementById('cabo_unipolar').value;
+        let bipolar = document.getElementById('cabo_bipolar').value;
+        let tripolar = document.getElementById('cabo_tripolar').value;
+        let tetrapolar = document.getElementById('cabo_tetrapolar').value;
+        let pentapolar = document.getElementById('cabo_pentapolar').value;
+        let shield = document.getElementById('cabo_shield').value;
+        let data_dict = {};
+
+        let list_ids = ['cabo_unipolar', 'cabo_bipolar', 'cabo_tripolar', 'cabo_tetrapolar', 'cabo_pentapolar', 'cabo_shield' ];
+        let list_campos_tamanho = [unipolar.length, bipolar.length, tripolar.length, tetrapolar.length, pentapolar.length, shield.length ]
+
+        if (unipolar.length <= 10 && bipolar.length <= 10 && tripolar.length <= 10 && tetrapolar.length <= 10 && pentapolar.length <= 10 &&  shield.length <= 10){
+            data_dict = {
+                'funcaoos' : funcao,
+                'cabounipolar': unipolar,
+                'cabobipolar': bipolar,
+                'cabotripolar': tripolar,
+                'cabotetrapolar': tetrapolar,
+                'cabo_pentapolar': pentapolar,
+                'caboshield': shield
+            }
+             enviaform(data_dict)
+             document.getElementById('error').innerText = ''
+             document.getElementById('certo').innerText= 'Campos preenchidos com sucesso! '
+             $('#modal_mensagem_certo').modal('show')
+        }else {
+            for (let i in list_ids) {
+                CampoInvalid(list_ids[i], list_campos_tamanho[i])
+                document.getElementById('error').innerText = ''
+                document.getElementById('error').innerText = 'Favor preencher corretamente todos os campos! '
+                $('#modal_mensagem_erro').modal('show')
+            }
+
+        }
+    }
+    function enviaform(data_dict){
+         const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+         $.ajax({
+             url: "/app/eletrica/a1pro/Conf_Alim/",
+             type:"POST",
+             headers: {'X-CSRFToken': csrftoken},
+             dataType: "json",
+             data:{'NewCadastro': JSON.stringify(data_dict)},
+             success: function (data){
+             },
+             failure: function() {
+                 alert('Algo deu errado.')
+             }
+         });
+    }
+
+
+    function PostDataSin(){
+        let id_cabosinais = document.getElementById('sinais').selectedOptions[0].id
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url:"/app/eletrica/a1pro/Cabo_sinais/",
+            type:"POST",
+            headers:{'X-CSRFToken': csrftoken},
+            dataType:"json",
+            data:{'BuscaSinal': JSON.stringify(id_cabosinais)},
+            success: function(data){
+                InputSinal(data['codigos_sinal'])
+            },
+            failure: function(){
+                alert('Algo deu errado.')
+            }
+        });
+    }
+
+    function InputSinal(data){
+        let sinal = 0
+        document.getElementById('cab-sin').value = data[sinal]
+    }
+
+
+    function salva_sinais(){
+        let selct_sinais = document.getElementById('sinais').selectedOptions[0].id
+        let sinal = document.getElementById('cab-sin').value;
+        let data_dict = {};
+
+        let lista_ids_cab = ['cab-sin'];
+        let list_campo_tamanh = [sinal.length]
+
+        if(sinal.length <= 11){
+            data_dict = {
+                'selectSinais': selct_sinais,
+                'sinais':sinal
+            }
+            enviasinal(data_dict)
+            document.getElementById('certo').innerText=''
+            document.getElementById('certo').innerText='Campos preenchidos com sucesso!'
+            $('#modal_mensagem_certo').modal('show')
+            console.log('chegou')
+
+        }else{
+            for (let j in  lista_ids_cab){
+            CampoInvalid(lista_ids_cab[j], list_campo_tamanh[j])}
+            document.getElementById('error').innerText = ''
+            document.getElementById('error').innerText = 'Favor preencher corretamente todos os campos!'
+            $('#modal_mensagem_erro').modal('show')
+            console.log('foi')
+        }
+    }
+    function enviasinal(data_dict){
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url:"/app/eletrica/a1pro/cadastra_sinais" ,
+            type:"POST",
+            headers: {'X-CSRFToken': csrftoken},
+            dataType: "json",
+            data:{'NewSinais': JSON.stringify(data_dict)},
+            success: function(data) {
+            },
+            failure: function(){
+                alert('Algo deu errado.')
+            }
+        });
+    }
+
+    function PostDataAcessorios(){
+        let id_caboacesorio = document.getElementById('acesso').selectedOptions[0].id
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url:"/app/eletrica/a1pro/cabo_acessorio",
+            type:"POST",
+            headers:{'X-CSRFToken': csrftoken},
+            dataType:"json",
+            data:{'BuscaAcess': JSON.stringify(id_caboacesorio)},
+            success: function (data){
+                InputAcessorio(data['codigos_acessorios'])
+            },
+            failure: function (){
+                alert('Algo deu errado.')
+            }
+        });
+    }
+
+    function InputAcessorio(data){
+        let acessorio =  0
+        document.getElementById('cab-acess').value = data[acessorio]
+    }
+
+    function salva_acess(){
+        let selct_acesso = document.getElementById('acesso').selectedOptions[0].id
+        let acess = document.getElementById('cab-acess').value;
+        let data_dict ={};
+
+        let lista_ids_cab = ['cab-acess'];
+        let list_campo_tamanh = [acess.length]
+
+        if(acess.length <= 11 ){
+             data_dict = {
+                'selctacesso': selct_acesso,
+                'acess':acess
+            }
+            enviaAcess(data_dict)
+            document.getElementById('certo').innerText=''
+            document.getElementById('certo').innerText='Campos preenchidos com sucesso!'
+            $('#modal_mensagem_certo').modal('show')
+
+        }else{
+            for (let j in  lista_ids_cab) {
+            CampoInvalid(lista_ids_cab[j], list_campo_tamanh[j])}
+            document.getElementById('error').innerText = ''
+            document.getElementById('error').innerText = 'Favor preencher corretamente todos os campos!'
+            $('#modal_mensagem_erro').modal('show')
+
+        }
+    }
+    function enviaAcess(data_dict){
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url:"/app/eletrica/a1pro/Cadastra_acesso",
+            type:"POST",
+            headers: {'X-CSRFToken': csrftoken},
+            dataType:"json",
+            data:{'NewAcessorios': JSON.stringify(data_dict)},
+            success: function(data){
+            },
+            failure: function (){
+                alert('Algo deu errado.')
+            }
+        });
+    }
+
+    function salva_terra_neu(){
+        let cabo_terra5 = document.getElementById('cab_terra_5').value
+        let cabo_terra = document.getElementById('cab_terra').value
+        let cabo_neutro_5 = document.getElementById('cabo_neutro').value
+        let tipo_cabo_neutro = document.getElementById('cabo_neutro_3').value
+
+        let listids_terra_neutro = ['cab_terra_5', 'cab_terra', 'tipo_terra', 'tipo_veias_terra' , 'cabo_neutro' , 'cabo_neutro_3', 'tipo_neutro', 'tipo_veias_neutro'];
+        let list_tamnh_camp_neu = [cabo_terra5.length , cabo_terra.length ,  cabo_neutro_5.length, tipo_cabo_neutro.length]
+
+        if( cabo_terra5.length <= 5  && cabo_neutro_5.length <= 5 && tipo_cabo_neutro.length <= 3 && cabo_terra.length <= 3){
+            document.getElementById('certo').innerText=''
+            document.getElementById('certo').innerText='Campos cadastrados com sucesso!'
+            $('#modal_mensagem_certo').modal('show')
+        }else{
+            for (let k in listids_terra_neutro){CampoInvalid(listids_terra_neutro[k], list_tamnh_camp_neu[k])}
+            document.getElementById('error').innerText=''
+            document.getElementById('error').innerText='Favor preencher corretamente todos os campos!'
+            $('#modal_mensagem_erro').modal('show')
+        }
+    }
+
+    function salva_terminais(){
+        let ponta1_tipo_curto = document.getElementById('tipo_ponta_curto').value
+        let ponta1_tipo_coce_longo = document.getElementById('tipo_coce_longo').value
+
+        let list_ids_terminais = [ 'tipo_ponta_curto' , 'tipo_coce_longo' , 'tipo_curto_secao', 'tipo_jt_curto', 'tipo_cr_curto', 'tipo_1_curto', 'tipo_curto_coce', 'tipo_longo',
+                                   'tipo_jt_longo', 'tipo_coce_longo_1', 'tipo_1_longo', 'para_potencia' , 'tipo_secao', 'cor_secao']
+        let terminais_tamanho_stri = [ponta1_tipo_curto.length , ponta1_tipo_coce_longo.length ]
+        if(ponta1_tipo_curto.length <= 4 && ponta1_tipo_coce_longo.length <=4 ){
+            document.getElementById('certo').innerText=''
+            document.getElementById('certo').innerText='Campos cadastrados com sucesso!'
+            $('#modal_mensagem_certo').modal('show')
+        }
+        else{
+            for( let t in list_ids_terminais){CampoInvalid(list_ids_terminais[t], terminais_tamanho_stri[t])}
+            document.getElementById('error').innerText=''
+            document.getElementById('error').innerText='Favor preencher corretamente todos os campos!'
+            $('#modal_mensagem_erro').modal('show')
+        }
+    }
+
+    // ---funcao valida formulario--- //
+    function CampoInvalid(item,tamanho){
+        let i = document.getElementById(item)
+        if (tamanho > 10 || tamanho > 4 || tamanho > 5 || tamanho > 3) {
+            console.log(tamanho)
+            i.classList.add('is-invalid')
+        }else{
+            console.log(i)
+            i.classList.remove('is-invalid')
+            i.classList.add('is-valid')
+        }
+    }
+
+</script>

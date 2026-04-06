@@ -1,0 +1,126 @@
+{% block book_lista_motores_memorial %}
+{% load static %}
+
+<link href="{% static 'css/hamster.css' %} " rel="stylesheet" />
+
+<div class="modal-header">
+    <h5 class="modal-title text-center w-100">Book Lista Motores</h5>
+    <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+</div>
+<div class="modal-body text-center">
+    <div class="mx-auto px-3" id="div_bar_task_book_lista_motores" hidden="">
+        <div id="hamster-motores" role="img" class="wheel-and-hamster mx-auto mb-3 animate__animated">
+            <div class="wheel"></div>
+                <div class="hamster">
+                    <div class="hamster__body">
+                        <div class="hamster__head">
+                            <div class="hamster__ear"></div>
+                            <div class="hamster__eye"></div>
+                            <div class="hamster__nose"></div>
+                        </div>
+                        <div class="hamster__limb hamster__limb--fr"></div>
+                        <div class="hamster__limb hamster__limb--fl"></div>
+                        <div class="hamster__limb hamster__limb--br"></div>
+                        <div class="hamster__limb hamster__limb--bl"></div>
+                        <div class="hamster__tail"></div>
+                    </div>
+                </div>
+	        <div class="spoke"></div>
+        </div>
+        <div class="rounded-lg p-1 w-100">
+            <div class="tab-content">
+                <div id="nav-tab-card" class="tab-pane fade show active d-flex flex-column">
+                    <div class="progress-wrapper">
+                        <div id="progress-bar-book-lista-motores" class="bordas progress-bar progress-bar-striped progress-bar-animated">&nbsp;</div>
+                    </div>
+                    <div id="progress-bar-message-book-lista-motores"><br><span>Aguardando Inicialização da tarefa ...</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id='download_file_memorial_lista_motores' method="get" action="">
+</form>
+
+<script>
+
+function ListaDeMotores(os) {
+    $('#booklistamotores').modal('show')
+    let csrftoken = document.getElementsByName("csrfmiddlewaretoken")
+    if (os !== '0') {
+        $.ajax({
+            url: "ListaMotores/", // Caminho do Ajax
+            type: "POST", // http method
+            headers: {'X-CSRFToken': csrftoken[0].value},
+            dataType: "json",
+            data: {'OS': os},
+            cache: false,
+            processData: false,
+            contentType: false,// Envia dados pela solicitação do POST
+            beforeSend: function () {
+                document.getElementById("div_bar_task_book_lista_motores").hidden = false;
+            },
+            success: function (data) {
+                var progressUrl = `/celery-progress/${data["task_id"]}/`
+                CeleryProgressBarCalcCabos.initProgressBar(progressUrl, {
+                    progressBarId: 'progress-bar-book-lista-motores',
+                    progressBarMessageId: 'progress-bar-message-book-lista-motores',
+                    onSuccess: customSucess,
+                    onError: customError,
+                    onProgress: onProgressCustom
+                })
+
+
+                function onProgressCustom(progressBarElement, progressBarMessageElement, progress) {
+                    progressBarElement.style.backgroundColor = '#68a9ef';
+                    progressBarMessageElement.innerHTML = progress.description || "";
+                    progressBarElement.style.width = progress.percent + "%";
+                }
+
+                function customSucess(progressBarElement, progressBarMessageElement, result) {
+                    progressBarElement.style.backgroundColor = '#76ce60';
+                    progressBarMessageElement.innerHTML = "Sucesso";
+                    let hamster = document.getElementById('hamster-motores')
+                    let url_download = 'DownloadBookPDF/' + data["task_id"]
+                    document.getElementById('download_file_memorial_lista_motores').action = url_download
+                    document.getElementById('download_file_memorial_lista_motores').submit()
+                    hamster.classList.add('animate__backOutLeft')
+                    hamster.addEventListener('animationend', function () {
+                        hamster.classList.remove('animate__backOutLeft');
+                        progressBarElement.style.backgroundColor = '#68a9ef';
+                        progressBarMessageElement.innerHTML = "Aguardando Inicialização da tarefa..."
+                        progressBarElement.style.width = '0%'
+                    });
+                    // Pausa o cronômetro
+                    setTimeout(() => {
+                        document.getElementById("div_bar_task_book_lista_motores").hidden = true
+                        $('#booklistamotores').modal('hide')
+                        swalAlert(false, 'Book gerado com sucesso!', 'success', false)
+                    }, 1000)
+
+                }
+
+                function customError(progressBarElement, progressBarMessageElement, excMessage) {
+                    progressBarMessageElement.innerHTML = "Houve um erro inesperado:" + excMessage;
+                    progressBarElement.style.backgroundColor = '#dc4f63';
+                    // Pausa o cronômetro
+
+                    setTimeout(() => {
+                        document.getElementById("div_bar_task_book_lista_motores").hidden = true
+                    }, 1000)
+                }
+            }
+            ,
+            failure: function () {
+                swalAlert(false, 'Algo deu errado ao fazer o Download! verifique e tente novamente.', 'error', false)
+            }
+        })
+    }
+}
+
+
+</script>
+
+
+{% endblock %}

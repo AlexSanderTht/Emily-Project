@@ -1,0 +1,254 @@
+{% load static %}
+{% block sinaisOS %}
+<div class="modal-header">
+    <h5 class="modal-title" id="subareaLabel">Sinais por OS</h5>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div>
+            <div class="col-sm-6" style="float: left;">
+                <div class="form-group mb-5">
+                    <td data-toggle="tooltip" title="Inserir codigo ">Sinais(Geral)
+                        <div class="divBuscaAcess">
+                            <input type="search" class="txtBuscaAcess" placeholder="Buscar..." id="sinais-general-search" title="Pesquise aqui seu Sinal geral" onclick="search_all_sinais();clean_forms_funcOS_bs(print_all_sinais_in_os, 'sinais-general-search', `#select-all-sinais`)"/>
+                        </div>
+                        <br>
+                        <select id="select-all-sinais" required class="form-control " multiple style="height: 180px; width: 120px;">
+                        </select>
+                    </td>
+                </div>
+            </div>
+
+            <div class="col-sm-6" style="float: right;">
+                <div class="form-group mb-5">
+                    <td data-toggle="tooltip">Sinais OS
+                        <div class="divBuscaAcess">
+                            <input type="search" class="txtBuscaAcess" placeholder="Buscar..." id="sinais-os-search" title="Pesquise aqui seu Sinal por OS" onclick="search_sinais_os(); clean_forms_funcOS_bs(print_all_sinais_per_os, 'sinais-os-search', `#select-all-sinais-os`)"/>
+                        </div>
+                      <br>
+                      <select id="select-all-sinais-os" required class="form-control " multiple style="height: 180px; width: 120px;" ondragover="changecolor(event,'gray', 'select-all-sinais-os')" ondrop="drop_sinais(event)" ondragleave="changecolor(event,'white', 'select-all-sinais-os')">
+                      </select>
+                    </td>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="col-sm-12" >
+                <div class="form-group mb-5">
+                    <td  for="area-type">
+                        Código
+                        <input type="text" id="sinaisOS-cdg" class="form-control" readonly>
+                    </td>
+                    <br>
+                    <td  for="area-type">
+                        Descrição
+                        <input type="text" id="sinaisOS-desc" class="form-control" readonly>
+                    </td>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+    <button type="button" class="btn btn-secondary" style="margin-left:53%; bottom: 11%; position: absolute" id="btn_del_sOS" ondragover="hover_sos(event)" ondragleave="changecolor(event, 'gray', 'btn_del_sOS')" ondrop="drop_sos(event)" title="Arraste o Sinal por OS até aqui para exclui-lo." onclick="drop_sinais_with_2_clicks()">🗑️</button>
+<script>
+
+    var sinais_for_os = {}
+    var all_sinais_for_os = {}
+
+    async function OnclickButtonSinaisOs(){
+        await print_all_sinais_in_os()
+        print_all_sinais_per_os()
+    }
+    async function print_all_sinais_in_os(){
+        var options_sinais='';
+        await $.ajax({
+              type: "GET",
+              url: "AllSinais/",
+              dataType: 'json',
+              success: function (data){
+                  for (i in data){
+                      options_sinais += `<option value=${data[i]['tb_sinais_id']} onclick="selectSinaisInOs(${data[i]['tb_sinais_id']}); disable_selects('#select-all-sinais-os')" draggable="true" ondragstart="drag_sinais(event, ${data[i]['tb_sinais_id']})">${data[i]['tb_sinais_nome']}</option>`
+                      sinais_for_os['Nome'] = data[i]['tb_sinais_nome']
+                      sinais_for_os['Desc'] = data[i]['tb_sinais_desc']
+                      all_sinais_for_os[data[i]['tb_sinais_id']] = sinais_for_os
+                      sinais_for_os = {}
+                  }
+                  $('#select-all-sinais').html(options_sinais)
+
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+        })
+        return options_sinais
+    }
+
+    function selectSinaisInOs(id){
+        document.getElementById('sinaisOS-cdg').value = all_sinais_for_os[id]['Nome']
+        document.getElementById('sinaisOS-desc').value = all_sinais_for_os[id]['Desc']
+    }
+
+    function print_all_sinais_per_os(){
+        var datas_return = {}
+        var all_ids_sinais = {}
+        var num_os = document.getElementById('pro-os').value
+        var options_sinais_os='';
+        $.ajax({
+              type: "GET",
+              url: "AllSinaisOS/" + num_os,
+              dataType: 'json',
+              success: function (data){
+                  for (i in data){
+                      options_sinais_os += `<option value="${data[i]['tb_sos_id']}" onclick="selectSinaisInOs(${data[i]['tb_sos_id_sinais']}); disable_selects('#select-all-sinais')" draggable="true" ondragstart="drag_sos(event, ${data[i]['tb_sos_id']})">${all_sinais_for_os[data[i]['tb_sos_id_sinais']]['Nome']}</option>`
+                      all_ids_sinais[data[i]['tb_sos_id']] = data[i]['tb_sos_id_sinais']
+                  }
+                  $(`#select-all-sinais-os`).html(options_sinais_os)
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+        })
+        datas_return['options'] = options_sinais_os
+        datas_return['ids_sinais'] = all_ids_sinais
+        return datas_return
+    }
+
+    function drag_sinais(event, id) {
+        event.dataTransfer.setData("id_sinais", id)
+    }
+
+    async function drop_sinais(event){
+        event.preventDefault()
+        const id = event.dataTransfer.getData("id_sinais")
+        var num_os = document.getElementById('pro-os').value
+        await $.ajax({
+              type: "POST",
+              url: "AllSinaisOS/" + num_os,
+              dataType: 'json',
+              data: { 'id': id },
+              success: function (data){
+                  if (data['sucess']){
+                      print_all_sinais_per_os()
+                      return alert(data['sucess'])
+                  }
+                  else{
+                      return alert(data['erro'])
+                  }
+              },
+              failure: function(error){
+                  return alert("erro")
+              },
+        })
+        changecolor(event, 'white', 'select-all-sinais-os')
+    }
+
+    function drag_sos(event, id) {
+        event.dataTransfer.setData('id_sos', id)
+    }
+
+    function hover_sos(event) {
+        if (event.dataTransfer.getData('id_sos') === ""){
+            document.getElementById('btn_del_sOS').draggable=false
+        }
+        else{
+            changecolor(event, 'white', 'btn_del_sOS')
+        }
+    }
+
+    function drop_sos(event) {
+        event.preventDefault()
+        const id_sos = event.dataTransfer.getData('id_sos')
+        $.ajax({
+              type: "DELETE",
+              url: "ManipulingSinaisOS/" + id_sos,
+              dataType: 'json',
+              success: function (data){
+                  if (data['sucess']){
+                      print_all_sinais_per_os()
+                      return alert(data['sucess'])
+                  }
+                  else {
+                      return alert(data['erro'])
+                  }
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+        })
+        changecolor(event, 'gray', 'btn_del_sOS')
+    }
+
+    function drop_sinais_with_2_clicks() {
+        var ids_sinais = $('#select-all-sinais-os').val();
+        if ($('#select-all-sinais').val().length > 0 ){
+            return alert("Sinal não pode ser excluido por aqui")
+        }
+        if (ids_sinais.length == 0){
+            return alert("Selecione um Sinal por OS para poder excluir ou arraste a mesma até aqui!!")
+        }
+        ids_sinais.forEach(function (id){
+            $.ajax({
+              type: "DELETE",
+              url: "ManipulingSinaisOS/" + id,
+              dataType: 'json',
+              success: function (data){
+                  if (data['sucess']){
+                      print_all_sinais_per_os()
+                      return alert(data['sucess'])
+                  }
+                  else {
+                      return alert(data['erro'])
+                  }
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+            })
+        })
+    }
+
+    function search_all_sinais() {
+        const search = document.getElementById('sinais-general-search')
+        search.addEventListener('keydown', function (event) {
+            const key = event.key; // const {key} = event; ES6+
+            if (key === "Enter") {
+                var sinais = document.getElementById('sinais-general-search').value
+                if (sinais.length == 0) {
+                    return $(`#select-all-sinais`).html(print_all_sinais_in_os())
+                }
+                var options = '';
+                $(`#select-all-sinais`).html(options)
+                for (keys in all_sinais_for_os) {
+                    var name_caps = all_sinais_for_os[keys]['Nome'].toUpperCase()
+                    if (name_caps.includes(sinais.toUpperCase())) {
+                        options += `<option value=${keys} onclick="selectSinaisInOs(${keys}); disable_selects('#select-all-sinais-os')" draggable="true" ondragstart="drag_sinais(event, ${keys})">${all_sinais_for_os[keys]['Nome']}</option>`
+                    }
+                }
+                $(`#select-all-sinais`).html(options)
+            }
+        });
+    }
+
+    function search_sinais_os(){
+        var ids_sinais = print_all_sinais_per_os()['ids_sinais']
+        const search = document.getElementById('sinais-os-search')
+        search.addEventListener('keydown', function (event) {
+            var sinalOS = document.getElementById('sinais-os-search').value
+            if (sinalOS.length == 0) {
+                return $(`#select-all-sinais-os`).html(print_all_sinais_per_os())
+            }
+            var options = '';
+            $(`#select-all-sinais-os`).html(options)
+            for (keys in ids_sinais) {
+                var name_caps = all_sinais_for_os[ids_sinais[keys]]['Nome'].toUpperCase()
+                if (name_caps.includes(sinalOS.toUpperCase())) {
+                    options += `<option value=${keys} onclick="selectSinaisInOs(${ids_sinais[keys]}); disable_selects('#select-all-sinais')" draggable="true" ondragstart="drag_sos(event, ${keys})">${all_sinais_for_os[ids_sinais[keys]]['Nome']}</option>`
+                }
+            }
+            $(`#select-all-sinais-os`).html(options)
+        })
+    }
+</script>
+{% endblock sinaisOS %}

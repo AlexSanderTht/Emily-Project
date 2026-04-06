@@ -1,0 +1,378 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+{% block head %}
+    <title>Cadastra Templates</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@4/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/cropper.css' %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static 'css/main_crop.css' %}" type="text/css"/>
+    <script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+
+    <style type="text/css">
+        .reset-this {
+            all: initial;
+        }
+
+        .legend-style {
+            color: black;
+            font-size: 20px;
+            font-family: Tahoma;
+            text-transform: uppercase;
+        }
+
+        .label-style {
+            font-size: 15px;
+            font-family: Tahoma;
+            color: black;
+        }
+
+        .custom-button {
+            padding: 2px;
+            color: black;
+            background-color: black;
+            border: 1px solid #000;
+            border-radius: 5px;
+            cursor: pointer;
+            height: 45px;
+            font-size: 15px;
+            font-family: Tahoma;
+        }
+
+        .custom-button:hover {
+            background: #f58c32;
+            color: black
+        }
+
+        .custom-logo {
+            padding: 2px;
+            color: black;
+            background-color: black;
+            border: 1px solid #000;
+            border-radius: 5px;
+            height: 45px;
+        }
+
+        .sortable {
+            padding: 0;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            background-color: white;
+        }
+
+        .sortable li {
+            display: flex;
+            float: left;
+            width: 240px;
+            height: 75px;
+            overflow: hidden;
+            margin: 5px;
+            justify-content: left;
+            align-items: center;
+            background: #eeeeee;
+        }
+
+        .button {
+            width: 100px;
+            height: 30px;
+            background: #ffbe47;
+            color: black;
+        }
+
+        /* The heart of the matter */
+        .testimonial-group > .row {
+            overflow-x: auto;
+            white-space: nowrap;
+            max-width: 100vh;
+        }
+
+        .testimonial-group > .row > .col-xs-4 {
+            display: inline-block;
+            float: none;
+            max-width: 100vh;
+        }
+
+        #image-gallery {
+            width: max-content;
+            max-width: max-content;
+            position: relative;
+            height: 650px;
+            background: #000;
+        }
+
+    </style>
+{% endblock %}
+{% block help %}
+    <h7><strong>"Área de crop"</strong>, use o scrool do mouse para realizar os métodos zoomIn e zoom Out</h7>
+    <br><br>
+    <h7><strong>"Botões de Navegação"</strong> Realizam acesso à partes do documento sem a necessidade de redimensionamento</h7>
+    <br><br>
+    <h7><strong>"Tabela de crops"</strong> Armazena os crops realizados em função dos atributos e permite remover antigos cortes que estejam equivocados <strong>NÃO É POSSÍVEL EDITAR, APENAS REMOVER</strong> </h7>
+    <br><br>
+    <h7><strong>"Finalizar Cadastro"</strong> Cadastra os dados da tabela de cortes <strong>SE O TEMPLATE MUDAR, CADASTRAR NOVAMENTE COM O MESMO CÓDIGO</strong> </h7>
+    <br><br>
+{% endblock %}
+{% block main %}
+
+    <!--inicio da interface -->
+    <br>
+    <center><h1 class="display-4" style="font-size: 28px"><b>A1 Templates</b></h1></center>
+    <br>
+    <div style="margin-left: 15em;">
+        <button class="button btn-outline-danger" onclick="history.back()">Go Back</button>
+    </div>
+    <div class="container testimonial-group" style="max-width: 87vw; width: max-content; height: 70vh; alignment: center; margin-left: 2px; margin-right: 10px; overflow: hidden">
+        <div id="image-gallery" class="img-container">
+            <img id="cropbox1" src="data:image/png;base64,{{ image }}">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" title="Move Left" onclick="cropper.move(30,0)">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="Mover para esquerda">
+                      <span class="fa fa-arrow-left"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" onclick="cropper.move(-30,0)" title="Move Right">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="Mover para direita">
+                      <span class="fa fa-arrow-right"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" onclick="cropper.move(0,30)" title="Move Up">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="Mover para Cima">
+                      <span class="fa fa-arrow-up"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" onclick="cropper.move(0,-30)" title="Move Down">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="Mover para baixo">
+                      <span class="fa fa-arrow-down"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br>
+    <table id="crop_table" class="table" data-toggle="table" data-mobile-responsive="true" data-pagination="true" data-height="460"></table>
+    <br>
+    <center>
+        <button type="button" style="background-color:#ffbe47;" class="subscribe btn btn-warning rounded-pill shadow-sm"
+                onclick="VerifyAtribBeforeSend()">Finalizar Cadastro</button>
+    </center>
+    <br>
+    <div id="agua"><!-- agua -->
+        <div id="agua-modal" class="w3-modal">
+            <div class="w3-modal-content modal-style" style="position: absolute; margin-left: 45vw ; top: 40vh; width: 370px ; height: 140px">
+                <div class="w3-container modal-value">
+                    <br>
+                    <table>
+                        <tr>
+                            <td><br><h6>Tem certeza que deseja enviar os cortes realizados?</h6></td>
+                            <td><label id="agua-percent"></label></td>
+                        </tr>
+                    </table>
+                    <tr>
+                        <center>
+                            <button type="button" class="subscribe btn btn-success  rounded-pill shadow-sm" onclick="envia_temp('{{ csrf_token }}')"> SIM </button>
+                            <span onclick="document.getElementById('agua-modal').style.display='none'" class="w3-button w3-display-topright">x</span>
+                            <button type="button" class="subscribe btn btn-danger  rounded-pill shadow-sm" onclick="document.getElementById('agua-modal').style.display='none'">NÃO </button>
+                        </center>
+                        <span onclick="document.getElementById('agua-modal').style.display='none'" class="w3-button w3-display-topright">x</span>
+                    </tr>
+                </div>
+            </div>
+        </div>
+    </div><!-- agua -->
+
+
+    <script src="https://unpkg.com/bootstrap@4/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous" type="application/javascript"></script>
+    <script src="https://fengyuanchen.github.io/shared/google-analytics.js" crossorigin="anonymous" type="application/javascript"></script>
+    <script src="{% static 'js/cropper.js' %}"></script>
+
+    <script>
+        var campos = [];
+        var num_campo = [];
+        var dict_cords = {}; // Dicionário com as coordenadas
+        var coords = []; /* Variável em lista que armazena as coordenadas */
+        var prev_crop = 0;  //Variável com o índice da última linha do crop
+        var aux_crop = 0;
+        var list_atributos = '';
+        var options = '';
+        var Cropper = window.Cropper;
+        var container = document.querySelector('.img-container');
+        var image = container.getElementsByTagName('img').item(0);
+        var dataX = 0;
+        var dataY = 0;
+        var dataHeight = 0;
+        var dataWidth = 0;
+        var imgHeight = 0;
+        var imgWidth = 0;
+        var dataScaleX = 1;
+        var dataScaleY = 1;
+        var zoom_now = 1;
+        var cropper = '';
+        var aux_coord = [];
+        var prev_preview = '';
+        let table = document.getElementById('crop_table');
+
+        table.insertAdjacentHTML('afterbegin', `<thead>
+                                                  <tr>
+                                                    <th style="text-align: left">Atributo</th>
+                                                    <th style="text-align: left">Área selecionada</th>
+                                                    <th style="text-align: left">Adicionar/Remover Atributo</th>
+                                                  </tr>
+                                                </thead>`);
+
+        {% for id, nome, class_bootstrap in campos %}
+            list_atributos += `<option class="{{class_bootstrap}}" value="{{id}}">{{nome}}</option>`
+        {% endfor %}
+
+        // Cria opções da combobox
+
+        function make_crop() {
+            // Incrementa e cria mais uma linha
+            prev_crop += 1;
+            dict_cords[prev_crop - 1] = [coords];
+            cria_linha();  // Cria uma linha após acrescentar os dados à lista
+            aux_coord = [coords[2] - coords[0], coords[3] - coords[1], coords[0], coords[1]];
+            prev_preview = $(`#cell_prev_${prev_crop - 1}`)[0].innerHTML.trim().replace('prev', 'nw_preview');
+            nw_crop(`prev_${prev_crop}`);  // Cria cropcustom-button
+            $(`#prev_${prev_crop-1}`).remove();
+            $(`#cell_prev_${prev_crop-1}`).html(prev_preview);
+            $(`#cell_btn_${prev_crop-1}`).html(`<button id="btn_del_${prev_crop-1}" class="btn btn-outline-danger" onclick="rmv_crop('${prev_crop-1}')" style="width: 70px; font-size: 12px">Remover</button>`);
+
+        }
+
+        function rmv_crop(row_index) {  // Função que remove o crop
+            if (Object.keys(dict_cords).includes(row_index)) { // Se o campo já contém algum valor
+                if (confirm("Deseja mesmo excluir essa linha?")) {
+                    delete dict_cords[row_index]; //Remove aquelas coordenadas pela chave
+                    $(`#row_view_${row_index}`).remove() // Remove a linha d botão selecionado
+                }
+            }
+        }
+
+        function cria_linha() {
+            var row = table.insertRow(1); // Acrescenta INÍCIO (1) e ao FINAL (-1) da tabela novas linhas
+            row.id = `row_view_${prev_crop}`;
+            for (let i = 0; i < 3; i++) {
+                var cell_i = row.insertCell(i);
+                if (i === 0) { // Combobox com o dado em questão
+                    cell_i.id = `cell_sel_${prev_crop}`;
+                    cell_i.innerHTML = `<select id="campos_${prev_crop}" name="campos" class="form-control" style="width: 200px; height: 45px; alignment: center" required>${list_atributos}</select>`;
+                    cell_i.style.width = '15vw';
+                } else if (i === 1) { // Preview da imagem em questão
+                    cell_i.id = `cell_prev_${prev_crop}`;
+                    cell_i.innerHTML = `<div id = "prev_${prev_crop}" style="overflow: hidden; width: 60vw; height: 15vh" class="img-preview">
+                                            <img id="preview_${prev_crop}" src="data:image/png;base64,{{ image }}">
+                                        </div>`;
+                    cell_i.style.width = '70vw';
+                    cell_i.className = "centered";
+                } else { // Botão de acrescentar linha
+                    cell_i.id = `cell_btn_${prev_crop}`;
+                    cell_i.style.width = '8vw';
+                    cell_i.className = "centered";
+                    var btn_id = `btn_${prev_crop}`;
+                    cell_i.innerHTML = `<button id="${btn_id}" class="btn btn-outline-success" onclick="make_crop('${btn_id}')" style="width: 70px; font-size: 12px">Adicionar</button>`
+                }
+                cell_i.style.verticalAlign = "center"; // Alinha todas as células ao centro
+            }
+        }
+
+        function envia_temp(token) {
+            let dict_aux = GetAttAndCrop()
+            $.ajax({
+                type: "POST",
+                url: "",
+                dataType: 'json',
+                data: {'dict_coord': JSON.stringify({'dict_cords': dict_aux}),
+                       'csrfmiddlewaretoken': token },
+            }).done(function (data) {
+                swalAlert_DOC_without_reload('Inserção de Registro', data['data'],'success', 'Fechar')
+                document.getElementById('agua-modal').style.display='none'
+            });
+        }
+
+        function GetAttAndCrop(){
+            let attrib
+            let dict_aux = {}
+            for(const [key, value] of Object.entries(dict_cords)){
+                attrib = document.getElementById(`campos_${key}`).selectedOptions[0].value
+                dict_aux[attrib] = value
+            }
+            return dict_aux
+        }
+
+        function VerifyAtribIsDuplicated(){
+            let attrib
+            let dict_aux = {}
+            let list_attrib_duplicated = []
+            for(const [key, value] of Object.entries(dict_cords)){
+
+                attrib =document.getElementById(`campos_${key}`).selectedOptions[0].value
+                if (Object.keys(dict_aux).includes(attrib)) {
+                    list_attrib_duplicated.push(document.getElementById(`campos_${key}`).selectedOptions[0].innerHTML)
+                }else{
+                    dict_aux[attrib] = value
+                }
+            }
+            return list_attrib_duplicated.length === 0;
+        }
+
+        function VerifyAtribBeforeSend(){
+            if(VerifyAtribIsDuplicated() === false){
+                swalAlert_DOC_without_reload('Atenção!', 'Há atributos duplicados, por favor verifique!', 'error', false)
+            }else {
+                document.getElementById('agua-modal').style.display='block'
+            }
+        }
+        function nw_crop(preview) {
+            'use strict';
+
+            if (prev_crop !== 0) { cropper.destroy() }
+
+            Cropper = window.Cropper;
+            container = document.querySelector('.img-container');
+            image = container.getElementsByTagName('img').item(0);
+
+            options = {
+                aspectRatio: NaN,
+                preview: document.getElementById(preview),
+                viewMode: 2,
+                crop: function (e) {
+                    var data = e.detail;
+                    dataX = ((data.x > 0) ? parseInt(data.x) : 0);
+                    dataY = ((data.y > 0) ? parseInt(data.y) : 0);
+                    dataHeight = ((data.height > 0) ? parseInt(data.height) : 0);
+                    dataWidth = ((data.width > 0) ? parseInt(data.width) : 0);
+                    coords = [dataX, dataY, dataX + dataWidth, dataY + dataHeight];
+                }
+            };
+            cropper = new Cropper(image, options);
+
+            // Tooltip
+            $('[data-toggle="tooltip"]').tooltip();
+
+            // Buttons
+            if (!document.createElement('canvas').getContext) {
+                $('button[data-method="getCroppedCanvas"]').prop('disabled', true);
+            }
+
+            if (typeof document.createElement('cropper').style.transition === 'undefined') {
+                $('button[data-method="rotate"]').prop('disabled', true);
+                $('button[data-method="scale"]').prop('disabled', true);
+            }
+        }
+
+        cria_linha(); // Cria a primeira linha ao iniciar a tela
+        nw_crop(`prev_${prev_crop}`);
+
+    </script>
+
+{% endblock %}

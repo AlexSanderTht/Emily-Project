@@ -1,0 +1,237 @@
+{% extends 'geral/base.html' %}
+{% block head %}
+<title>A1MatList</title>
+
+<style>
+  .hover:hover {
+    box-shadow: 0 0 23px 3px rgba(255, 228, 171, 0.548);
+    transition: 1s;
+  }
+
+
+
+</style>
+{% endblock %}
+{% block help %}
+<h7>Botão "Escolher" Neste botão você irá selecionar doc. com extensão .txt. </h7>
+<br><br>
+<h7>Botão 2 "Escolher" Neste botão você irá selecionar doc. com extensão .xlsx. </h7>
+<br><br>
+<h7>Opção "Materiais secundários" Nesta opção você irá gerar somente  lista de materiais secundários. </h7>
+<br><br>
+<h7>Opção "Lista de secundários " Nesta opção você irá gerar somente lista de secundários. </h7>
+<br><br>
+<h7>Opção "Lista de primários " Nesta opção você irá gerar somente lista de primários. </h7>
+<br><br>
+<h7>Opção "Lista de isolamento " Nesta opção você irá gerar somente lista de isolamento. </h7>
+<br><br>
+<h7>Opção "Materiais + Lista de secundários " Nesta opção você irá gerar somente lista de secundários e materiais secundários. </h7>
+<br><br>
+<h7>Opção "English " Nesta opção você irá gerar somente Lista de compras. </h7>
+<br><br>
+<h7> "Número da revisão" Neste campo você irá inserir o número da revisão. </h7>
+<br><br>
+<h7>Botão "Gerar" Neste botão será gerado a lista dos doc. tranformando em extensão .xlsx.</h7>
+<br><br>
+<h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+
+
+<div class="container py-5">
+    <!-- For demo purpose -->
+    <div class="row mb-4">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4" 
+        style="
+          font-style: italic;
+          text-shadow: 3px 3px rgba(255, 153, 0, 0.356);
+        "
+        >
+        <b>A1Mat List</b></h1>
+
+      </div>
+    </div>
+    <!-- End -->
+
+
+    <div class="row">
+      <div class="col-lg-7 mx-auto">
+        <div class="bg-white rounded-lg p-5" style="box-shadow: 0 0 23px 3px rgba(255, 228, 171, 0.548);">
+
+
+          <!-- Credit card form content -->
+          <div class="tab-content">
+
+            <!-- credit card info-->
+            <div id="nav-tab-card" class="tab-pane fade show active">
+
+              <div class="col-12 p-0 mb-2 text-right">
+                  <div class="dropdown">
+                  <button style="border-radius: 50px;" class="btn butof dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Templates
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" onclick="window.open('/app/engenharia/a1mat_list/DownloadTemplates/template_lst_mont/', '_self')">Montagem</a>
+                    <a class="dropdown-item" onclick="window.open('/app/engenharia/a1mat_list/DownloadTemplates/template_lst_prim/', '_self')">Primários</a>
+                    <a class="dropdown-item" onclick="window.open('/app/engenharia/a1mat_list/DownloadTemplates/template_lst_sec/', '_self')">Secundários + Materiais</a>
+                    <a class="dropdown-item" href="#">Isolamento</a>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <form action="{% url 'download' %}" id="auto-download" method="GET" enctype="multipart/form-data">
+                    {% csrf_token %}
+                </form>
+              </div>
+
+              <form role="form" id="form" action="{% url 'a1mat_list' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group" style="display: flex; flex-direction: column;">
+
+                    <button type="button"  id="bot-folder"  class=" btn butof hover" onclick="clicked('folder')" style="border-radius: 50px; width: 150px;"> Escolher</button>
+                    <input type="file" id="folder" hidden="hidden"  onchange="selectedFolder(event, 'text-folder')" name="path" multiple />
+                    <span id = "text-folder"  class= "label-style"> Selecione os materiais:</span>
+                    <hr/>
+
+                    <button type="button"  id="bot-file" class=" btn butof hover" onclick="clicked('file-mat')" style="border-radius: 50px; width: 150px;"> Escolher</button>
+                    <input type="file" id="file-mat" hidden="hidden"  onchange="selectedFile(event, 'file-mat')" name="file" />
+                    <span id = "text-file-mat"  class= "label-style"> Selecione o template/revisão (xlsx):</span>
+                    <hr/>
+                </div>
+
+                <div class="form-group">
+                    <input type="radio" name="options" value="lst_pri"><span class = "label-style"> Lista de Primários</span><br>
+                    <input type="radio" name="options" value="lst_iso"><span class = "label-style"> Lista de Isolamento </span><br>
+                    <input type="radio" name="options" value="new_lst_sec"><span class = "label-style"> Lista de secundários + Materiais </span><br>
+                    <input type="radio" name="options" value="lst_mont"><span class = "label-style"> Lista de Montagem </span><br><br>
+
+
+                    <style>
+                        .checkbox-green-selected {
+                            background-color: #ffb350 !important;
+                            border-color: #ffa43d !important;
+                            display: flex;
+                        }
+                    </style>
+                    <div id="english-checkbox-container"
+                         style="font-weight: bold; padding: 7px; width: 90px; border-radius: 10px; border: 1px solid rgb(255, 184, 113); display: flex; justify-content: center; transition: background 0.2s; cursor: pointer;"
+                         onclick="
+                            var box = document.getElementById('checkbox-english');
+                            var cont = document.getElementById('english-checkbox-container');
+                            box.checked = !box.checked;
+                            if (box.checked) {
+                                cont.classList.add('checkbox-green-selected');
+                            } else {
+                                cont.classList.remove('checkbox-green-selected');
+                            }
+                         ">
+                        <input
+                            class="inputcheck"
+                            type="checkbox"
+                            name="english"
+                            value="True"
+                            id="checkbox-english"
+                            style="display: none;"
+                        />
+                        <span class="select-text"> English </span>
+                    </div>
+                    <br>
+                    <label for="rev_value">Selecione o número da revisão:</label>
+                    <select id="rev_value" name="revision" style="background-color: white; color: black;
+                    padding: 3px; border: 1px solid rgb(255, 170, 0); border-radius: 5px;">
+                        <option value=0>0</option>
+                        <option value=1>1</option>
+                        <option value=2>2</option>
+                        <option value=3>3</option>
+                        <option value=4>4</option>
+                        <option value=5>5</option>
+                        <option value=6>6</option>
+                        <option value=7>7</option>
+                        <option value=8>8</option>
+                        <option value=9>9</option>
+                    </select>
+                </div>
+
+                <div class="row">
+                </div>
+              </form>
+              <div style="margin-left: 0px; margin-right: 0px;"><!-- barra de progresso -->
+                {% include 'geral/bar.html' %}
+                {% block bar %}
+                {% endblock %}
+              </div><!-- barra de progresso -->
+
+
+            <!-- End -->
+            <!-- End -->
+          </div>
+          <!-- End -->
+
+        </div>
+      </div>
+    </div>
+    </div>
+</div>
+
+<!-- Modal de Erro -->
+<div class="modal fade" id="modalErroA1Mat" tabindex="-1" role="dialog" aria-labelledby="tituloErroA1Mat" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tituloErroA1Mat">Erro na geração da lista</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="mensagemErroA1Mat" style="white-space: pre-wrap;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Substitui o handler de erro da barra de progresso apenas nesta página
+  (function() {
+    const originalBarTrigger = window.bar_trigger;
+    if (!originalBarTrigger) return;
+    window.bar_trigger = function() {
+      document.getElementById('agua-modal-task').style.display='none';
+      let formData = new FormData($("#form")[0]);
+      $.ajax({
+        type: "POST",
+        url: "",
+        dataType: 'json',
+        data: formData,
+        contentType : false,
+        processData : false
+      }).done(function(data){
+        var progressUrl = `/celery-progress/${data["task_id"]}/`;
+        function customResult(resultElement, result) {
+          document.getElementById('auto-download').submit();
+        }
+        function customError(progressBarElement, progressBarMessageElement, excMessage) {
+          try {
+            progressBarElement.style.backgroundColor = '#dc4f63';
+            var msg = (excMessage && typeof excMessage === 'string') ? excMessage : 'Ocorreu um erro inesperado.';
+
+            // Ajusta mensagem padrão antiga para o novo modal
+            $("#mensagemErroA1Mat").text(msg);
+            $('#modalErroA1Mat').modal('show');
+
+            progressBarMessageElement.innerHTML = 'Falha ao processar a tarefa.';
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        CeleryProgressBar.initProgressBar(progressUrl, { onResult: customResult, onError: customError });
+      });
+    }
+  })();
+</script>
+{% endblock %}

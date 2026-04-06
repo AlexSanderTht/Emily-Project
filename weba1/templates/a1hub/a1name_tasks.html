@@ -1,0 +1,588 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>A1Name Tasks</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<style>
+    .overflow-y-auto-350 {
+        max-height: 350px !important;
+        overflow-y: auto !important;
+    }
+
+    .overflow-y-auto-519 {
+        max-height: 519px !important;
+        overflow-y: auto !important;
+    }
+</style>
+<div class="container mt-5" style="max-width: 80%;">
+    {% csrf_token %}
+    <div class="row justify-content-center animate__animated animate__pulse w-100">
+        <div class="col-sm-12 col-md-12 col-lg-12 bordas py-3 bg-white border shadow animate__animated animate__pulse">
+            <h1 class="text-center">A1Name Tasks</h1>
+            <p class="text-center h6">Ferramenta necessária para controlar e acompanhar a
+                execução das tasks do CELERY_WORKER.</p>
+            <hr class="my-4">
+
+            <div class="row gx-2 gy-3 justify-content-between mb-2">
+                <div class="col-lg-4 pr-2">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="form-group d-flex flex-column h-100">
+                                <label class="form-label font-poppins"><small>Selecione a ferramenta </small></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text border-end-0" for="select_tool" title="Tool" onclick="findRegisters('tool',$('#select_tool')[0].selectedOptions[0].id.split('tool_id_')[1])">
+                                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                                        </label>
+                                    </div>
+                                    <select id="select_tool" class="form-control border-start-0">
+                                        <option>---</option>
+                                        {% for tool in Tools%}
+                                        <option id="tool_id_{{tool.tb_tool_id}}" title="{{tool.tb_tool_desc}}">{{tool.tb_tool_name}}</option>
+                                        {%endfor%}
+                                    </select>
+                                    <button class="btn btn-danger" onclick="findRegisters('exclude',$('#select_tool')[0].selectedOptions[0].id.split('tool_id_')[1])" data-bs-toggle="tooltip" data-bs-placement="top" title="Clique para visualizar Tasks não relacionadas" type="button"><i class="fa-solid fa-file-circle-xmark"></i></button>
+                                </div>
+                                <small class="text-muted mb-2">Clique no ícone para visualizar as ferramentas por tasks.</small>
+
+                                <label class="form-label"><small>Selecione o nome da task</small></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text border-end-0" for="select_task" title="Task" onclick="findRegisters('task',$('#select_task')[0].selectedOptions[0].id.split('task_id_')[1])">
+                                            <i class="fa-solid fa-diagram-project"></i>
+                                        </label>
+                                    </div>
+                                    <select id="select_task" class="form-control border-start-0">
+                                        <option>---</option>
+                                        {% for task in Tasks %}
+                                        <option id="task_id_{{task.tb_task_name_id}}" title="{{task.tb_task_name_desc_fantasy}}">
+                                            {{task.tb_task_name_desc}}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-dark border-secondary" onclick="$('#new_tool').modal('show')" data-bs-toggle="tooltip" data-bs-placement="top" title="Criar nova Task." type="button"><i class="fa-solid fa-file-circle-plus"></i></button>
+                                </div>
+                                <small class="text-muted">Clique no ícone para visualizar os tasks por ferramenta.</small>
+
+                                <div class="position-relative d-flex justify-content-center">
+                                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-4 my-2"
+                                            onclick="createNewUser()">Adicionar<i class="fa-solid fa-circle-plus pl-2"></i>
+                                    </button>
+                                    <span type="button" class="btn btn-outline-secondary rounded-pill font_size_0_8 py-0 mb-2 position-absolute" style="right: 1.5rem; top: 1.0rem;">
+                                        Total: <span id="total_itens_add_new" class="badge badge-secondary ml-2">0</span>
+                                    </span>
+                                </div>
+
+
+                                <div class="card h-100 mb-0 p-3 overflow-y-auto-350" id="field_create_register"></div>
+
+                                <button type="button" class="btn btn-sm btn-warning rounded-pill px-4 my-2 mx-auto"
+                                    onclick="saveNewUser('field_create_register')">
+                                    Salvar<i class="fa-solid fa-circle-check pl-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 px-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex flex-column h-100">
+                                <h6 class="card-title font-poppins"><small>Visualização e atualização de cadastros</small></h6>
+                                <span type="button" class="btn btn-outline-secondary rounded-pill font_size_0_8 py-0 mb-2 position-absolute" style="right: 1.5rem; top: 1.0rem;">
+                                    Total: <span id="total_itens_filter" class="badge badge-secondary ml-2">0</span>
+                                </span>
+                                <div class="card h-100 overflow-y-auto-519 p-3" id="field_registers"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 pl-2">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active bg-transparent" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Ajuda</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade border rounded-bottom p-3 show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                    <div class="card mb-0">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-primary"><i class="fa-solid fa-user-plus pr-2"></i>Inserção</h6>
+                                            <p class="card-text"><small>Selecione o colaborador, nível, ferramenta, clique em <b>adicionar</b>.</small></p>
+                                        </div>
+                                    </div>
+                                    <div class="card my-3">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-success"><i class="fa-solid fa-circle-check pr-2"></i>Cadastro</h6>
+                                            <p class="card-text"><small>Apões a etapa acima, um card de informações aparecerá, se todas as informações estierem corretas, clique em <b>Salvar</b> para registrar as alterações.</small></p>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-secondary"><i class="fa-solid fa-eye pr-2"></i>Visualização</h6>
+                                            <p class="card-text"><small>Para visualizar os usuários cadastrados ou ferramentas cadastradas clique sobre o card após inseri-lo.</small></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade border border-top-0 rounded-bottom" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+                                <div class="tab-pane fade border border-top-0 rounded-bottom" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!------------------ Início Modal Parametros ------------------>
+    <div class="modal fade" id="new_tool" tabindex="-1" aria-labelledby="new_tool" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title"><i class="fa-solid fa-circle-plus fa-xl pr-2"></i>Nova Task</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <label for="name_task">Nome de gerenciamento da task</label>
+                        <select id="name_task" class="form-control border-start-0">
+                            <option>---</option>
+                            {% for task_result in TaskResult %}
+                            <option value="{{task_result}}">
+                                {{task_result}}
+                            </option>
+                            {% endfor %}
+                        </select>
+<!--                        <input type="text" class="form-control" id="name_task">-->
+
+                    </div>
+                    <div class="form-floating mb-3">
+                        <label for="name_task_fantasy">Nome de exibição da task</label>
+                        <input type="text" class="form-control" id="name_task_fantasy">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm rounded-pill" data-bs-dismiss="modal">Fechar<i class="fa-solid fa-circle-xmark d-sm-none d-md-inline pl-2"></i></button>
+                    <button type="button" onclick="postNewTask()" class="btn btn-warning btn-sm rounded-pill">Salvar<i class="fa-solid fa-circle-check pl-2"></i></button>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim Modal Parametros ------------------>
+</div>
+<script>
+    //--------------------- Função atualiza quantidade de options ---------------------//
+    $(document).ready(function() {
+        // Atualiza o valor de quantidade das cargas e tipicos
+        setInterval(function () {
+            $('#total_itens_filter').text($('#field_registers .card.bg-light.bordas').length);
+            $('#total_itens_add_new').text($('#field_create_register [data-bool-use="True"]').length);
+        }, 1000);
+    });
+
+    // --------------------- Função para buscar task / ferramenta ---------------------//
+    function findRegisters(select, _id_element) {
+        // Verifica se name_tool, name_user e level_user não são "---"
+        if (_id_element === undefined) {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, "Erro: Valor '---' não permitido para pesquisa.", 'error', false)
+        } else {
+            // Envia os dados para o backend via AJax
+            const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+            $.ajax({
+                url: "/app/a1hub/manage_name_tasks/", // Caminho do Ajax
+                type: "POST", // http method
+                headers: {'X-CSRFToken':csrftoken},
+                dataType: "json",
+                data: {'dict_select': JSON.stringify({'select':select, 'id_element': _id_element})}, // Envia dados pela solicitação do POST
+                success: function (data) {
+                    fillPreviewField(data['response'], select)
+                },
+                failure: function () {
+                    swalAlert(false, 'Algo deu errado ao buscar registros! verifique e tente novamente.', 'error', false)
+                }
+            });
+        }
+    }
+
+    // --------------------- Função para preeencher card html ---------------------//
+    function fillPreviewField(data, select) {
+        // Limpa o campo de visualização
+        $('#field_registers')[0].innerHTML = ''
+
+        // Busca o elemento/campo de registros
+        const fieldRegister = document.getElementById("field_registers");
+
+        if (data.length === 0) {
+            // Adiciona o novo card a ferramenta existente
+            const content = document.createElement("div");
+            content.classList.add("flex-grow-1", "d-flex", "justify-content-center", "align-items-center", "h-100", "animate__animated", "animate__wobble");
+            content.innerHTML = `
+            <div class="align-items-center text-center animate__animated animate__flipInX" id="text_notify_image">
+                <i class="fa-solid fa-hand-point-up fa-xl mb-4"></i>
+                <p>Nenhuma Acesso encontrado.</p>
+            </div>`
+
+            fieldRegister.appendChild(content);
+        } else {
+            if (select === 'task') {
+                for (let i = 0; i < data.length; i++) {
+                    let element_preview = data[i];
+                    let new_id = 'card_preview_tool_' + element_preview['tool_id'];
+
+                    // Cria dicionário de informações do usuário
+                    let dict_del_access = JSON.stringify({'id_tool': element_preview['tool_id'],
+                        'id_task': element_preview['task_id']})
+
+                    // Adiciona o novo card a ferramenta existente
+                    const content = document.createElement("div");
+                    content.classList.add("card", "bg-light", "bordas", "text-center", "mb-2", "animate__animated", "animate__flipInX");
+                    content.id = new_id;
+                    content.dataset.dictUserPreview = dict_del_access;
+                    content.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-2 pr-0 d-flex justify-content-center align-items-center">
+                                <i class="fa-solid fa-screwdriver-wrench"></i>
+                            </div>
+                            <div class="col-md-10 pl-0">
+                                <div class="card-body mt-sm-5 mt-md-0">
+                                    <div class="text-left mt-1" data-dict-user-preview='${dict_del_access}' data-bool-use-preview="True">
+                                        <h6 class="card-subtitle font_size_0_8 mb-0">${element_preview['tool_name']}</h6>
+                                        <button type="button" onclick="deleteAccess('${new_id}');removeCardTool('${new_id}', 'field_registers')" class="btn btn-sm py-0 btn-outline-danger rounded-pill position-absolute" style="right: 1.3rem; top: 0.8rem">Remover<i class="fa-solid fa-circle-xmark d-sm-none d-md-inline ps-2"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
+
+                    fieldRegister.appendChild(content);
+                }
+            } else if (select === 'exclude')  {
+                for (let i = 0; i < data.length; i++) {
+                    let element_preview = data[i];
+                    let new_id = 'card_preview_task_' + element_preview['task_id'];
+
+                    // Cria dicionário de informações do usuário
+                    let dict_del_access = JSON.stringify({'id_tool': element_preview['tool_id'],
+                        'id_task': element_preview['task_id']})
+
+                    // Adiciona o novo card a ferramenta existente
+                    const content = document.createElement("div");
+                    content.classList.add("card", "bg-light", "bordas", "text-center", "mb-2", "animate__animated", "animate__flipInX");
+                    content.id = new_id;
+                    content.dataset.dictUserPreview = dict_del_access;
+                    content.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-2 pr-0 d-flex justify-content-center align-items-center">
+                                <i class="fa-solid fa-diagram-project"></i>
+                            </div>
+                            <div class="col-md-10 pl-0">
+                                <div class="card-body mt-sm-5 mt-md-0">
+                                    <div class="text-left mt-1" data-dict-user-preview='${dict_del_access}' data-bool-use-preview="True">
+                                        <h6 class="card-subtitle font_size_0_8 mb-0"><b>${element_preview['tool_name']}</b></h6>
+                                        <h6 class="card-subtitle font_size_0_8 mb-0 mt-2">${element_preview['task_name']}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
+
+                    fieldRegister.appendChild(content);
+                }
+            } else {
+                for (let i = 0; i < data.length; i++) {
+                    // Percorre novo item
+                    let element_preview = data[i];
+                    let new_id = 'card_preview_task_' + element_preview['task_id'];
+
+                    // Verificar se o name_tool já existe
+                    const existingNameTool = document.getElementById('card_preview_tool_' + element_preview['tool_id']);
+
+                    // Cria dicionário de informações do usuário
+                    let dict_del_access = JSON.stringify({'id_tool': element_preview['tool_id'],
+                        'id_task': element_preview['task_id']})
+
+                    if (existingNameTool) {
+                        // Adiciona o novo card a ferramenta existente
+                        const content = document.createElement("div");
+                        content.classList.add("card", "bg-light", "bordas", "text-center", "mb-2", "animate__animated", "animate__flipInX");
+                        content.id = new_id;
+                        content.dataset.dictUserPreview = dict_del_access;
+                        content.dataset.boolUsePreview = 'True';
+                        content.innerHTML = `
+                           <div class="row">
+                                <div class="col-md-2 pr-0 d-flex justify-content-center align-items-center">
+                                    <i class="fa-solid fa-diagram-project"></i>
+                                </div>
+                                <div class="col-md-10 pl-0">
+                                    <div class="card-body mt-sm-5 mt-md-0">
+                                        <div class="text-left">
+                                            <h6 class="card-subtitle font_size_0_8 mb-0"><b>${element_preview['tool_name']}</b></h6>
+                                            <h6 class="card-subtitle font_size_0_8 mb-0 mt-2">${element_preview['task_name']}</h6>
+                                        </div>
+                                        <button type="button" onclick="deleteAccess('${new_id}');removeCard('${new_id}', 'field_registers')" class="btn btn-sm btn-outline-danger py-0 rounded-pill position-absolute" style="right: 1.3rem; top: 0.5rem;">Remover<i class="fa-solid fa-circle-xmark d-sm-none d-md-inline pl-2"></i></button>
+                                    </div>
+                                </div>
+                           </div>`;
+
+                        // Adicionar o cartão abaixo do elemento correspondente a name_tool
+                        existingNameTool.parentNode.appendChild(content);
+
+                    } else {
+                         // O name_tool não existe, adicionar um novo cartão
+                        const card = document.createElement("div");
+                        card.classList.add("card", "p-3", "mb-2", "animate__animated", "animate__flipInX");
+                        card.innerHTML = `
+                           <h6 class="card-subtitle font_size_0_8 mb-2" id="card_preview_tool_${element_preview['tool_id']}">${element_preview['tool_name']}</h6>
+                           <div class="card bg-light bordas text-center mb-2 animate__animated animate__flipInX" data-dict-user-preview='${dict_del_access}' data-bool-use-preview="True" id="${new_id}">
+                               <div class="row">
+                                    <div class="col-md-2 pr-0 d-flex justify-content-center align-items-center">
+                                        <i class="fa-solid fa-diagram-project"></i>
+                                    </div>
+                                    <div class="col-md-10 pl-0">
+                                        <div class="card-body mt-sm-5 mt-md-0">
+                                            <div class="text-left">
+                                                <h6 class="card-subtitle font_size_0_8 mb-0"><b>${element_preview['tool_name']}</b></h6>
+                                                <h6 class="card-subtitle font_size_0_8 mb-0 mt-2">${element_preview['task_name']}</h6>
+                                            </div>
+                                            <button type="button" onclick="deleteAccess('${new_id}');removeCard('${new_id}', 'field_registers')" class="btn btn-sm btn-outline-danger py-0 rounded-pill position-absolute" style="right: 1.3rem; top: 0.5rem;">Remover<i class="fa-solid fa-circle-xmark d-sm-none d-md-inline pl-2"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+
+                        fieldRegister.appendChild(card);
+                    }
+                }
+            }
+        }
+    }
+
+    // --------------------- Função POST cadastra nova task ---------------------//
+    function postNewTask() {
+        let name_task = document.getElementById('name_task').selectedOptions[0].value;
+        let name_task_fantasy = document.getElementById('name_task_fantasy').value;
+        let dict_tool = {'name_task': name_task, 'name_task_fantasy': name_task_fantasy}
+        // const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        if (name_task === '---') {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, "Erro: Valor '---' não permitido para pesquisa.", 'error', false)
+        } else {
+            $.ajax({
+                url: "/app/a1hub/manage_name_tasks/insert_or_update/", // Caminho do Ajax
+                type: "GET", // http method
+                // headers:{'X-CSRFToken':csrftoken},
+                dataType: "json",
+                data: {'dict_task': JSON.stringify(dict_tool)}, // Envia dados pela solicitação do GET
+                success: function (data) {
+                    if (Object.keys(data['message'])[0] === 'success') {
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, data['message']['success'], 'success', false)
+                        setTimeout(()=>{swal.close();window.location.reload();}, 2000)
+                    } else {
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, data['message']['error'], 'error', false)
+                    }
+                },
+                failure: function () {
+                    swalAlert(false, 'Algo deu errado ao criar a task! verifique e tente novamente.', 'error', false)
+                }
+            });
+        }
+    }
+
+    // --------------------- Função Cria Card Novo usuário ---------------------//
+    function createNewUser() {
+        let name_tool = document.getElementById('select_tool').selectedOptions[0];
+        let name_task = document.getElementById('select_task').selectedOptions[0];
+        let new_id = 'card_task_' + name_task.id
+
+        // Verifica se o elemento com o ID new_id já existe
+        const existingElement = document.getElementById(new_id);
+
+        // Verifica se name_tool, name_user e level_user não são "---"
+        if (name_task.value === "---" || name_tool.value === "---") {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, "Erro: Um ou mais campos estão com o valor '---'.", 'error', false)
+        } else if (existingElement) {
+            // O elemento já existe, então exibir um alerta de erro
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Elemento ja adicionado!', 'error', false)
+        } else {
+            // O elemento não existe, então adiciona à div
+            const fieldCreateRegister = document.getElementById("field_create_register");
+
+            // Verificar se o name_tool já existe
+            const existingNameTool = document.getElementById('card_' + name_tool.id);
+
+            // Cria dicionário de informações do usuário
+            let dict_new_user = JSON.stringify({'id_tool': name_tool.id.split('tool_id_')[1],
+                'id_task': name_task.id.split('task_id_')[1]})
+
+            if (existingNameTool) {
+                // Adiciona o novo card a ferramenta existente
+                const content = document.createElement("div");
+                content.classList.add("card", "bordas", "text-center", "mb-2", "animate__animated", "animate__flipInX");
+                content.id = new_id;
+                content.dataset.dictUser = dict_new_user;
+                content.dataset.boolUse = 'True';
+                content.innerHTML = `
+                   <div class="row mx-0">
+                        <div class="col-md-2 d-flex justify-content-center align-items-center">
+                            <i class="fa-solid fa-diagram-project"></i>
+                        </div>
+                        <div class="col-md-10 px-0">
+                            <div class="card-body mt-sm-5 mt-md-0">
+                                <div class="text-left">
+                                    <h6 class="card-subtitle mb-0 mt-3">${name_task.title}</h6>
+                                    <h6 class="card-subtitle font_size_0_8 mb-0 mt-2">${name_task.value}</h6>
+                                </div>
+                                <button type="button" onclick="removeCard('${new_id}', 'field_create_register')" class="btn btn-sm btn-outline-danger py-0 rounded-pill position-absolute" style="right: 0.5rem; top: 0.5rem;">Remover<i class="fa-solid fa-circle-xmark d-sm-none d-md-inline"></i></button>
+                            </div>
+                        </div>
+                   </div>
+                `;
+
+                // Adicionar o cartão abaixo do elemento correspondente a name_tool
+                existingNameTool.parentNode.appendChild(content);
+            } else {
+                 // O name_tool não existe, adicionar um novo cartão
+                const card = document.createElement("div");
+                card.classList.add("card", "p-3", "bg-light", "mb-2", "animate__animated", "animate__flipInX");
+                card.innerHTML = `
+                   <h6 class="card-subtitle font-size-08 mb-2" id="card_${name_tool.id}">${name_tool.value}</h6>
+                   <div class="card bordas text-center mb-2 animate__animated animate__flipInX" data-dict-user='${dict_new_user}' data-bool-use="True" id="${new_id}">
+                       <div class="row mx-0">
+                            <div class="col-md-2 d-flex justify-content-center align-items-center">
+                                <i class="fa-solid fa-diagram-project"></i>
+                            </div>
+                            <div class="col-md-10 px-0">
+                                <div class="card-body mt-sm-5 mt-md-0">
+                                    <div class="text-left">
+                                        <h6 class="card-subtitle mb-0 mt-3">${name_task.title}</h6>
+                                        <h6 class="card-subtitle font_size_0_8 mb-0 mt-2">${name_task.value}</h6>
+                                    </div>
+                                    <button type="button" onclick="removeCard('${new_id}', 'field_create_register')" class="btn btn-sm btn-outline-danger py-0 rounded-pill position-absolute" style="right: 0.5rem; top: 0.5rem;">Remover<i class="fa-solid fa-circle-xmark d-sm-none d-md-inline"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+
+                fieldCreateRegister.appendChild(card);
+            }
+        }
+    }
+
+    // --------------------- Função para adicionar usuário a ferramenta ---------------------//
+    function saveNewUser(id_field) {
+        let children_field = $('#' + id_field)[0].children
+        if (children_field.length !== 0) {
+            let node_list_user = document.querySelectorAll('[data-bool-use="True"]')
+            let list_dicts = Array.from(node_list_user).map(element => element.dataset.dictUser);
+
+            const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+            $.ajax({
+                url: "/app/a1hub/manage_name_tasks/insert_or_update/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrftoken},
+                dataType: "json",
+                data: {'dict_save_task': JSON.stringify(list_dicts)}, // Envia dados pela solicitação do POST
+                success: function (data) {
+                    if (Object.keys(data['message'])[0] === 'success') {
+                        let elements_selected = children_field;
+
+                        for (let i = 0; i < elements_selected.length; i++) {
+                            let element_selected = elements_selected[i];
+                            element_selected.style.zIndex = '1';
+                            element_selected.classList.add('animate__zoomOutDown')
+                            element_selected.addEventListener('animationend', () => {
+                                element_selected.remove()
+                            });
+                        }
+
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, data['message']['success'].join('\n'), 'success', false)
+                        setTimeout(()=>{swal.close();window.location.reload();}, 3000)
+
+                    } else {
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, data['message']['error'].join('\n'), 'error', false)
+                    }
+                },
+                failure: function () {
+                    swalAlert(false, 'Algo deu errado ao atualizar acesso! verifique e tente novamente.', 'error', false)
+                }
+            });
+        } else {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Insira um novo usuário para salvar os dados!', 'error', false)
+        }
+    }
+
+    // --------------------- Função para deletar acesso de task/ferramenta ---------------------//
+    function deleteAccess(id_card) {
+        let node_list_user = document.querySelectorAll('#' + id_card)
+
+        if (node_list_user.length !== 0) {
+            let list_dicts = node_list_user[0].dataset.dictUserPreview;
+            const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+            $.ajax({
+                type: "DELETE",
+                url: "/app/a1hub/manage_name_tasks/insert_or_update/",
+                headers:{'X-CSRFToken':csrftoken},
+                dataType: 'json',
+                data: JSON.stringify(list_dicts), // Envia dados pela solicitação do POST
+                success: function (data){
+                    if (Object.keys(data['message'])[0] === 'success') {
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, data['message']['success'].join('\n'), 'success', false)
+                        setTimeout(()=>{swal.close();window.location.reload();}, 4000)
+                    } else {
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, data['message']['error'], 'error', false)
+                    }
+                },
+                failure: function(error){
+                    swalAlert(false, `Algo deu errado ao deletar card! verifique e tente novamente: ${error}.`, 'error', false)
+                },
+            })
+        }
+    }
+
+    // --------------------- Função para remover card tool ---------------------//
+    function removeCardTool(new_id, id_field) {
+        let element_selected = document.getElementById(new_id)
+        element_selected.style.zIndex = '1';
+        element_selected.classList.add('animate__flipOutX')
+        element_selected.addEventListener('animationend', () => {
+            $('#' + id_field).find('#' + new_id).remove()
+        });
+    }
+
+    // --------------------- Função para remover card ---------------------//
+    function removeCard(new_id, id_field) {
+        let children_field = $('#' + id_field)[0].children[0]
+        let lenght_itens = children_field.children
+        if (lenght_itens.length === 2) {
+            children_field.style.zIndex = '1';
+            children_field.classList.add('animate__flipOutX')
+            children_field.addEventListener('animationend', () => {
+                children_field.remove()
+            });
+
+        } else {
+            let element_selected = document.getElementById(new_id)
+            element_selected.style.zIndex = '1';
+            element_selected.classList.add('animate__flipOutX')
+            element_selected.addEventListener('animationend', () => {
+                $('#' + id_field).find('#' + new_id).remove()
+            });
+        }
+    }
+</script>
+{% endblock %}
+

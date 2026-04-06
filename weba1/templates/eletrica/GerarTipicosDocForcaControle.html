@@ -1,0 +1,123 @@
+{% load static %}
+<div class="container-fluid h-100" id="content_drop_tipicos_forca_controle" hidden>
+
+
+
+    <div class="col-12 mt-2 text-center">
+        Capa:
+    </div>
+    <div class="row card_dropzone_blue px-0 mx-1 animate__animated animate__fadeIn mt-2 scroll_tipicos_doc" id="drop-area-capa_forca">
+        <div class="text-center w-100" id="capa_dwg_forca">
+            <!------------------ Inicio Message ------------------>
+            <span class="font-italic text-primary">Arraste e solte o arquivo (*.DWG) ou</span><br>
+            <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+            <!------------------ Fim Message ------------------>
+            <label class="mt-2 btn btn-primary rounded-pill text-white">
+                <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_forca" onchange="DropRelatPdms('drop-area-capa_forca', this.id, 'FileCapaForca', false, null)"/>
+                <i class="fa-solid fa-upload"></i> Import DWG
+            </label>
+        </div>
+    </div>
+
+
+    <div class="col-12 mt-2 text-center">
+        Logo:
+    </div>
+    <div class="row card_dropzone_blue px-0 mx-1 animate__animated animate__fadeIn mt-2 scroll_tipicos_doc" id="drop-area-logo_forca">
+        <div class="text-center w-100" id="logo_forca">
+            <!------------------ Inicio Message ------------------>
+            <span class="font-italic text-primary">Arraste e solte o arquivo (*.DWG) ou</span><br>
+            <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+            <!------------------ Fim Message ------------------>
+            <label class="mt-2 btn btn-primary rounded-pill text-white">
+                <input accept=".dwg" class="hidden" type="file" id="arquivo_logo_forca" onchange="DropRelatPdms('drop-area-logo_forca', this.id, 'FileLogoForca', false, null)"/>
+                <i class="fa-solid fa-upload"></i> Import DWG
+            </label>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="col-12 mt-2 d-flex justify-content-end my-2">
+        <button type="button" class="btn btn-primary" onclick="SendFilesForcaControleGtDoc()">Enviar</button>
+    </div>
+</div>
+
+<script>
+    let formFileForcaControle = new FormData();
+
+    function DropRelatPdms(id_dropzone, id_input_file, key_form_data, xlsx=false, file_event=null){
+        let container_drop_file = document.getElementById(id_dropzone)
+        let input_file = document.getElementById(id_input_file)
+        let file = file_event === null ? input_file.files[0]:file_event.files[0]
+        let error_file = false
+        let name_file_splited = file.name.split('.')
+        let extension = name_file_splited[name_file_splited.length - 1]
+        let image
+        if(xlsx){
+            if(extension !== 'xlsx'){
+                error_file = true
+            }
+            image = "{% static 'img/XLS.png' %}"
+        }
+        else{
+            if(extension !== 'dwg'){
+                error_file = true
+            }
+            image = "{% static 'img/DWG.png' %}"
+        }
+        if(!error_file){
+            ClearDropsZonesBandEle(container_drop_file)
+            formFileForcaControle.append(key_form_data, file)
+            container_drop_file.innerHTML += `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown">
+                                                    <div class="input-group-prepend my-auto px-1">
+                                                        <img class="" src="${image}" style="height:20px">
+                                                    </div>
+                                                    <span type="text" title="${file.name}" class="col border-0 input-group-text bg-white text-truncate">${file.name}</span>
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="DeleteFileSupBandGtDocs(this, '${key_form_data}')">
+                                                            <i class="fas fa-times-circle fa-lg"></i>
+                                                        </button>
+                                                    </div>
+                                               </div>`
+        }
+        else{
+            SwitchAlertGtDoc('Extensão de arquivo inválida!!', true)
+        }
+
+
+
+    }
+
+    jQuery(document).ready(function($) {
+        let params = ReturnParamsDropFilesInDropzone()
+        for(let id_dropzone in params){
+            $('#'+id_dropzone).on('dragover', function(event_2) {
+              event_2.preventDefault();
+              event_2.stopPropagation();
+              $(this).addClass('upload-hover-blue');
+            })
+
+            $('#'+id_dropzone).on('drop', function(event_2) {
+              event_2.preventDefault();
+              event_2.stopPropagation();
+              $(this).removeClass('upload-hover-blue');
+              let file = event_2.originalEvent.dataTransfer;
+              // A função abaixo altera o conteudo do campo dropdown
+              DropRelatPdms(id_dropzone, params[id_dropzone]['id_input'], params[id_dropzone]['key_form_data'], params[id_dropzone]['xlsx'], file)
+            })
+
+            $('#'+id_dropzone).on('dragleave', function(event_2) {
+              event_2.preventDefault();
+              event_2.stopPropagation();
+              $(this).removeClass('upload-hover-blue');
+            })
+        }
+    });
+</script>

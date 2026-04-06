@@ -1,0 +1,549 @@
+{%extends 'geral/base.html'%}
+
+{% load static %}
+{% block head %}
+<title>Correção Modelo</title>
+{% endblock %}
+{%block main %}
+    <style>
+
+
+            label
+            {
+                margin-bottom: 0px;
+            }
+            .loader {
+      border: 8px solid #A1A1A1;
+      border-top: 8px solid #f6801e;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 2s linear infinite;
+       display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .input-group-text{
+        background-color: gray;// #343A40;
+        color: white;
+    }
+    .flex {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .flex-item + .flex-item {
+      margin-left: 10px;
+    }
+
+    .button {
+      margin-top: 15px;
+      background-color: #0066FF;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    </style>
+{% load poll_extras %}
+{% verify_tool as user_info %}
+{% if user_info.A1CIVAtividades %}
+
+
+
+    <p hidden id="IDAtiv">{{ IDAtividade.id }}</p>
+    <p hidden id="IDDisciplina">{{ IDAtividade.Disciplina }}</p>
+    <p hidden id="IDVerificacao">{{ IDVerificacao }}</p>
+    <p hidden id="IDModelo">{{ IDModelo }}</p>
+    <p hidden id="CaminhoPDF">{{CaminhoArquivo}}</p>
+<h1><center>Correção de Modelo</center></h1>
+ <div style="display: grid; grid-template-rows: 1fr;  grid-template-columns: 1fr 1fr 1fr 1fr; grid-gap: 5px;">
+    <button type="button" style="color: #343a40; margin: 10px 10px;" class="subscribe btn btn-outline-warning  rounded-pill shadow-sm"
+            onclick="window.location='/app/civil/DetalhesAtividade/{{ IDAtividade.id }}'"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+  <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1z"/>
+</svg>
+        <b>Voltar para Atividade</b>
+    </button>
+                                      <button type="button"  style="color: #202020; margin: 10px 10px; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"  class="subscribe btn btn-outline-primary rounded-pill shadow-sm" onclick="window.location='/app/civil/VerificacaoModelo/{{IDVerificacao}}'">
+                                     <b>Verificação</b>
+                                    </button>
+
+                                     <button type="button"  style="color: #202020; margin: 10px 10px; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;" class="subscribe btn btn-success rounded-pill shadow-sm" onclick="window.location='/app/civil/VerificacaoModelo/Correcao/{{IDVerificacao}}'">  <b>Correção</b>
+                                    </button>
+
+                                    <button type="button"  style="color: #202020; margin: 10px 10px; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;" class="subscribe btn btn-outline-info rounded-pill shadow-sm" onclick="window.location='/app/civil/VerificacaoModelo/VerificacaoCorrecao/{{IDVerificacao}}'">  <b>Verificação de Correção</b>
+                                    </button>
+    </div>
+<div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span style="height:34px" class="input-group-text" id="{{ VerificacaoForm.OS.id_for_label }}">{{VerificacaoForm.OS.label_tag}}</span>
+                    </div>
+                    <select disabled="disabled" style="height:34px" class="custom-select"
+                            id="{{ VerificacaoForm.OS.html_name }}" name="{{ VerificacaoForm.OS.html_name }}">
+                        {% for valor in VerificacaoForm.OS %}
+                        {%if valor %}
+                        {{ valor }}
+                        {%endif%}
+                        {% endfor %}
+                    </select>
+                    <div class="input-group-prepend">
+                        <span style="height:34px" class="input-group-text"
+                              id="{{ VerificacaoForm.CodigoDocumento.id_for_label }}">{{VerificacaoForm.CodigoDocumento.label_tag}}</span>
+                    </div>
+                    <input readonly type="text" id="CodigoDocumento" name="{{ VerificacaoForm.CodigoDocumento.html_name }}"
+                           class="form-control" {% if VerificacaoForm.CodigoDocumento.value %}
+                           value="{{VerificacaoForm.CodigoDocumento.value }}" {%endif%}
+                           aria-describedby="{{ VerificacaoForm.CodigoDocumento.id_for_label }}">
+
+                    <div class="input-group-prepend">
+                        <span style="height:34px" class="input-group-text" id="{{ VerificacaoForm.Revisao.id_for_label }}">{{VerificacaoForm.Revisao.label_tag}}</span>
+                    </div>
+                    <input readonly type="text" id="Revisao" name="{{ VerificacaoForm.Revisao.html_name }}" class="form-control"
+                           {% if VerificacaoForm.Revisao.value %} value="{{VerificacaoForm.Revisao.value }}" {%endif%}
+                           aria-describedby="{{ VerificacaoForm.Revisao.id_for_label }}">
+
+
+                </div>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="{{ VerificacaoForm.Status.html_name }}">{{VerificacaoForm.Status.label_tag}}</label>
+                    </div>
+                    <select class="custom-select" id="{{ VerificacaoForm.Status.html_name }}"
+                            name="{{ VerificacaoForm.Status.html_name }}" {%if VerificacaoForm.Status.field.required%} required
+                            {%endif%}>
+
+                        {% for valor in VerificacaoForm.Status %}
+                        {%if valor %}
+                        {{ valor }}
+                        {%endif%}
+                        {% endfor %}
+                    </select>
+                    <button id="AlterarStatusBTN" type="button" style="height:32px; margin:1px 5px;font-size:75%"
+                            class="subscribe btn btn-warning  rounded-pill shadow-sm"
+                            onclick="MostrarModalAlteracaoStatus()">Alterar Status
+                    </button>
+                </div>
+
+    <nav>
+        <div class="nav nav-pills mb-3 nav-justified" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active" id="nav-detalhes-gerais" data-toggle="tab" href="#nav_detalhes" role="tab"
+               aria-controls="nav_documento" aria-selected="true" style="color: #f58323"><b>Informações</b></a>
+            <a class="nav-item nav-link" id="nav-verificacao-tab" data-toggle="tab" href="#nav-verificacao" role="tab"
+               aria-controls="nav-verificacao" aria-selected="false" style="color: #f58323"><b>Correção</b></a>
+            <a class="nav-item nav-link" id="nav-comentarios-tab" data-toggle="tab" href="#nav-comentarios" role="tab"
+               aria-controls="nav-comentarios" aria-selected="false" style="color: #f58323"><b>Comentários</b></a>
+
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav_detalhes" role="tabpanel" aria-labelledby="nav-detalhes-gerais">
+            <div class="loader" id="loaderDetalhes" style="height: 50px; width:50px; display: none"></div>
+
+
+
+
+              <div id="Arquivos">
+                        <div class="jumbotron">
+                          <h1 class="display-4">Arquivos</h1>
+                          <p class="lead">Arquivos específicos desta etapa da atividade</p>
+                          <hr class="my-4">
+                          <div id="MensagemArquivos"></div>
+                            <table id="TabelaArquivos" class="display" style="padding: 0px; width:100%; font-size:75%; overflow-y: hidden;"></table>
+                         <button type="button" style="margin:1px 5px;" class="subscribe btn btn-warning  rounded-pill shadow-sm" onclick="MostrarModalAdicionarArquivo()">Adicionar Arquivo</button>
+                        </div>
+
+
+                    </div>
+        </div>
+
+
+        <div class="tab-pane fade" id="nav-verificacao" role="tabpanel" aria-labelledby="nav-verificacao-tab">
+<div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="SelectDetalhesPreenchimento">Selecione uma Verificação:</label>
+                </div>
+                <select class="custom-select" id="SelectDetalhesPreenchimento">
+
+
+                </select>
+
+            </div>
+            <div class="loader" id="loaderVerificacao" style="height: 50px; width:50px; display: none"></div>
+            <div id="AutoVerificacao">
+
+            </div>
+            <br/>
+        </div>
+
+
+        <div class="tab-pane fade" id="nav-comentarios" role="tabpanel" aria-labelledby="nav-comentarios-tab">
+            <div class="list-group" id="ListGroupComentarios">
+
+
+            </div>
+            <br/>
+            <button type="button" class="subscribe btn btn-warning  rounded-pill shadow-sm" style="float: right"
+                    data-toggle="modal" data-target="#CadastrarComentario">
+                Adicionar Comentário
+            </button>
+            <div class="modal fade" id="CadastrarComentario" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Adicionar Comentário</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" id="AdicionarComentarioPost">
+
+                                {% csrf_token %}
+
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span style="height:34px" class="input-group-text"
+                                              id="{{ FormComentarios.Comentario.id_for_label }}">{{FormComentarios.Comentario.label_tag}}</span>
+                                    </div>
+                                    <textarea id="observacao-comentario" style="height: 500px; width: 400px" type="text"
+                                              name="{{ FormComentarios.Comentario.html_name }}" class="form-control"
+                                              aria-describedby="{{ FormComentarios.Comentario.id_for_label }}"
+                                              {%if FormComentarios.Comentario.field.required%} required {%endif%}>{% if FormComentarios.Comentario.value %}{{FormComentarios.Comentario.value }}{%endif%}</textarea>
+                                </div>
+                                {% if FormComentarios.Comentario.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ FormComentarios.Comentario.errors }}
+                                </div>
+                                {%endif%}
+                                <div id="resultsComentarios"></div>
+                                <div class="modal-footer">
+
+                                    <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm"
+                                            data-dismiss="modal">Fechar
+                                    </button>
+                                    <button type="submit" class="subscribe btn btn-warning  rounded-pill shadow-sm">Salvar
+                                    </button>
+
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="modal fade" id="AvisoAlteracaoStatus" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="TituloConfirmacao">Confirmação de Modificação</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <p id="AvisoErroAtividades"></p>
+
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="{{ VerificacaoForm.ResponsavelVerificacao.html_name }}">{{VerificacaoForm.ResponsavelVerificacao.label_tag}}</label>
+                                </div>
+                                <select class="custom-select" id="{{ VerificacaoForm.ResponsavelVerificacao.html_name }}"
+                                        name="{{ VerificacaoForm.ResponsavelVerificacao.html_name }}" {%if  VerificacaoForm.ResponsavelVerificacao.field.required%} required {%endif%}>
+
+                                    {% for valor in VerificacaoForm.ResponsavelVerificacao %}
+                                    {%if valor %}
+                                    {{ valor }}
+                                    {%endif%}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div id="DataDiv" class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span style="height:34px" class="input-group-text"
+                                          id="{{ VerificacaoForm.DataVerificacao.id_for_label }}">{{VerificacaoForm.DataVerificacao.label_tag}}</span>
+                                </div>
+                                <input type="date" id="DataVlrForm" name="{{ VerificacaoForm.DataVerificacao.html_name }}"
+                                       class="form-control" {% if VerificacaoForm.DataVerificacao.value %}
+                                       value="{{VerificacaoForm.DataVerificacao.value|date:'Y-m-d' }}" {%endif%}
+                                       aria-describedby="{{ VerificacaoForm.DataVerificacao.id_for_label }}" {%if VerificacaoForm.DataVerificacao.field.required%} required {%endif%}>
+                            </div>
+                            <div id="ErrorAlteracaoStatus"></div>
+                            <div class="modal-footer" id="FooterContinuarEnvio">
+                                <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                        data-dismiss="modal">Não
+                                </button>
+                                <button type="submit" class="subscribe btn btn-warning  rounded-pill shadow-sm"
+                                        onclick="AlterarStatus()">Sim
+                                </button>
+                                <div class="loader" id="loaderStatus" style="height: 50px; width:50px; display: none"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="RemoverVerificacaoSelecionada" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" >Confirmação de Remoção</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <p>Tem certeza que deseja remover a verificação selecionada?</p>
+                            <p>Caso tenha passado pela verificação, a nota será excluída do sistema</p>
+                            <div class="modal-footer">
+                                <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;"
+                                        data-dismiss="modal">Não
+                                </button>
+                                <button type="submit" class="subscribe btn btn-warning  rounded-pill shadow-sm"
+                                        onclick="RemoverVerificacao()">Sim
+                                </button>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div aria-hidden="true" aria-labelledby="ModalLabel" class="modal fade" id="AvisoPreenchimento" role="dialog"
+             tabindex="-1">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Erro de Preenchimmento</h5>
+                        <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <div id="Preenchimento"></div>
+
+
+                            <div class="modal-footer">
+                                <button class="subscribe btn btn-secondary  rounded-pill shadow-sm" data-dismiss="modal"
+                                        type="button">OK
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div aria-hidden="true" aria-labelledby="ModalLabel" class="modal fade" id="CadastroPreenchimento" role="dialog"
+             tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cadastrar Verificação</h5>
+                        <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <div id="PreenchimentoCadastroPreenchimento">
+                                <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="CadastrarPreenchimentoSelect">Responsável:</label>
+                                </div>
+                                <select class="custom-select" id="CadastrarPreenchimentoSelect">
+
+                                    {% for valor in VerificacaoForm.ResponsavelVerificacao %}
+                                    {%if valor %}
+                                    {{ valor }}
+                                    {%endif%}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text" for="SelectLVE">Selecione uma LVE:</label>
+                                    </div>
+                                    <select class="custom-select" style="width: 500px" id="SelectLVE">
+
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div id="ErroNoPreenchimento"></div>
+                        </div>
+                            <div class="modal-footer">
+                                <button type="button" class="subscribe btn btn-secondary  rounded-pill"
+                                        data-dismiss="modal">Cancelar
+                                </button>
+                                <button type="button" class="subscribe btn btn-warning  rounded-pill"
+                                        onclick="CadastrarPreenchimento()">Cadastrar
+                                </button>
+                                <div class="loader" id="loaderCadastroPreenchimento"
+                                     style="height: 50px; width:50px; display: none"></div>
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+        </div>
+
+<div class="modal fade" id="AdicionarArquivoModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <form method="post" enctype="multipart/form-data">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Adicionar Arquivo à Etapa</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Arquivo</span>
+                            </div>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" name="ArquivoUpload"
+                                       id="ArquivoUploadInput" aria-describedby="inputGroupFileAddon01" required>
+                                <label class="custom-file-label" name="NomeDoArquivolbl" id="id_NomeDoArquivolbl">Selecione um arquivo</label>
+                                <input hidden type="text" name="NomeDoArquivo" id="id_NomeDoArquivo" required>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Descrição</span>
+                                </div>
+                                <textarea required class="form-control" id="DescricaoArquivo" aria-label="With textarea"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer" >
+                            <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm"
+                                    style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important" data-dismiss="modal">Cancelar
+                            </button>
+                            <button type="button" class="subscribe btn btn-warning  rounded-pill shadow-sm"
+                                    onclick="EnviarArquivo()">Enviar
+                            </button>
+                            <div class="loader" id="loaderUploadArquivo" style="height: 50px; width:50px; display: none"></div>
+                        </div>
+
+                    </div>
+                </div>
+                  <div id="progress-box"></div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal fade" id="ConfirmarExcluirArquivoModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <form method="post" enctype="multipart/form-data">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmação de Exclusão de Arquivo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    {% csrf_token %}
+
+
+                        <p> Tem certeza que deseja excluir o arquivo?</p>
+                        <br/>
+                        <p hidden id="IDArquivoExcluir"></p>
+                        <div class="modal-footer" >
+                              <div class="loader" id="loaderExcluirArquivo" style="height: 50px; width:50px; display: none"></div>
+                            <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm"
+                                    style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important" data-dismiss="modal">Não
+                            </button>
+                            <button type="button" class="subscribe btn btn-warning  rounded-pill shadow-sm"
+                                    onclick="ExcluirArquivoConfirmado()">Sim
+                            </button>
+
+                        </div>
+
+
+
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal fade" id="ExcluirComentario" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <form method="post" enctype="multipart/form-data">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmação de Exclusão de Comentário</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                        <p> Tem certeza que deseja excluir o Comentário?</p>
+                        <br/>
+
+                        <div class="modal-footer" >
+                             <div class="loader" id="loaderExcluirComentario" style="height: 50px; width:50px; display: none"></div>
+                            <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm"
+                                    style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important" data-dismiss="modal">Não
+                            </button>
+                            <button type="button" class="subscribe btn btn-warning  rounded-pill shadow-sm" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important"
+                                    onclick="RemoverComentarioBD()">Sim
+                            </button>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+        {% else %}
+        <h1> Acesso não permitido </h1>
+        {% endif %}
+
+        <script src="{% static 'js/civil/ScriptsCorrecaoModelo.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/civil/jquery.dataTables.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/a1civ.css' %}"/>
+<script src="{% static 'js/civil/scriptsGerais.js' %}"></script>
+
+{%endblock%}

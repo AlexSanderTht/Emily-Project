@@ -1,0 +1,94 @@
+{% load static %}
+<div class="modal fade" id="modal_select_cols" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Seleção de colunas</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+
+            <div class="col-12 bg-secondary bordas text-white mt-2">
+                <div class="row d-flex align-items-center">
+                    <div class="col-3">
+                        <label class="switch_toggle mb-0 mt-1">
+                            <input type="checkbox" name="cols_export_lc" value="tensao">
+                            <span class="slider_switch round"></span>
+                        </label>
+                    </div>
+                    <p class="col-9 mb-0">Tensão</p>
+                </div>
+            </div>
+
+            <div class="col-12 bg-secondary bordas text-white mt-2">
+                <div class="row d-flex align-items-center">
+                    <div class="col-3">
+                        <label class="switch_toggle mb-0 mt-1">
+                            <input type="checkbox" name="cols_export_lc" value="veia">
+                            <span class="slider_switch round"></span>
+                        </label>
+                    </div>
+                    <p class="col-9 mb-0">Veia</p>
+                </div>
+            </div>
+
+            <div class="col-12 bg-secondary bordas text-white mt-2">
+
+                <div class="row d-flex align-items-center">
+                    <div class="col-3">
+                        <label class="switch_toggle mb-0 mt-1">
+                            <input type="checkbox" name="cols_export_lc" value="regua_origem">
+                            <span class="slider_switch round"></span>
+                        </label>
+                    </div>
+                    <p class="col-9 mb-0">Regua Origem</p>
+                </div>
+            </div>
+
+            <div class="col-12 bg-secondary bordas text-white mt-2">
+                <div class="row d-flex align-items-center">
+                    <div class="col-3">
+                        <label class="switch_toggle mb-0 mt-1">
+                            <input type="checkbox" name="cols_export_lc" value="borne_origem">
+                            <span class="slider_switch round"></span>
+                        </label>
+                    </div>
+                    <p class="col-9 mb-0">Borne Origem</p>
+                </div>
+            </div>
+
+            <div class="col-12 bg-secondary bordas text-white mt-2">
+
+                <div class="row d-flex align-items-center">
+                    <div class="col-3">
+                        <label class="switch_toggle mb-0 mt-1">
+                            <input type="checkbox" name="cols_export_lc" value="regua_dest">
+                            <span class="slider_switch round"></span>
+                        </label>
+                    </div>
+                    <p class="col-9 mb-0">Regua Destino</p>
+                </div>
+            </div>
+
+            <div class="col-12 bg-secondary bordas text-white mt-2">
+                <div class="row d-flex align-items-center">
+                    <div class="col-3">
+                        <label class="switch_toggle mb-0 mt-1">
+                            <input type="checkbox" name="cols_export_lc" value="borne_dest">
+                            <span class="slider_switch round"></span>
+                        </label>
+                    </div>
+                    <p class="col-9 mb-0">Borne Destino</p>
+                </div>
+            </div>
+
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        <button type="button" class="btn btn-success" onclick="ExportLc()">Selecionar</button>
+      </div>
+    </div>
+  </div>
+</div>

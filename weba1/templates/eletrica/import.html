@@ -1,0 +1,31 @@
+  {% load static %}
+  {% block import %}
+  <div class="modal-header border-0 ">
+    <h5 class="modal-title" id="ModalLabel">Importar/Exportar Função</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body ">
+    <div class="input-group mb-3">
+      <div class="custom-file">
+        <label class="custom-file-label" for="file_import_func_motor" id="frase_arquivo_import_func_motor">Selecione um arquivo</label>
+        <input type="file" class="custom-file-input" id="file_import_func_motor" onchange="import_export()">
+      </div>
+    </div>
+    <div id="progress-box-funcao" hidden>
+        <div class='progress-wrapper'>
+            <div id='progress-bar-xd' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;"></div>
+        </div><br>
+        <div id="progress-bar-message-xd" class="text-center">Aguardando a Inicialização da tarefa ...</div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="limpaCampo()">Fechar</button>
+    <button type="button" id="import_func_xd" class="btn btn-primary" onclick="">Exportar</button>
+    <form id='import_func' method="get"></form>
+    <button type="button" class="btn btn-primary" onclick="">Importar</button>
+    <button type="button" class="subscribe btn btn-success shadow" onclick="download_template_motor()">Download Template</button>
+    <form id='download_file_func_motor' method="get"></form>
+  </div>
+{% endblock import %}

@@ -1,0 +1,45 @@
+{% load static %}
+<div class="row">
+    <div class="form-group text-left col-md-12 col-lg-6 d-flex">
+        <div class="card mb-0 flex-grow-1 bg-light">
+            <div class="card-body" id="container-list-tag-blocos">
+                <div class="d-flex justify-content-between">
+                    <h5>Lista de Fixações</h5>
+                    <button type="button" class="btn btn-outline-primary rounded-pill py-0 mb-2 btn-sm">
+                        Total: <span class="badge badge-primary ml-2">{{len_chumbs}}</span>
+                    </button>
+                </div>
+                <p>Selecione os DWGS de Fixações que quer utilizar nessa OS</p>
+                <div class="form mb-3 rounded">
+                    <i class="fa fa-search position-absolute"></i>
+                    <input type="text" class="form-control form-input" onkeyup="FilterGroupsInChumbsOs(this.value)" placeholder="Pesquisar...">
+                </div>
+                <!---------------- Início Lista de Tags ---------------->
+                <div id="content_cards_tipicos_chumbs" class="list-tags-tipico-container">
+
+                </div>
+
+                <!---------------- Início Conteiner para salvar ---------------->
+                <div class="d-flex mt-2">
+                    <button type="button" class="btn btn-primary rounded-pill py-0" onclick="SendFilesCheckedChumbs()">
+                        <i class="fa-solid fa-circle-check"></i> Salvar
+                    </button>
+                </div><!---------------- Fim Conteiner para salvar ---------------->
+            </div>
+        </div>
+    </div>
+    <!------------------ Início exibição de imagem ------------------>
+    <div class="form-group text-left col-md-12 col-lg-6 d-flex">
+        <div class="bd-callout bd-callout-default my-0 bg-light w-100 d-flex flex-column">
+            <h6>Visualizar Arquivo</h6>
+            <div class="flex-grow-1 d-flex justify-content-center align-items-center">
+                <img hidden id="img_dwg_chumbs" class="shadow h-100 image_tip_tag animate__animated">
+                <div class="text-center animate__animated animate__flipInX" id="text_notify_image_chumbs">
+                    <i class="fa-solid fa-eye-slash text-secondary fa-2xl mb-4"></i>
+                    <p>Nenhuma visualização disponível.</p>
+                </div>
+            </div>
+        </div>
+    </div><!------------------ Fim exibição de imagem ------------------>
+
+</div>

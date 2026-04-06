@@ -1,0 +1,145 @@
+{% extends 'geral/base.html' %}
+{% block head %}
+<title>Tela de Controle - Proposta 02</title>
+{% endblock %}
+{% block help %}
+    <h7>Drop List <strong>"Liberar sistema"</strong>> Droplist: Liberar / revisar sistema Finalizar comentários</h7>
+    <br><br>
+    <h7>Opção "Controladoria" Nesta opção você irá revisar somente  listas da controladoria. </h7>
+    <br><br>
+    <h7>Opção "Outra lista" Nesta opção você irá revisar as demais listas. </h7>
+    <br><br>
+    <h7>Opção "Revisar abas por posição" Nesta opção você irá revisar pelas sequencia numérica das abas. </h7>
+    <br><br>
+    <h7>"Chave 1" Neste campo você irá inserir a coluna com ou sem repetição de valores. </h7>
+    <br><br>
+    <h7> "Chave 2" Neste campo você irá inserir a coluna  sem repetição de valores(caso a primeira tenha repetição). </h7>
+    <br><br>
+    <h7>Botão "Revisar" Neste botão ele realizará a revisão entre os doc. marcando em amarelo o que mudou, mantendo a extensão .xlsx.</h7>
+    <br><br>
+    <h7>"Barra de progresso" aguarde o fim do processo para o download dos documentos. </h7>
+{% endblock %}
+{% block main %}
+<!-- For demo purpose -->
+<div class="row mb-4">
+  <div class="col-lg-8 mx-auto text-center">
+    <h1 class="display-4"><b>A1 Flex - Tela de Sistemas</b></h1>
+  </div>
+</div>
+<!-- End -->
+
+<div class="row">
+  <div class="col-lg-12 mx-auto">
+    <div class="bg-white rounded-lg shadow-sm p-5">
+
+
+      <!-- Credit card form content -->
+      <div class="tab-content row">
+
+        <!-- credit card info-->
+        <div id="nav-tab-card" class="tab-pane fade show active col-12">
+
+          <div>
+            <form action="{% url 'download' %}" id="auto-download" method="GET" enctype="multipart/form-data">
+                {% csrf_token %}
+            </form>
+          </div>
+
+          <form role="form" action="{% url 'a1rev' %}" method="POST" enctype="multipart/form-data" id="form">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-4">
+                  <!-- Campo 1-->
+                  <!-- linha 1-->
+                  <div class="form-group col-12">
+                      <select class="form-control bg-gray" id="estados" readonly>
+                          <option>Liberar</option>
+                          <option>Revisar Sistema</option>
+                      </select>
+                  </div>
+
+                  <!-- linha 2 -->
+                  <div class="row">
+                    <div class="form-group marcador col-6">
+                        <label for="sistema">Sistema</label>
+                          <input class="form-control" type="sistema" id="sistema" placeholder="SXXX" readonly>
+                    </div>
+                    <div class="form-group marcador col-6">
+                        <label for="revisao">Revisão</label>
+                          <input class="form-control" type="revisao" id="revisao" placeholder="RX" readonly>
+                    </div>
+                  </div>
+                  <!-- linha 3 -->
+                  <div class="custom-file marcador col-12">
+                      <input class="custom-file-input" type="file" id="arquivo">
+                      <label class="custom-file-label">Isométricos</label>
+                  </div><br><br>
+                  <!-- linha 4 -->
+                  <div class="custom-file marcador col-12">
+                      <input class="custom-file-input" type="file" id="arquivo">
+                      <label class="custom-file-label">Arquivos PD2CII</label>
+                  </div><br><br>
+                </div>
+                <div class="valid-feedback">
+                  Campo Obrigatório
+                </div>
+                <!-- Campo 2-->
+                <div class="col-8">
+                      <div class="row">
+                        <div class="form-group marcador col-12">
+                          <label for="mensagem">Observações</label>
+                          <textarea class="form-control" id="mensagem" rows="8" placeholder="Alterações em relação à última revisão"></textarea>
+                        </div>
+                      </div>
+                </div>
+                <table class="table">
+                  <table class="table table-striped table-bordered">
+                    <thead>
+                      <tr>
+                        <th>OS</th>
+                        <th>Item</th>
+                        <th>Status</th>
+                        <th>Área</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr>
+                        <td>2121</td>
+                        <td>1</td>
+                        <td>Tubulação Ajustada</td>
+                        <td>Marrom</td>
+                      </tr>
+                      <tr>
+                        <td>2121</td>
+                        <td>2</td>
+                        <td>Em análise</td>
+                        <td>Cozimento</td>
+                      </tr>
+                      <tr>
+                        <td>2120</td>
+                        <td>3</td>
+                        <td>Em análise</td>
+                        <td>Cozimento</td>
+                      </tr>
+                    </tbody>
+                  </table><br>
+              <div align="justfy-content-end" class="col-3">
+                <div class="progress-wrapper" >
+                  <button type="button" onclick="document.getElementById('agua-modal-task').style.display='block'" style="background-color:#ffbe47;" class="subscribe btn btn-block btn-warning rounded-pill shadow-sm"> Enviar Requisição </button>
+                  <br>
+                </div>
+              </div>
+            </div>
+          </form>
+          <!-- barra de progresso -->
+
+        </div>
+        <!-- End -->
+        <!-- End -->
+      </div>
+      <!-- End -->
+    </div>
+  </div>
+</div>
+{% endblock %}

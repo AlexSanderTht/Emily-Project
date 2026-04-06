@@ -1,0 +1,116 @@
+<!--############################################### Origem ##############################################################-->
+
+{%block info_origem%}
+<div class="nome_origem">
+    <button class="btn_mais" data-toggle="collapse" href="#CargaColapseMenuAlimentador" role="button"
+            aria-expanded="false" aria-controls="CargaColapseMenuAlimentador">
+        +
+    </button>
+    Origem (Alimentador)
+</div>
+
+<div class="collapse" id="CargaColapseMenuAlimentador">
+    <div class="card card-body bg-gray" id="CargaInforAlimentador">
+        <div class="text-center">
+            <h6> ORIGEM (ALIMENTADOR) </h6>
+            <hr>
+        </div>
+        <div class="form-row">
+
+            <div class="col-sm-8">
+                <div class="">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="CargaCBOrigem" type="radio" id="CargaCBPainelOrigem"
+                               value="PN" onchange="CreateSelectOrigem('PN')">
+                        <label class="form-check-label" for="CargaCBPainelOrigem">Painel</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="CargaCBOrigem" type="radio" id="CargaCBTrafoOrigem"
+                               value="TR" onchange="CreateSelectOrigem('TR')">
+                        <label class="form-check-label" for="CargaCBTrafoOrigem">Transformador</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="CargaCBOrigem" type="radio" id="CargaCBBarramentoOrigem"
+                               value="BR" onchange="CreateSelectOrigem('BR')">
+                        <label class="form-check-label" for="CargaCBBarramentoOrigem">Barramento</label>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+        <div class="form-row">
+            <!--Inicio campo TAG-->
+            <div class="col-sm-2 col-lg-3">
+                <label for="CargaTagOrigem">TAG</label>
+                <select type="text" name="tipo_cub" id="CargaTagOrigem" class="form-control">
+                    <option value="none">Selecione um Tipo de equipamento!!</option>
+                </select>
+            </div>
+            <!--Fim campo TAG-->
+
+            <div class="col-sm-2 col-lg-3">
+                <label for="TensaoOrigem">Tensão</label>
+                <input type="text" id="TensaoOrigem" class="form-control" readonly>
+            </div>
+
+            <!--Inicio campo CUB-->
+            <div class="col-sm-2 col-lg-3">
+                <label for="CargaCubiculoOrigem">CUB</label>
+                <input list="CubOrigem" type="text" name="tipo_cub" id="CargaCubiculoOrigem" class="form-control" onclick="FillCubsGavs('Orig', this.value, 'Cub')">
+                <datalist id="CubOrigem">
+                    <option></option>
+                </datalist>
+            </div>
+            <!--Fim campo CUB-->
+
+            <!--Inicio campo GAV-->
+            <div class="col-sm-2 col-lg-3">
+                <label for="CargaGavetaOrigem">GAV</label>
+                <input list="GavOrigem" type="text" id="CargaGavetaOrigem" class="form-control" onclick="FillCubsGavs('Orig', this.value, 'Gav')">
+                <datalist id="GavOrigem">
+                    <option></option>
+                </datalist>
+            </div>
+            <!--Fim campo GAV-->
+
+            <!--Inicio campo area-->
+            <div class="col-sm-2 col-lg-3">
+                <div class="form-group mb-4">
+                    <label for="CargaAreaOrigem">Area</label>
+                    <select type="text" name="tipo_area" id="CargaAreaOrigem" class="form-control" onchange="ChangeArea(this.id, 'CargaSubAreaOrigem')">
+                        <option value="none">---</option>
+                        {% for i in ListArea %}
+                        <option value="{{i}}">{{i}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <!--Fim campo area-->
+
+            <!--Inicio campo sub-area-->
+            <div class="col-sm-2 col-lg-3">
+                <div class="form-group mb-4">
+                    <label for="CargaSubAreaOrigem">Sub-Area</label>
+                    <select type="text" name="tipo_subarea" id="CargaSubAreaOrigem" class="form-control" disabled>
+                    </select>
+                </div>
+            </div>
+            <!--Fim campo subarea-->
+
+            <div class="col-sm-2 col-lg-3 hidden">
+                <div class="form-group mb-4">
+                    <input type="text" id="IdLig" class="form-control">
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+
+{%endblock info_origem%}

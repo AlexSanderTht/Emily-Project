@@ -1,0 +1,5 @@
+{% block buttons %}
+<br>
+<button type="button" style="background-color:#ffbe47 ;" class="subscribe btn btn-warning  rounded-pill shadow-sm" onclick="clear_inputs(this.parentElement.id)"> Limpar</button>
+<button type="button" style="background-color:#ffbe47;" class="subscribe btn btn-warning  rounded-pill shadow-sm" onclick="import_data('{{ csrf_token }}', this.parentElement.id)">Adicionar/Alterar</button>
+{% endblock %}

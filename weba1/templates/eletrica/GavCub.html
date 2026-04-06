@@ -1,0 +1,135 @@
+{% load static %}
+{% block GavCub %}
+<!--modal Gavetas/Cubiculos-->
+    <div class="modal-header">
+        <h5 class="modal-title" id="cadastroLabel">Gavetas/Cubículos</h5>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+'            <!-- First column -->
+            <div class="col-md-6">
+                <div class="border p-3">
+                    <div class="container" style="height: 400px; overflow-y: scroll">
+                        <div class="col">
+                            <div class="form-row">
+                                  <div class="form-group col-md-10">
+                                    <label for="select-paineis">Paineis</label>
+                                    <select class="form-control" id="select-paineis" onchange="pick_cubs()">
+                                    </select>
+                                  </div>
+                              </div>
+
+                              <div class="form-row">
+                                  <div class="form-group col-md-5">
+                                    <label for="select-cubs">Cub</label>
+                                     <select class="form-control" id="select-cubs"  onchange="pick_gavs()">
+                                         <option value="none">----</option>
+                                     </select>
+                                     <br>
+                                     <br>
+                                     <div align="left">
+                                         <button type="button" class="btn btn-warning" onclick="show_modal()">Criar Cub/Gav</button>
+                                     </div>
+                                  </div>
+                                  <div class="form-group col-md-5">
+                                     <label for="select-gav">Gav</label>
+                                     <select class="form-control" id="select-gav" onchange="gav_selected()">
+                                         <option value="none">----</option>
+                                     </select>
+                                     <div align="right">
+                                         <input class="form-check-input" type="checkbox" value="" id="gav-reserve" onchange="change_reserve()">
+                                         <label class="form-check-label" for="gav-reserve">
+                                            Reservada
+                                         </label>
+                                     </div>
+                                     <br>
+                                     <div align="right">
+                                         <button type="button" class="btn btn-warning" id="btn-del-gav-cub" onclick="what_func()">Remover Cub/Gav</button>
+                                     </div>
+                                  </div>
+                                  <div class="form-group col-md-3">
+                                  </div>
+                              </div>
+                        </div>
+                        <div class="col">
+                            <div class="collapse" id="register-gav-cub">
+                               <div class="card card-body">
+                                   <div class="form-row">
+                                      <div class="form-group col-md-6">
+                                        <label for="form-register-cub">Cubículo</label>
+                                        <input list="options-cub-reg" type="text" id="form-register-cub" class="form-control" placeholder="Selecione ou adicione um Cubículo.">
+                                        <datalist id="options-cub-reg">
+                                        </datalist>
+                                      </div>
+                                  </div>
+                                  <div class="form-row">
+                                      <div class="form-group col-md-6">
+                                        <label for="form-register-gav">Gaveta</label>
+                                        <input type="text" id="form-register-gav" class="form-control">
+                                        <div align="right">
+                                            <input class="form-check-input" type="checkbox" value="" id="gav-reserve-reg">
+                                            <label class="form-check-label" for="gav-reserve-reg">
+                                                Reservada
+                                            </label>
+                                        </div>
+                                      </div>
+                                  </div>
+                                  <div class="row">
+                                      <div class="col-md-4">
+                                        <button type="button" class="btn btn-warning" onclick="register_gavs()">Salvar</button>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <button type="button" class="btn btn-warning" onclick="hide_screen_reg()">↑</button>
+                                      </div>
+                                  </div>
+
+                               </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <p class="col-md-4 font-weight-bold">Legenda:</p>
+                            <div class="d-flex flex-column">
+                                <div class="flex-row">
+                                    <input  class="bg-success col-2">
+                                    <label >Gaveta com carga ou reservada</label>
+                                </div>
+                                <div class="flex-row">
+
+                                    <input class="bg-danger col-2">
+                                    <label >Gaveta sem carga</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Second column -->
+            <div class="col-md-5">
+                <div class="border p-3">
+
+                    <h5>Cargas do Painel</h5>
+
+                    <div id="cargas_painel_cub_gav" class="container " style="height: 370px; overflow-y: scroll">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+<script src="{% static 'js/eletrica/A1Pro/GavCubs.js' %}"></script>
+<script src="{% static 'js/eletrica/A1Pro/GavCubs.js' %}"></script>
+<script>
+
+    async function hide_screen_reg(){
+        clean_forms_register()
+        await print_options_cubs_and_gavs()
+        $('#register-gav-cub').hide()
+    }
+</script>
+<!--fim do modal Gavetas/Cubiculos-->
+{% endblock GavCub %}

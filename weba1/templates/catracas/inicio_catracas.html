@@ -1,0 +1,60 @@
+{% extends 'geral/base.html' %}
+{% load poll_extras %}
+{% load static %}
+{% block head %}
+<title>Dashboards</title>
+<link rel="icon" href="{% static 'dashboards\graph_icon.png' %}" type="image/x-icon">
+
+<!------------------ Início Cartão de conteúdo ------------------>
+<div class="row justify-content-center mt-5 pt-5 bordas">
+
+        <!------------------ Aba conteúdo ------------------>
+        <div class="col-lg-6 bordas_radio imagem_celulose shadow">
+            <div class="container">
+                <div class="row justify-content-md-center mt-5">
+                    <div class="col-lg-2 row align-self-center">
+                        <img class="ml-3" src="{% static 'dashboards\a1_menu_white.png' %}">
+                    </div>
+                    <div class="col-lg-2 row align-self-center ml-1">
+                        <h3 class="text-white font-weight-bold font-italic display-4">Gateway</h3>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-white mx-5">
+
+            <div class="container mb-3">
+                <div class="row justify-content-md-center ">
+                    <!------------------ Início Cartão Catracas ------------------>
+                    <div class="col col-lg-4 ">
+                        <div class="p-2 bordas tamanho_cartao background_card_portaria row align-items-end border" >
+                            <div class="bordas fundo_opaco p-3">
+                                <h5 class="card-title text-center">Catracas</h5>
+                                <p class="card-text ">Acompanhamento do fluxo de pessoas por portaria, data e hora.</p>
+                                <div class="row justify-content-center">
+                                    <a class="btn btn-outline-primary" href="/app/dashboards/a1gateway/portaria/" role="button"><< Acesse aqui >></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!------------------ Fim Cartão Catracas ------------------>
+
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <span class="font-weight-bold" id="AtualizacaoGateway"></span>
+            </div>
+
+            <div class="row justify-content-center my-3">
+                <span class="font-weight-bold">©2001-2022 by A1 Engenharia - CT</span>
+            </div>
+        </div><!------------------ Fim Aba conteúdo ------------------>
+
+</div><!------------------ Fim Cartão de conteúdo ------------------>
+<br>
+<br>
+
+<script src="{% static 'js/dashboards/a1gateway.js' %}"></script>
+
+{% endblock %}
+{% block end %}
+{% endblock %}

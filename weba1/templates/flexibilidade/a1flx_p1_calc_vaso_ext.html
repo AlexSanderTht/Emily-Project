@@ -1,0 +1,264 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Calculos de Vasos Sujeito a Pressão Externa - Proposta 01</title>
+{% endblock %}
+{% block help %}
+    <h7><strong>Temperatura: </strong>Entrar com a temperatura de design.</h7>
+    <br><br>
+    <h7><strong>Diferença de Pressão: </strong>Entrar com a diferença de pressão entre a pressão externa e a interna.</h7>
+    <br><br>
+    <h7><strong>Material: </strong>Escolher um material da lista que compõe o vaso de pressão.</h7>
+    <br><br>
+    <h7><strong>Diâmetro Externo:</strong> Diâmetro externo do vaso de pressão.</h7>
+    <br><br>
+    <h7><strong>Espessura de parede:</strong> Entrar com a espessura de parede desconsiderando a sobre-espessura de
+        corrosão.</h7>
+    <br><br>
+    <h7><strong>Comprimento entre Reforços:</strong> Entrar com o comprimento entre reforços, um reforço pode ser
+        qualquer um dentre os listados abaixo:</h7>
+    <br><br>
+    <h7><strong>1 -</strong> Uma linha circunferencial (exceto em cabeças cônicas) em 1/3 de profundidade da cabeça;</h7>
+    <br><br>
+    <h7><strong>2 -</strong> Um anel de reforço que atende os requisitos do parágrafo UG-29;</h7>
+    <br><br>
+    <h7><strong>3 -</strong> A região do começo de uma jaqueta no vaso de pressão;</h7>
+    <br><br>
+    <h7><strong>4 -</strong> Uma junção entre um cone e cilindro.</h7>
+    <hr style="background-color:#000000;">
+    <h7>Esta ferramenta foi desenvolvida com o objetivo de calcular espessuras de parede de vasos sujeitos a pressão externa, o dimensionamento esta de acordo com a norma ASME BPVC.</h7>
+
+{% endblock %}
+{% block main %}
+<style>
+  .loadergb {
+    border: 8px solid #A1A1A1;
+    border-top: 8px solid #f6801e;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .alinhamento-img{
+    transform: translate(-50%, -50%);
+    margin: 0px;
+    padding: 0px;
+    left: 50%;
+    top: 50%;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+</style>
+
+<div class="container py-5">
+  <div class="row mb-4">
+    <div class="col-12 mx-auto text-center">
+      <h1 class="display-4"><b>Calculos de Vasos Sujeito a Pressão Externa</b></h1>
+    </div>
+  </div>
+  <div id="tela"  class="container">
+    <div class="col rounded bg-white shadow py-3">
+    <!-- Início campo dados de entrada -->
+    <div class="mx-2 my-1 px-5 py-3 border border-dark">
+      <div class="row">
+        <div class="col-4">
+        <form class="needs-validation">
+          {% csrf_token %}
+          <div class="form-group my-1">
+          <label for="temperatura">Temperatura (°C)</label>
+          <input type="text" class="form-control" id="temperatura" placeholder="Temperatura em °C" onclick="limpaerro(this)" onselect="limpaerro(this)" required>
+          <div id="errotemperatura"></div>
+          </div>
+          <div class="form-group my-1" id="pressaoform" style="display: none;">
+            <label for="pressao">Diferença de Pressão (kPa)</label>
+            <input type="text" class="form-control" step="1" id="pressao"  value="103.42" placeholder="Pressão em kPa" onclick="limpaerro(this)" onselect="limpaerro(this)" required>
+            <div id="erropressao"></div>
+          </div>
+          <div class="form-group my-1">
+            <label for="material">Material</label>
+            <select class="form-control bg-gray" id="material">
+              <option selected>Selecionar material</option>
+              <option>A312 TP 304</option>
+              <option>A358 304</option>
+              <option>A312 TP 316</option>
+              <option>A358 316</option>
+              <option>A312 TP 304L</option>
+              <option>A358 304L</option>
+              <option>A358 316L</option>
+              <option>A240 304L</option>
+              <option>A312 TP 316L</option>
+              <option>A240 316L</option>
+              <option>A335 P11</option>
+              <option>A335 P22</option>
+              <option>API 5L Gr. B</option>
+              <option>A106 Gr. B</option>
+              <option>A53 Gr. B</option>
+              <option>B862 Gr. 2</option>
+              <option>A790 S32205</option>
+              <option>A790 S32750</option>
+            </select>
+            <div id="erromaterial"></div>
+          </div>         
+          <div class="form-group my-1">
+            <label for="diametro">Do: Diâmetro Externo (mm)</label>
+            <input type="text" class="form-control" id="diametro" placeholder="Diâmetro em mm" onclick="limpaerro(this)" onselect="limpaerro(this)" required>
+            <div id="errodiametro"></div>
+            <div id="errodot"></div>
+          </div>         
+          <div class="form-group my-1">
+            <label for="espessura">t: Espessura de Parede (mm)</label>
+            <input type="text" class="form-control" id="espessura" placeholder="Espessura em mm" onclick="limpaerro(this)" onselect="limpaerro(this)" required>
+            <div id="erroespessura"></div>
+          </div>         
+          <div class="form-group my-1">
+            <label for="comprimento">L: Comprimento entre reforços (mm)</label>
+            <input type="text" class="form-control" id="comprimento" placeholder="Comprimento em mm" onclick="limpaerro(this)" onselect="limpaerro(this)" required>
+            <div id="errocomprimento"></div>
+          </div>                
+        </form>
+        <div class="col text-center mt-3">
+          <button type="submit" class="btn font-weight-bold" style="background-color: #F58C32; color: #ffff" onclick="calcular()">Calcular</button>
+        </div>
+      </div>
+      <div class="col-8">
+        <div class="row">
+          <div class="col text-right">
+            <button type="submit" class="btn font-weight-bold" style="background-color: #F58C32; color: #ffff" data-toggle="dropdown">Informações adicionais</button>
+            <div class="dropdown-menu dropdown-menu-right p-0">
+              <div class="p-3 shadow m-0">
+                <div class="form-group">
+                  <div class="form-check p-0">
+                    <input type="checkbox" id="pressaomanual" onclick="habilitarpressao()">
+                    <label class="form-check-label" for="pressaomanual" onclick="habilitarpressao()">
+                      Habilitar campo da pressão
+                    </label>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row m-0">
+                    <div class="col pl-0 pr-1">
+                      <a href="/app/flexibilidade/DownloadTemplateInputDados/">
+                        <button id="BotaoVal" class="btn font-weight-bold" type="button" onclick="" style="background-color:#F58C32; color: #ffff">Baixar planilha padrão</button>
+                      </a>
+                    </div>
+                    <div class="col pr-0 pl-1">
+                      <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="ArquivoUpload" id="ArquivoUploadInput" accept=".xlsx, .xls, .xlsm, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel.sheet.macroenabled.12" required>
+                        <label class="custom-file-label" name="NomeDoArquivolbl" id="id_NomeDoArquivolbl">Calcular planilha</label>
+                        <input hidden type="text" name="NomeDoArquivo" id="id_NomeDoArquivo" lang="pt-BR" required>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group" style="display:none" id="divCalcularPlanilhaInput">
+                  <button id="CalcularPlanilhaInput" class="btn font-weight-bold w-100" type="button" onclick="CalcularArquivo()" style="background-color:#F58C32; color: #ffff">Calcular planilha</button>
+                </div>
+                <div class="form-group mb-0">
+                  <button id="BotaoVal" class="btn font-weight-bold w-100" type="button" onclick="abrirtabela()" style="background-color:#F58C32; color: #ffff">Comparação de Resultados com PV Elite</button>
+                </div>
+                <div id="ErroArquivo"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row h-100 pb-4">
+          <div class="col">
+            <img class="position-relative alinhamento-img" src="{% static 'img\a1_flex_images\a1_fist_reforcos_img.png' %}">
+          </div>
+        </div>
+      </div>
+      <!-- Final campo dados de entrada -->
+    </div>
+    <div id="Loader" class="loadergb mt-3" style="display:none"></div>
+    <div id="progress" class="mt-3"></div>
+    <div id="ProgressCelery" style="display: none">
+      <div class='progress-wrapper'>
+      <div class="row">
+          <div id='progress-bar' class='progress-bar' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+        </div>
+      </div>
+      <div class="row">
+        <div id="progress-bar-message"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="nav-tab-card" class="tab-pane fade show active col-12">
+  <form role="form" action="{% url 'a1rev' %}" method="POST" enctype="multipart/form-data" id="form">
+    {% csrf_token %}
+    <div class="row">
+        <!--fim da linha 2-->
+        <div class="modal fade" id="TeladeResultado" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content" style="width: 150%;">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Cálculo da Pressão Admissível</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="tab-content row">
+                  <!-- credit card info-->
+                  <div id="nav-tab-card" class="tab-pane fade show active col-12">
+                    <div class="row">
+                      <div class="col-lg-5">
+                        <!-- Campo 1-->
+                        <!-- linha 1-->
+                        <div class="row">
+                          <div class="form-group col-12">
+                            <label for="diametro1">Diâmetro Entrado (mm):</label>
+                            <input class="form-control" type="text" id="diametro1" placeholder="" readonly>
+                          </div>
+                          <div class="form-group col-12">
+                            <label for="pa">Pressão Admissível (KPa):</label>
+                            <input class="form-control" type="text" id="pa" placeholder="" readonly>
+                          </div>
+                          <div class="form-group col-12">
+                            <label for="pressao1">Pressão Entrada (KPa):</label>
+                            <input class="form-control" type="text" id="pressao1" placeholder="" readonly>
+                          </div>
+                          <div class="form-group col-12">
+                            <label for="totimo">Espessura Ótima (mm):</label>
+                            <input class="form-control" type="text" id="totimo" placeholder="" readonly>
+                          </div>
+
+                          <div class="form-group col-12">
+                            <label for="espessura1">Espessura Entrada (mm):</label>
+                            <input class="form-control" type="text" id="espessura1" placeholder="" readonly>
+                          </div>
+
+                          <div class="form-group col-12">
+                            <label for="lotimo">Comprimento entre Reforços Ótimo (mm):</label>
+                            <input class="form-control" type="text" id="lotimo" placeholder="" readonly>
+                          </div>
+                          <div class="form-group col-12">
+                            <label for="comprimento1">Comprimento entre Reforços Entrado (mm):</label>
+                            <input class="form-control" type="text" id="comprimento1" placeholder="" readonly>
+                          </div>
+                          <div class="form-group col-12">
+                            <div class="text-center">
+                              <button type="button" class="btn font-weight-bold" data-dismiss="modal" aria-label="Close" style="margin-left: 10%; background-color: #F58C32; color: #ffff">Retornar</button>
+                            </div>
+                          </div>
+                          </div>
+                      </div>
+                      <div class="col-lg-7" align="center">
+                          <label for="mensagem">Resumo dos resultados da Pressão Externa:</label>
+                          <textarea class="form-control" id="mensagem" rows="20" placeholder=""></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+  </form>
+  <!-- barra de progresso -->
+</div>
+    <script src="{% static 'js/a1flx/P1_vaso_press_ext.js' %}"></script>
+{% endblock %}

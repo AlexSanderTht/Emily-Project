@@ -1,0 +1,48 @@
+{% load static %}
+
+<div class="modal fade" id="modal_materiais_gt" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content mt-5 shadow border estl_modal">
+      <div class="modal-header border-0">
+        <h5 class="modal-title font-weight-bold mt-2 p-1" id="exampleModalLabel">Materiais</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body ">
+        <div class="row">
+          <div class="col-6">
+            <form>
+              <div class="form-group">
+                <label>Nome:</label>
+                <input type="text" class="form-control input-a1style" id="nome_mat_gt">
+              </div>
+              <div class="form-group">
+                <label>Descrição:</label>
+                <input type="text" class="form-control input-a1style" id="desc_mat_gt">
+              </div>
+            </form>
+          </div>
+          <div class="col-6">
+            <form>
+              <div class="form-group">
+                <label >Procurar:</label>
+                <input type="text" class="form-control input-a1style" id="search_mat_gt" onkeyup="FilterSelectsCt(this.value, 'all_mat_gt')">
+              </div>
+              <div class="form-group">
+                <select multiple class="form-control input-a1style " id="all_mat_gt"></select>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="grid d-flex align-self-start mr-auto">
+          <button type="button" class="btn btn-success" onclick="SendValuesMatGt()" style="">Adicionar/Alterar</button>
+        </div>
+          <button type="button" class="btn btn-warning"  onclick="ClearModalMats()">Limpar</button>
+          <button type="button" class="btn btn-danger"  onclick="DeleteMatGt()">Excluir</button>
+      </div>
+    </div>
+  </div>
+</div>

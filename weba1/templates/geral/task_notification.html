@@ -1,0 +1,547 @@
+{% load static %}
+{% load poll_extras %}
+{% verify_tool as user_info %}
+
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<link href="{% static 'css/pagination.min.css' %} " rel="stylesheet"/>
+<style>
+  .color_card_notification {
+      background-color: var(--bg-color);
+  }
+  .loader_task_notify {
+      border: 2px solid rgba(243, 243, 243, 0.1);
+      border-radius: 50%;
+      border-top: 2px solid #fd7e14;
+      width: 15px;
+      height: 15px;
+      -webkit-animation: spin 0.4s linear infinite; /* Safari */
+      animation: spin 0.4s linear infinite;
+  }
+
+  @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+  }
+
+
+  .lds-ripple {
+      display: inline-block;
+      position: relative;
+      width: 80px;
+      height: 80px;
+  }
+  .lds-ripple div {
+      position: absolute;
+      border: 4px solid #fff;
+      opacity: 1;
+      border-radius: 50%;
+      animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  }
+  .lds-ripple div:nth-child(2) {
+      animation-delay: -0.5s;
+  }
+
+  @keyframes lds-ripple {
+      0% {
+          top: 36px;
+          left: 36px;
+          width: 0;
+          height: 0;
+          opacity: 0;
+      }
+      4.9% {
+          top: 36px;
+          left: 36px;
+          width: 0;
+          height: 0;
+          opacity: 0;
+      }
+      5% {
+          top: 36px;
+          left: 36px;
+          width: 0;
+          height: 0;
+          opacity: 1;
+      }
+      100% {
+          top: 0px;
+          left: 0px;
+          width: 72px;
+          height: 72px;
+          opacity: 0;
+      }
+  }
+
+  .paginationjs .paginationjs-pages li.active {
+      background-color: #f8f9fa !important;
+  }
+
+  .w-70 {
+      width: 70% !important;
+  }
+
+  .overflow-container-tasks {
+      max-height: 400px;
+      overflow-y: scroll;
+      padding-right: 10px;
+      scrollbar-color: #6c757d #d9dadb;
+      scrollbar-width: thin;
+  }
+
+</style>
+
+<div class="pos-f-t position-absolute bordas"  style="width: 30rem; right: 5%; z-index: 1;">
+    {% csrf_token %}
+    <div class="collapse" id="navbarToggleExternalContent">
+        <div class="color_card_notification px-4 border-bottom border-secondary">
+            <!---------------- Início card de tasks ---------------->
+            <div class="card bg-transparent mb-0 font_size_0_8">
+                <!---------------- Início Cabeçalho ---------------->
+                <div class="card-body pb-2 d-flex justify-content-between">
+                    <small class="text-white font-weight-bold">TASK</small>
+                    <button id="filter_tasks" type="button" class="btn btn-sm btn-outline-light border border-white rounded-pill py-0 px-2 animate__animated animate__flipInY" style="max-width: 250px;">
+                        <i class="fa-solid fa-person-walking-luggage"></i> Minhas tasks
+                    </button>
+                    <small class="text-white font-weight-bold">TASK STATE</small>
+                </div><!---------------- Fim Cabeçalho ---------------->
+
+                <!---------------- Início Lista de tasks ---------------->
+                    <div style="height:300px; overflow-y:scroll" id="list_tasks_user" class="overflow-auto">
+
+                    </div>
+                <!---------------- Início Barra de Navegação ---------------->
+                <div id="pagination-container"></div>
+
+            </div><!---------------- Fim card de tasks ---------------->
+         </div>
+    </div>
+    <nav class="navbar navbar-dark color_card_notification border_bottom">
+        <!---------------- Botão navbar de histórico de tasks ---------------->
+        <a class="navbar-toggler text-white border-0 w-100 text-center d-flex align-items-center" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fa-solid fa-bell fa-sm pr-3"></i><small class="font_size_0_8" id="tasks_number">Fila de Task: n° 0</small>
+        </a><!---------------- Fim Botão navbar de histórico de tasks ---------------->
+
+        <!---------------- Animação de Loading ---------------->
+        <div id="loader_task_ctrl_user" class="loader_task_notify position-absolute my-auto" style="right: 5%; top: 35%; display: none;"></div>
+
+        <small id="last_time_update" title="Clique para buscar as tasks!" class="position-absolute my-auto text-white" style="right: 10%; top: 25%; opacity: 0.8"></small>
+
+        <!---------------- Animação de notificação ---------------->
+        <div id="notification_task_ctrl_user" class="lds-ripple position-absolute" style="left: -1%; top: -50%; display: none;">
+            <div></div>
+            <div></div>
+        </div><!---------------- Fim Animação de notificação ---------------->
+    </nav>
+
+</div>
+<script src="{% static 'js/pagination.js' %}"></script>
+<script>
+    const csrf_ = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+    const user_id = JSON.parse('{{user_info.id_user}}');
+    let id_for_request = user_id;
+    // let ws_t
+    // let ws
+    // initializeWebSocket(user_id);
+    // initializeWebSocketTaskResult();
+    let list_tasks_update_user = []
+    let list_tasks_ids = []
+
+    // tentativa de implementar websocket, comentado para tentar colocar em produção em um momento mais oportuno
+    // setInterval(function() {
+    //     if (ws.readyState === WebSocket.OPEN) {
+    //         ws.send(JSON.stringify({ }));
+    //     }
+    // }, 8000);
+    //
+    // setInterval(function() {
+    //     if (ws_t.readyState === WebSocket.OPEN) {
+    //         ws_t.send(JSON.stringify({'task_ids': list_tasks_ids}))
+    //     }
+    // },6000);
+    //
+    // setInterval(function(){
+    //     if(ws_t.readyState === WebSocket.CLOSED){
+    //         initializeWebSocketTaskResult()
+    //     }
+    //     if(ws.readyState === WebSocket.CLOSED){
+    //         initializeWebSocket(user_id)
+    //     }
+    // }
+    // ,20000);
+
+    setInterval(async function() {
+        try {
+            const response = await fetch(`/app/tasks/${id_for_request}/`);
+            if (response.ok) {
+                const taskListData = await response.json();
+                // const data = JSON.parse(taskListData);
+                // console.log(taskListData)
+
+                let html
+                let father_tasks = document.getElementById('list_tasks_user')
+                let back_ground_style
+                let border_style
+                taskListData.tasks.forEach(task => {
+                    if( document.getElementById(`${task.result}`) === null){
+                        if(task.status === 'SUCCESS'){
+                            back_ground_style = 'text-success border-success'
+                        }else if(task.status === 'FAILURE'){
+                            back_ground_style = 'text-danger border-danger'
+                        }else if(task.status === 'REVOKED'){
+                            back_ground_style = 'text-muted border-muted'
+                        }else{
+                            back_ground_style = 'text-warning border-warning'
+                        }
+
+                        html = `<div id="${task.result}" class="card-body bg-white rounded p-2 mb-1 d-flex justify-content-between">
+                                    <div class="accordion w-100" id="accordion_task_${task.result}">
+                                        <div class="card border-0 mb-0">
+                                            <div class="card-header text-truncate border-0 p-0" id="heading_three_${task.result}">
+                                                <h6 class="mb-0">
+                                                    <button class="btn btn-link bg-white collapsed py-0 w-100 text-left" type="button" data-toggle="collapse" data-target="#collapse_task_${task.result}" aria-expanded="false" aria-controls="collapse_task_${task.result}">
+                                                        <dd class="mb-0 text-secondary text-truncate font_size_0_8 my-auto" title="${task.name}">
+                                                            <b>${task.name}</b>
+                                                        </dd>
+                                                    </button>
+                                                </h6>
+                                            </div>
+                                            <small class=" ml-2 ">
+                                                <div class="progress my-auto col-8">
+                                                    <div id="progress-bar-${task.result}" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                                </div>
+                                            </small>
+                                            <small class="text-secondary ml-1">Date: <b>(${task.date_c}) - ${task.per_name}</b></small>
+                                            <button title="Status task" style="right: 5px; bottom:20px" class="border ${back_ground_style} align-middle rounded-pill px-2 position-absolute">
+                                                 ${task.status}
+                                            </button>
+                                            <button title="Status task" style="right: 5px; top: 27px" class="text-success border border-success align-middle rounded-pill px-2 position-absolute" onclick="downloadTaskFile('${task.result}')">
+                                                <i class="fa-solid fa-download pb-1 ml-1"></i> Baixar
+                                            </button>
+                                            <button hidden title="Status task" style="right: 5px; top: 55px" class="text-danger border border-danger align-middle rounded-pill px-2 position-absolute" onclick="revokeTask('${task.result}')">
+                                                <i class="fa-solid fa-circle-stop pb-1 ml-1"></i> Parar Task
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                   `;
+
+                        father_tasks.insertAdjacentHTML('afterbegin', html)
+                    }
+                    list_tasks_update_user.push(task)
+                    list_tasks_ids.push(task.result)
+                });
+                // document.getElementById('tasks_number').innerHTML =  `Fila de Task: n° ${data.qtd_tasks}`
+                // Update your UI with taskListData
+            } else {
+                console.error("Failed to fetch task list.");
+            }
+        } catch (error) {
+            console.error("Error fetching task list:", error);
+        }
+    }, 8000);  // Poll every 8 seconds
+
+
+    setInterval(async function() {
+        try {
+            const response = await fetch(`/app/task-results/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrf_,
+                    'Content-Type': 'application/json',
+                },
+                dataType: 'json',
+                body: JSON.stringify({ 'task_ids': list_tasks_ids })
+            });
+            if (response.ok) {
+                const taskResultData = await response.json();
+                taskResultData.tasks.forEach(task => {
+                    const progress = task.progress || 0;
+                    updateTaskProgress(task.id, progress, task.status);
+                });
+                document.getElementById('tasks_number').innerHTML =  `Fila de Task: n° ${taskResultData.qtd_tasks}`
+                
+                // Controla a exibição das animações baseado na quantidade de tasks
+                const loaderElement = document.getElementById('loader_task_ctrl_user');
+                const notificationElement = document.getElementById('notification_task_ctrl_user');
+                
+                if (taskResultData.qtd_tasks > 0) {
+                    // Mostra animações quando há tasks
+                    loaderElement.style.display = 'block';
+                    notificationElement.style.display = 'inline-block';
+                } else {
+                    // Esconde animações quando não há tasks
+                    loaderElement.style.display = 'none';
+                    notificationElement.style.display = 'none';
+                }
+
+                // Update your UI with taskResultData
+            } else {
+                console.error("Failed to fetch task results.");
+            }
+        } catch (error) {
+            console.error("Error fetching task results:", error);
+        }
+    }, 6000);  // Poll every 6 seconds
+
+
+    setInterval(verifySession, 5 * 60 * 1000); // verifica a seção a cada 5 minutos
+
+    function updateTaskProgress(taskId, progress, status) {
+        const taskItem = document.getElementById(`progress-bar-${taskId}`);
+        if (taskItem) {
+            taskItem.style.width = `${progress}%`;
+            taskItem.setAttribute("aria-valuenow", progress);
+            taskItem.textContent = `${progress}% - ${status}`;
+            taskItem.style.backgroundColor = "blue";
+            if (status === 'SUCCESS') {
+                taskItem.style.backgroundColor = "green";
+                taskItem.style.width = `100%`;
+                taskItem.textContent = `100% - ${status}`
+            } else if (status === 'FAILURE') {
+                taskItem.style.width = `100%`;
+                taskItem.textContent = `100% - ${status}`
+                taskItem.style.backgroundColor = "purple"
+            }else if (status === 'REVOKED') {
+                taskItem.style.width = `100%`;
+                taskItem.textContent = `100% - ${status}`
+                taskItem.style.backgroundColor = "gray"
+            }
+        }
+    }
+
+    function initializeWebSocketTaskResult(){
+        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        let host = window.location.host;
+        let port = ':8001';
+        console.log(host)
+        if (host === 'localhost:8000'){
+
+            host = 'localhost';
+        }
+        ws_t = new WebSocket(`${protocol}${host}${port}/ws/task-progress/`);
+
+        ws_t.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            data.tasks.forEach(task => {
+                const progress = task.progress || 0;
+                updateTaskProgress(task.id, progress, task.status);
+            });
+            document.getElementById('tasks_number').innerHTML =  `Fila de Task: n° ${data.qtd_tasks}`
+        };
+        ws_t.onerror = function(error) {
+            console.error("WebSocket Taks error:", error);
+        };
+
+        ws_t.onclose = function() {
+            console.log("WebSocket Taks connection closed");
+        };
+
+        ws_t.onopen = function () {
+            console.log("WebSocket Taks Opened")
+        }
+    }
+
+
+    function initializeWebSocket(person_id) {
+        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        let host = window.location.host;
+        let port = ':8001';
+        console.log(host)
+        if (host === 'localhost:8000'){
+
+            host = 'localhost'
+        }
+        // Close any existing WebSocket connection
+        if (ws) {
+            ws.close();
+        }
+
+        // Initialize the WebSocket with the new person_id
+        ws = new WebSocket(`${protocol}${host}${port}/ws/task-list/${person_id}/`);
+
+        // Set up WebSocket event handlers
+        ws.onopen = function() {
+            console.log(`WebSocket connection established for person_id: ${person_id}`);
+        };
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            list_tasks_update_user
+            list_tasks_update_user.length = 0
+            list_tasks_ids
+            list_tasks_ids.length = 0
+            let html
+            let father_tasks = document.getElementById('list_tasks_user')
+            let back_ground_style
+            let border_style
+            data.tasks.forEach(task => {
+                if( document.getElementById(`${task.result}`) === null){
+                    if(task.status === 'SUCCESS'){
+                        back_ground_style = 'text-success border-success'
+                    }else if(task.status === 'FAILURE'){
+                        back_ground_style = 'text-danger border-danger'
+                    }else if(task.status === 'REVOKED'){
+                        back_ground_style = 'text-muted border-muted'
+                    }else{
+                        back_ground_style = 'text-warning border-warning'
+                    }
+
+                    html = `<div id="${task.result}" class="card-body bg-white rounded p-2 mb-1 d-flex justify-content-between">
+                                <div class="accordion w-100" id="accordion_task_${task.result}">
+                                    <div class="card border-0 mb-0">
+                                        <div class="card-header text-truncate border-0 p-0" id="heading_three_${task.result}">
+                                            <h6 class="mb-0">
+                                                <button class="btn btn-link bg-white collapsed py-0 w-100 text-left" type="button" data-toggle="collapse" data-target="#collapse_task_${task.result}" aria-expanded="false" aria-controls="collapse_task_${task.result}">
+                                                    <dd class="mb-0 text-secondary text-truncate font_size_0_8 my-auto" title="${task.name}">
+                                                        <b>${task.name}</b>
+                                                    </dd>
+                                                </button>
+                                            </h6>
+                                        </div>
+                                        <small class=" ml-2 ">
+                                            <div class="progress my-auto col-8">
+                                                <div id="progress-bar-${task.result}" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                            </div>
+                                        </small>
+                                        <small class="text-secondary ml-1">Date: <b>(${task.date_c}) - ${task.per_name}</b></small>
+                                        <button title="Status task" style="right: 5px;" class="border ${back_ground_style} align-middle rounded-pill px-2 position-absolute">
+                                             ${task.status}
+                                        </button>
+                                        <button title="Status task" style="right: 5px; top: 27px" class="text-success border border-success align-middle rounded-pill px-2 position-absolute" onclick="downloadTaskFile('${task.result}')">
+                                            <i class="fa-solid fa-download pb-1 ml-1"></i> Baixar
+                                        </button>
+                                        <button hidden title="Status task" style="right: 5px; top: 55px" class="text-danger border border-danger align-middle rounded-pill px-2 position-absolute" onclick="revokeTask('${task.result}')">
+                                            <i class="fa-solid fa-circle-stop pb-1 ml-1"></i> Parar Task
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                               `;
+
+                    father_tasks.insertAdjacentHTML('afterbegin', html)
+                }
+                list_tasks_update_user.push(task)
+                list_tasks_ids.push(task.result)
+            });
+        };
+
+        ws.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
+
+        ws.onclose = function() {
+            console.log("WebSocket connection closed");
+        };
+    }
+    function openInNewTab(url) {
+        let link = document.createElement("a");
+        link.download = 'File'; // <- name instead of 'name'
+        link.href = url;
+        link.click();
+        link.remove();
+
+    }
+    function downloadTaskFile(taskId) {
+        const protocol = window.location.protocol
+        // Perform a HEAD request to check if the file is available
+        $.ajax({
+            url: `/app/a1hub/download/${taskId}/`,
+            type: 'HEAD',  // Using HEAD to check availability
+            method: "GET",
+            success: function() {
+                // If the file exists, trigger the download by navigating to the URL
+                openInNewTab(`${protocol}//${window.location.host}/app/a1hub/download/${taskId}/`);
+            },
+            error: function() {
+                swalAlert("Atenção!", 'Arquivo não encontrado', 'error', false);
+            }
+        });
+    }
+
+    function revokeTask(taskId) {
+        $.ajax({
+            url: `/app/a1hub/revoke-task/${taskId}/`,  // URL for the centralized revocation view
+            type: 'HEAD',
+            method: "GET",
+            success: function(response) {
+                swalAlert("Atenção!", response.message, 'error', false);
+            },
+            error: function(xhr) {
+                const response = xhr.responseJSON;
+                swalAlert("Atenção!", response ? response.message : "Error revoking task.",  response ? response.status: 'error', false);
+            }
+        });
+    }
+
+  // --------------------- Alert para notificar usuario ---------------------//
+    function swalAlert(titulo, texto, icone_img, btn){
+        swal({
+            title: titulo,
+            text: texto,
+            icon: icone_img,
+            button: btn,
+        })
+        $('div.swal-modal').addClass('bordas')
+        $('div.swal-title').addClass('h4')
+        $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+        $('div.swal-text').addClass('text-center')
+        $('div.swal-footer').addClass('d-flex justify-content-center')
+    }
+
+    var button = document.getElementById('filter_tasks');
+    button.addEventListener('click', function() {
+        var button = document.getElementById('filter_tasks');
+
+        // Remove a classe de animação anterior
+        button.classList.remove('animate__flipInY');
+
+        // Toggle entre as classes e o conteúdo
+        if (button.classList.contains('btn-outline-light')) {
+            button.classList.remove('btn-outline-light');
+            button.classList.add('btn-primary');
+            button.innerHTML = '<i class="fa-solid fa-users-line"></i> Todas tasks';
+            document.getElementById('list_tasks_user').innerHTML = ''
+            // initializeWebSocket(0)
+            id_for_request = 0
+
+        } else {
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-outline-light');
+            button.innerHTML = '<i class="fa-solid fa-person-walking-luggage"></i> Minhas tasks';
+            document.getElementById('list_tasks_user').innerHTML = ''
+            // initializeWebSocket(user_id)
+            id_for_request = user_id
+        }
+        // Adiciona a classe de animação após um pequeno intervalo para garantir a remoção da classe anterior
+        setTimeout(function() {
+            button.classList.add('animate__flipInY');
+        }, 10);
+    });
+
+    // Remove a classe de animação após a conclusão da animação
+    button.addEventListener('animationend', function() {
+        button.classList.remove('animate__flipInY');
+    });
+
+    async function verifySession() {
+    try {
+        const response = await fetch('/check-session/');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        let data = await response.json();
+        // If session is not active, redirect to the home page
+        if (!data.session_active) {
+            window.location.href = '/';
+        }
+    } catch (error) {
+        console.error('Error checking session:', error);
+    }
+}
+
+
+
+</script>

@@ -1,0 +1,151 @@
+{% extends 'geral/base.html %}
+{% load static %}
+{% block head %}
+<title>A1 Pro</title>
+{% endblock %}
+{% block main %}
+
+
+<style>
+    .pageContainer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .cardContainer {
+        display: flex;
+        flex-wrap: wrap;
+        position: relative;
+        justify-content: space-evenly;
+        max-width: 1200px;
+    }
+
+    .cardContainer > * {
+        flex-basis: 45%;
+        margin: 10px;
+    }
+
+    .newCard  {
+        width: 25rem;
+        height: 20rem;
+        background-color: rgb(22, 21, 49);
+        padding: 50px 25px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.1s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .newBox {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .newCard:hover .newBox {
+        transform: scale(1.05);
+    }
+
+
+    .newCard .newBox p {
+        text-align: center;
+        font-size: 10pt;
+    }
+
+    .newCard i {
+        font-size: 50px;
+        color: #ff9900;
+        transition: all 0.8s ease;
+    }
+
+
+
+    .cardContent { /* Estilos para a div interna */
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(14, 30, 61, 0.77);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0; /* Começa invisível */
+        transition: opacity 0.7s ease;
+    }
+
+    .newCard.active .cardContent { /* Mostra a div quando o card está ativo */
+        opacity: 1;
+    }
+
+    /* Estilos para cards ativos e inativos */
+    .newCard.active {
+        transform: scale(1.1); /* Aumenta o tamanho do card ativo */
+        flex-basis: 60%; /* Ocupa mais espaço */
+        width: 70rem;
+        height: 30rem;
+        z-index: 2;
+        position: absolute;
+    }
+
+    .newCard:not(.active) {
+        transform: scale(0.8); /* Diminui o tamanho dos outros cards */
+        opacity: 0.6;
+        position: relative;
+    }
+</style>
+
+
+
+
+<div class="pageContainer">
+    <section class="" id="services">
+        <div class="max-width">
+            <div class="cardContainer">
+                {% for item in my_card_list %}
+                    <div class="newCard" onclick="toggleCard(this)">
+                        <div class="newBox">
+                            <i class="fab fa-android"></i>
+                        </div>
+                        <div class="cardContent">
+                            <h2>{{ item.card_number }}</h2>
+                            <p>Card {{ item.card_number }}</p>
+                            <p>Este é o {{ item.content }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+<script>
+    function toggleCard(card) {
+        const allCards = document.querySelectorAll('.newCard');
+
+        allCards.forEach(c => {
+            if (c !== card) {
+                c.classList.remove('active');
+            }
+        });
+
+        card.classList.toggle('active');
+    }
+</script>
+
+
+
+{% endblock %}

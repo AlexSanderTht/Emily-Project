@@ -1,0 +1,44 @@
+{%block info_carga_list_cabos%}
+<div class="nome_origem">
+    <button class="btn_mais" data-toggle="collapse" href="#DadosCargaListCabos" role="button" aria-expanded="false"
+            aria-controls="DadosCargaListCabos">
+        +
+    </button>
+    Dados da Carga
+</div>
+
+<div class="collapse" id="DadosCargaListCabos">
+    <div class="card card-body bg-gray" id="CargaInfoTag">
+        <div class="origem">
+            <h6> DADOS DA CARGA </h6>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <label for="PotenciaCargaListCabos">Potencia(kW):</label>
+                <input type="number" id="PotenciaCargaListCabos" class="form-control" readonly>
+            </div>
+            <div class="col-lg-6">
+                <label for="TensaoCargaListCabos">Tensão:</label>
+                <input type="number" id="TensaoCargaListCabos" class="form-control" readonly>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-3">
+                <label for="FuncaoCargaListCabos">Função:</label>
+                <input type="text" id="FuncaoCargaListCabos" class="form-control" readonly>
+            </div>
+
+            <div class="col-lg-3">
+                <label for="TPartidaCargaListCabos">Tipo de partida:</label>
+                <input type="text" id="TpartidaCargaListCabos" class="form-control" readonly>
+            </div>
+
+            <div class="col-lg-6">
+                <label for="DescCargaListCabos">Descrição:</label>
+                <textarea class="form-control" id="DescCargaListCabos" rows="2" readonly></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock info_carga_list_cabos%}

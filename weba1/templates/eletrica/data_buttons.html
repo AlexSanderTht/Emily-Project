@@ -1,0 +1,3 @@
+<button type="button" style="background-color:#ffbe47;" class="subscribe btn btn-warning  rounded-pill shadow-sm" > Exportar arquivo</button>
+<label for="data-file" style="background-color:#ffbe47;" class="subscribe btn btn-warning  rounded-pill shadow-sm" >Importar arquivo</label>
+<input id="data-file" type="file" style="display: none" onchange="import_file('{{ csrf_token }}', this.parentElement.id, event)"/>

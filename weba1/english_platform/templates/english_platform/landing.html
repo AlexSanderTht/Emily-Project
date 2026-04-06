@@ -1,0 +1,92 @@
+{% extends 'english_platform/base.html' %}
+
+{% block title %}Emily English Studio | Vitrine de Aulas{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-copy">
+        <p class="eyebrow">Aulas de ingles com Emily</p>
+        <h1>Do "I am shy" para conversa fluida em situacoes reais.</h1>
+        <p class="lead">
+            Uma vitrine completa para conhecer a professora Emily, sua metodologia e os formatos de aula.
+            Aqui voce encontra trilha personalizada, foco em speaking e acompanhamento pratico.
+        </p>
+        <div class="cta-row">
+            <a href="#interesse" class="btn-primary">Quero uma aula teste</a>
+            <a href="{% url 'english_platform:register' %}" class="btn-secondary">Criar conta de aluno</a>
+        </div>
+        <ul class="hero-points">
+            <li>Plano individual por objetivo</li>
+            <li>Feedback semanal de evolucao</li>
+            <li>Aulas online com material proprio</li>
+        </ul>
+    </div>
+    <aside class="hero-card">
+        <p class="stamp">Agenda aberta</p>
+        <h2>Turmas novas este mes</h2>
+        <ul>
+            <li>Iniciante absoluto (A1)</li>
+            <li>Destravando conversacao (A2/B1)</li>
+            <li>Business English para reunioes</li>
+            <li>Preparacao para entrevistas</li>
+        </ul>
+        <a href="#aulas" class="btn-primary card-btn">Ver formatos de aula</a>
+    </aside>
+</section>
+
+<section id="metodo" class="cards-grid">
+    <article class="info-card">
+        <h3>Metodo Speak First</h3>
+        <p>Voce fala desde a primeira aula com roteiros guiados e correcao leve em tempo real.</p>
+    </article>
+    <article class="info-card">
+        <h3>Rotina de 20 minutos</h3>
+        <p>Microtarefas de listening, shadowing e vocabulario para evoluir mesmo em dias corridos.</p>
+    </article>
+    <article class="info-card">
+        <h3>Progresso mensuravel</h3>
+        <p>Checklist de marcos para enxergar claramente a sua evolucao de fluencia.</p>
+    </article>
+</section>
+
+<section id="aulas" class="showcase-grid">
+    <article class="showcase-card">
+        <h3>Aula particular</h3>
+        <p>Atendimento 1:1 para metas especificas, com calendario flexivel.</p>
+        <span>Ideal para: entrevistas, viagem e destravar fala</span>
+    </article>
+    <article class="showcase-card">
+        <h3>Dupla estrategica</h3>
+        <p>Aula com duas pessoas em ritmo colaborativo e atividades de role-play.</p>
+        <span>Ideal para: casais, amigos e parceiros de trabalho</span>
+    </article>
+    <article class="showcase-card">
+        <h3>Grupo premium</h3>
+        <p>Turmas pequenas com tema semanal e simulacoes de contexto real.</p>
+        <span>Ideal para: manter constancia com investimento acessivel</span>
+    </article>
+</section>
+
+<section id="interesse" class="form-section">
+    <div>
+        <h2>Agende sua aula diagnostico gratuita</h2>
+        <p>Preencha o formulario e a Emily retorna com proposta de trilha e sugestao de horario.</p>
+    </div>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        <label>Nome
+            {{ lead_form.name }}
+        </label>
+        <label>E-mail
+            {{ lead_form.email }}
+        </label>
+        <label>Telefone
+            {{ lead_form.phone }}
+        </label>
+        <label class="full">Objetivo principal
+            {{ lead_form.message }}
+        </label>
+        <button type="submit" class="btn-primary full">Enviar interesse</button>
+    </form>
+</section>
+{% endblock %}

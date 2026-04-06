@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.js"
+      integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+      crossorigin="anonymous">
+    </script>
+    <script type="text/javascript">
+        function select() {
+            $.ajax({
+                type: "POST",
+                url: "",
+                dataType: 'json',
+                data: { csrfmiddlewaretoken: '{{ csrf_token }}',
+                    'con': 'DRIVER={SQL Server};SERVER=MIC-246\\SQLEXPRESS;DATABASE=db_a1pro;USER=sa;PASSWORD=Tecnomm3',
+                    'query': document.getElementById('query').value },
+            }).done(function( data ) {
+                document.getElementById('l0').innerText = data[0][0];
+            });
+        }
+    </script>
+</head>
+<body>
+    {% include 'query_base.html' %}
+    {% block content %}
+    {% endblock %}
+</body>
+
+</html>

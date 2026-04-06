@@ -1,0 +1,1236 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1pro</title>
+{% endblock %}
+
+{% block main %}
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/GerarTipicosDoc.js' %} "></script>
+<script type="text/javascript" src="{% static 'js/eletrica/A1Pro/PainelDiagInter.js' %}"></script>
+<script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+
+<div class="col-lg-12"> <div id='progress-bar-list-cabos' class='progress-bar h-50'>&nbsp;</div> <div id="progress-bar-message-list-cabos"></div></div>
+
+
+<!-------------------- INICIO TÍTULO ------------------------------------------------------------------------------------>
+<div class="container-fluid h-100">
+    <div class="text-justify m-3">
+        <button class="btn btn-primary btn-warning" onclick="window.history.go(-1)">Voltar</button>
+    </div>
+
+    <div class="row d-flex justify-content-center mt-2">
+        <h3>Configurações diagrama de interligação</h3>
+    </div>
+
+    <div class="row d-flex justify-content-center mt-2">
+        <h4>OS {{OS}}</h4>
+        <div id="os_tela_diagram_interligacao" hidden>{{OS}}</div>
+    </div>
+</div>
+<!-------------------- FIM TÍTULO --------------------------------------------------------------------------------------->
+
+
+
+
+
+    <!-------------------- INICIO ABAS ------------------------------------------------------------------------------------>
+    <div class="container-fluid d-flex justify-content-center">
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4" style="width: 70%;">
+            <div class="card-header border-bottom-0 bg-white d-flex justify-content-center">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+
+                        <a class="nav-item nav-link" id="nav-inicio-tab" data-toggle="tab" href="#nav-inicio" role="tab" aria-controls="nav-inicio" aria-selected="false">
+                            <i class="fa-solid fa-bolt pr-3"></i>Início
+                        </a>
+                        <a class="nav-item nav-link" id="nav-cabecalho-tab" data-toggle="tab" href="#nav-cabecalho" role="tab" aria-controls="nav-cabecalho" aria-selected="false">
+                            <i class="fa-solid fa-bolt pr-3"></i>Cabeçalhos
+                        </a>
+                        <a class="nav-item nav-link" id="nav-acess-tab" data-toggle="tab" href="#nav-acess" role="tab" aria-controls="nav-acess" aria-selected="false">
+                            <i class="fa-solid fa-bolt pr-3"></i>Acessórios
+                        </a>
+                        <a class="nav-item nav-link" id="nav-sinal-tab" data-toggle="tab" href="#nav-sinal" role="tab" aria-controls="nav-sinal" aria-selected="false">
+                            <i class="fa-solid fa-bolt pr-3"></i>Sinais
+                        </a>
+                        <a class="nav-item nav-link" id="nav-equip-tab" data-toggle="tab" href="#nav-equip" role="tab" aria-controls="nav-equip" aria-selected="false">
+                            <i class="fa-solid fa-bolt pr-3"></i>Equipamentos
+                        </a>
+                        <a class="nav-item nav-link" id="nav-bornes-tab" data-toggle="tab" href="#nav-bornes" role="tab" aria-controls="nav-bornes" aria-selected="false">
+                            <i class="fa-solid fa-bolt pr-3"></i>Bornes
+                        </a>
+
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="nav-templates-tab" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" style="width: 163px;">
+                                <i class="fa-solid fa-layer-group pr-2"></i>Templates
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow" aria-labelledby="nav-templates-tab">
+                                <a class="dropdown-item" href="#FOLHA" data-toggle="tab" tabindex="-1">
+                                    <i class="fa-solid fa-file pr-2"></i>FOLHA
+                                </a>
+                                <a class="dropdown-item" href="#CAPA" data-toggle="tab" tabindex="-1">
+                                    <i class="fa-solid fa-file pr-2"></i>CAPA
+                                </a>
+                                <a class="dropdown-item" href="#INDICE" data-toggle="tab" tabindex="-1">
+                                    <i class="fa-solid fa-file pr-2"></i>ÍNDICE
+                                </a>
+                                <a class="dropdown-item" href="#LOGOA1" data-toggle="tab" tabindex="-1">
+                                    <i class="fa-solid fa-file pr-2"></i>LOGO A1
+                                </a>
+                                <a class="dropdown-item" href="#LOGOCLIENTE" data-toggle="tab" tabindex="-1">
+                                    <i class="fa-solid fa-file pr-2"></i>LOGO CLIENTE
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-------------------- FIM ABAS ------------------------------------------------------------------------------------------>
+
+
+
+
+    <!-------------------- INICIO CORPOS ABAS----------------------------------------------------------------------------------->
+    <div class="tab-content" id="nav-tabContent">
+
+
+    <!-------------------- INICIO CORPO ABA INICIO ----------------------------------------------------------------------------->
+    <div class="tab-pane fade" id="nav-inicio" role="tabpanel" aria-labelledby="nav-inicio-tab">
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO CAMPO EDITAVEL -------------------->
+        <div class="container d-flex flex-column align-items-center mt-4">
+
+
+            <div class="card shadow p-3" style="width: 50%;">
+            <div class="card-body">
+                <h5 class="card-title text-center">ANOTAÇÃO GERAL</h5>
+                <div contenteditable="false" class="campo-anotacao border rounded p-2" style="min-height: 60px; width: 100%; outline: none;">
+                    {{list_note_os}}
+                </div>
+                <button class="btn btn-primary position-absolute btn-editar" style="bottom: 6px; right: 6px; padding: 2px 14px; font-size: 11px;">Editar</button>
+                <button onclick="SaveOrDeleteNotesCardsStandard(this)" class="btn btn-success position-absolute btn-salvar" style="bottom: 6px; right: 10px; padding: 2px 14px; font-size: 11px; display: none;" >Salvar</button>
+            </div>
+            </div>
+
+            <!-- Botão para adicionar novas anotações -->
+            {% for id_notes, notes, filter_notes in list_notes%}
+            <div class="card shadow p-3" style="width: 50%;">
+            <div class="card-body">
+                <h5 class="card-title text-center">ANOTAÇÃO OS {{OS}}</h5>
+                <div contenteditable="false" class="campo-anotacao border rounded p-2" style="min-height: 60px; width: 100%; outline: none;">
+                    {{notes}}
+                </div>
+                <button class="btn btn-primary position-absolute btn-editar" style="bottom: 6px; right: 6px; padding: 2px 14px; font-size: 11px;">Editar</button>
+                <button onclick="SaveOrDeleteNotesCards('{{id_notes}}', 'SALVAR', this)" class="btn btn-success position-absolute btn-salvar" style="bottom: 6px; right: 10px; padding: 2px 14px; font-size: 11px; display: none;" >Salvar</button>
+                <button onclick="SaveOrDeleteNotesCards('{{id_notes}}', 'DELETAR', this)" class="btn btn-danger position-absolute btn-excluir" style="bottom: 6px; left: 10px; padding: 2px 14px; font-size: 11px;">Excluir</button>
+            </div>
+            </div>
+            {% endfor %}
+
+            <div id="cards-container" class="w-100 d-flex flex-column align-items-center">
+
+            </div>
+            <button id="btn-add-card"  class="btn btn-outline-primary rounded-circle mt-3" style="width: 50px; height: 50px; font-size: 24px;">+</button>
+
+            <!-- Área onde serão criadas as novas anotações -->
+
+        </div>
+        </div> <!-------------------- FIM CAMPO EDITAVEL -------------------->
+    </div>
+    <!-------------------- FIM CORPO ABA INICIO ------------------------------------------------------------------------------->
+
+
+
+
+
+
+    <!-------------------- INICIO CORPO ABA CABEÇALHO --------------------------------------------------------------------------->
+    <div class="tab-pane fade" id="nav-cabecalho" role="tabpanel" aria-labelledby="nav-cabecalho-tab">
+
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- DROPDOWN E SALVAR CABEÇALHO -------------------->
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-1 mx-2 d-flex justify-content-center align-items-center" style="width: 25%; height: 80px;">
+
+        <div class="form-group row">
+            <div class="col-12 text-center">
+                <label class="objte col-lg-12 col-form-label" for="painel-origem-os">
+                    <h5> Painel de Origem </h5>
+                </label>
+                <select class="form-control" id="painel-origem-os" style="width: 250px;"  onchange="PreencherCamposPainel()">
+                    <option value="0">---</option>
+                    <option disabled="true" class="bg-warning">PAINEL</option>
+                    {% for id_pk, name  in lista_painel_origem_pn%}
+                        <option class="bg-warning" value="{{id_pk}}" > {{name}}</option>
+                    {% endfor %}
+                    <option disabled="true" class="bg-info">PAINEL AUXÍLIAR</option>
+                    {% for id_pk, name in lista_painel_origem_pna%}
+                        <option class="bg-info"  value="{{id_pk}}" > {{name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+    </div>
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-1 mx-2 d-flex justify-content-center align-items-center" style="width: 25%; height: 80px;">
+        <button type="button" class="btn btn-success w-50" onclick="SalvarCabecalhoPainel()">Salvar</button>
+    </div>
+    </div> <!-------------------- DROPDOWN E SALVAR CABEÇALHO -------------------->
+
+
+
+
+
+    <div class="container-fluid d-flex justify-content-center" > <!-------------------- INICIO CABEÇALHO -------------------->
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4" style="width: 50%;">
+
+        <div class="row mt-4">
+            <div class="col-2 text-right p-2">
+                <label for="numero_a1">Número A1:</label>
+            </div>
+            <div class="col-6">
+                <input type="text" class="form-control" id="numero_a1">
+            </div>
+            <div class="col-2 text-right p-2">
+                <label for="revisao_a1">Revisão A1:</label>
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" id="revisao_a1">
+            </div>
+            <div class="col-2 text-right p-2">
+                <label for="numero_cliente">Número Cliente:</label>
+            </div>
+            <div class="col-6">
+                <input type="text" class="form-control" id="numero_cliente">
+            </div>
+            <div class="col-2 text-right p-2">
+                <label for="revisao_cliente">Revisão cliente:</label>
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" id="revisao_cliente">
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="container-fluid d-flex justify-content-center">
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4" style="width: 50%;">
+        <div class="row mt-4">
+            <div class="col-2 text-right p-0">
+                <label for="descricao_documento">Descrição do Doc.:</label>
+            </div>
+            <div class="col-10">
+                <input type="text" class="form-control" id="descricao_documento">
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-2 text-right p-0">
+                <label for="descricao_area">Descrição da Área:</label>
+            </div>
+            <div class="col-10">
+                <input type="text" class="form-control" id="descricao_area">
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-2 text-right p-0">
+                <label for="diagrama_funcional">Diagrama Func.:</label>
+            </div>
+            <div class="col-10">
+                <input type="text" class="form-control" id="diagrama_funcional">
+            </div>
+        </div>
+    </div>
+    </div>
+    </div> <!-------------------- FIM CABEÇALHO -------------------->
+    <!-------------------- INICIO CORPO ABA CABEÇALHO --------------------------------------------------------------------------->
+
+
+
+
+
+
+    <!-------------------- INICIO CORPO ABA ACESSÓRIO --------------------------------------------------------------------------->
+    <div class="tab-pane fade" id="nav-acess" role="tabpanel" aria-labelledby="nav-acess-tab">
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPDOWN ACESSÓRIO -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-1 mx-2 d-flex justify-content-center align-items-center" style="width: 19.5%; height: 80px;">
+            <div class="form-group row">
+                <div class="col-12 text-center">
+                <label class="objte col-lg-12 col-form-label" for="acessorios-nome-os">
+                    <h5> Acessório cadastrado</h5>
+                </label>
+                    <select class="form-control" id="acessorios-nome-os">
+                        <option value="0">---</option>
+                        {% for id_pk, name in list_names_access_os%}
+                            <option  value="{{id_pk}}">{{name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-1 mx-2 d-flex justify-content-center align-items-center" style="width: 19.5%; height: 80px;">
+            <div class="form-group row">
+                <div class="col-12 text-center">
+                <label class="objte col-lg-12 col-form-label" for="acessorios-nome-padrao">
+                     <h5>Nome do bloco .dwg</h5>
+                </label>
+                <select class="form-control" id="acessorios-nome-padrao">
+                    <option value="0">---</option>
+                    {% for id_pk, name in list_names_access %}
+                        <option  value="{{id_pk}}">{{name}}</option>
+                    {% endfor %}
+                </select>
+                </div>
+            </div>
+        </div>
+    </div> <!-------------------- FIM DROPDOWN ACESSÓRIO -------------------->
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPZONE ACESSÓRIO -------------------->
+        <div class="bg-white shadow content-diagrama-interligacao mt-4 p-4">
+
+            <div class="col-7 card_dropzone_blue text-center" id="acessorio_dwg">
+                <div class="file-dropzone">
+                    <span class="font-italic text-primary">Arraste e solte um arquivo (*.DWG) por vez</span><br>
+                    <span class="font-italic text-primary">ou clique em importar para fazer o upload.</span><br>
+                    <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                        <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_1" onchange="DropRelatPdms('uploaded-file-1', this.id, 'FileAcessorio', false, null)"/>
+                        Importar DWG
+                    </label>
+                    <div id="uploaded-file-1" class="uploaded-file mt-10"></div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center align-items-center" style="height: 10vh;">
+                <div class="col-3 mt-1 text-center">
+                    <label>Largura X</label>
+                    <input type="number" class="form-control" id="X" step="0.0001" placeholder="0.0000" max="9999.9999"/>
+                </div>
+                <div class="col-3 mt-1 text-center">
+                    <label>Altura Y</label>
+                    <input type="number" class="form-control" id="Y" step="0.0001" placeholder="0.0000" max="9999.9999" />
+                </div>
+            </div>
+            <p>
+            <button type="button" class="btn btn-danger btn-sm rounded-circle ms-50"
+                data-toggle="tooltip"
+                data-placement="top"
+                title="<div>Atualmente, para acessório, antes de importar, é necessário executar purge all e explode no bloco inteiro. (Condição temporária)<br>
+                <img src='{% static 'img/img_din/acess_01.png' %}'  style='width: 400px; display: block; margin-top: 30px;'>
+                <div>"
+                data-html="true">
+                ?
+             </button>
+            </p>
+        </div>
+    </div> <!-------------------- FIM DROPZONE ACESSÓRIO -------------------->
+
+
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO CHECKLIST ACESSÓRIOS -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+
+            <div class="row d-flex justify-content-center mt-2">
+                <h5>CHECK-LIST ACESSÓRIOS</h5>
+            </div>
+                {% for pk, id_pk_os, name_os, id_pk_std, name_std in list_names_acess_check%}
+                    <li onclick="PreencheImgDwg('{{pk}}', 'acess'); $('#exampleModal').modal('show');" class="list-group-item-hover rounded-4  bg-white border d-flex justify-content-between align-items-center p-2">
+                        {{name_os}} → {{name_std}}
+                        <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="event.stopPropagation(); DeleteAcessorioOs(this, '{{id_pk_os}}', '{{id_pk_std}}')">
+                            <i class="fas fa-times-circle fa-lg"></i>
+                        </button>
+                    </li>
+                {% endfor %}
+        </div>
+    </div> <!-------------------- FIM CHECKLIST ACESSÓRIOS -------------------->
+
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BOTÃO SALVAR ACESSÓRIO-------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+            <div class="col-12 mt-2 d-flex justify-content-end my-2">
+                <button type="button" class="btn btn-success w-100" onclick="UpdateAndSendDwgAcess()" style="margin-top: 20px;">Salvar</button>
+            </div>
+            <!-- Backend para validar essa mensagem ainda não está funcionando. Procure pela função dwg_explode_purge_save_cad
+            <div class="mt-2 fw-bold text-muted" style="font-size: 0.9rem; padding-left: 20px;">
+                Observação: Ao salvar, os comandos 'explode' e 'purge all' são executados automaticamente.
+            </div>
+            -->
+        </div>
+
+    </div> <!-------------------- FIM BOTÃO SALVAR ACESSÓRIO -------------------->
+    </div>
+
+    <div class="modal" id="modalLoading" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 500px; border-radius: 20px;">
+        <div class="modal-content" style="border-radius: 20px;">
+            <div class="modal-body text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Salvando...</span>
+                </div>
+                <p id="salvando-text" style="font-size: 24px; margin-top: 15px;">Salvando<span id="dots">...</span></p>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let dots = document.getElementById("dots");
+            let count = 0;
+            setInterval(function () {
+                count = (count + 1) % 4;
+                dots.textContent = ".".repeat(count);
+            }, 500);
+        });
+    </script>
+
+    <div id="overlay" class="overlay" style="display: none;"></div>
+
+<!-- Modal Render -->
+<div class="modal" id="modalRender" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 500px; border-radius: 20px;">
+        <div class="modal-content" style="border-radius: 20px;">
+            <div class="modal-body text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Aguarda a pagina recarregar...</span>
+                </div>
+                <p id="salvando-text-render" style="font-size: 24px; margin-top: 15px;">Aguarde a página recarregar<span id="dots-render">...</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let dots = document.getElementById("dots-render");
+            let count = 0;
+            setInterval(function () {
+                count = (count + 1) % 4;
+                dots.textContent = ".".repeat(count);
+            }, 500);
+        });
+    </script>
+    <!-------------------- FIM CORPO ABA ACESSÓRIO-------------------------------------------------------------------------------->
+
+
+
+
+
+
+    <!-------------------- INICIO CORPO ABA SINAL -------------------------------------------------------------------------------->
+    <div class="tab-pane fade" id="nav-sinal" role="tabpanel" aria-labelledby="nav-sinal-tab">
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPDOWN FUNÇÃO O.S SINAL-------------------->
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+
+        <div class="form-group row">
+            <div class="col-12 text-center">
+                <label class="objte col-lg-12 col-form-label" for="sinais-nome-os">
+                    <h5> Função </h5>
+                </label>
+
+
+                <!-------------------- IndicaSistemaFuncaoOs(this.selectedOptions[0].value) -------------------->
+                <select class="form-control" id="sinais-nome-os" style="width: 500px;">
+                    <option value="0">---</option>
+                    {% for name, id_pk in lista_names_funcao_os_sig_pn%}
+                        <option  value="{{id_pk}}">{{name}}</option>
+                    {% endfor %}
+                    {% for name, id_pk  in lista_names_funcao_os_sig_mo%}
+                        <option  value="{{id_pk}}">{{name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    </div> <!-------------------- FIM DROPDOWN FUNÇÃO O.S SINAL-------------------->
+
+
+
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPZONE SINAIS -------------------->
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+
+        <div class="col-7 card_dropzone_blue text-center" id="sinal_dwg">
+            <div class="file-dropzone">
+                <span class="font-italic text-primary">Arraste e solte um arquivo (*.DWG) por vez</span><br>
+                <span class="font-italic text-primary">ou clique em importar para fazer o upload.</span><br>
+                <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                    <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_3" onchange="DropRelatPdms('uploaded-file-3', this.id, 'FileSinal', false, null)"/>
+                    Importar DWG
+                </label>
+                <div id="uploaded-file-3" class="uploaded-file mt-10"></div>
+            </div>
+        </div>
+        <p>
+        <button type="button" class="btn btn-danger btn-sm rounded-circle ms-50" data-toggle="tooltip" data-placement="top" title="Atualmente, a importação das funções de SINAIS deve ser feito SEM executar os comandos purge all e explode. (Condição temporária)">
+         ?
+        </button>
+        </p>
+    </div>
+    </div> <!-------------------- FIM DROPZONE SINAIS -------------------->
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO CHECKLIST SINAIS -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+
+            <div class="row d-flex justify-content-center mt-2">
+                <h5 id="checklist-sinais">CHECK-LIST SINAIS</h5>
+            </div>
+                {% for pk, name_fos_sig, id_fos_sig in lista_names_sinal_check%}
+                    <li onclick="PreencheImgDwg('{{pk}}', 'sinal'); $('#exampleModal').modal('show');" class="list-group-item-hover rounded-4  bg-white border d-flex justify-content-between align-items-center p-2">
+                        {{name_fos_sig}}
+                        <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="event.stopPropagation(); DeleteSinaisOs(this, '{{id_fos_sig}}', '{{OS}}')">
+                            <i class="fas fa-times-circle fa-lg"></i>
+                        </button>
+                    </li>
+                {% endfor %}
+        </div>
+    </div> <!-------------------- FIM CHECKLIST SINAIS -------------------->
+
+
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BOTÃO SALVAR SINAIS-------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+            <div class="col-12 mt-2 d-flex justify-content-end my-2">
+                <button type="button" class="btn btn-success w-100" onclick="UpdateAndSendDwgSinal()" style="margin-top: 20px;">Salvar</button>
+            </div>
+        </div>
+    </div> <!-------------------- FIM BOTÃO SALVAR SINAIS-------------------->
+    </div>
+    <!-------------------- FIM CORPO ABA SINAL ---------------------------------------------------------------------------------------->
+
+
+
+
+
+    <!-------------------- INICIO CORPO ABA EQUIPAMENTO -------------------------------------------------------------------------------->
+    <div class="tab-pane fade" id="nav-equip" role="tabpanel" aria-labelledby="nav-equip-tab">
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPDOWN FUNÇÃO O.S -------------------->
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+
+        <div class="form-group row">
+            <div class="col-12 text-center">
+                    <label class="objte col-lg-12 col-form-label" for="funcao-nome-os">
+                        <h5> Função </h5>
+                    </label>
+                <!-------------------- IndicaSistemaFuncaoOs(this.selectedOptions[0].value) -------------------->
+                <select class="form-control" id="funcao-nome-os" style="width: 500px;" >
+                    <option value="0">---</option>
+                    <option disabled="true" class="bg-warning">Motores</option>
+                    {% for name, id_pk in lista_names_funcao_os_mo%}
+                        <option class="bg-warning" onclick="IndicaSistemaFuncaoOs({{id_pk}}, 'equip')" value="{{id_pk}}" > {{name}}</option>
+                    {% endfor %}
+                    <option disabled="true" class="bg-info">Paineis</option>
+                    {% for name, id_pk in lista_names_funcao_os_pn%}
+                        <option class="bg-info" onclick="IndicaSistemaFuncaoOs({{id_pk}}, 'equip')" value="{{id_pk}}" > {{name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    </div> <!-------------------- FIM DROPDOWN FUNÇÃO O.S -------------------->
+
+
+
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BLOCO SISTEMA -------------------->
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+    <div class="form-group row">
+        <div class="col-12 text-center">
+            <label class="objte col-form-label" for="funcao-nome-os">Sistema</label>
+            <input type="text" required class="form-control mt-2" id="code_tipico" readonly style="text-align: center;">
+        </div>
+    </div>
+    </div>
+    </div> <!-------------------- INICIO BLOCO SISTEMA -------------------->
+
+
+
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPZONE EQUIPAMENTO DWG -------------------->
+    <div class="bg-white shadow content-diagrama-interligacao mt-4 p-4">
+
+        <div class="col-7 card_dropzone_blue text-center" id="sistema_tipo_dwg">
+            <div class="file-dropzone">
+                <span class="font-italic text-primary">Arraste e solte um arquivo (*.DWG) por vez</span><br>
+                <span class="font-italic text-primary">ou clique em importar para fazer o upload.</span><br>
+                <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                    <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_2" onchange="DropRelatPdms('uploaded-file-2', this.id, 'FileEquip', false, null)"/>
+                    Importar DWG
+                </label>
+                <div id="uploaded-file-2" class="uploaded-file mt-10"></div>
+            </div>
+        </div>
+        <p>
+        <button type="button" class="btn btn-danger btn-sm rounded-circle ms-50" data-toggle="tooltip" data-placement="top" title="Atualmente, a importação das funções de equipamento deve ser feito SEM executar os comandos purge all e explode. (Condição temporária)">
+         ?
+        </button>
+        </p>
+    </div>
+    </div> <!-------------------- FIM DROPZONE EQUIPAMENTO DWG -------------------->
+
+
+
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO CHECKLIST EQUIPAMENTOS -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+            <div class="row d-flex justify-content-center mt-2">
+                <h5>CHECK-LIST LIGAÇÕES</h5>
+            </div>
+                {% for pk, name_fos, id_fos in lista_fos_name%}
+                    <li onclick="PreencheImgDwg('{{pk}}', 'equip'); $('#exampleModal').modal('show');" class="list-group-item-hover rounded-4  bg-white border d-flex justify-content-between align-items-center p-2">
+                        {{name_fos}}
+                        <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="event.stopPropagation(); DeleteEquipOs(this, '{{id_fos}}', '{{OS}}', '{{name_fos}}')">
+                            <i class="fas fa-times-circle fa-lg"></i>
+                        </button>
+                    </li>
+                {% endfor %}
+        </div>
+    </div> <!-------------------- FIM CHECKLIST EQUIPAMENTOS -------------------->
+
+
+
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BOTÃO SALVAR EQUIPAMENTO -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+            <div class="col-12 mt-2 d-flex justify-content-end my-2">
+                <button type="button" class="btn btn-success w-100" onclick="UpdateAndSendDwgEquip()" style="margin-top: 20px;">Salvar</button>
+            </div>
+        </div>
+    </div> <!-------------------- FIM BOTÃO SALVAR EQUIPAMENTO -------------------->
+    </div>
+    <!-------------------- FIM CORPO ABA EQUIPAMENTO ---------------------------------------------------------------------------->
+
+
+
+
+    <!-------------------- INICIO CORPO ABA BORNES ---------------------------------------------------------------------------->
+    <div class="tab-pane fade" id="nav-bornes" role="tabpanel" aria-labelledby="nav-bornes-tab">
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPDOWN FUNÇÃO O.S -------------------->
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+
+        <div class="form-group row">
+            <div class="col-12 text-center">
+                    <label class="objte col-lg-12 col-form-label" for="funcao-nome-os">
+                        <h5> Função </h5>
+                    </label>
+                <!-------------------- IndicaSistemaFuncaoOs(this.selectedOptions[0].value) -------------------->
+                <select class="form-control" id="funcao-nome-os-borne" style="width: 500px;" >
+                    <option value="0">---</option>
+                    <option disabled="true" class="bg-warning">Motores</option>
+                    {% for name, id_pk in lista_names_funcao_os_mo%}
+                        <option class="bg-warning" onclick="IndicaSistemaFuncaoOs({{id_pk}}, 'borne')" value="{{id_pk}}" > {{name}}</option>
+                    {% endfor %}
+                    <option disabled="true" class="bg-info">Paineis</option>
+                    {% for name, id_pk in lista_names_funcao_os_pn%}
+                        <option class="bg-info" onclick="IndicaSistemaFuncaoOs({{id_pk}}, 'borne')" value="{{id_pk}}" > {{name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+    </div>
+    </div> <!-------------------- FIM DROPDOWN BORNE  -------------------->
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BLOCO SISTEMA FUNÇÃO FORMAÇÃO BORNE -------------------->
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+    <div class="row">
+    <div class="col-md-4 mb-3">
+      <div class="text-center">
+        <label class="objte col-form-label" for="sistema">Sistema</label>
+        <input type="text" required class="form-control mt-2" id="sistema" readonly style="text-align: center;">
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="text-center">
+        <label class="objte col-form-label" for="tipo-funcao">Tipo função</label>
+        <input type="text" required class="form-control mt-2" id="tipo-funcao" readonly style="text-align: center;">
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="text-center">
+        <label class="objte col-form-label" for="formacao-cabo">Formação cabo</label>
+        <input type="text" required class="form-control mt-2" id="formacao-cabo" readonly style="text-align: center;">
+      </div>
+    </div>
+    </div>
+    </div>
+    </div> <!-------------------- FIM BLOCO SISTEMA FUNÇÃO FORMAÇÃO BORNE -------------------->
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BLOCO INSERÇÃO VALORES BORNE -------------------->
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+        <table id="table-borne" class="table table-sm text-center border">
+
+        <thead>
+          <tr class="table-primary">
+            <th colspan="2" class="text-primary border">ORIGEM</th>
+            <th colspan="2" class="text-primary border">DESTINO</th>
+          </tr>
+          <tr class="table-primary">
+            <th colspan="2" class="text-primary border">RÉGUA: <input type="text" class="form-control"></th>
+            <th colspan="2" class="text-primary border">RÉGUA: <input type="text" class="form-control"></th>
+          </tr>
+          <tr class="table-secondary">
+            <th class="border">BORNES</th>
+            <th class="border">VEIAS</th>
+            <th class="border">BORNES</th>
+            <th class="border">VEIAS</th>
+          </tr>
+        </thead>
+
+        <tbody>
+        </tbody>
+        </table>
+
+    </div>
+    </div> <!-------------------- FIM BLOCO INSERÇÃO VALORES BORNE -------------------->
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BOTÃO SALVAR BORNE -------------------->
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+
+    </div>
+    </div> <!-------------------- FIM BOTÃO SALVAR BORNE -------------------->
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+    <!-------------------- FIM CORPO ABA BORNES ---------------------------------------------------------------------------->
+
+
+
+
+
+
+
+
+
+
+
+    <!-------------------- INICIO CORPO ABA FOLHA -------------------------------------------------------------------------------->
+    <div class="tab-pane fade" id="FOLHA" role="tabpanel" aria-labelledby="nav-templates-tab">
+
+
+    <div class="container-fluid d-flex justify-content-center">
+    <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center"> <!-------------------- INICIO DROPDOWN TEMPLATE -------------------->
+
+        <div class="form-group row">
+            <div class="col-12 text-center">
+                <label class="objte col-lg-12 col-form-label" for="sinais-nome-os">
+                    <h5> Nome do template </h5>
+                </label>
+
+
+                <!-------------------- IndicaSistemaFuncaoOs(this.selectedOptions[0].value) -------------------->
+                <select class="form-control" id="template-nome-os" style="width: 500px;">
+                    <option value="0">---</option>
+                    {% for id_pk, name  in lista_names_templates_std%}
+                        <option  value="{{id_pk}}">{{name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    </div> <!-------------------- FIM DROPDOWN TEMPLATE -------------------->
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPZONE DWG TEMPLATE -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+
+            <div class="col-12 text-center">
+            <div class="col-7 card_dropzone_blue text-center" id="templete_dwg">
+            <div class="file-dropzone">
+                <span class="font-italic text-primary">Arraste e solte um arquivo (*.DWG) por vez</span><br>
+                <span class="font-italic text-primary">ou clique em importar para fazer o upload.</span><br>
+                <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                    <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_4" onchange="DropRelatPdms('uploaded-file-4', this.id, 'FileTemplate', false, null)"/>
+                    Importar DWG
+                </label>
+                <div id="uploaded-file-4" class="uploaded-file mt-10"></div>
+            </div>
+            </div>
+            </div>
+        </div>
+    </div> <!-------------------- INICIO DROPZONE DWG TEMPLATE -------------------->
+
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO CHECKLIST TEMPLATES -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+
+            <div class="row d-flex justify-content-center mt-2">
+                <h5>CHECK-LIST TEMPLATES</h5>
+            </div>
+
+                {% for id_pk_os, name_templete in lista_names_templates%}
+                    <li onclick="PreencheImgDwg('{{id_pk_os}}', 'template'); $('#exampleModal').modal('show');" class="list-group-item-hover rounded-4  bg-white border d-flex justify-content-between align-items-center p-2">
+                        {{name_templete}}
+                        <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="event.stopPropagation(); DeleteTempleteOs(this, '{{id_pk_os}}')">
+                            <i class="fas fa-times-circle fa-lg"></i>
+                        </button>
+                    </li>
+                {% endfor %}
+        </div>
+    </div>  <!-------------------- FIM CHECKLIST TEMPLATES -------------------->
+
+
+
+
+
+    <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BOTÃO SALVAR TEMPLATES -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+            <div class="col-12 mt-2 d-flex justify-content-end my-2">
+                <button type="button" class="btn btn-success w-100" onclick="UpdateAndSendDwgTemplate()" style="margin-top: 20px;">Salvar</button>
+            </div>
+        </div>
+    </div> <!-------------------- FIM BOTÃO SALVAR TEMPLATES -------------------->
+
+    </div>
+    <!-------------------- FIM CORPO ABA FOLHA -------------------------------------------------------------------------------------->
+
+
+
+
+
+        <!-------------------- INICIO CORPO ABA CAPA--------------------------------------------------------------------------------------------->
+        <div class="tab-pane fade" id="CAPA" role="tabpanel" aria-labelledby="nav-templates-tab">
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPZONE CAPA -------------------->
+        <div class="bg-white shadow content-diagrama-interligacao mt-4 p-4">
+            <div class="col-12 text-center">
+             <label class="objte col-lg-12 col-form-label" for="sinais-nome-os">
+                <h5> Capa </h5>
+            </label>
+            </div>
+            <div class="col-7 card_dropzone_blue text-center" id="capa_dwg">
+                <div class="file-dropzone">
+                    <span class="font-italic text-primary">Arraste e solte um arquivo (*.DWG) por vez</span><br>
+                    <span class="font-italic text-primary">ou clique em importar para fazer o upload.</span><br>
+                    <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                        <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_5" onchange="DropRelatPdms('uploaded-file-5', this.id, 'FileCapa', false, null)"/>
+                        Importar DWG
+                    </label>
+                    <div id="uploaded-file-5" class="uploaded-file mt-10"></div>
+                </div>
+            </div>
+        </div>
+        </div> <!-------------------- FIM DROPZONE CAPA -------------------->
+
+
+
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO CHECKLIST CAPA -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+
+            <div class="row d-flex justify-content-center mt-2">
+                <h5>CHECK-LIST CAPA</h5>
+            </div>
+                {% for id_pk_os, name_templete in lista_names_templates_geral%}
+                    {% if name_templete == 'CAPA'%}
+                    <li onclick="PreencheImgDwg('{{id_pk_os}}', 'capa'); $('#exampleModal').modal('show');" class="list-group-item-hover rounded-4  bg-white border d-flex justify-content-between align-items-center p-2">
+                        {{name_templete}}
+                        <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="event.stopPropagation(); DeleteTempleteGeralOs(this, '{{id_pk_os}}')">
+                            <i class="fas fa-times-circle fa-lg"></i>
+                        </button>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+        </div>
+        </div> <!-------------------- FIM CHECKLIST CAPA -------------------->
+
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BOTÃO CAPA -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+            <div class="col-12 mt-2 d-flex justify-content-end my-2">
+                <button type="button" class="btn btn-success w-100" onclick="UpdateTemplates('CAPA')" style="margin-top: 20px;">Salvar</button>
+            </div>
+        </div>
+        </div> <!-------------------- FIM BOTÃO CAPA -------------------->
+        </div>
+        <!-------------------- FIM CORPO ABA CAPA--------------------------------------------------------------------------------------------->
+
+
+
+
+
+        <!-------------------- INICIO CORPO ABA ÍNDICE ---------------------------------------------------------------------------------------->
+        <div class="tab-pane fade" id="INDICE" role="tabpanel" aria-labelledby="nav-templates-tab">
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPZONE ÍNDICE -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+
+            <div class="col-12 text-center">
+             <label class="objte col-lg-12 col-form-label" for="sinais-nome-os">
+                <h5> Índice </h5>
+            </label>
+            </div>
+
+            <div class="col-7 card_dropzone_blue text-center" id="indice_dwg">
+                <div class="file-dropzone">
+                    <span class="font-italic text-primary">Arraste e solte um arquivo (*.DWG) por vez</span><br>
+                    <span class="font-italic text-primary">ou clique em importar para fazer o upload.</span><br>
+                    <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                        <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_6" onchange="DropRelatPdms('uploaded-file-6', this.id, 'FileIndice', false, null)"/>
+                        Importar DWG
+                    </label>
+                    <div id="uploaded-file-6" class="uploaded-file mt-10"></div>
+                </div>
+            </div>
+        </div>
+        </div> <!-------------------- FIM DROPZONE ÍNDICE -------------------->
+
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO CHECKLIST ÍNDICE -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+
+
+                <div class="row d-flex justify-content-center mt-2">
+                    <h5>CHECK-LIST ÍNDICE</h5>
+                </div>
+                {% for id_pk_os, name_templete in lista_names_templates_geral%}
+                    {% if name_templete == 'ÍNDICE'%}
+                    <li onclick="PreencheImgDwg('{{id_pk_os}}', 'indice'); $('#exampleModal').modal('show');" class="list-group-item-hover rounded-4  bg-white border d-flex justify-content-between align-items-center p-2">
+                        {{name_templete}}
+                        <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="event.stopPropagation(); DeleteTempleteGeralOs(this, '{{id_pk_os}}')">
+                            <i class="fas fa-times-circle fa-lg"></i>
+                        </button>
+                    </li>
+                    {% endif%}
+                {% endfor %}
+
+        </div>
+        </div> <!-------------------- FIM CHECKLIST ÍNDICE -------------------->
+
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BOTÃO SALVAR ÍNDICE -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+            <div class="col-12 mt-2 d-flex justify-content-end my-2">
+                <button type="button" class="btn btn-success w-100" onclick="UpdateTemplates('INDICE')" style="margin-top: 20px;">Salvar</button>
+            </div>
+        </div>
+        </div> <!-------------------- FIM BOTÃO SALVAR ÍNDICE -------------------->
+        </div>
+        <!-------------------- FIM CORPO ABA ÍNDICE---------------------------------------------------------------------------------------->
+
+
+
+
+
+        <!-------------------- INICIO CORPO ABA LOGO A1 ------------------------------------------------------------------------------------>
+        <div class="tab-pane fade" id="LOGOA1" role="tabpanel" aria-labelledby="nav-templates-tab">
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPZONE LOGO A1 --------------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+
+            <div class="col-12 text-center">
+             <label class="objte col-lg-12 col-form-label" for="sinais-nome-os">
+                <h5> Logo A1 </h5>
+            </label>
+            </div>
+            <div class="col-7 card_dropzone_blue text-center" id="logoa1_dwg">
+                <div class="file-dropzone">
+                    <span class="font-italic text-primary">Arraste e solte um arquivo (*.DWG) por vez</span><br>
+                    <span class="font-italic text-primary">ou clique em importar para fazer o upload.</span><br>
+                    <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                        <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_7" onchange="DropRelatPdms('uploaded-file-7', this.id, 'FileLogoa1', false, null)"/>
+                        Importar DWG
+                    </label>
+                    <div id="uploaded-file-7" class="uploaded-file mt-10"></div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center align-items-center" style="height: 10vh;">
+                <div class="col-3 mt-1 text-center">
+                    <label>Coordenada X</label>
+                    <input type="number" class="form-control" id="X_logoa1" step="0.0001" placeholder="0.0000" max="9999.9999" value="-185" />
+                </div>
+                <div class="col-3 mt-1 text-center">
+                    <label>Coordenada Y</label>
+                    <input type="number" class="form-control" id="Y_logoa1" step="0.0001" placeholder="0.0000" max="9999.9999" value="10" />
+                </div>
+            </div>
+
+        </div>
+        </div> <!-------------------- FIM DROPZONE LOGO A1 --------------------------->
+
+
+
+
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO CHECKLIST LOGO A1 -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+
+            <div class="row d-flex justify-content-center mt-2">
+                <h5>CHECK-LIST LOGO A1</h5>
+            </div>
+                {% for id_pk_os, name_templete in lista_names_templates_geral%}
+                    {% if name_templete == 'LOGO A1'%}
+                    <li onclick="PreencheImgDwg('{{id_pk_os}}', 'indice'); $('#exampleModal').modal('show');" class="list-group-item-hover rounded-4  bg-white border d-flex justify-content-between align-items-center p-2">
+                        {{name_templete}}
+                        <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="event.stopPropagation(); DeleteTempleteGeralOs(this, '{{id_pk_os}}')">
+                            <i class="fas fa-times-circle fa-lg"></i>
+                        </button>
+                    </li>
+                    {% endif%}
+                {% endfor %}
+
+        </div>
+        </div> <!-------------------- FIM CHECKLIST LOGO A1 -------------------->
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BOTÃO SALVAR LOGO A1 -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+            <div class="col-12 mt-2 d-flex justify-content-end my-2">
+                <button type="button" class="btn btn-success w-100" onclick="UpdateTemplates('LOGO A1')" style="margin-top: 20px;">Salvar</button>
+            </div>
+        </div>
+        </div> <!-------------------- FIM BOTÃO SALVAR LOGO A1 -------------------->
+        </div>
+        <!-------------------- FIM CORPO ABA LOGO A1 --------------------------------------------------------------------------------------->
+
+
+
+
+        <!-------------------- INICIO CORPO ABA LOGO CLIENTE --------------------------------------------------------------------------------------->
+        <div class="tab-pane fade" id="LOGOCLIENTE" role="tabpanel" aria-labelledby="nav-templates-tab">
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO DROPZONE LOGO CLIENTE ----------------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+
+            <div class="col-12 text-center">
+             <label class="objte col-lg-12 col-form-label" for="sinais-nome-os">
+                <h5> Logo Cliente </h5>
+            </label>
+            </div>
+
+            <div class="col-7 card_dropzone_blue text-center" id="logocliente_dwg">
+                <div class="file-dropzone">
+                    <span class="font-italic text-primary">Arraste e solte um arquivo (*.DWG) por vez</span><br>
+                    <span class="font-italic text-primary">ou clique em importar para fazer o upload.</span><br>
+                    <label class="mt-2 btn btn-primary rounded-pill text-white w-100">
+                        <input accept=".dwg" class="hidden" type="file" id="arquivo_capa_sup_band_8" onchange="DropRelatPdms('uploaded-file-8', this.id, 'FileCliente', false, null)"/>
+                        Importar DWG
+                    </label>
+                    <div id="uploaded-file-8" class="uploaded-file mt-10"></div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center align-items-center" style="height: 10vh;">
+                <div class="col-3 mt-1 text-center">
+                    <label>Coordenada X</label>
+                    <input type="number" class="form-control" id="X_cliente" step="0.0001" placeholder="0.0000" max="9999.9999" value="-162.7500"/>
+                </div>
+                <div class="col-3 mt-1 text-center">
+                    <label>Coordenada Y</label>
+                    <input type="number" class="form-control" id="Y_cliente" step="0.0001" placeholder="0.0000" max="9999.9999" value="10"/>
+                </div>
+            </div>
+        </div>
+        </div> <!-------------------- INICIO DROPZONE LOGO CLIENTE --------------------------------->
+
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO CHECKLIST LOGO CLIENTE -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4">
+
+            <div class="row d-flex justify-content-center mt-2">
+                    <h5>CHECK-LIST LOGO CLIENTE</h5>
+                </div>
+                {% for id_pk_os, name_templete in lista_names_templates_geral%}
+                    {% if name_templete == 'LOGO CLIENTE'%}
+                    <li onclick="PreencheImgDwg('{{id_pk_os}}', 'indice'); $('#exampleModal').modal('show');" class="list-group-item-hover rounded-4  bg-white border d-flex justify-content-between align-items-center p-2">
+                        {{name_templete}}
+                        <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="event.stopPropagation(); DeleteTempleteGeralOs(this, '{{id_pk_os}}')">
+                            <i class="fas fa-times-circle fa-lg"></i>
+                        </button>
+                    </li>
+                    {% endif%}
+                {% endfor %}
+
+        </div>
+        </div> <!-------------------- FIM CHECKLIST LOGO CLIENTE -------------------->
+
+        <div class="container-fluid d-flex justify-content-center"> <!-------------------- INICIO BOTÃO SALVAR LOGO CLIENTE -------------------->
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+            <div class="col-12 mt-2 d-flex justify-content-end my-2">
+                <button type="button" class="btn btn-success w-100" onclick="UpdateTemplates('LOGO CLIENTE')" style="margin-top: 20px;">Salvar</button>
+            </div>
+        </div>
+        </div> <!-------------------- FIM BOTÃO SALVAR LOGO CLIENTE -------------------->
+        </div>
+        <!-------------------- FIM CORPO ABA LOGO CLIENTE --------------------------------------------------------------------------------------->
+
+</div>
+{% include './ModalDadosDocumento.html' %}
+{% include './ModalLoadCelery.html' %}
+{% include 'eletrica/ModalViewImgDI.html'%}
+
+<script type="text/javascript" src="{% static 'js/eletrica/PainelAcessorio.js' %}"></script>
+
+<script>
+    debugger;
+    $('#exampleModal').on('hidden.bs.modal', function () {});
+</script>
+
+
+<script>
+    document.getElementById("btn-add-card").addEventListener("click", function () {
+        let container = document.getElementById("cards-container");
+        let index = container.children.length + 1;
+
+        let card = `
+        <div class="card shadow p-3" style="width: 50%;">
+            <div class="card-body">
+                <h5 class="card-title text-center">Anotação ${index}</h5>
+                <div contenteditable="false" class="campo-anotacao border rounded p-2" style="min-height: 60px; width: 100%; outline: none;">
+                    Clique em "Editar" para adicionar suas anotações...
+                </div>
+                <button class="btn btn-primary position-absolute btn-editar" style="bottom: 6px; right: 6px; padding: 2px 14px; font-size: 11px;">Editar</button>
+                <button class="btn btn-success position-absolute btn-salvar" style="bottom: 6px; right: 10px; padding: 2px 14px; font-size: 11px; display: none;" onclick="SaveOrDeleteNotesCards('{{id_notes}}', 'SALVAR', this)">Salvar</button>
+                <button class="btn btn-danger position-absolute btn-excluir" style="bottom: 6px; left: 10px; padding: 2px 14px; font-size: 11px;" onclick="SaveOrDeleteNotesCards('{{id_notes}}', 'DELETAR', this)">Excluir</button>
+            </div>
+        </div>`;
+
+        container.insertAdjacentHTML("beforeend", card);
+    });
+
+    // Evento de clique para delegação (garante que funcione para novos elementos adicionados)
+        document.getElementById("cards-container").addEventListener("click", function (event) {
+        let target = event.target;
+
+        if (target.classList.contains("btn-editar")) {
+            let cardBody = target.closest(".card-body");
+            let campoAnotacao = cardBody.querySelector(".campo-anotacao");
+            let btnSalvar = cardBody.querySelector(".btn-salvar");
+
+            // Habilita edição
+            campoAnotacao.contentEditable = "true";
+            campoAnotacao.focus();
+
+            // Mostra botão salvar e esconde botão editar
+            target.style.display = "none";
+            btnSalvar.style.display = "inline-block";
+        }
+
+        if (target.classList.contains("btn-salvar")) {
+            let cardBody = target.closest(".card-body");
+            let campoAnotacao = cardBody.querySelector(".campo-anotacao");
+            let btnEditar = cardBody.querySelector(".btn-editar");
+
+            // Desabilita edição
+            campoAnotacao.contentEditable = "false";
+
+            // Mostra botão editar e esconde botão salvar
+            target.style.display = "none";
+            btnEditar.style.display = "inline-block";
+        }
+
+        if (target.classList.contains("btn-excluir")) {
+            let card = target.closest(".card");
+            card.remove();
+        }
+    });
+
+
+    document.addEventListener("click", function (event) {
+    let target = event.target;
+
+    if (target.classList.contains("btn-editar")) {
+        let cardBody = target.closest(".card-body");
+        let campoAnotacao = cardBody.querySelector(".campo-anotacao");
+        let btnSalvar = cardBody.querySelector(".btn-salvar");
+
+        // Habilita edição
+        campoAnotacao.contentEditable = "true";
+        campoAnotacao.focus();
+
+        // Mostra botão salvar e esconde botão editar
+        target.style.display = "none";
+        btnSalvar.style.display = "inline-block";
+    }
+
+    if (target.classList.contains("btn-salvar")) {
+        let cardBody = target.closest(".card-body");
+        let campoAnotacao = cardBody.querySelector(".campo-anotacao");
+        let btnEditar = cardBody.querySelector(".btn-editar");
+
+        // Desabilita edição
+        campoAnotacao.contentEditable = "false";
+
+        // Mostra botão editar e esconde botão salvar
+        target.style.display = "none";
+        btnEditar.style.display = "inline-block";
+    }
+
+    if (target.classList.contains("btn-excluir")) {
+        let card = target.closest(".card");
+        card.remove();
+    }
+});
+
+</script>
+
+
+<style>
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: transparent !important;
+    color: inherit !important;
+}
+
+.overlay{
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.5); /* Transparente com fundo escuro */
+z-index: 999; /* Garantir que a camada de sobrecarga fique sobre outros elementos */
+}
+</style>
+
+
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip({
+            html: true
+        });
+    });
+</script>
+
+{% endblock %}

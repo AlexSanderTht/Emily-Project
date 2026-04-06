@@ -1,0 +1,100 @@
+{% load static %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@6.2.2/dist/handsontable.full.min.css">
+<script src="https://cdn.jsdelivr.net/npm/handsontable@6.2.2/dist/handsontable.full.min.js"></script>
+
+
+<div class="modal fade" id="CatalogoEletrodutos" tabindex="-1" role="dialog" aria-labelledby="testModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document" style="max-width: 80%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="testModalLabel">TABELA DE DIMENSIONAMENTO DE ELETRODUTOS</h5>
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>-->
+            </div>
+            <div class="modal-body">
+
+                <div id="handsontableContainer" style="height: 300px; overflow: hidden;"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick='UpdateTabelaDimencionamento()'>Salvar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="CatalogoCarcacas" tabindex="-1" role="dialog" aria-labelledby="testModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document" style="max-width: 1300px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">TABELA DE DIMENSIONAMENTO DE CARCAÇAS</h5>
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>-->
+            </div>
+            <div class="modal-body">
+
+                <div class="row" style="margin-top: 25px;">
+                    <div class="col-3">
+                    <!------------------ Início Tipo de componente na extremidade do leito ou eletroduto ------------------>
+                    <div class="form-group input-group-sm">
+                        <label>Tipo de Área </label>
+                        <div>
+                            <select class="form-control" id="tipo_rosca_tabela" onchange="AtivarTabelaCarcaca()">
+                                <!--onchange="fillPopoverSelect('tipo_componente_acessorios');fillCodeTipicoAcessorios();ajaxOptionNextLevel('tipo_rosca_ligacao_acessorios', this.selectedOptions[0].id, '');removeDisabledAtribute('tipo_rosca_ligacao_acessorios')">-->
+                                <option selected>MÉTRICA</option>
+                                <option>BSP</option>
+                                <option >NPT</option>
+                            </select>
+                        </div>
+                    </div><!------------------ Fim Tipo de componente na extremidade do leito ou eletroduto ------------------>
+                </div>
+            </div>
+
+                <div id="handsontableContainer1" style="height: 400px; overflow: hidden;"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick='UpdateTabelaDimencionamentoCarcacas()'>Salvar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" >Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="CatalogoCabos">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!--<h5 class="modal-title" id="exampleModalLabel">Configurar informações de materiais</h5>-->
+                    <h6 class="modal-title" id="exampleModalLabel">FABRICANTE DE CABO</h6>
+                    <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>-->
+                </div>
+                <div class="modal-body">
+                    <div class="form-group input-group-md">
+                        <div class="col">
+                            <div class="label" style="margin-top: 25px;">PARA ALIMENTAÇÃO DE EQUIPAMENTO:</div>
+                            <select class="form-control" id="fabricante_cabo_equipamento">
+                                <option selected>Prysmian</option>
+                                <option>Nexans</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <div class="label" style="margin-top: 25px;">PARA ALIMENTAÇÃO DE ACESSÓRIOS:</div>
+                            <select class="form-control" id="fabricante_cabo_acessorio">
+                                <option selected>Belden</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="AlterarFabricanteCabo();">ALTERAR FABRICANTE DE CABO</button>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,968 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>A1 Histogramas</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+<div class="container row mx-auto">
+    <div class="col-sm-12 col-md-12 col-xl-12 mt-5 bordas bg-white border shadow">
+
+        <h1 class="display-4 row justify-content-center ">A1 Histogramas</h1>
+        <hr class="my-2">
+
+        <div class="row justify-content-center mx-5">
+            <!------------------ Inicio Dropzone ------------------>
+            <form class="col-lg-12 form my-3" id="form">
+                {% csrf_token %}
+                <div class="card_dropzone py-3" onclick="" id="drop-area">
+                    <div class="text-center w-100">
+                        <!------------------ Inicio Message ------------------>
+                        <span class="font-italic">Arraste e solte o arquivo (*.xlsx) ou</span><br>
+                        <span class="font-italic">click em import para fazer o upload.</span><br>
+                        <!------------------ Fim Message ------------------>
+                        <label class="mt-2 btn btn-success text-white">
+                            <input accept=".xlsx" class="hidden" type="file" id="arquivo" onchange="DropArquivo()"/>
+                            <i class="fa-solid fa-upload"></i> Import
+                        </label>
+                        <a class="btn btn-info text-white" href="/app/a1hist/download_template_excel/">
+                            <i class="fa-solid fa-download"></i> Template
+                        </a>
+
+                    </div>
+                </div>
+            </form><!------------------ Fim Dropzone ------------------>
+
+            <!------------------ Início Separador ------------------>
+            <div class="col-lg-12 text-center mb-3 mx-2 ">
+                <hr class="col">
+                <span class="col-sm-2 col-md-2 col-lg-1 px-1">OU</span>
+                <hr class="col">
+            </div><!------------------ Fim Separador ------------------>
+
+            <!------------------ Início Botões ------------------>
+            <div class="col-lg-12 d-flex justify-content-start">
+                <div class="border_bottom_warming w-100">
+                    <button id="btn_form" class="btn btn-warning rounded-0" onclick="NavigationForm()">Formulário Usuário</button>
+                    <button id="btn_tbd" class="btn btn-light border rounded-0" onclick="NavigationTBD()">Formulário TBD</button>
+                    <button id="btn_table" class="btn btn-light border rounded-0" onclick="NavigationTable()">Tabela de Visualização</button>
+                </div>
+            </div><!------------------ Fim Botões ------------------>
+
+            <!------------------ Início do Formulário Preenchimento ------------------>
+            <form id="form_hist" class="col-lg-12 needs-validation" novalidate>
+                <!------------------ Início 1° Linha form ------------------>
+                <div class="form-row mt-3">
+                    <!------------------ Início Projeto ------------------>
+                    <div class="col-sm-12 col-md-6 col-lg-2 mb-3">
+				        <label for="proj_os">Projeto (OS)</label>
+				        <select class="custom-select" id="proj_os" onclick="PostOS()" onchange="PostOS()">
+                            <option selected></option>
+                            {% for numberOS in NumOS%}
+                            <option id="{{numberOS.tb_so_id}}">{{numberOS.tb_so_num}}</option>
+                            {%endfor%}
+                        </select>
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim Projeto ------------------>
+
+                    <!------------------ Início Nome ------------------>
+				    <div class="col-sm-12 col-md-6 col-lg-4 mb-3" id="campo_name">
+				        <label for="Nome">Nome</label>
+                        <select class="custom-select" name="user" id="Nome" onclick="PostUser()" onchange="PostUser()">
+                            <option selected></option>
+                            {% for colaborador in Users%}
+                            <option id="{{colaborador.tb_per_id}}" >{{colaborador.tb_per_name}}</option>
+                            {%endfor%}
+				        </select>
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim Nome ------------------>
+
+                    <!------------------ Início TBD ------------------>
+				    <div class="col-sm-12 col-md-6 col-lg-4 mb-3" id="campo_tbd">
+				        <label for="input_tbd">Nome</label>
+                        <input class="form-control" name="tbd" type="text" id="input_tbd" placeholder="Nomeie o TBD (ex: TBD1, TBD_2, TBD-3...)" title="A nomenclatura do TBD deve ser (única), para não sobrescrever outro TBD já cadastrado na revisão, sendo responsabilidade do usuário preencher corretamente!">
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim TBD ------------------>
+
+                    <!------------------ Início Classificação User ------------------>
+				    <div class="col-sm-12 col-md-8 col-lg-4 mb-3" id="class_user">
+				        <label for="clas_select_user">Classificação</label>
+				        <select class="custom-select" id="clas_select_user" title="Caso não seja TBD click sobre o nome do colaborador para preencher este campo.">
+                            <option selected></option>
+                        </select>
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim Classificação User ------------------>
+
+                    <!------------------ Início Classificação TBD ------------------>
+				    <div class="col-sm-12 col-md-8 col-lg-4 mb-3" id="class_tbd">
+				        <label for="clas_select_tbd">Classificação</label>
+				        <select onclick="PreencheNivelTBD()" class="custom-select" id="clas_select_tbd" title="Caso não seja TBD click sobre o nome do colaborador para preencher este campo.">
+                            <option selected></option>
+                            {% for cla in Classification%}
+                            <option id="{{cla.tb_cl_id}}" value="{{cla.tb_cl_id}}">{{cla.tb_cl_desc}}</option>
+                            {%endfor%}
+                        </select>
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim Classificação TBD ------------------>
+
+                    <!------------------ Início Nível TBD ------------------>
+				    <div class="col-sm-12 col-md-4 col-lg-2 mb-3" id="campo_nv_tbd">
+				        <label for="niv_tbd">Nível</label>
+				        <select class="custom-select" id="niv_tbd">
+                            <option value="" selected></option>
+                        </select>
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim Nível TBD ------------------>
+
+                    <!------------------ Início Nível ------------------>
+				    <div class="col-sm-12 col-md-4 col-lg-2 mb-3" id="campo_nv">
+				        <label for="niv">Nível</label>
+				        <select class="custom-select" id="niv">
+                            <option value="" selected></option>
+                            {% for level in CargoLevel%}
+                            <option id="{{level.tb_level_id}}" value="{{level.tb_level_id}}">{{level.tb_level_desc}}</option>
+                            {%endfor%}
+                        </select>
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim Nível ------------------>
+                </div><!------------------ Fim 1° Linha form ------------------>
+
+                <!------------------ Início 2° Linha form ------------------>
+                <div class="form-row">
+                    <!------------------ Início MO/OCV ------------------>
+                    <div class="col-sm-12 col-md-4 col-lg-2 mb-3">
+				        <label for="rh_ocv">RH/OCV</label>
+				        <select class="custom-select" id="rh_ocv">
+                            <option selected></option>
+                            {% for tipo in RhOCV%}
+                            <option id="{{tipo.tb_tipo_id}}">{{tipo.tb_tipo_desc}}</option>
+                            {%endfor%}
+                        </select>
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim MO/OCV ------------------>
+
+                    <!------------------ Início Disciplina ------------------>
+				    <div class="col-sm-12 col-md-8 col-lg-5 mb-3">
+				        <label for="disc">Disciplina</label>
+				        <select class="custom-select" id="disc">
+                            <option selected></option>
+                            {% for discip in AreaIntranet%}
+                            <option id="{{discip.tb_area_id}}" value="{{discip.tb_area_id}}">{{discip.tb_area_id}} - {{discip.tb_area_descricao}}</option>
+                            {%endfor%}
+                        </select>
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim Disciplina ------------------>
+
+                    <!------------------ Início Alocação ------------------>
+                    <div class="col-sm-12 col-md-4 col-lg-2 mb-3">
+				        <label for="alocacao">Alocação</label>
+				        <select class="custom-select" id="alocacao">
+                            <option selected></option>
+                            <option>0%</option>
+                            <option>10%</option>
+                            <option>15%</option>
+                            <option>20%</option>
+                            <option>25%</option>
+                            <option>30%</option>
+                            <option>35%</option>
+                            <option>40%</option>
+                            <option>45%</option>
+                            <option>50%</option>
+                            <option>55%</option>
+                            <option>60%</option>
+                            <option>65%</option>
+                            <option>70%</option>
+                            <option>75%</option>
+                            <option>80%</option>
+                            <option>85%</option>
+                            <option>90%</option>
+                            <option>95%</option>
+                            <option>100%</option>
+                        </select>
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim Alocação ------------------>
+
+                    <!------------------ Início EAP ------------------>
+                    <div class="col-sm-12 col-md-8 col-lg-3 mb-3">
+				        <label for="campo_eap">EAP</label>
+				        <select class="custom-select" id="campo_eap" title="Click na OS para preencher a EAP">
+                            <option selected></option>
+                        </select>
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim EAP ------------------>
+                </div><!------------------ Fim 2° Linha form ------------------>
+
+                <!------------------ Início 3° Linha form ------------------>
+                <div class="form-row">
+                    <!------------------ Início Data Inicio ------------------>
+				    <div class="col-sm-6 col-lg-3">
+				        <label for="date_ini">Inicio</label>
+				        <input class="form-control" type="date" id="date_ini">
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim Data Inicio ------------------>
+
+                    <!------------------ Início Data Término ------------------>
+				    <div class="col-sm-6 col-lg-3 mb-md-3">
+				        <label for="date_fim">Término</label>
+				        <input class="form-control" type="date" id="date_fim">
+				        <div class="invalid-feedback">
+				            Preencha este Campo!
+				        </div>
+				    </div><!------------------ Fim Data Término ------------------>
+
+                    <!------------------ Início Observação ------------------>
+                    <div class="col-lg-6 mb-3">
+                        <label for="observ">Observação</label>
+                        <textarea class="form-control" id="observ" rows="1"></textarea>
+                    </div><!------------------ Início Observação ------------------>
+                </div><!------------------ Fim 3° Linha form ------------------>
+            </form><!------------------ Fim do Formulário Preenchimento ------------------>
+
+            <!------------------ Início Table ------------------>
+            <div id="filtro_table" class="col-lg-12 mb-3">
+                <fieldset class="border rounded my-3 bg-light">
+                    <legend class="float-none w-auto px-2 mb-0">Filtros</legend>
+
+                    <!------------------ Início Filtros ---------------->
+                    <div id="id_filters" class="col-sm-12 col-lg-12 mb-2">
+                        <div class="row">
+                            <!------------------ Início Projeto ------------------>
+                            <div class="col-sm-12 col-md-6 col-lg-2">
+                                <label for="proj_os_rev">Projeto (OS)</label>
+                                <select class="custom-select" id="proj_os_rev" onclick="PopulaRevisao()" onchange="PopulaRevisao()">
+                                    <option selected></option>
+                                    {% for value_os, key_os in OSRev.items %}
+                                    <option id="{{key_os.0}}" value="{{value_os}}">{{value_os}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div><!------------------ Fim Projeto ------------------>
+
+                            <!------------------ Início Nome ------------------>
+                            <div class="col-sm-12 col-md-6 col-lg-2 mr-auto" id="campo_rev">
+                                <label for="select_rev">Revisão</label>
+                                <select class="custom-select" id="select_rev">
+                                    <option selected></option>
+                                </select>
+                            </div><!------------------ Fim Nome ------------------>
+
+                            <!------------------ Início Botões ---------------->
+                            <div id="btn_page_table" class="col-auto my-auto pt-sm-2 pt-md-2">
+                                <form id="form_download" method="GET" enctype="multipart/form-data">
+                                   {% csrf_token %}
+                                </form>
+                                <button class="btn btn-outline-success" onclick="DownLoadExcel()">Download Excel</button>
+                                <button class="btn btn-outline-primary" onclick="PostTabela()">Pesquisar</button>
+                            </div><!------------------ Fim Botões ------------------>
+                        </div>
+                    </div><!------------------ Fim Filtros ------------------>
+                </fieldset>
+            </div><!------------------ Fim table ------------------>
+
+            <!------------------ Início Modal Tabela ------------------>
+            <div class="modal fade" id="Modal_Tabela">
+                <div class="modal-dialog mt-5 w-75 mw-100">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div id="Tabela"></div>
+                        </div>
+                    </div>
+                </div>
+            </div><!------------------ Fim Modal Tabela ------------------>
+
+            <!------------------ Início Modal Preenchimento ------------------>
+            <div class="modal fade" id="modal_mensagem_erro">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title text-center text-danger w-100">Atenção</h4>
+                            <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <p><b id="text_error"></b></p>
+                            <hr>
+                            <div class="mx-auto">
+                                <img class="w-50" src="{% static 'img/alert.gif' %}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!------------------ Fim Modal Preenchimento ------------------>
+
+            <!------------------ Início Botão Submit Cadastrar Histograma ------------------>
+            <button type="button" id="VerificaPreenchimento" onclick="CadastraFormulárioHistograma()" class="mx-4 mb-4 row col-sm-3 col-md-3 col-lg-2 subscribe btn btn-block btn-warning rounded-pill shadow border">
+                Cadastrar
+            </button><!------------------ Fim Botão Submit Alterar Autorizações ------------------>
+
+            <!------------------ Início Modal Mensagem Submit ------------------>
+            <div class="modal fade" id="modal_mensagem_submit">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title text-center text-success w-100">Atenção</h4>
+                            <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <p><b>Dados Histograma Cadastrados com Sucesso!</b></p>
+                            <hr>
+                            <div class="mx-auto">
+                                <img class="w-50" src="{% static 'img/success_alert.gif' %}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!------------------ Fim Modal Mensagem Submit ------------------>
+
+            <!------------------ Início Modal Mensagem Load ------------------>
+            <div class="modal fade" id="modal_load">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title text-center text-success w-100">Atenção</h4>
+                            <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <p><b id="mensagem_load"></b></p>
+                            <hr>
+                            <div class="mx-auto">
+                                <img id="image_load" class="w-75">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!------------------ Fim Modal Mensagem Submit ------------------>
+
+        </div><!------------------ Fim Cartões ------------------>
+    </div>
+</div>
+{% endblock %}
+{% block end %}
+<script>
+    // --------------------- Exibe elementos e classe estabelecidos como padrão de visualização ao carregar a página ---------------------//
+    $("#filtro_table").hide()
+    $("#table_hist").hide()
+    $("#campo_tbd").hide()
+    $("#campo_name").show()
+    $("#class_user").show()
+    $("#class_tbd").hide()
+    $("#btn_table").show()
+    $("#form_hist").show()
+    $("#campo_nv_tbd").hide()
+    $("#btn_form").removeClass('btn-light')
+    $("#btn_form").addClass('btn-warning')
+    $("#btn_tbd").removeClass('btn-warning')
+    $("#btn_tbd").addClass('btn-light')
+    $("#btn_table").removeClass('btn-warning')
+    $("#btn_table").addClass('btn-light')
+
+    // --------------------- Função preenche tabela ---------------------//
+    function CloseHelp() {
+        $('#btn_help').show()
+        $('#btn_close_help').hide()
+        $('#table_hist').show()
+        $('#item_carousel').hide()
+        $('#arrow_carousel').hide()
+        $('#campo_image_help').hide()
+    }
+    // --------------------- Função preenche tabela ---------------------//
+    function CardHelp() {
+        $('#btn_help').hide()
+        $('#btn_close_help').show()
+        $('#table_hist').hide()
+        $('#item_carousel').show()
+        $('#arrow_carousel').show()
+        document.getElementById('image_help_active').src = "{% static 'img/a1hist_help/Help_1.jpg' %}"
+        document.getElementById('image_help_item_2').src = "{% static 'img/a1hist_help/Help_2.jpg' %}"
+        document.getElementById('image_help_item_3').src = "{% static 'img/a1hist_help/Help_3.jpg' %}"
+        document.getElementById('image_help_item_4').src = "{% static 'img/a1hist_help/Help_4.jpg' %}"
+        document.getElementById('image_help_item_5').src = "{% static 'img/a1hist_help/Help_5.jpg' %}"
+        document.getElementById('image_help_item_6').src = "{% static 'img/a1hist_help/Help_6.jpg' %}"
+        document.getElementById('image_help_item_7').src = "{% static 'img/a1hist_help/Help_7.jpg' %}"
+        document.getElementById('image_help_item_8').src = "{% static 'img/a1hist_help/Help_8.jpg' %}"
+        document.getElementById('image_help_item_9').src = "{% static 'img/a1hist_help/Help_9.jpg' %}"
+        $('#campo_image_help').show()
+    }
+
+    // --------------------- Função para alterar classe dos botoes página Formulário ---------------------//
+    function NavigationForm() {
+        document.getElementById('Nome').value='';
+        document.getElementById('input_tbd').value='';
+        $("#form_hist").show()
+        $("#campo_name").show()
+        $("#campo_tbd").hide()
+        $("#table_hist").hide()
+        $("#filtro_table").hide()
+        $("#proj_os").show()
+        $("#class_user").show()
+        $("#campo_nv_tbd").hide()
+        $("#campo_nv").show()
+        $("#class_tbd").hide()
+        $("#btn_form").removeClass('btn-light border')
+        $("#btn_form").addClass('btn-warning')
+        $("#btn_tbd").removeClass('btn-warning')
+        $("#btn_tbd").addClass('btn-light border')
+        $("#btn_table").removeClass('btn-warning')
+        $("#btn_table").addClass('btn-light border')
+    }
+
+    // --------------------- Função executa download pelo id do local do arquivo através do submit ---------------------//
+    function DownLoadExcel(){
+        let os = $('#proj_os_rev').val()
+        let rev = $('#select_rev').val()
+        if(os ==="" || rev ===""){
+            document.getElementById('text_error').innerText = 'Selecione a OS e revisão para baixar o excel!'
+            $('#modal_mensagem_erro').modal('show')
+        } else {
+            let id_file = document.getElementById('select_rev').selectedOptions[0].id
+            if (window.location.hostname == 'localhost') {
+                document.getElementById('form_download').action = 'http://' + window.location.hostname + ':8000/app/a1hist/download_excel_hist/'+ id_file
+            } else {
+                document.getElementById('form_download').action = 'https://' + window.location.hostname + '/app/a1hist/download_excel_hist/'+ id_file
+            }
+            document.getElementById('form_download').submit()
+        }
+
+    }
+
+    // --------------------- Função para baixar template histograma ---------------------//
+    function DownloadTemplate(){
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url: "/app/a1hist/download_template_excel/", // Caminho do Ajax
+            type: "GET", // http method
+            headers:{'X-CSRFToken':csrftoken},
+            dataType: "json",
+            success: function (data) {
+
+                document.getElementById('download-temp-file-xlsx').submit()
+            },
+            failure: function () {
+                alert('Algo deu errado com o download do template! verifique e tente novamente.')
+            }
+        });
+    }
+
+
+    // --------------------- Função para alterar classe dos botoes página TBD ---------------------//
+    function NavigationTBD() {
+        document.getElementById('Nome').value='';
+        document.getElementById('input_tbd').value='';
+        $("#form_hist").show()
+        $("#campo_name").hide()
+        $("#campo_tbd").show()
+        $("#proj_os").show()
+        $("#filtro_table").hide()
+        $("#table_hist").hide()
+        $("#class_user").hide()
+        $("#class_tbd").show()
+        $("#campo_nv_tbd").show()
+        $("#campo_nv").hide()
+        $("#btn_form").removeClass('btn-warning')
+        $("#btn_form").addClass('btn-light border')
+        $("#btn_tbd").removeClass('btn-light border')
+        $("#btn_tbd").addClass('btn-warning')
+        $("#btn_table").removeClass('btn-warning')
+        $("#btn_table").addClass('btn-light border')
+    }
+
+    // --------------------- Função para alterar classe dos botoes página Table ---------------------//
+    function NavigationTable() {
+        document.getElementById('Nome').value='';
+        document.getElementById('input_tbd').value='';
+        $("#form_hist").hide()
+        $("#filtro_table").show()
+        $("#filters").hide();
+        $("#proj_os").hide();
+        $("#btn_form").removeClass('btn-warning')
+        $("#btn_form").addClass('btn-light border')
+        $("#btn_tbd").removeClass('btn-warning')
+        $("#btn_tbd").addClass('btn-light border')
+        $("#btn_table").removeClass('btn-light border')
+        $("#btn_table").addClass('btn-warning')
+    }
+
+    // --------------------- Função adiciona campo visual no dropzone ---------------------//
+    function DropArquivo() {
+        let arq_container = document.getElementById("drop-area");
+        let arq_file = document.getElementById("arquivo");
+        arq_container.innerHTML="";
+        let form = new FormData();
+        let name_file = arq_file.files[0].name;
+        form.append('ArquivoHist',arq_file.files[0])
+
+        let drop = `
+                    <p class="font-italic text-center w-100 mb-0">Arquivo selecionado</p>
+                    <div class="col-8 mx-auto my-2 input-group input-group-sm">
+                        <span type="text" class="col form-control bg-white input-group-text">${name_file}</span>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary border bg-white" type="button" onclick="PreencherCampo()">
+                                <i class="fa-solid fa-x"></i>
+                            </button>
+                        </div>
+                    </div>`
+
+        arq_container.innerHTML += drop;
+        document.getElementById('mensagem_load').innerText = 'Cadastrando dados no banco, por favor aguarde!'
+        document.getElementById('image_load').src = "{% static 'img/load_2.gif' %}"
+        $('#modal_load').modal('show')
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+          $.ajax({
+              url: "/app/a1hist/drop_planilha/", // Caminho do Ajax
+              type: "POST", // http method
+              headers:{'X-CSRFToken':csrftoken},
+              dataType: "json",
+              data: form, // Envia dados pela solicitação do POST
+              processData: false,
+              contentType: false,
+              success: function (data) {
+                  setTimeout(() =>{$('#modal_load').modal('hide')},300);
+                  let array = data['HistData']
+                  if (array!== true){
+                      // reescreve a string '>' para a tag <hr>
+                      document.getElementById('text_error').innerHTML = array.replace(/>/g, `<hr>`);
+                      $('#modal_mensagem_erro').modal('show')
+                  } else {
+                      $('#modal_mensagem_submit').modal('show')
+                  }
+              },
+              failure: function () {
+                  alert('Algo deu errado! verifique e tente novamente.')
+              }
+          })
+    }
+
+    // --------------------- Função envia id da OS para filtrar Eap's ---------------------//
+    function PostOS(){
+        let proj_os = document.getElementById('proj_os')
+        if (proj_os.value !== '') {
+            const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+            $.ajax({
+                url: "/app/a1hist/histogramas/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrftoken},
+                dataType: "json",
+                data: {'OsSelect': JSON.stringify(proj_os.selectedOptions[0].id)}, // Envia dados pela solicitação do POST
+                success: function (data) {
+                    PreencheEAP(data['EapFiltered'])
+                },
+                failure: function () {
+                    alert('Algo deu errado! verifique e tente novamente.')
+                }
+            });
+        }
+
+    }
+
+    // --------------------- Função envia id da OS para filtrar classificação Atual ---------------------//
+    function PostUser(){
+        let user = document.getElementById('Nome')
+        if (user.value !== '') {
+            const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+            $.ajax({
+                url: "/app/a1hist/function_filtered/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrftoken},
+                dataType: "json",
+                data: {'UserSelect': JSON.stringify(user.selectedOptions[0].id)}, // Envia dados pela solicitação do POST
+                success: function (data) {
+                    console.log(data['FunctionFiltered'])
+                    PreencherClassfAndNivel(data['FunctionFiltered'])
+                },
+                failure: function () {
+                    alert('Algo deu errado! verifique e tente novamente.')
+                }
+            });
+        }
+    }
+
+    // --------------------- Função preenche tabela ---------------------//
+    function PostTabela(){
+        let id_os = document.getElementById('proj_os_rev').selectedOptions[0].id;
+        let num_os = document.getElementById('proj_os_rev').selectedOptions[0].value;
+        let rev_hist = document.getElementById('select_rev').value;
+
+        if (rev_hist === ""){
+            document.getElementById('text_error').innerText = 'Preencha a OS e Revisão para efetuar a pesquisa'
+            $('#modal_mensagem_erro').modal('show')
+        } else {
+            document.getElementById('mensagem_load').innerText = 'Pesquisando histograma da OS '+ num_os
+            document.getElementById('image_load').src = "{% static 'img/search.gif' %}"
+            $('#modal_load').modal('show')
+            revisao = document.getElementById('select_rev').selectedOptions[0].value;
+            let dict_os_rev = {'NUM_OS':num_os,'ID_OS':id_os,'Rev':rev_hist}
+            const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+            $.ajax({
+                url: "/app/a1hist/atualiza_tabela/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrftoken},
+                dataType: "json",
+                data: {'OsTable': JSON.stringify(dict_os_rev)}, // Envia dados pela solicitação do POST
+                success: function (data) {
+                    if (data['HistData'] !== '') {
+                        $('#Tabela').innerHTML = ''
+                        setTimeout(() => {$('#modal_load').modal('hide')}, 300);
+                        $('#Modal_Tabela').modal('show')
+                        $('#Tabela').html(data['HistData'])
+                    } else {
+                        document.getElementById('text_error').innerText = 'Não foi possível encontrar o arquivo, contate o CT'
+                        $('#modal_mensagem_erro').modal('show')
+                        setTimeout(() =>{$('#modal_load').modal('hide')},300);
+                    }
+                },
+                failure: function () {
+                    alert('Algo deu errado! verifique e tente novamente.')
+                }
+            });
+        }
+    }
+
+    // --------------------- Função preenche classificação e nível ao clicar no nome ---------------------//
+    function PreencherClassfAndNivel(data){
+        let array_data = data[0]
+        let index_id = 0;
+        let index_name = 1;
+        let index_nivel = 2;
+        let index_id_area = 3;
+
+        if (array_data[index_name].substring(0,3) === 'EST') {
+            $("#niv").val("1");// Caso a string comece com EST seleciona estagiário.
+        } else if (array_data[index_name].substring(0,3) === 'COO' && array_data[index_nivel] !== 'JR' && array_data[index_nivel] !== 'PL' && array_data[index_nivel] !== 'SR') {
+            $("#niv").val("3");// Caso a string comece com COO, ou seja - Coordenador - seleciona pleno.
+        } else if (array_data[index_name].substring(0,3) === 'ENG' && array_data[index_nivel] !== 'JR' && array_data[index_nivel] !== 'PL' && array_data[index_nivel] !== 'SR') {
+            $("#niv").val("2");// Caso a string comece com ENG, ou seja - Engenheiro - seleciona estagiário.
+        } else if (array_data[index_name].substring(0,3) === 'GER') {
+            $("#niv").val("4");// Caso a string comece com GER - Gerente - seleciona estagiário.
+        } else if (array_data[index_nivel] === 'JR') {
+            $("#niv").val("2");
+        } else if (array_data[index_nivel] === 'PL') {
+            $("#niv").val("3");
+        } else if (array_data[index_nivel] === 'SR') {
+            $("#niv").val("4");
+        } else {
+            $("#niv").val("");
+        }
+        document.getElementById('clas_select_user').selectedOptions[0].id=array_data[index_id];
+        document.getElementById('clas_select_user').selectedOptions[0].innerText=array_data[index_name];
+        $("#disc").val(array_data[index_id_area].toString())
+    }
+
+    // --------------------- Função loop For para preencher nível ao clicar na classificação TBD ---------------------//
+    function ForOptions(classf){
+        let nivel = document.getElementById('niv_tbd');
+        let option = ''
+        for(let i in classf){
+                let opt ='<option id="'+ i +'" value="'+ i +'">'+ classf[i] +'</option>'
+                option += opt
+        }
+        nivel.innerHTML += option
+    }
+
+    // --------------------- Função preenche nível ao clicar na classificação TBD ---------------------//
+    function PreencheNivelTBD() {
+        let select = document.getElementById('clas_select_tbd').selectedOptions[0].id;
+        let nivel = document.getElementById('niv_tbd');
+        let Coordenador = {3: 'Pleno', 4: 'Sênior'}
+        let Desenhista = {2:'Júnior', 3:'Pleno', 4:'Sênior'}
+        let Diretor = {5:'Master'}
+        let Especialista = {3:'Pleno', 4:'Sênior'}
+        let Estagiario = {1:'Estagiário'}
+        let Gdp = {4:'Sênior', 5:'Master'}
+        let Gerente = {4:'Sênior', 5:'Master'}
+        let Lider = {3:'Pleno', 4:'Sênior'}
+        let Tecnico = {2:'Júnior', 3:'Pleno', 4:'Sênior'}
+
+        // Limpa o campo nível antes de preencher.
+        for (let j=0;j<nivel.length;j++){nivel.innerHTML=''}
+
+        if (select === '1'){
+            ForOptions(Coordenador)
+            $('#niv_tbd').val('3')
+
+        } else if (Number(select) === 2){
+            ForOptions(Desenhista)
+            $('#niv_tbd').val('2')
+
+        } else if (Number(select) === 3){
+            ForOptions(Diretor)
+            $('#niv_tbd').val('5')
+
+        } else if (Number(select) === 4){
+            ForOptions(Especialista)
+            $('#niv_tbd').val('3')
+
+        } else if (Number(select) === 5){
+            ForOptions(Estagiario)
+            $('#niv_tbd').val('1')
+
+        } else if (Number(select) === 6){
+            ForOptions(Gdp)
+            $('#niv_tbd').val('4')
+
+        } else if (Number(select) === 7){
+            ForOptions(Gerente)
+            $('#niv_tbd').val('4')
+
+        } else if (Number(select) === 8){
+            ForOptions(Lider)
+            $('#niv_tbd').val('3')
+
+        } else {
+            ForOptions(Tecnico)
+            $('#niv_tbd').val('2')
+        }
+    }
+
+    // --------------------- Função filtra dict context e popula revisoes ---------------------//
+    function PopulaRevisao(){
+        let select_os = $('#proj_os_rev').val();
+        if (select_os !== '') {
+            let data = {{OSRev | safe}}
+            let keys_context = Object.keys(Object.keys(data));
+            let entries_array = Object.entries(data[keys_context=select_os])
+            let rev_option = document.getElementById("select_rev");// cria ID do container.
+            let rev_os = 0
+            let id_rev = 1
+            let list_data = []
+            let object_array = Object.entries(entries_array[id_rev][id_rev])
+            let gera_option = ''
+
+            for (let j = 0; j <object_array.length;j++){
+                list_data = object_array[j]
+                let item_option = `<option id="${list_data[id_rev]}">${list_data[rev_os]}</option>`
+                gera_option += item_option;
+            }
+            rev_option.innerHTML = gera_option;
+        }
+    }
+
+    // --------------------- Função cadastra dados preenchidos nos formulários ---------------------//
+    function CadastraFormulárioHistograma() {
+        let date = (new Date()).toLocaleDateString()
+        let [day, month, year] = date.split('/');
+        let date_now = [year, month, day].join('-');
+        let nome = document.getElementById('Nome').selectedOptions[0].id;
+        let tbd = document.getElementById('input_tbd').value;
+        let nivel = document.getElementById('niv').selectedOptions[0].id;
+        let nivel_tbd = document.getElementById('niv_tbd').selectedOptions[0].id;
+        let projeto = document.getElementById('proj_os').selectedOptions[0].id;
+        let disciplina = document.getElementById('disc').selectedOptions[0].id;
+        let rh_ocv = document.getElementById('rh_ocv').selectedOptions[0].id;
+        let date_inicio = document.getElementById('date_ini').value;
+        let date_fim = document.getElementById('date_fim').value;
+        let aloc = document.getElementById('alocacao').value;
+        let campo_eap = document.getElementById('campo_eap').selectedOptions[0].id;
+        let observacao = document.getElementById('observ').value;
+        // Abaixo a variável retira o ultimo caracter '%' e divide por 100, convertendo para numero decimal.
+        let aloc_corect = (aloc.substring(0, aloc.length-1))/100;
+        let data_dict = {};
+        let select_input = '';
+
+        if ($('#campo_tbd').is(":hidden")) {
+            let list_ids = ['proj_os', 'Nome','clas_select_user','niv','rh_ocv','disc','alocacao','campo_eap','date_ini','date_fim']
+            let classificacao_user = document.getElementById('clas_select_user').selectedOptions[0].id;
+            if (nome === '' || classificacao_user === '' || nivel === '' || rh_ocv === '' || projeto === '' || disciplina === '' || aloc === '' || campo_eap === '' || date_inicio === '' || date_fim === '') {
+                // Se campos estiverem vazios/não preenchidos, será adicionado classe invalida com loop for
+                for (let i in list_ids) {ClassIsInvalid(list_ids[i])}
+                document.getElementById('text_error').innerText=''
+                document.getElementById('text_error').innerText='Erro ao fazer o cadastro,\n preencha todos os campos!'
+                $('#modal_mensagem_erro').modal('show')
+            } else if (date_now > date_inicio) {
+                document.getElementById('text_error').innerText=''
+                document.getElementById('text_error').innerText='Não é possível planejar o incorrido, \ncorrija a data de início a partir de hoje!'
+                $('#modal_mensagem_erro').modal('show')
+            } else {
+                // Se campos estiverem diferentes de vazios/não preenchidos, será removida a classe invalida com loop for
+                for (let j in list_ids) {ClassIsInvalid(list_ids[j])}
+                let name_user = document.getElementById('Nome').name;
+                select_input = name_user
+
+                data_dict = {
+                    'NameInput': select_input,
+                    'IDNome': nome,
+                    'IDClassificacao': classificacao_user,
+                    'IDNivelCargo': nivel,
+                    'IDProjetoOS': projeto,
+                    'IDDisciplina': disciplina,
+                    'ID_RH_OCV': rh_ocv,
+                    'DataInicio': date_inicio,
+                    'DataFim': date_fim,
+                    'Aloc': aloc_corect,
+                    'IDEAP': campo_eap,
+                    'Observ': observacao}
+                AjaxCadForm(data_dict)
+            }
+        } else {
+            let list_ids = ['proj_os', 'input_tbd','clas_select_tbd','niv_tbd','rh_ocv','disc','alocacao','campo_eap','date_ini','date_fim']
+            let classificacao_tbd = document.getElementById('clas_select_tbd').selectedOptions[0].id;
+
+            if (tbd === '' || classificacao_tbd === '' || nivel_tbd === '' || rh_ocv === '' || projeto === '' || disciplina === '' || aloc_corect === '' || campo_eap === '' || date_inicio === '' || date_fim === '') {
+                // Se campos estiverem vazios/não preenchidos, será adicionado classe invalida com loop for
+                for (let i in list_ids) {ClassIsInvalid(list_ids[i])}
+                document.getElementById('text_error').innerText=''
+                document.getElementById('text_error').innerText='Erro ao fazer o cadastro,\n preencha todos os campos!'
+                $('#modal_mensagem_erro').modal('show')
+            } else if (date_now > date_inicio) {
+                document.getElementById('text_error').innerText=''
+                document.getElementById('text_error').innerText='Não é possível planejar o incorrido, \ncorrija a data de início a partir de hoje!'
+                $('#modal_mensagem_erro').modal('show')
+            } else {
+                // Se campos estiverem diferente de vazios/não preenchidos, será removida a classe invalida com loop for
+                for (let j in list_ids) {ClassIsInvalid(list_ids[j])}
+                let name_tbd = document.getElementById('input_tbd').name;
+                select_input = name_tbd
+                data_dict = {
+                    'NameInput': select_input,
+                    'TBD': tbd,
+                    'IDClassificacao': classificacao_tbd,
+                    'IDNivelCargo': nivel_tbd,
+                    'IDProjetoOS': projeto,
+                    'IDDisciplina': disciplina,
+                    'ID_RH_OCV': rh_ocv,
+                    'DataInicio': date_inicio,
+                    'DataFim': date_fim,
+                    'Aloc': aloc_corect,
+                    'IDEAP': campo_eap,
+                    'Observ': observacao}
+                AjaxCadForm(data_dict)
+            }
+        }
+    }
+
+    // --------------------- Função para enviar dicionario do form ---------------------//
+    function AjaxCadForm(data_dict) {
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url: "/app/a1hist/cadastro_histograma/", // Caminho do Ajax
+            type: "POST", // http method
+            headers: {'X-CSRFToken': csrftoken},
+            dataType: "json",
+            data: {'DadosFormSelect': JSON.stringify(data_dict)}, // Envia dados pela solicitação do POST
+            success: function (data) {
+                $('#modal_mensagem_submit').modal('show')
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        });
+    }
+
+    // --------------------- Função valida formulario ---------------------//
+    function ClassIsInvalid(item){
+        let i = document.getElementById(item)
+        if (i.value === '') {
+            i.classList.add('is-invalid')
+        } else {
+            i.classList.remove('is-invalid')
+        }
+    }
+
+    // --------------------- Função preenche Eap's de acordo com o parâmetro recebido do ajax ---------------------//
+    function PreencheEAP(data) {
+        let campo_eap = document.getElementById("campo_eap");// cria ID do container.
+        let list_data = []
+        let id_eap = []
+        let name_eap = []
+        let gera_option = ''
+
+        for (let i = 0; i <data.length;i++){
+            if (data[i] !== null){
+                list_data = data[i]
+                id_eap = list_data[0]
+                name_eap = list_data[2]
+                let item_option = `<option id="${id_eap}">${name_eap}</option>`
+                gera_option += item_option;
+            }
+        }
+        campo_eap.innerHTML = gera_option;
+    }
+
+    // --------------------- Função para adicionar arquivo dropado pelo click no botao input(Import) ---------------------//
+    function FunctionSubmit(){
+		document.getElementById("drop-area").innerHTML="";
+
+		let arq_container = document.getElementById("drop-area");
+		let drop = `
+				<p class="font-italic text-center w-100 mb-0">Arquivo selecionado</p>
+	            <div class="col-8 mx-auto my-2 input-group input-group-sm">
+                  <span type="text" class="col form-control bg-white input-group-text">Arquivo tal</span>
+                  <div class="input-group-append">
+                      <button class="btn btn-outline-secondary border bg-white" type="button" onclick="PreencherCampo()">
+                      	<i class="fa-solid fa-x"></i>
+                  	  </button>
+                  </div>
+               </div>`
+
+        arq_container.innerHTML += drop;
+	}
+
+    // --------------------- Função limpa e preenche campo Dropzone ao clicar no botao ---------------------//
+	function PreencherCampo() {
+        window.location.reload()
+	}
+
+    // --------------------- Função Jquery para adicionar e remover classe "hover" e apos soltar o arquivo ---------------------//
+    jQuery(document).ready(function($) {
+
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('.card_dropzone').on('dragover', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).addClass('upload-hover');
+        })
+
+        // Ao retirar o cursor com arquivo sobre o campo dropzone as bordas diminuem
+        $('.card_dropzone').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+        })
+
+        // Ao soltar o arquivo sobre o campo
+        $('#arquivo').on(function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            $(this).removeClass('upload-hover');
+            var files = event.originalEvent.dataTransfer.files;
+            var name_files = files[0].name
+        });
+
+        // Ao soltar o arquivo sobre o campo
+        $('.card_dropzone').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+          var form_data = new FormData();
+          var file = event.originalEvent.dataTransfer.files;
+          var name_files = file[0].name
+
+          // A unção abaixo faz o ajax do documento
+          DropArquivo()
+        })
+    });
+</script>
+{% endblock %}

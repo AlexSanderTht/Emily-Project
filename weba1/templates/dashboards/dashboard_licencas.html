@@ -1,0 +1,218 @@
+{% extends 'geral/base.html' %}
+{% load poll_extras %}
+{% load static %}
+{% block head %}
+<title>Dashboards</title>
+<link rel="icon" href="{% static 'dashboards\graph_icon.png' %}" type="image/x-icon">
+{% endblock %}
+{% block help %}
+
+{% endblock %}
+{% block main %}
+<script>
+    (function ($) {
+        $(function () {
+            window.fs_test = $('.selection').fSelect(
+                {
+                    placeholder: 'Selecione',
+                    numDisplayed: 3,
+                    overflowText: '{n} Selecionados',
+                    noResultsText: 'Nenhum Resultado Encontrado',
+                    searchText: 'Search',
+                    showSearch: true
+                }
+            );
+        });
+    })(jQuery);
+</script>
+{% csrf_token %}
+
+<!------------------ Início Cartão de conteúdo ------------------>
+{% with id_modal='modal-load-portaria' %}
+    {% include 'catracas/modal_load.html' %}
+{% endwith %}
+<!-- JavaScript Aplicação Dashboard -->
+<script src="{% static 'js/dashboards/Chart.js' %}"></script><!-- Script de classe de Gráficos -->
+<script src="{% static 'js/dashboards/FunctionSelect.js' %}"></script><!-- Plugin de Função de Múltiplo Selects -->
+<!-- jQuery Aplicação Dashboard -->
+<script src="{% static 'js/dashboards/jquery-3.3.1.min.js' %}"></script>
+
+
+<div class="modal fade" id="modal_preco" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Valor Por Acesso</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <label>Valor:</label>
+                <input id="valor_lic_unit" class="form-control col-6" type="number" name="Name"/>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" onclick="SendLicValue()">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="px-5 py-5 bordas">
+    <div class="row justify-content-md-center">
+
+        <!------------------ Aba Filtro de conteúdo ------------------>
+        <div class="col-sm-3 col-xl-2 borda_filtros bg-secondary imagem_LateralSup">
+            <div class="row my-4">
+                <a class="col-sm-6 col-6" href="/app/dashboards/licenca/">
+                    <img class="ml-3" src="{% static 'dashboards\a1_menu_white.png' %}">
+                </a>
+                <a class="col-sm-6 col-6" href="/app/dashboards/licenca/">
+                    <h3 class="h3 float-right text-white font-weight-bold font-italic">Dash Consumo Lics.</h3>
+                </a>
+            </div>
+
+            <!------------------ Início Secção de colaborador ------------------>
+            <div class="form-group">
+                <label class="font-weight-bold text-white" for="colaborador">Colaborador</label>
+                <select class="selection" id="colaborador" multiple="multiple">
+                    {% for id_login, name_per in persons %}
+                    <option name="colab" value="{{id_login}}">{{name_per}}</option>
+                    {% endfor %}
+                </select>
+            </div><!------------------ Fim Secção de colaborador ------------------>
+
+            <!------------------ Início Secção de catracas ------------------>
+            <div class="form-group">
+                <label class="font-weight-bold text-white" for="catraca">OS</label>
+                <select class="selection" id="catraca" multiple="multiple">
+                    {% for id, eqp in all_os %}
+                    <option name="catr" value="{{id}}">{{eqp}}</option>
+                    {% endfor %}
+                </select>
+            </div><!------------------ Início Secção de catracas ------------------>
+
+                            <!------------------ Início Secção Filtros de Data ------------------>
+            <label class="font-weight-bold text-white">Data</label>
+            <div class="col-sm-12 col-xl-12 border borda_lateral">
+                <div class="col-12">
+                    <div class="form-group mb-1 mx-4 ">
+                        <label for="DataInicio">Data inicio</label>
+                        <input type='date' class="form-control" id='DataInicio' min="{{min_date}}" max="{{max_date}}"
+                               onclick="change_color_date('form-control')">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-group mb-1 mx-4">
+                        <label for="DataFim">Data fim</label>
+                        <input type='date' class="form-control" id='DataFim' min="{{min_date}}" max="{{max_date}}"
+                               onclick="change_color_date('form-control')">
+                    </div>
+                </div>
+            </div><!------------------ Fim Secção Filtros de Data ------------------>
+            <!------------------ Início Secção de eventos ------------------>
+            <!------------------ Início Secção de Seleção ------------------>
+            <div class="text-white">
+                <br>
+            </div><!------------------ Fim Secção de Seleção ------------------>
+
+            <!------------------ Início Secção de Limpar Filtro ------------------>
+            <div class="mx-1 w-100 btn-group row justify-content-center">
+                <a class=" btn btn-outline-light active" id="ClearFilter" onclick="clean_filters_portaria()">
+                    <i class="fas fa-eraser"></i>
+                </a>
+                <a onclick="PostDataInfo()" class="btn btn-outline-light" role="button" id="ApplyFilters" type="submit">Aplicar
+                    Filtros</a>
+            </div><!------------------ Fim Secção de Limpar Filtro ------------------>
+
+            <div class="mx-1 w-100 btn-group row justify-content-center">
+                <button class="btn btn-outline-light bg-warning" role="button" data-toggle="modal" data-target="#modal_preco" id="price_lics" onclick="RecivieLicValue()">Preço Licença</button>
+
+            </div><!------------------ Fim Secção de Limpar Filtro ------------------>
+
+        </div><!------------------ Fim Aba de Filtros ------------------>
+
+        <!------------------ Aba de Gráficos ------------------>
+        <div class="col-sm-9 col-xl-10 border borda_lateral">
+            <div class="row">
+                <div class="col-sm-12 col-md-4 col-xl-5">
+                    <div class="row justify-content-center px-md-2">
+
+                    </div>
+                </div>
+            </div>
+
+            <!------------------ Início Secção 2 ------------------>
+            <div class="row" align="center">
+                <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5 rounded pr-0 pr-md-3">
+
+                    <div class="col-sm-12 col-md-12 col-xl-12 row my-2 justify-content-center px-1">
+                        <div class="col-md-3 col-xl-3 bordas py-4 px-1 fundo_p2">
+                            <div class="">
+                                <span class="font-weight-bold h5" id="quant_lic"></span><br>
+                                <span>Qtd. De Acessos</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-xl-4 bordas py-4 px-1 fundo_p1">
+                            <div class="" >
+                                <span class="font-weight-bold h5" id="valor_lic"></span><br>
+                                <span>Valor Total Acessos</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!------------------ Início Gráfico de Rosca ------------------>
+                    <div class="row HeigthCard bg-white rounded border shadow container justify-content-center">
+                        <div class="col-lg-6 col-md-8 col-lg-9 col-xl-8" id="daddy-chart">
+                            <canvas class="" id="doughnut-chart" width="" height=""></canvas>
+                        </div>
+                    </div><!------------------ Fim Gráfico de Rosca ------------------>
+
+                </div>
+
+                <!------------------ Início Tabela ------------------>
+                <div class="col container pb-md-2 pl-xl-0">
+                    <div class="justify-content-center rounded border bg-white mt-3 shadow tableFixHead" id="table">
+                        <table class="table table-hover sortable ">
+                            <thead class="thead-light">
+                            <tr>
+                                <th data-column="DATA_HORA" data-order="desc">Data</th>
+                                <th data-column="TIPO" data-order="desc">OS</th>
+                                <th data-column="EQPI_DESCRICAO" data-order="desc">MIC</th>
+                                <th data-column="PES_NOME" data-order="desc">Nome</th>
+                            </tr>
+                            </thead>
+                            <tbody id="table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div><!------------------ Fim Tabela ------------------>
+
+
+            </div><!------------------ Fim Secção 2 ------------------>
+
+            <!------------------ Início Gráficos de Barras Empilhadas ------------------>
+            <div class="row px-3 pb-3 hidden">
+                <div class="col-12 px-3 bg-white shadow rounded">
+                    <div class="loader">
+                        <img src="{% static 'dashboards\spinner.gif' %}" alt=""/>
+                    </div>
+                    <div id="graph-daddy">
+                        <canvas id="bar-chart-grouped" width="" height="300px"></canvas>
+                    </div>
+                </div>
+            </div><!------------------ Fim Gráficos de Barras Empilhadas ------------------>
+
+        </div>
+    </div>
+</div>
+<br>
+<br>
+
+<script src="{% static 'js/dashboards/dash_licenca.js' %}"></script>
+{% endblock %}
+{% block end %}
+{% endblock %}

@@ -1,0 +1,231 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>A1Logs Firewall</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+<div class="container mt-5">
+    {% csrf_token %}
+    <!------------------ Cabeçalho da ferramenta de converter PDF ------------------>
+    <div class="row justify-content-center animate__animated animate__pulse">
+        <div class="col-lg-12 text-center">
+            <h1>A1Logs Firewall</h1>
+        </div>
+        <div class="col-lg-12 text-center">
+            <h5>Ferramenta para cadastrar e acompanhar os acessos bloqueados pelo firewall.</h5>
+        </div>
+    </div>
+    <!------------------ Fim do cabeçalho ------------------>
+
+    <div class="container row justify-content-center animate__animated animate__pulse">
+        <div class="col-sm-12 col-md-10 col-xl-12 bordas py-3 bg-white border shadow">
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true"><i class="fa-solid fa-folder-open pr-3"></i>Gerenciamento logs</a>
+                </div>
+            </nav>
+
+            <div class="tab-content border border-top-0 p-3 bg-white shadow">
+                  <div class="tab-pane fade show active mt-2" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                      <div class="row px-2">
+                            <div class="form-group text-left col-md-6 col-lg-5 d-flex pr-2">
+                                <div class="card mb-0 flex-grow-1 bg-light p-3">
+                                    <!------------------ Inicio Dropzone ------------------>
+                                    <div class="col-lg-12" id="form">
+                                        {% csrf_token %}
+                                        <div class="form-row">
+                                            <!------------------ Inicio Dropzone TXT ------------------>
+                                            <div class="col-sm-12 col-md-12 col-lg-12 card_dropzone_blue bg-white row align-items-center py-3 ml-0 px-0" id="drop-area-txt">
+                                                <div class="text-center w-100" id="log">
+                                                    <div class="my-5">
+                                                        <!------------------ Inicio Message ------------------>
+                                                        <span class="font-italic text-primary">Arraste e solte o arquivo (*.log) ou</span><br>
+                                                        <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                                                        <!------------------ Fim Message ------------------>
+                                                        <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                                            <input multiple="multiple" accept=".log" class="hidden" type="file" id="arquivo_txt" onchange="DropArquivo('arquivo_txt','drop-area-txt','log',null)"/>
+                                                            <i class="fa-solid fa-upload"></i> Import LOG
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div><!------------------ Fim Dropzone TXT ------------------>
+                                        </div>
+                                    </div><!------------------ Fim Dropzone ------------------>
+                                </div>
+                            </div>
+                            <!------------------ Início Materiais referente a OS ------------------>
+                            <div class="form-group text-left col-md-9 col-lg-7 d-flex">
+                                <div class="bd-callout bd-callout-default my-0 bg-light w-100">
+                                    <h6>Últimos Arquivos dropados</h6>
+                                    <div class="row justify-content-center border rounded overflow_firefox">
+
+                                            {% if ArquivosLog %}
+                                                {% for file in ArquivosLog %}
+                                                    <div class="col-lg-10 my-1 input-group rounded-pill border input-group-sm bg-white shadow animate__animated animate__zoomInDown">
+                                                        <div class="input-group-prepend my-auto pl-2">
+                                                            <img src="{% static 'img/txt.png' %}" alt="Image XLS" style="height:20px">
+                                                        </div>
+                                                        <span type="text" title="file" class="col border-0 input-group-text bg-white text-truncate">{{ file }}</span>
+                                                        <div class="input-group-append">
+                                                            <a href="/app/a1hub/manage_log_firewall/download/{{ file }}/" class="btn text-primary rounded-pill m-1 border-0" type="button">
+                                                                <i class="fa-solid fa-link"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <div class="col-12">
+                                                    <p class="text-center">Nenhum arquivo encontrado</p>
+                                                </div>
+                                            {% endif %}
+
+                                    </div>
+                                </div>
+                            </div><!------------------ Fim Materiais referente a OS ------------------>
+                      </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let formFileLogsFirewall = new FormData();
+
+    // --------------------- Função envia os dados para função de cadastro no backend ---------------------//
+    function SendValuesToRegistration() {
+        const csrf = document.getElementsByName("csrfmiddlewaretoken")
+        $.ajax({
+            url: "/app/a1hub/manage_log_firewall/", // Caminho do Ajax
+            type: "POST", // http method
+            headers:{'X-CSRFToken':csrf[0].value},
+            dataType: "json",
+            data: formFileLogsFirewall, // Envia form pela solicitação do POST
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                let chave = Object.keys(data)[0];
+                let valor = data[chave];
+
+                // Argumentos possíveis (tipo, mesagem, timeout(milisegundos))
+                messageNotification(chave,valor)
+            },
+            failure: function () {
+                // Argumentos possíveis (tipo, mesagem, timeout(milisegundos))
+                messageNotification('error','Algo deu errado! verifique e tente novamente.')
+            }
+        })
+    }
+
+    // --------------------- Função para converter o tamanho para bytes ---------------------//
+    function FormatNumberToBytes(bytes, decimal = 2) {
+        if (!+bytes) return '0 Bytes'
+        const k = 1024
+        const dm = decimal < 0 ? 0 : decimal
+        const tamanho = ['Bytes', 'KB', 'MB', 'GB']
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${tamanho[i]}`
+    }
+
+    // --------------------- Função adiciona campo visual nos dropzones ---------------------//
+    function DropArquivo(id_input,id_drop,campo,arquivo) {
+        let drop_container = document.getElementById(campo);
+        let file = document.getElementById(id_input);
+        let form;
+        let name_file;
+        let drop = '';
+        let itens = $('#'+id_drop)[0].children
+
+        // Caso não seja dropado o arquivo é recebido via id
+        if (arquivo !== null) {
+            form = arquivo.files;
+        } else {
+            form = file.files;
+        }
+
+        for (let i = 0; i <form.length;i++){
+            name_file = form[i].name
+            let extension = name_file.split('.').pop();
+            if (extension === campo){
+                if (campo === 'log'){
+                    if (itens.length === 1) {
+                        let tamanho = FormatNumberToBytes(form[i].size) //Recebe o tamanho para o formato em bytes
+                        if (name_file.split(' ').length <= 1){
+                            name_file = name_file.match(/.{1,18}/g).join(' ') //Caso o nome do arquivo seja maior que 18 caracteres a string é quebrada
+                        }
+
+                        formFileLogsFirewall.append('fileTXT', form[i]);
+                        drop = `<div class="col-5 bordas mx-auto text-center input-group border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown position-relative">
+                                    <button onclick="window.location.reload(true)" title="Remove arquivo" class="btn btn-outline-danger rounded-pill px-2 border-0 position-absolute" type="button" style="right:0px;top:0px;z-index: 1;">
+                                        <i class="fas fa-times-circle fa-xl"></i>
+                                    </button>
+                                    <img class="my-2 w-50 mx-auto" src="{% static 'img/txt.png' %}" alt="Image TXT">
+                                    <span type="text" title="${name_file}" class="py-2 w-100 border-bottom font-weight-bold">${tamanho}</span>
+                                    <span type="text" title="${name_file}" class="py-2 mx-2 text-center">${name_file}</span>
+                                    <button onclick="SendValuesToRegistration()" type="button" class="btn btn-primary rounded-pill my-2 mx-auto w-75">
+                                        <i class="fa-solid fa-paper-plane pr-2"></i>Enviar
+                                    </button>
+                                </div>`
+
+                        drop_container.innerHTML = drop;
+                    }
+                }
+            } else {
+                // Argumentos possíveis (tipo, mesagem, timeout(milisegundos))
+                messageNotification('error','Extensão diferente de (.log)!')
+            }
+        }
+    }
+
+    // --------------------- Função genérica para notificar avisos ---------------------//
+    function messageNotification(tipo, message, time) {
+        toastr.options = {
+          "closeButton": false,
+          "debug": false,
+          "newestOnTop": false,
+          "progressBar": true,
+          "positionClass": "toast-bottom-right",
+          "preventDuplicates": true,
+          "onclick": null,
+          "showDuration": "300",
+          "hideDuration": "1000",
+          "timeOut": time ? time.toString() : "5000",
+          "extendedTimeOut": "1000",
+          "showEasing": "swing",
+          "hideEasing": "linear",
+          "showMethod": "fadeIn",
+          "hideMethod": "fadeOut"
+        }
+        toastr[tipo](message)
+    }
+
+    // --------------------- Usa Jquery para capturar eventos na página ---------------------//
+    jQuery(document).ready(function($) {
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-area-txt').on('dragover', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).addClass('upload-hover-blue');
+        })
+
+        // Ao retirar o cursor com arquivo sobre o campo dropzone as bordas diminuem
+        $('#drop-area-txt').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+        })
+
+        // Ao soltar o arquivo sobre o campo chama a função DropArquivo passando os parâmetros
+        $('#drop-area-txt').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+          let file_txt = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivo('arquivo_txt','drop-area-txt','log',file_txt)
+        })
+
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,300 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | LISTA DE MATERIAIS</title>
+{% endblock %}
+{% block main %}
+{% include './ModalLoadCelery.html' %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<script src="{% static 'js/eletrica/A1Pro/ListaMateriaisRevit.js' %}"></script>
+<script type=text/javascript src="{% static 'js/eletrica/A1Pro/GerarTipicosDoc.js' %} "></script>
+
+<div class="text-justify m-3">
+    <button type="button" style="z-index: 1000" class="btn btn-primary btn-warning position-absolute" onclick="window.history.go(-1)">Voltar</button>
+</div>
+
+
+<div class="container-fluid mt-3">
+    <div class="row d-flex justify-content-center">
+        <h3>Lista de Materiais - Padrão Revit</h3>
+    </div>
+
+    <div class="container-fluid d-flex justify-content-center mt-2">
+        <div class="size_contentlst_mat_a1pro shadow border border-success">
+            <div class="row h-100">
+                <div class="col-12 border-success ">
+
+                    <div class="row mt-1 ml-5">
+                        <div class="col-5" style="margin-top: 30px;">
+                            <div class="row">
+                                <label class="switch_toggle mb-0 mt-1">
+                                    <input type="checkbox" name="cols_config_proj_bt" id="num_client_lst_mat">
+                                    <span class="slider_switch round"></span>
+                                </label>
+                                <p class="ml-2 mb-0">Número do Cliente</p>
+                            </div>
+                            <div class="row">
+                                <label class="switch_toggle mb-0 mt-1">
+                                    <input type="checkbox" name="cols_config_proj_bt" id="cod_forn_lst_mat">
+                                    <span class="slider_switch round"></span>
+                                </label>
+                                <p class="ml-2 mb-0">Código do Fornecedor</p>
+                            </div>
+                        </div>
+
+
+                        <div class="col-6" style="margin-top: 20px;">
+                            <!-- Caixa de seleção e botão na mesma linha -->
+                            <div class="d-flex align-items-center mb-4">
+                                <select class="form-control form-control mr-2" id="cabecalhos_salvos">
+                                    <option>Novo Documento</option>
+                                </select>
+                                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#dadosDocumentoModal" onclick="AberturaModalCabecalho()">
+                                    Dados do Documento
+                                </button>
+                            </div>
+                            <!-- Botões alinhados abaixo com espaçamento -->
+                            <div class="d-flex justify-content-end mt-3">
+                                <button type="button" class="btn btn-success" onclick="window.open('/app/eletrica/gerar_tipicos/TemplateTipicos', '_self')">
+                                    <i class="fa-solid fa-download pr-2"></i>Template
+                                </button>
+                            </div>
+                        </div>"
+
+
+
+
+
+                    </div>
+                    <br>
+
+
+                    <div class="col-12 mt-1 text-center font_size_headers_lst_mat">
+                    </div>
+
+
+                    <div class="col-12 mt-2">
+                        Template Capa:
+                    </div>
+                     <div class="row card_dropzone_green px-0 mx-3 animate__animated animate__fadeIn mt-2 scroll_dropzones_lst_mat" id="dropzone_xlsx_capa">
+                        <div class="text-center w-100" id="xlsx">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte o arquivo (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx,.csv" class="hidden" type="file" id="arquivo_xlsx_lst_mat" onchange="DropFileInLstMatRevit('dropzone_xlsx_capa', this.id, 'FileCapa')"/>
+                                <i class="fa-solid fa-upload"></i> Import XLSX
+                            </label>
+                        </div>
+                     </div>
+
+                    <div class="col-12 mt-2">
+                        Template Lista de Materiais:
+                    </div>
+                     <div class="row card_dropzone_green px-0 mx-3 animate__animated animate__fadeIn mt-2 scroll_dropzones_lst_mat" id="dropzone_xlsx_template">
+                        <div class="text-center w-100" id="xlsx_tampa">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte o arquivo (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx,.csv" class="hidden" type="file" id="arquivo_xlsx_tampa_lst_mat" onchange="DropFileInLstMatRevit('dropzone_xlsx_template', this.id, 'FileTemplate')"/>
+                                <i class="fa-solid fa-upload"></i> Import XLSX
+                            </label>
+                            <div id="uploaded-file-template" class="uploaded-file mt-3"></div>
+                        </div>
+                     </div>
+
+                    <div class="col-12 mt-2">
+                        Relatório Revit:
+                    </div>
+                     <div class="row card_dropzone_green px-0 mx-3 animate__animated animate__fadeIn mt-2 scroll_dropzones_lst_mat" id="dropzone_xlsx_revit">
+                        <div class="text-center w-100" id="xlsx_perfis">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-success">Arraste e solte o arquivo (*.xlsx) ou</span><br>
+                            <span class="font-italic text-success">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-success rounded-pill text-white">
+                                <input multiple="multiple" accept=".xlsx,.csv" class="hidden" type="file" id="arquivo_xlsx_perfis_lst_mat" onchange="DropFileInLstMatRevit('dropzone_xlsx_revit', this.id, 'FileRevit', null, 1)"/>
+                                <i class="fa-solid fa-upload"></i> Import XLSX
+                            </label>
+                        </div>
+                     </div>
+
+                    <div class="col-12 mt-1 text-center font_size_headers_lst_mat">
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        Arquivos de Detalhes Típicos (Opcional):
+                    </div>
+                     <div class="row card_dropzone_blue px-0 mx-3 animate__animated animate__fadeIn mt-2 scroll_dropzones_lst_mat" id="dropzone_dwg_lst_mat">
+                        <div class="text-center w-100" id="dwg">
+                            <!------------------ Inicio Message ------------------>
+                            <span class="font-italic text-primary">Arraste e solte o arquivo (*.dwg) ou</span><br>
+                            <span class="font-italic text-primary">click em import para fazer o upload.</span><br>
+                            <!------------------ Fim Message ------------------>
+                            <label class="mt-2 btn btn-primary rounded-pill text-white">
+                                <input multiple="multiple" accept=".dwg,.DWG" class="hidden" type="file" id="arquivo_dwg_lst_mat" onchange="DropFileInLstMatRevit('dropzone_dwg_lst_mat', this.id, 'FilesDWG', null, 2)"/>
+                                <i class="fa-solid fa-upload"></i> Import DWG
+                            </label>
+                        </div>
+                     </div>
+
+
+                    <div class="col-12 mt-2">
+                        <button type="button" class="btn btn-secondary mb-2" onclick="SendFileLstMatRevit()">Enviar</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="dadosDocumentoModal" tabindex="-1" role="dialog" aria-labelledby="dadosDocumentoModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            INFORMAÇÕES DE CABEÇALHO
+          </div>
+            <div class="modal-body">
+              <!--<div class="d-flex justify-content-between">-->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="numero_fornecedor">Número A1</label>
+                            <input type="text" class="form-control" id="numero_fornecedor" onchange="PesquisaCabecalho()">
+                        </div>
+                    </div>
+                    <div class="col-3">
+                    <!-- Caixa de input para Revisão A1 -->
+                        <div class="form-group">
+                            <label for="revisao_fornecedor">Rev. A1</label>
+                            <input type="text" class="form-control" id="revisao_fornecedor">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="numero_cliente">Número Cliente</label>
+                            <input type="text" class="form-control" id="numero_cliente">
+                        </div>
+                    </div>
+                    <div class="col-3">
+                    <!-- Caixa de input para Revisão A1 -->
+                        <div class="form-group">
+                            <label for="revisao_cliente">Rev. Cliente</label>
+                            <input type="text" class="form-control" id="revisao_cliente">
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+              <!--</div>-->
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" id="botaoSalvar" onclick="SalvarCabecalho()" data-bs-dismiss="modal">Salvar</button>
+            <button type="button" class="btn btn-danger" id="botaoDeletar" onclick="DeletarCabecalho()" data-bs-dismiss="modal" hidden>Excluir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+{% include './ModalFilterCodeLstMat.html' %}
+{% include './ModalTalaSimplesLstMat.html' %}
+{% include './ModalTipoMateriais.html' %}
+{% include './ModalTipoTampa.html' %}
+{% include './ModalDeParaTampasLstMat.html' %}
+{% include './ModalLoadCelery.html' %}
+
+<script src="{% static 'js/eletrica/A1Pro/ListaMateriaisRevit.js' %}"></script>
+<script>
+    function DropFileInLstMatRevit(id_dropzone, id_input, key_form_data, files_event=null, dwg_or_xlsx=0){
+        debugger;
+        /// dwg_or_xlsx = 0 para cair na regra dos 3 ou 6 metros, 1 para cair na regra do xlsx simples e 2 para cair na regra do dwg
+        let container_drop_file = document.getElementById(id_dropzone)
+        let input_file = document.getElementById(id_input)
+        let files = files_event === null ? input_file.files:files_event.files
+        for (let i = 0; i <files.length;i++){
+            let file = files[i]
+            let error_file = false
+            let name_file_splited = file.name.split('.')
+            let extension = name_file_splited[name_file_splited.length - 1]
+            extension = extension.toUpperCase()
+            console.log(extension, dwg_or_xlsx)
+            if((extension === 'XSLX' || extension === 'CSV') && (dwg_or_xlsx !== 0 && dwg_or_xlsx !== 1)){
+                error_file = true
+            }
+            if ((dwg_or_xlsx !== 2) && (extension === 'DWG')){
+                error_file = true
+            }
+
+            if(!error_file){
+                formFileLstMat.append(key_form_data, file)
+                console.log(file)
+
+                if(dwg_or_xlsx === 0){
+
+                     container_drop_file.innerHTML += `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown" title="${file.name}">
+                                                                <div class="input-group-prepend my-auto px-1">
+                                                                    <img src="{% static 'img/XLS.png' %}" style="height:20px">
+                                                                </div>
+                                                                <span class="col-6 my-1 text-truncate" type="text">${file.name}</span>
+
+                                                                <div class="input-group-append ml-auto">
+                                                                    <button class="btn btn-outline-danger rounded-pill px-2 border-0" type="button" onclick="DeleFileXlsxLstMat(this, '${file.name}')">
+                                                                        <i class="fas fa-times-circle fa-lg"></i>
+                                                                    </button>
+                                                                </div>
+
+                                                        </div>
+                                                   </div>`
+                }
+                else if(dwg_or_xlsx === 1){
+                    container_drop_file.innerHTML += `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown" title="${file.name}">
+                                                        <div class="input-group-prepend my-auto px-1">
+                                                            <img class="" src="{% static 'img/XLS.png' %}" style="height:20px">
+                                                        </div>
+                                                        <span type="text" title="${file.name}" class="col border-0 input-group-text bg-white text-truncate">${file.name}</span>
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="DeleFileXlsxLstMat(this, '${file.name}')">
+                                                                <i class="fas fa-times-circle fa-lg"></i>
+                                                            </button>
+                                                        </div>
+                                                   </div>`
+                }
+                else{
+                    container_drop_file.innerHTML += `<div class="col-10 mx-auto my-1 input-group rounded-pill border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown" title="${file.name}">
+                                    <div class="input-group-prepend my-auto px-1">
+                                        <img class="" src="{% static 'img/DWG.png' %}" style="height:20px">
+                                    </div>
+                                    <span type="text" title="${file.name}" class="col border-0 input-group-text bg-white text-truncate">${file.name}</span>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-danger rounded-pill px-2 my-1 border-0" type="button" onclick="DeleFileXlsxLstMat(this, '${file.name}')">
+                                            <i class="fas fa-times-circle fa-lg"></i>
+                                        </button>
+                                    </div>
+                               </div>`
+                }
+            }
+            else{
+                formFileLstMat.delete(key_form_data)
+                return SwitchAlertLstMat(file.name + ': Extensão de arquivo inválida!!', true)
+            }
+        }
+        input_file.value = ''
+    }
+
+</script>
+
+{% endblock %}

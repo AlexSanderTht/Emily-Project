@@ -1,0 +1,217 @@
+body {
+
+    background: #f5f5f5;
+
+}
+.navbar-brand {
+
+    display: inline-block;
+    padding-top: 0.3125rem;
+    padding-bottom: 0.3125rem;
+    margin-right: 1rem;
+    white-space: nowrap;
+    height: 57px;
+    margin-left: 155px;
+    background-image: url("img/a1teste.png") ;
+    background-position: 50px;
+    background-repeat: no-repeat;
+}
+
+.test{
+  float:left;
+  
+  width: 520px;
+     
+  }
+
+
+  .mold{
+    border:none;
+    float: right;
+    margin-top:-65px;
+
+      }
+
+ #pro-os-project{
+ 
+  border:none;
+
+
+ }
+
+ #pro-os-project-num{
+
+  border:none;
+
+ }
+
+
+ #pro-os-unid-fabril{
+
+  border:none;
+
+ }
+
+ 
+ #pro-os-client{
+
+  border:none;
+
+ }
+
+ .devol{
+ 
+  width: 150px;  
+ 
+}
+
+
+
+.objte {
+
+width: 100px;
+
+}
+  
+.objte1 {
+
+width: 110px;
+
+}
+
+.barra{
+border-right: 2px solid rgb(161, 158, 158); 
+width: 20vw;
+float: right: 150px ;
+
+}
+
+.barra1{
+  border-right: 2px solid rgb(153, 153, 153);
+  width: 10vw; 
+
+  }
+
+  .barra2{
+    border-right: 2px solid rgb(161, 158, 158); 
+    float: left;
+    width: 20vw;
+    
+    }
+
+
+
+.barrahorizontal{
+    border-top: 2px solid rgb(161, 158, 158); 
+    margin-top:30px; 
+    padding-right: 8px;
+
+
+}
+ button[name="bot"]{
+  
+  background-color:#ffbe47; 
+  margin-top: 17px;
+
+ }
+
+ #but {
+   
+  background-color:#ffbe47; 
+
+ }
+
+
+ button[name="drop"]{
+        border: none;
+        cursor: pointer;
+        background-color: #807d7d;
+        padding: 10px;
+        font-size: 15px;
+        color: white;
+      }
+      .menu-drop{
+        display: inline-block;
+        position: relative;
+      }
+      .drop-content{
+        display: none;
+        background-color: rgb(231, 225, 225);
+        position: absolute;
+        z-index: 1;
+      }
+      .drop-content a{
+        color: white;
+        padding: 8px 10px;
+        text-decoration: none;
+        display: block;
+      }
+      .drop-content a:hover{
+        background-color:#f7bd51;
+        border-radius:5px;
+        
+      }
+      .menu-drop:hover .drop-content{
+        display: block;
+        border-radius:7px;
+        border-color:black
+      }
+      .menu-drop:hover button[name="drop"]{
+        background-color: #807d7d;
+        
+      }
+
+ <!-- Botões do Motor_acessorios -- >
+.buty{
+
+  margin-left:20px; 
+  align-items: left;
+
+}
+
+.buty1{
+
+  margin-left:60px; 
+  align-items: left;
+
+}
+
+.buty2{
+
+  margin-left:80px; 
+  align-items: right;
+
+}
+.staic{
+
+float: left; 
+width: 500px;
+
+}
+<!-- botões do Motor_acessorios -->
+
+.accs{
+  float: left; 
+  width: 500px;
+}
+
+.accs1{
+  margin-top: 55px;
+}
+
+ <!-- Botões do acessorios -- >
+.buty2{
+
+   
+  margin-top:25px;
+
+}
+
+.buty1{
+
+  margin-left:60px; 
+  align-items: left;
+
+}
+<!-- botões do acessorios -->
+

@@ -1,0 +1,222 @@
+{% load static %}
+<div class="container-fluid " id="content_bandeja_eletrocalhas" hidden>
+    <div class="col-xs-12 col-sm-12  col-md-12 col-lg-12 row ">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 h-90 border-right">
+            <div class="col-xs-12 col-sm-12  col-md-12 col-lg-12 text-center">
+                <h5>Insira os Tipicos de Bandeja e Eletrocalha</h5>
+            </div>
+            <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 px-3 scroll_templates_gt" id="cardzone_files_tip_band_elet">
+                <div class="text-center dwgs_insert">
+                    <!------------------ Inicio Message ------------------>
+                    <div class="d-flex flex-column">
+                        <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>TIPICO</b></span>
+                        <span class="font-italic text-primary">click em import para fazer o upload.</span>
+                    </div>
+                    <!------------------ Fim Message ------------------>
+                    <label class="mt-2 btn btn-primary rounded-pill text-white">
+                        <input multiple="multiple" accept=".dwg" class="hidden" type="file" id="arquivo_dwg_band_elet" onchange="ClearDropZoneTemplateBandElet();DropArquivosTalasChumbs('BAND_ELET', '{% static 'DWG.png' %}')"/>
+                        Upload
+                    </label>
+                </div>
+                <div class="container-fluid radius_10 animate__animated animate__zoomInDown" id="content_files_band_elet">
+
+                </div>
+                <div class="container-fluid radius_10 animate__animated animate__zoomInDown bg-primary mb-2" id="forms_files_band_elet" hidden>
+                    <br>
+                    <div class="row mt-1 d-flex justify-content-around">
+                        <div class="col-3 bg-secondary radius_10 mb-1">
+                            <div class="col-12 text-center">
+                                Medidas Rodapé <i class="fa-solid fa-sort muda_cursor_hover" onclick="HideShowMedidas(['band_elet_medidas_logo', 'band_elet_medidas_circulo', 'band_elet_medidas_rodape'])"></i>
+                            </div>
+
+                            <div class="container-fluid p-0" id="band_elet_medidas_rodape" hidden>
+                                <div class="row col-12">
+                                    <div class="col-3">
+                                        <label>X:</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control form-control-sm" type="number" id="band_elet_x_footer" value="25">
+                                    </div>
+                                </div>
+
+                                <div class="row col-12 mb-2">
+                                    <div class="col-3">
+                                        <label>Y:</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control form-control-sm" type="number" id="band_elet_y_footer" value="12">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-3 bg-secondary radius_10 mb-1">
+                            <div class="col-12 text-center">
+                                Medidas Circulos <i class="fa-solid fa-sort muda_cursor_hover" onclick="HideShowMedidas(['band_elet_medidas_logo', 'band_elet_medidas_circulo', 'band_elet_medidas_rodape'])"></i>
+                            </div>
+
+                            <div class="container-fluid p-0" id="band_elet_medidas_circulo" hidden>
+                                <div class="row col-12">
+                                    <div class="col-3">
+                                        <label>X:</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control form-control-sm" type="number" id="band_elet_x_table" value="200">
+                                    </div>
+                                </div>
+
+                                <div class="row col-12 mb-2">
+                                    <div class="col-3">
+                                        <label>Y:</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control form-control-sm" type="number" id="band_elet_y_table" value="259.5">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 bg-secondary radius_10 mb-1">
+                            <div class="col-12 text-center">
+                                Medidas Logo <i class="fa-solid fa-sort muda_cursor_hover" onclick="HideShowMedidas(['band_elet_medidas_logo', 'band_elet_medidas_circulo', 'band_elet_medidas_rodape'])"></i>
+                            </div>
+
+                            <div class="container-fluid p-0" id="band_elet_medidas_logo" hidden>
+                                <div class="row col-12">
+                                    <div class="col-3">
+                                        <label>X:</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control form-control-sm" type="number" id="band_elet_x_logo" value="25">
+                                    </div>
+                                </div>
+
+                                <div class="row col-12 mb-2">
+                                    <div class="col-3">
+                                        <label>Y:</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control form-control-sm" type="number" id="band_elet_y_logo" value="269.5">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                        Grupos:
+                        <select class="form-control" id="grupos_files_band_elet" onchange="AddGroupInBandElet()">
+                            <option value="0">---</option>
+                            {% for id_gp, nome_gp in GRUPOS_TEMPLATES_BAND_ELET.items %}
+                                <option value="{{id_gp}}">{{nome_gp}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="grupo_content">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 my-2 d-flex justify-content-end border-bottom py-2">
+                <button type="button" class="btn btn-outline-secondary me-md-2" onclick="ClearDropzoneTalasChumbs('BAND_ELET'); ClearDropZoneTemplateBandElet()">Limpar</button>
+                <button type="button" class="btn btn-outline-primary" onclick="SendFilesDwgTalasChumbs('BAND_ELET')">Salvar</button>
+                <input class="form-control form-control-sm" type="text" hidden id="band_elet_exists_selected">
+            </div>
+
+            <div class="row my-2">
+                <div class="col-auto">
+                    <div class="input-group">
+                        <div class="search-box border border-secondary-subtle d-flex justify-content-end float-end">
+                           <input type="search"  class="search-text" placeholder="Pesquisar..." onkeyup="FilterFilesExistsTalasChumbs('cards_files_band_elet', this.value)" >
+                           <a id="" class="search-btn" >
+                             <img class="loupe-white" src="{% static 'scripts/search_FILL0_wght400_GRAD0_opsz48.svg' %}" >
+                           </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-auto d-inline-flex align-items-end">
+                    <div class="form-check">
+                      <input class="form-check-input border-primary" type="checkbox" id="selectAllBandElet" onchange="changeCheckboxSelectAllChecks(this.checked, 'check_in_band_elet_exists')">
+                      <label class="form-check-label" for="selectAllBandElet">
+                        Selecionar todos
+                      </label>
+                    </div>
+                </div>
+
+                <div class="col-auto d-inline-flex align-items-end">
+                    <button type="button" class="btn btn-danger" onclick="clickBtnDelTalasChumbsSelecteds('BAND_ELET')">Remover Selecionados</button>
+                </div>
+            </div>
+
+            <div class="row px-2 overflow-y-auto py-2" style="height: 200px;">
+                <div class="col-xs-12 col-sm-12  col-md-12 col-lg-12">
+                    <div class="row" id="cards_files_band_elet">
+                        {% for id_band_elet, nome_band_elet in BAND_ELET.items %}
+                            <div class="col-6 name_filter_templ px-4" title="{{nome_band_elet}}">
+                                <div class="row p-2 border rounded-4 my-2 bg-secondary">
+                                    <div class="col-8">
+                                        <div class="bg-white rounded-4 border p-2 d-inline-flex w-100 muda_cursor_hover" onclick="ClickTalasChumbsExists({{id_band_elet}}, '{% static 'DWG.png' %}');FillDatasInTemplateExistsBandElet({{id_band_elet}})">
+                                            <img  src="{% static 'img/DWG.png' %}" alt="Image TXT"  width="40">
+                                            <span type="text" class="mb-0">{{nome_band_elet}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-4">
+                                        <div class="rounded-4 bg-white border p-2 w-100 h-100 d-inline-flex justify-content-between align-items-center">
+                                            <button title="Remover arquivo" class="btn btn-outline-danger rounded-pill px-2 border-0" type="button" >
+                                                <i class="fas fa-times-circle fa-xl" onclick="confirmDeleteTalasChumbs([{{id_band_elet}}], 'BAND_ELET')"></i>
+                                            </button>
+
+                                            <div class="form-check">
+                                                <input class="form-check-input border border-primary check_in_band_elet_exists" value="{{id_band_elet}}" id="checkbox_select_band_elet_{{id_band_elet}}" type="checkbox">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center mt-2">
+                <h5>Visualização do Tipico</h5>
+            </div>
+            <div class="container-fluid w-100 h-75 p-0">
+                <img src="" id="img_dwg_band_elet" class="shadow">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    jQuery(document).ready(function($) {
+        $('#cardzone_files_tip_band_elet').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover');
+        })
+
+        $('#cardzone_files_tip_band_elet').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+        })
+
+        $('#cardzone_files_tip_band_elet').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+          let file_dwg = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivosTalasChumbs('BAND_ELET', "{% static 'img/DWG.png' %}", file_dwg)
+        })
+    })
+</script>

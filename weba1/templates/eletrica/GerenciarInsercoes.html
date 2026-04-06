@@ -1,0 +1,209 @@
+{% load static %}
+<div class="container-fluid " id="content_insercao" hidden>
+    <div class="col-xs-12 col-sm-12  col-md-12 col-lg-12 row ">
+        <div class="col-xs-3 col-sm-3 col-md-6 col-lg-3 h-90">
+
+            <div class="card_dropzone_blue animate__animated animate__fadeIn mt-1 px-3 scroll_templates_gt position-relative" id="cardzone_files_talas" style="height: 600px;">
+                    <div class="text-center dwgs_insert">
+                        <!------------------ Inicio Message ------------------>
+                        <div class="d-flex flex-column">
+                            <span class="font-italic text-primary">Arraste e solte o arquivo dwg de <b>TIPICO</b></span>
+                            <span class="font-italic text-primary">click em import para fazer o upload.</span>
+                        </div>
+                        <!------------------ Fim Message ------------------>
+                        <label class="mt-2 btn btn-primary rounded-pill text-white">
+                            <input multiple="multiple" accept=".dwg" class="hidden" type="file" id="arquivo_dwg_insercao_blocos" onchange="DropArquivosBlocos('{% static 'DWG.png' %}')"/>
+                            Upload
+                        </label>
+                    </div>
+                    <div class="container-fluid radius_10 animate__animated animate__zoomInDown" id="content_files_insercao_blocos">
+
+                    </div>
+
+                    <div class="container-fluid radius_10 animate__animated animate__zoomInDown mb-2" id="forms_files_insercao_blocos">
+                        <div class="col-7 bg-secondary radius_10 mb-1 py-3 mx-auto" id="box_dimencao_bloco" hidden>
+                            <!-- Campo Comprimento -->
+                            <div class="d-flex justify-content-center align-items-center mb-2">
+                                <label class="col-form-label me-2" for="comprimento_bloco" style="width: 120px;">Comprimento:</label>
+                                <input type="text" id="comprimento_bloco" class="form-control form-control-sm w-50 text-center">
+                            </div>
+                            <!-- Campo Altura -->
+                            <div class="d-flex justify-content-center align-items-center">
+                                <label class="col-form-label me-2" for="altura_bloco" style="width: 120px;">Altura:</label>
+                                <input type="text" id="altura_bloco" class="form-control form-control-sm w-50 text-center">
+                            </div>
+                        </div>
+
+                        <div class="col-7 bg-secondary radius_10 mb-1 py-3 mx-auto position-relative" id="box_posicao_bloco" hidden>
+                            <!-- Campo Inserção em X -->
+                            <div class="d-flex justify-content-center align-items-center mb-2">
+                                <label class="col-form-label me-2" for="insercao_x_bloco" style="width: 120px;">Inserção em X:</label>
+                                <input type="text" id="insercao_x_bloco" class="form-control form-control-sm w-50 text-center">
+                            </div>
+                            <!-- Campo Inserção em Y -->
+                            <div class="d-flex justify-content-center align-items-center mb-2">
+                                <label class="col-form-label me-2" for="insercao_y_bloco" style="width: 120px;">Inserção em Y:</label>
+                                <input type="text" id="insercao_y_bloco" class="form-control form-control-sm w-50 text-center">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botão Salvar no canto inferior direito da área azul -->
+                    <div class="position-absolute" style="bottom: 10px; right: 10px;">
+                        <button type="button" class="btn btn-outline-success" onclick="SalvarTemplateBloco()">Salvar</button>
+                    </div>
+                </div>
+
+
+
+
+
+
+        </div>
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 h-90">
+          <div class="row">
+
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+
+          <div class="box-scrollbar overflow_chrome overflow_firefox" style="height: 600px; max-width: 900px; overflow-x: hidden; border: 1px solid #ccc; padding: 10px;">
+            <div class="row justify-content-center" id="cabecalho_indice_geral">
+                <div class="col-12" style="max-width: 600px;" onclick="ShowImgBloco('cabecalho_indice_geral')">
+                    <div class="list-group-item-hover bg-white border d-flex justify-content-between align-items-center p-2" onclick="selecionarItem(this)">
+                        <div class="d-flex align-items-center">
+                            <img src="{% static 'img/DWG.png' %}" alt="Image TXT" width="16" height="16" class="me-2">
+                            <span id="nome_cabecalho_indice_geral">CABEÇALHO ÍNDICE GERAL</span>
+                        </div>
+                        <span class="ms-auto text-danger" id="status_cabecalho_indice_geral">Não cadastrado</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center" id="linha_indice_geral">
+                <div class="col-12" style="max-width: 600px;" onclick="ShowImgBloco('linha_indice_geral')">
+                    <div class="list-group-item-hover bg-white border d-flex justify-content-between align-items-center p-2" onclick="selecionarItem(this)">
+                        <div class="d-flex align-items-center">
+                            <img src="{% static 'img/DWG.png' %}" alt="Image TXT" width="16" height="16" class="me-2">
+                            <span id="nome_linha_indice_geral">LINHA ÍNDICE GERAL</span>
+                        </div>
+                        <span class="ms-auto text-danger" id="status_linha_indice_geral">Não cadastrado</span>
+                    </div>
+                </div>
+            </div>
+
+           <div class="row justify-content-center" id="cabecalho_indice_complementar">
+                <div class="col-12" style="max-width: 600px;" onclick="ShowImgBloco('cabecalho_indice_complementar')">
+                    <div class="list-group-item-hover bg-white border d-flex justify-content-between align-items-center p-2" onclick="selecionarItem(this)">
+                        <div class="d-flex align-items-center">
+                            <img src="{% static img/DWG.png' %}" alt="Image TXT" width="16" height="16" class="me-2">
+                            <span id="nome_cabecalho_indice_complementar">CABEÇALHO ÍNDICE COMPLEMENTAR</span>
+                        </div>
+                        <span class="ms-auto text-danger" id="status_cabecalho_indice_complementar">Não cadastrado</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center" id="linha_indice_complementar">
+                <div class="col-12" style="max-width: 600px;" onclick="ShowImgBloco('linha_indice_complementar')">
+                    <div class="list-group-item-hover bg-white border d-flex justify-content-between align-items-center p-2" onclick="selecionarItem(this)">
+                        <div class="d-flex align-items-center">
+                            <img src="{% static 'img/DWG.png' %}" alt="Image TXT" width="16" height="16" class="me-2">
+                            <span id="nome_linha_indice_complementar">LINHA ÍNDICE COMPLEMENTAR</span>
+                        </div>
+                        <span class="ms-auto text-danger" id="status_linha_indice_complementar">Não cadastrado</span>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="row justify-content-center" id="componente">
+                <div class="col-12" style="max-width: 600px;" onclick="ShowImgBloco('componente')">
+                    <div class="list-group-item-hover bg-white border d-flex justify-content-between align-items-center p-2" onclick="selecionarItem(this)">
+                        <div class="d-flex align-items-center">
+                            <img src="{% static 'img/DWG.png' %}" alt="Image TXT" width="16" height="16" class="me-2">
+                            <span id="nome_componente">Componente</span>
+                        </div>
+                        <span class="ms-auto text-danger" id="status_componente">Não cadastrado</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center" id="tabela_uma_coluna">
+                <div class="col-12" style="max-width: 600px;" onclick="ShowImgBloco('tabela_uma_coluna')">
+                    <div class="list-group-item-hover bg-white border d-flex justify-content-between align-items-center p-2" onclick="selecionarItem(this)">
+                        <div class="d-flex align-items-center">
+                            <img src="{% static 'img/DWG.png' %}" alt="Image TXT" width="16" height="16" class="me-2">
+                            <span id="nome_tabela_uma_coluna">TABELA 1 COLUNA</span>
+                        </div>
+                        <span class="ms-auto text-danger" id="status_tabela_uma_coluna">Não cadastrado</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center" id="tabela_duas_colunas">
+                <div class="col-12" style="max-width: 600px;" onclick="ShowImgBloco('tabela_duas_colunas')">
+                    <div class="list-group-item-hover bg-white border d-flex justify-content-between align-items-center p-2" onclick="selecionarItem(this)">
+                        <div class="d-flex align-items-center">
+                            <img src="{% static 'img/DWG.png' %}" alt="Image TXT" width="16" height="16" class="me-2">
+                            <span id="nome_tabela_duas_colunas">TABELA 2 COLUNAS</span>
+                        </div>
+                        <span class="ms-auto text-danger" id="status_tabela_duas_colunas">Não cadastrado</span>
+                    </div>
+                </div>
+            </div>
+
+
+           <div class="row justify-content-center" id="template_simples">
+                <div class="col-12" style="max-width: 600px;" onclick="ShowImgBloco('template_simples')">
+                    <div class="list-group-item-hover bg-white border d-flex justify-content-between align-items-center p-2" onclick="selecionarItem(this)">
+                        <div class="d-flex align-items-center">
+                            <img src="{% static 'img/DWG.png' %}" alt="Image TXT" width="16" height="16" class="me-2">
+                            <span id="nome_template_simples">TEMPLATE SIMPLES</span>
+                        </div>
+                        <span class="ms-auto text-danger" id="status_template_simples">Não cadastrado</span>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+
+              <div class="container-fluid w-100 h-100 p-0">
+                <img src="" id="img_dwg_template_bloco" class="shadow" style="width: 800px; height: 600px; border: 5px solid #333; border-radius: 20px;">
+              </div>
+        </div>
+
+
+  </div>
+</div>
+
+    </div>
+</div>
+
+
+
+<script>
+    jQuery(document).ready(function($) {
+        $('#cardzone_files_talas').on('dragover', function(event_2) {
+          event_2.preventDefault();
+          event_2.stopPropagation();
+          $(this).addClass('upload-hover');
+        })
+
+        $('#cardzone_files_talas').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+        })
+
+        $('#cardzone_files_talas').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover');
+          let file_dwg = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivosTalasChumbs('TALAS', "{% static 'img/DWG.png' %}", file_dwg)
+        })
+    })
+</script>

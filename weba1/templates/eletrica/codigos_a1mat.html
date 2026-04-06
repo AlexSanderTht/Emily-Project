@@ -1,0 +1,975 @@
+{% extends 'geral/base_plano.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | Códigos A1Mat</title>
+{% endblock %}
+
+{% block main %}
+<style>
+    .list-tags-cabo-container {
+        max-height: 400px;
+        overflow-y: scroll;
+        padding-right: 10px;
+        scrollbar-color: #6c757d #d9dadb;
+        scrollbar-width: thin;
+    }
+</style>
+
+<div class="text-justify m-3">
+    <button type="button" style="z-index: 1" class="btn btn-primary btn-warning position-absolute" onclick="window.location.replace(window.location.origin + '/app/eletrica/a1pro')">Voltar</button>
+</div>
+{% include './ModalLoadCelery.html' %}
+<!-------------------- Início Container -------------------->
+<div class="container mt-5">
+    <!------------------ Cabeçalho da ferramenta de Típicos Força e controle ------------------>
+    <div class="row justify-content-center animate__animated animate__backInRight">
+        <div class="col-lg-12 text-center">
+            <h1>Códigos A1Mat</h1>
+        </div>
+        <div class="col-lg-12 text-center text-secondary">
+            <h5>Esta ferramenta é dedicada ao cadastro e gerenciamento de códigos de cabos e terminais.</h5>
+        </div>
+    </div><!------------------ Fim do cabeçalho ------------------>
+
+    <div class="container row justify-content-center animate__animated animate__pulse">
+        <div class="col-sm-12 col-md-10 col-xl-12 bordas py-3 bg-white border shadow">
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab">
+                    <a class="nav-item nav-link active" data-bs-toggle="tab" data-bs-target="#nav-home" id="nav-tab-home" role="tab" aria-controls="nav-home"  href="#nav-home" aria-selected="true"><i class="fa-solid fa-plug-circle-bolt pr-3"></i>Cabos Alim.</a>
+                    <a class="nav-item nav-link" data-bs-toggle="tab" data-bs-target="#nav-terra" id="nav-tab-terra" role="tab" aria-controls="nav-terra" href="#nav-terra" aria-selected="false"><i class="fa-solid fa-arrow-down-wide-short pr-3"></i>Terra e Neutro</a>
+                    <a class="nav-item nav-link" data-bs-toggle="tab" data-bs-target="#nav-terminal" id="nav-tab-terminal" role="tab" aria-controls="nav-terminal" href="#nav-terminal" aria-selected="false"><i class="fa-solid fa-list-ul pr-3"></i>Terminais</a>
+                    <a class="nav-item nav-link" data-bs-toggle="tab" data-bs-target="#nav-sinal-acess" id="nav-tab-sinal" role="tab" aria-controls="nav-sinal-acess" href="#nav-sinal-acess" aria-selected="false"><i class="fa-solid fa-wave-square pr-3"></i>Sinais e Acess.</a>
+                </div>
+            </nav>
+
+            <div class="tab-content border border-top-0 p-3 bg-white shadow">
+                <form>
+                    <!-------------------- Início Cabos Alimentação -------------------->
+                    <div class="row tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-tab-home">
+                        <div class="form-group col-md-12 d-flex">
+                            <div class="card bg-light mb-2">
+                                <div class="card-body">
+                                    <form class="needs-validation" novalidate>
+                                        <div class="form-row">
+                                            <div class="form-group col-sm-12 col-lg-3">
+                                                <div class="bd-callout bd-callout-info my-0 bg-white w-100 h-100 d-flex flex-column position-relative">
+                                                    <i class="fa-solid fa-cubes fa-2xl text-center text-info mt-3 mb-4"></i>
+                                                    <h6 class="font-weight-bold">Cabos de Alimentação</h6>
+                                                    <p>Preencha os códigos referente aos cabos de forma que atenda todos os requisitos/caracteres e pressiona <b>Salvar</b> para registrar o código.</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group col-sm-12 col-lg-5">
+                                                <div class="border rounded p-3 bg-white">
+                                                    <div class="form-group">
+                                                        <label for="funcao_os">Função</label>
+                                                        <select class="form-control" id="funcao_os" onclick="PostIDFunction()">
+                                                            {% for i in Funcao %}
+                                                                {% if i.tb_fos_id_fg.tb_fg_tipo == 'ALIMENTACAO' %}
+                                                                    <option id="{{i.tb_fos_id_fg.tb_fg_id}}">{{i.tb_fos_id_fg.tb_fg_nome}}</option>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <div class="form-check mb-4 pl-0">
+                                                            <input type="checkbox" name="atribuir" value="True" id="atribui_todas_funcoes">
+                                                            <label class="form-check-label" for="atribui_todas_funcoes">Atribuir à todas funções</label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="cabo_unipolar"><b>Unipolar</b></label>
+                                                        <input oninput="ValidLenght(this.id, 10)" maxlength="10" type="text" class="form-control" id="cabo_unipolar" placeholder="10 caracteres">
+                                                        <div class="invalid-feedback">
+                                                            Insira 10 caracteres!
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="cabo_bipolar"><b>Bipolar</b></label>
+                                                        <input onkeyup="ValidLenght(this.id, 10)" maxlength="10" type="text" class="form-control" id="cabo_bipolar"  placeholder="10 caracteres" >
+                                                        <div class="invalid-feedback">
+                                                            Insira 10 caracteres!
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="cabo_tripolar"><b>Tripolar</b></label>
+                                                        <input onkeyup="ValidLenght(this.id, 10)" maxlength="10" type="text" class="form-control" id="cabo_tripolar" placeholder="10 caracteres" >
+                                                        <div class="invalid-feedback">
+                                                            Insira 10 caracteres!
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="cabo_tetrapolar"><b>Tetrapolar</b></label>
+                                                        <input onkeyup="ValidLenght(this.id, 10)" maxlength="10" type="text"  class="form-control" id="cabo_tetrapolar" placeholder="10 caracteres">
+                                                         <div class="invalid-feedback">
+                                                            Insira 10 caracteres!
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="cabo_pentapolar"><b>Pentapolar</b></label>
+                                                        <input onkeyup="ValidLenght(this.id, 10)" maxlength="10" type="text" class="form-control" id="cabo_pentapolar" placeholder="10 caracteres">
+                                                        <div class="invalid-feedback">
+                                                            Insira 10 caracteres!
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="cabo_shield"><b>Shield</b></label>
+                                                        <input onkeyup="ValidLenght(this.id, 10)" maxlength="10" type="text" class="form-control" id="cabo_shield" placeholder="10 caracteres">
+                                                        <div class="invalid-feedback">
+                                                            Insira 10 caracteres!
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group col-sm-12 col-lg-4">
+                                                <div class="d-flex flex-column border rounded p-3 bg-white h-100">
+                                                    <h6 class="font-weight-bold text-center">Ações</h6>
+                                                    <button type="button" class="btn btn-success text-white mb-2" onclick="clickBtnExportTemplate()">
+                                                       <i class="fa-regular fa-file-excel pr-2"></i>Template Excel
+                                                    </button>
+                                                    <label class="btn btn-info text-white">
+                                                        <input accept=".xlsx" class="hidden" type="file" id="arquivo_import_xlsx" onchange="PercorreArquivoCod()"/>
+                                                        <i class="fa-solid fa-file-import"></i>
+                                                        <span>Importar Código</span>
+                                                    </label>
+                                                    <a class="btn btn-warning mb-2" onclick="SalvaCodigoCabos()">
+                                                        <i class="fa-solid fa-floppy-disk text-white pr-2"></i>Salvar código</a>
+                                                    <a class="btn btn-danger text-white mb-2" onclick="window.location.reload(true)">
+                                                        <i class="fa-regular fa-circle-xmark pr-2"></i>Limpar Campos</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-------------------- Fim Cabos Alimentação -------------------->
+
+                    <!-------------------- Início Terra e Neutro -------------------->
+                    <div class="row" id="nav-terra" role="tabpanel" aria-labelledby="nav-tab-terra">
+                        <div class="form-group col-md-12 d-flex">
+                            <div class="card bg-light mb-2">
+                                <div class="card-body">
+                                    <form class="needs-validation" novalidate>
+                                        <div class="form-row">
+                                            <div class="form-group col-sm-12 col-lg-3">
+                                                <div class="bd-callout bd-callout-success my-0 bg-white w-100 h-100 d-flex flex-column position-relative">
+                                                    <i class="fa-solid fa-cubes fa-2xl text-center text-success mt-3 mb-4"></i>
+                                                    <h6 class="font-weight-bold">Terra e Neutro</h6>
+                                                    <p>Preencha os códigos referente aos cabos de forma que atenda todos os requisitos/caracteres e pressiona <b>Salvar</b> para registrar o código.</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group col-sm-12 col-lg-5">
+                                                <div class="border rounded p-3 h-100 bg-white">
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="terra">Terra</label>
+                                                        <input onkeyup="ValidLenght(this.id, 10)" maxlength="10" type="text" class="form-control" id="terra" placeholder="10 caracteres" value="{{cod_terra}}">
+                                                        <div class="invalid-feedback">
+                                                            Insira 10 caracteres!
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="neutro">Neutro</label>
+                                                        <input onkeyup="ValidLenght(this.id, 10)" maxlength="10" type="text" class="form-control" id="neutro" placeholder="10 caracteres" value="{{cod_neutro}}">
+                                                        <div class="invalid-feedback">
+                                                            Insira 10 caracteres!
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group col-sm-12 col-lg-4">
+                                                <div class="d-flex flex-column border rounded p-3 bg-white h-100">
+                                                    <h6 class="font-weight-bold text-center">Ações</h6>
+                                                    <a type="button" class="form-control btn btn-warning px-4" onclick="SalvaTerraNeutro()">
+                                                        <i class="fa-solid fa-floppy-disk text-white pr-2"></i>Salvar código</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-------------------- Fim Terra e Neutro -------------------->
+
+                    <!-------------------- Início Terminais -------------------->
+                    <div class="row" id="nav-terminal" role="tabpanel" aria-labelledby="nav-tab-terminal">
+                        <div class="form-group col-md-12 d-flex">
+                            <div class="card bg-light mb-2">
+                                <div class="card-body">
+                                    <form class="needs-validation" novalidate>
+                                        <div class="form-row">
+                                            <div class="form-group col-sm-12 col-lg-3">
+                                                <div class="bd-callout bd-callout-warning my-0 bg-white w-100 h-100 d-flex flex-column position-relative">
+                                                    <i class="fa-solid fa-cubes fa-2xl text-center text-warning mt-3 mb-4"></i>
+                                                    <h6 class="font-weight-bold">Terminais</h6>
+                                                    <p>Preencha os códigos referente aos cabos de forma que atenda todos os requisitos/caracteres e pressiona <b>Salvar</b> para registrar o código.</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group col-sm-12 col-lg-5">
+                                                <div class="border rounded p-3 h-100 bg-white">
+                                                    <div class="form-inline">
+                                                        <div class="form-group mb-2 w-100">
+                                                            <label for="tipo_curto_secao"><b>TIPO CURTO</b>-- Para seção <=</label>
+                                                            <input  class="form-control flex-grow-1 ml-2 col-4" id="tipo_curto_secao" value="{{Terminal.secao}}">
+<!--                                                            <select onclick="fillCodeTerminal(this)">-->
+<!--                                                                <option id="0">&#45;&#45;</option>-->
+<!--                                                                {% for key, value in Secao.items %}-->
+<!--                                                                    <option id="{{ key }}">{{ value }}</option>-->
+<!--                                                                {% endfor %}-->
+<!--                                                            </select>-->
+                                                            <div class="invalid-feedback text-right">
+                                                                Selecione a seção!
+                                                            </div>
+                                                        </div>
+                                                        <input placeholder="9 caracteres" type="text" maxlength="9" onkeyup="ValidLenght(this.id, 9)" class="form-control flex-grow-1" id="tipo_curto" value="{{Terminal.cod_tipo_curto}}">
+                                                        <div class="invalid-feedback">
+                                                            Insira 9 caracteres!
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="font-weight-bold">TIPO LONGO</label>
+                                                        <input placeholder="9 caracteres" type="text" maxlength="9" onkeyup="ValidLenght(this.id, 9)" class="form-control" id="tipo_longo" value="{{Terminal.cod_tipo_longo}}">
+                                                        <div class="invalid-feedback">
+                                                            Insira 9 caracteres!
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group col-sm-12 col-lg-4">
+                                                <div class="d-flex flex-column border rounded p-3 bg-white h-100">
+                                                    <h6 class="font-weight-bold text-center">Ações</h6>
+                                                    <a type="button" class="form-control btn btn-warning px-4" onclick="adjustCodeTerminal()">
+                                                        <i class="fa-solid fa-floppy-disk text-white pr-2"></i>Salvar código</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-------------------- Fim Terminais -------------------->
+
+                    <!-------------------- Início Cabos Sinais e Acessórios -------------------->
+                    <div class="row" id="nav-sinal-acess" role="tabpanel" aria-labelledby="nav-tab-sinal">
+                        <div class="form-group col-md-12 d-flex">
+                            <div class="card bg-light mb-0">
+                                <div class="card-body">
+                                    <form class="needs-validation" novalidate>
+                                        <div class="form-row">
+                                            <div class="form-group col-sm-12 col-lg-3">
+                                                <div class="bd-callout bd-callout-default my-0 bg-white w-100 h-100 d-flex flex-column position-relative">
+                                                    <i class="fa-solid fa-cubes fa-2xl text-center text-secondary mt-3 mb-4"></i>
+                                                    <h6 class="font-weight-bold">Sinais e Acessórios</h6>
+                                                    <p>Preencha os códigos referente aos cabos de forma que atenda todos os requisitos/caracteres e pressiona <b>Salvar</b> para registrar o código.</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group col-sm-12 col-lg-5">
+                                                <div class="border rounded p-3 bg-white h-100">
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="sinais">Sinais</label>
+                                                        <div class="form-inline">
+                                                            <select class="form-control" id="sinais" onclick="PostIDsinal()">
+                                                                {% for s in Sinais %}
+                                                                    <option id="{{s.tb_sos_id_sinais.pk}}">{{s.tb_sos_id_sinais.tb_sinais_nome}}</option>
+                                                                {% endfor %}
+                                                            </select>
+
+                                                            <input onkeyup="ValidLenght(this.id, 11)" maxlength="11" type="text" class="form-control ml-2 flex-grow-1" id="cabo-sin" placeholder="11 caracteres">
+                                                            <div class="invalid-feedback">
+                                                                Insira 11 caracteres!
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="acessorios">Acessorios</label>
+                                                        <div class="form-inline">
+                                                            <select class="form-control" id="acessorios" onclick="PostIDacessorios()">
+                                                                {% for h in Acessorios %}
+                                                                    <option id="{{h.tb_acess_os_id_acess.pk}}">{{h.tb_acess_os_id_acess.tb_acess_nome}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                            <input onkeyup="ValidLenght(this.id, 11)" maxlength="11" type="text" class="form-control ml-2 flex-grow-1" id="cabo-acess" placeholder="11 caracteres">
+                                                            <div class="invalid-feedback">
+                                                                Insira 11 caracteres!
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group col-sm-12 col-lg-4">
+                                                <div class="d-flex flex-column border rounded p-3 bg-white h-50">
+                                                    <h6 class="font-weight-bold text-center">Ações</h6>
+                                                    <a type="button" class="form-control btn btn-warning px-4" onclick="SalvaSinal()">
+                                                        <i class="fa-solid fa-floppy-disk text-white pr-2"></i>Salvar código </a>
+                                                </div>
+                                                <div class="d-flex flex-column border rounded p-3 bg-white h-50">
+                                                    <h6 class="font-weight-bold text-center">Ações</h6>
+                                                    <a type="button" class="form-control btn btn-warning px-4" onclick="SalvaAcess()">
+                                                        <i class="fa-solid fa-floppy-disk text-white pr-2"></i>Salvar código</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-------------------- Fim Cabos Sinais e Acessórios -------------------->
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-------------------- Início Modal Load -------------------->
+    <div class="modal fade" id="modal_loading_cod_list_material">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bordas">
+                <div class="modal-body text-center">
+                    <div class="d-flex justify-content-center">
+                        <img class="w-75" src="{% static 'img/check_file.gif' %}" >
+                    </div>
+                    <div id="progress-box-list-material" class="col-lg-12 mt-3 font_size_0_8 my-3" hidden>
+                        <div id="load-gif-cod-list-material" style="width: 0%;height: 30px;">
+                            <img id="gif-progress-cod-list-material" class="float-right" style="height: 40px;" src="{% static 'img/run-sonic.gif' %}" alt="GIF progress-bar">
+                            <img hidden id="gif-success-cod-list-material" class="float-right" style="height: 40px;" src="{% static 'img/sonic-success.gif' %}" alt="GIF complete-progress-bar">
+                        </div>
+                        <div class='progress-wrapper text-center'>
+                            <div id='progress-bar-cod-list-material' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                        </div><br>
+                        <div id="progress-bar-message-cod-list-material" class="text-center">Aguardando a Inicialização da tarefa ...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-------------------- Fim Modal Load -------------------->
+
+</div><!-------------------- Fim Container -------------------->
+
+<script>
+
+    let csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+
+    // --------------------- Função valida campos atraves dos parametros de maximo e minimo de caracteres ---------------------//
+    function ValidLenght(id_element, tamanho) {
+        let item = document.getElementById(id_element)
+        let inputValue = item.value.replace(/ /g, ''); // Remove espaços em branco
+        let upperLetters = /^[A-Z0-9]+$/.test(inputValue); // Verifica se contém apenas letras maiúsculas
+        item.value = inputValue.toUpperCase();
+
+        if (upperLetters && inputValue.length !== tamanho) {
+            item.classList.add('is-invalid')
+        } else {
+            item.classList.remove('is-invalid')
+        }
+    }
+
+    // --------------------- Função valida código com base na seção ---------------------//
+    function adjustCodeTerminal() {
+        let item = document.getElementById('tipo_curto_secao').value;
+        let tipo_curto = document.getElementById('tipo_curto');
+        let tipo_longo = document.getElementById('tipo_longo');
+
+        tipo_curto = validaInput(tipo_curto);
+        tipo_longo = validaInput(tipo_longo);
+
+        if (tipo_curto && tipo_longo) {
+            tipo_curto = document.getElementById('tipo_curto').value;
+            tipo_longo = document.getElementById('tipo_longo').value;
+            SalvaTerminais(item, tipo_curto, tipo_longo)
+        } else {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Preencha todos campos para continuar!', 'error', false);
+        }
+
+    }
+
+    function validaInput(inputElement) {
+        if (inputElement.value.length < 9) {
+            inputElement.classList.add('is-invalid');
+            return false
+        } else {
+            if (inputElement.classList.contains('is-invalid')) {
+                inputElement.classList.remove('is-invalid');
+            }
+            inputElement.value = inputElement.value.substring(0, 9);
+
+            return true
+        }
+    }
+
+    function fillCodeTerminal(element){
+        let item = element.selectedOptions[0].innerText
+        let tipo_curto = document.getElementById('tipo_curto')
+        let tipo_longo = document.getElementById('tipo_longo')
+
+        if (item !== "--") {
+            $.ajax({
+                url: "/app/eletrica/a1pro/CadastraTerminais/",
+                type: "GET",
+                dataType:"json",
+                data:{'sec_terminal':item},
+                success: function(data){
+                    if (data['return'] !== '') {
+                        tipo_curto.value = data['return']['tipo_curto'] !== '' ? data['return']['tipo_curto'].tb_imp_term_tipo_curto : '';
+                        tipo_longo.value = data['return']['tipo_longo'] !== '' ? data['return']['tipo_longo'].tb_imp_term_tipo_longo : '';
+                    }
+                },
+                failure: function () {
+                      alert('Algo deu errado ao buscar os códigos referente a função!')
+                }
+            });
+        } else {
+            tipo_curto.value = ''
+            tipo_longo.value = ''
+        }
+    }
+
+    // --------------------- Função Ajax percorre o arquivo e retorna os dados da planilha ---------------------//
+    function PercorreArquivoCod() {
+        let file = document.getElementById('arquivo_import_xlsx').files[0]
+        let form = new FormData()
+        form.append('CodA1mat', file)
+
+        $.ajax({
+            url: "/app/eletrica/a1pro/template_cod_a1mat/",
+            type: "POST",
+            headers:{'X-CSRFToken': csrftoken},
+            dataType:"json",
+            data: form,
+            processData: false,
+            contentType: false,
+            beforeSend: function(){
+                $('#modal_loading_cod_list_material').modal('show')
+                document.getElementById("progress-box-list-material").hidden = false;
+                $('#gif-progress-cod-list-material')[0].hidden = false
+                $('#gif-success-cod-list-material')[0].hidden = true
+            },
+            success: function(data){
+                var progressUrl = `/celery-progress/${data["task_id"]}/`
+                CeleryCustomProgressBar.initProgressBar(progressUrl, {
+                    progressBarId: 'progress-bar-cod-list-material',
+                    progressBarMessageId: 'progress-bar-message-cod-list-material',
+                    onSuccess: customSucess,
+                    onError: customError,
+                    onProgress: onProgressCustom
+                })
+
+                function customSucess(progressBarElement, progressBarMessageElement, result){
+                    $('#gif-progress-cod-list-material')[0].hidden = true
+                    $('#gif-success-cod-list-material')[0].hidden = false
+                    $('#modal_loading_cod_list_material').modal('hide')
+                    let chave = Object.keys(result)[0];
+                    let valor = result[chave];
+
+                    if (Array.isArray(valor)) {
+                        valor = valor.join(', \n');
+                    }
+
+                    if (chave === 'success') {
+                        progressBarMessageElement.innerHTML = "Sucesso";
+                        progressBarElement.style.backgroundColor = '#76ce60';
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, valor, chave, false);
+
+                    } else {
+                        progressBarMessageElement.innerHTML = "Houve um erro inesperado!";
+                        progressBarElement.style.backgroundColor = '#dc4f63';
+
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, valor, chave, false);
+                        $('div.swal-text').addClass('font_size_0_8 list-tags-cabo-container')
+                    }
+
+                    setTimeout(() => {
+                        document.getElementById("progress-box-list-material").hidden = true;
+
+                        if (chave === 'success') {
+                            window.location.reload(true);
+                        }
+                    }, 3000);
+                }
+
+                function onProgressCustom(progressBarElement, progressBarMessageElement, progress) {
+                      progressBarElement.style.backgroundColor = '#68a9ef';
+                      progressBarMessageElement.innerHTML = progress.description || "";
+                      progressBarElement.style.width = progress.percent + "%";
+                      $('#load-gif-cod-list-material')[0].style.width = progress.percent + "%";
+                }
+
+                function customError(progressBarElement, progressBarMessageElement, excMessage) {
+                      progressBarMessageElement.innerHTML = "Houve um erro inesperado:" + excMessage;
+                      progressBarElement.style.backgroundColor = '#dc4f63';
+
+                      setTimeout(() => {
+                            document.getElementById("progress-box-list-material").hidden = true
+                            $('#gif-progress-cod-list-material')[0].hidden = true
+                            $('#gif-progress-cod-list-material')[0].hidden = true
+                      }, 2000)
+                }
+            },
+            failure: function () {
+                  alert('Algo deu errado ao buscar os códigos referente a função!')
+            }
+        });
+
+    }
+
+    // --------------------- Envia id da função pelo Ajax e retorno os códigos ---------------------//
+    function PostIDFunction(){
+        let id_funcao =  document.getElementById('funcao_os').selectedOptions[0].id
+        $.ajax({
+            url: "/app/eletrica/a1pro/ConfigCodigosA1MAT/",
+            type: "POST",
+            headers:{'X-CSRFToken': csrftoken},
+            dataType:"json",
+            data:{'FuncaoOS':id_funcao},
+            success: function(data){
+                if (data['codigos_cabo'].length !== 0) {
+                    InsereCodigosAlimentacao(data['codigos_cabo'][0])
+                } else {
+                    document.getElementById('cabo_unipolar').value = '';
+                    document.getElementById('cabo_bipolar').value = '';
+                    document.getElementById('cabo_tripolar').value = '';
+                    document.getElementById('cabo_tetrapolar').value = '';
+                    document.getElementById('cabo_pentapolar').value = '';
+                    document.getElementById('cabo_shield').value = '';
+                }
+            },
+            failure: function () {
+                  alert('Algo deu errado ao buscar os códigos referente a função!')
+            }
+        });
+    }
+
+    // --------------------- Função atribui valores do ajax nos campos de cabos de alimentação ---------------------//
+    function InsereCodigosAlimentacao(codigos){
+        let unipolar = 0
+        let bipolar = 1
+        let tripolar = 2
+        let tetrapolar = 3
+        let pentapolar = 4
+        let shield = 5
+        document.getElementById('cabo_unipolar').value = codigos[unipolar]
+        document.getElementById('cabo_bipolar').value = codigos[bipolar]
+        document.getElementById('cabo_tripolar').value = codigos[tripolar]
+        document.getElementById('cabo_tetrapolar').value = codigos[tetrapolar]
+        document.getElementById('cabo_pentapolar').value = codigos[pentapolar]
+        document.getElementById('cabo_shield').value = codigos[shield]
+
+    }
+
+    // --------------------- Função trata input de códigos de cabos de alimentação ---------------------//
+    function SalvaCodigoCabos(){
+        let atribui_funcs_check = document.getElementById("atribui_todas_funcoes").checked ? 1: 0
+        let funcao = document.getElementById('funcao_os').selectedOptions[0].id
+        let unipolar = document.getElementById('cabo_unipolar').value;
+        let bipolar = document.getElementById('cabo_bipolar').value;
+        let tripolar = document.getElementById('cabo_tripolar').value;
+        let tetrapolar = document.getElementById('cabo_tetrapolar').value;
+        let pentapolar = document.getElementById('cabo_pentapolar').value;
+        let shield = document.getElementById('cabo_shield').value;
+
+        let list_ids = ['cabo_unipolar', 'cabo_bipolar', 'cabo_tripolar', 'cabo_tetrapolar', 'cabo_pentapolar', 'cabo_shield' ];
+        let list_campos_tamanho = [unipolar.length, bipolar.length, tripolar.length, tetrapolar.length, pentapolar.length, shield.length ]
+        let list = []
+        list_campos_tamanho.map((x) => {x ===10 ? list.push(1): list.push(0)})
+
+        for (let i = 0; i<list_ids.length;i++) {
+            let item = document.getElementById(list_ids[i])
+            if (item.value.length < 3 || item.value.length > 10 ) {
+                item.classList.add('is-invalid')
+            }else{
+                item.classList.remove('is-invalid')
+            }
+        }
+        if (!list.includes(0)){
+            let data_dict = {
+                'funcao_OS' : funcao,
+                'cabo_unipolar': unipolar,
+                'cabo_bipolar': bipolar,
+                'cabo_tripolar': tripolar,
+                'cabo_tetrapolar': tetrapolar,
+                'cabo_pentapolar': pentapolar,
+                'cabo_shield': shield,
+                'atribui_funcs_check': atribui_funcs_check,
+            }
+             POSTCodAlimentacao(data_dict)
+        }else {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Favor preencher corretamente todos os campos!', 'info', false);
+        }
+    }
+
+    // --------------------- Função cadastra códigos de cabos de alimentação ---------------------//
+    function POSTCodAlimentacao(data_dict){
+         $.ajax({
+             url: "/app/eletrica/a1pro/CadastraAlimentacao/",
+             type:"POST",
+             headers: {'X-CSRFToken': csrftoken},
+             dataType: "json",
+             data:{'CODcabos': JSON.stringify(data_dict)},
+             success: function (data){
+                 let chave = Object.keys(data)[0];
+                 let valor = data[chave];
+                 // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                 swalAlert(false, valor, chave, false);
+                 $('div.swal-text').addClass('font_size_0_8 list-tags-cabo-container')
+             },
+             failure: function() {
+                 // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                 swalAlert(false, 'Algo deu errado ao enviar os dados de alimentação!', 'error', false);
+             }
+         });
+    }
+
+    // --------------------- Função envia id do sinal selecionado e retorna o código ---------------------//
+    function PostIDsinal(){
+        let id_cabosinais = document.getElementById('sinais').selectedOptions[0].id
+        $.ajax({
+            url:"/app/eletrica/a1pro/CadastraSinais/",
+            type:"POST",
+            headers:{'X-CSRFToken': csrftoken},
+            dataType:"json",
+            data:{'BuscaSinal': JSON.stringify(id_cabosinais)},
+            success: function(data){
+                if (data['cod_sinal'].length !== 0) {
+                    document.getElementById('cabo-sin').value = data['cod_sinal'][0]
+                } else {
+                    document.getElementById('cabo-sin').value = '';
+                }
+            },
+            failure: function(){
+                alert('Algo deu errado ao buscar sinais.')
+            }
+        });
+    }
+
+    // --------------------- Função verifica preenchimento e trata dados do sinal ---------------------//
+    function SalvaSinal(){
+        let select = document.getElementById('sinais').selectedOptions[0].id
+        let item = document.getElementById('cabo-sin');
+
+        if (item.value.length !== 11 || item.value.length === null) {
+            item.classList.add('is-invalid')
+        }else{
+            item.classList.remove('is-invalid')
+        }
+
+        if(item.value.length === 11){
+            let data_dict = {
+                'SelectSinal': select,
+                'sinal': item.value
+            }
+            AjaxCadastroSinal(data_dict)
+        } else {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Favor preencher corretamente todos os campos!', 'info', false);
+        }
+    }
+
+    // --------------------- Função envia id do acessório selecionado e retorna o código ---------------------//
+    function PostIDacessorios(){
+        let id_acessorio = document.getElementById('acessorios').selectedOptions[0].id
+        $.ajax({
+            url:"/app/eletrica/a1pro/CadastraAcessorios/",
+            type:"POST",
+            headers:{'X-CSRFToken': csrftoken},
+            dataType:"json",
+            data:{'BuscaAcess': JSON.stringify(id_acessorio)},
+            success: function (data){
+                if (data['cod_acessorio'].length !== 0) {
+                    document.getElementById('cabo-acess').value = data['cod_acessorio'][0]
+                } else {
+                    document.getElementById('cabo-acess').value = '';
+                }
+            },
+            failure: function (){
+                alert('Algo deu errado.')
+            }
+        });
+    }
+
+    // --------------------- Função verifica preenchimento e trata dados do acessório ---------------------//
+    function SalvaAcess(){
+        let select_acesso = document.getElementById('acessorios').selectedOptions[0].id
+        let acess = document.getElementById('cabo-acess');
+
+        if (acess.value.length !== 11 || acess.value.length === null) {
+            acess.classList.add('is-invalid')
+        }else{
+            acess.classList.remove('is-invalid')
+        }
+
+        if(acess.value.length === 11 && acess.value.length !== 0){
+            let data_dict = {
+                'SelectAcesso': select_acesso,
+                'acessorio':acess.value
+            }
+            AjaxCadastroAcessorio(data_dict)
+        } else {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Favor preencher corretamente todos os campos!', 'info', false);
+        }
+    }
+
+    // --------------------- Função Ajax cadastra sinal e retorna mensagem de cadastro ---------------------//
+    function AjaxCadastroSinal(data_dict){
+        $.ajax({
+            url:"/app/eletrica/a1pro/CadastraSinais",
+            type: "GET",
+            headers: {'X-CSRFToken': csrftoken},
+            dataType:"json",
+            data:{ 'SalvaSinal': JSON.stringify(data_dict)},
+            success: function(data){
+                let chave = Object.keys(data)[0];
+                let valor = data[chave];
+                // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                swalAlert(false, data_dict['sinal'] +' - '+ valor, chave, false);
+            },
+            failure: function (){
+                alert('Algo deu errado ao cadastrar cabos de sinais e acessórios.')
+            }
+        });
+    }
+
+    // --------------------- Função Ajax cadastra acessorio e retorna mensagem de cadastro ---------------------//
+    function AjaxCadastroAcessorio(data_dict){
+        $.ajax({
+            url:"/app/eletrica/a1pro/CadastraAcessorios",
+            type: "GET",
+            headers: {'X-CSRFToken': csrftoken},
+            dataType:"json",
+            data:{ 'SalvaAcessorios': JSON.stringify(data_dict)},
+            success: function(data){
+                let chave = Object.keys(data)[0];
+                let valor = data[chave];
+                // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                swalAlert(false, data_dict['acessorio'] +' - '+ valor, chave, false);
+            },
+            failure: function (){
+                alert('Algo deu errado ao cadastrar cabos de sinais e acessórios.')
+            }
+        });
+    }
+
+    // --------------------- Função verifica o preenchimento e caso esteja correto cadastra os dados via Ajax ---------------------//
+    function SalvaTerraNeutro(){
+        let list_inputs = ['terra','neutro']
+        let data_dict = {}
+        for (let i in list_inputs){
+            let item = document.getElementById(list_inputs[i])
+            if (item.value.length !== 10) {
+                item.classList.add('is-invalid')
+            }else{
+                item.classList.remove('is-invalid')
+                data_dict[list_inputs[i]] = item.value
+            }
+        }
+        if (Object.keys(data_dict).length > 1){
+             $.ajax({
+                url:"/app/eletrica/a1pro/CadastraTerraNeutro/",
+                type: "POST",
+                headers: {'X-CSRFToken': csrftoken},
+                dataType:"json",
+                data:{ 'SalvaTerraNeutro': JSON.stringify(data_dict)},
+                success: function(data){
+                    let chave = Object.keys(data)[0];
+                    let valor = data[chave];
+                    // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                    swalAlert(false, valor, chave, false);
+                },
+                failure: function (){
+                    alert('Algo deu errado ao cadastrar cabos de sinais e acessórios.')
+                }
+            });
+        }
+    }
+
+    function SalvaTerminais(value, code_tipo_curto, code_tipo_longo){
+        let list_inputs = {'secao': value, 'tipo_curto': code_tipo_curto,'tipo_longo': code_tipo_longo}
+        let data_dict = {}
+        console.log(list_inputs)
+         $.ajax({
+            url:"/app/eletrica/a1pro/CadastraTerminais/",
+            type: "POST",
+            headers: {'X-CSRFToken': csrftoken},
+            dataType:"json",
+            data:{ 'SalvaTerminais': JSON.stringify(list_inputs)},
+            success: function(data){
+                let chave = Object.keys(data)[0];
+                let valor = data[chave];
+
+                // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                swalAlert(false, valor, chave, false);
+            },
+            failure: function (){
+                alert('Algo deu errado ao cadastrar cabos de sinais e acessórios.')
+            }
+        });
+
+
+    }
+
+    // --------------------- Alert para notificar usuario ---------------------//
+    function swalAlert(titulo, texto, icone_img, btn){
+        swal({
+            title: titulo,
+            text: texto,
+            icon: icone_img,
+            button: btn,
+        })
+        $('div.swal-modal').addClass('bordas')
+        $('div.swal-title').addClass('h4')
+        $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+        $('div.swal-text').addClass('text-center')
+        $('div.swal-footer').addClass('d-flex justify-content-center')
+    }
+
+    function clickBtnExportTemplate(){
+        $.ajax({
+            url: "/app/eletrica/a1pro/template_cod_a1mat/",
+            type: "GET",
+            dataType:"json",
+            data:{},
+            success: function(data){
+                $('#modal_load_celery').modal('show')
+                InitProgressCodsA1Mat(data['task_id'])
+            },
+            failure: function () {
+                alert('Deu algum bololo')
+            }
+        });
+    }
+
+    function HideModalLoadCelery(){
+        $('#modal_load_celery').modal('hide')
+    }
+
+    function InitProgressCodsA1Mat(task_id){
+        var progressUrl = `/celery-progress/${task_id}/`
+        CeleryProgressBar.initProgressBar(progressUrl, {
+              onSuccess: customSucess,
+              onError: customError,
+              onProgress: customProgress,
+            })
+
+            function customSucess(progressBarElement, progressBarMessageElement, result){
+                progressBarElement.style.backgroundColor = '#76ce60';
+                HideModalLoadCelery()
+                window.open('/app/eletrica/a1pro/download_template_cod_a1mat/' + task_id + '/', '_self')
+            }
+
+            function customError(progressBarElement, progressBarMessageElement, excMessage){
+                progressBarElement.style.backgroundColor = '#dc4f63';
+                progressBarMessageElement.innerHTML = "Houve um erro inesperado. Entre em contato com o SEA e informe o número da tarefa: "
+                + progressUrl;
+                setTimeout(HideModalLoadCelery, 8000)
+            }
+
+            function customProgress(progressBarElement, progressBarMessageElement, progress){
+                progressBarElement.style.backgroundColor = '#68a9ef';
+                progressBarElement.style.width = progress.percent + "%";
+                var description = progress.description || "";
+                progressBarMessageElement.innerHTML = description
+            }
+    }
+    // --------------------- Clase para receber respostas do celery ---------------------//
+    let CeleryCustomProgressBar = (function () {
+    function onSuccessDefault(progressBarElement, progressBarMessageElement, result) {
+        progressBarElement.style.backgroundColor = '#76ce60';
+        progressBarMessageElement.innerHTML = "Success!";
+    }
+
+    function onResultDefault(resultElement, result) {
+        if (resultElement) {
+            resultElement.innerHTML = result;
+        }
+    }
+
+    function onErrorDefault(progressBarElement, progressBarMessageElement, excMessage) {
+        progressBarElement.style.backgroundColor = '#dc4f63';
+        progressBarMessageElement.innerHTML = "Uh-Oh, something went wrong! " + excMessage;
+    }
+
+    function onProgressDefault(progressBarElement, progressBarMessageElement, progress) {
+        progressBarElement.style.backgroundColor = '#68a9ef';
+        progressBarElement.style.width = progress.percent + "%";
+        var description = progress.description || "";
+        progressBarMessageElement.innerHTML = progress.current + ' de ' + progress.total + ' processado. ' + description;
+    }
+
+    function updateProgress (progressUrl, options) {
+        options = options || {};
+        var progressBarElement = options.progressBarElement || document.getElementById(options.progressBarId);
+        var progressBarMessageElement = options.progressBarMessageElement || document.getElementById(options.progressBarMessageId);
+        var onProgress = options.onProgress || onProgressDefault;
+        var onSuccess = options.onSuccess || onSuccessDefault;
+        var onError = options.onError || onErrorDefault;
+        var pollInterval = options.pollInterval || 500;
+        var resultElementId = options.resultElementId || 'celery-result';
+        var resultElement = options.resultElement || document.getElementById(resultElementId);
+        var onResult = options.onResult || onResultDefault;
+
+
+        fetch(progressUrl).then(function(response) {
+            response.json().then(function(data) {
+                if (data.progress) {
+                    onProgress(progressBarElement, progressBarMessageElement, data.progress);
+                }
+                if (!data.complete) {
+                    setTimeout(updateProgress, pollInterval, progressUrl, options);
+                } else {
+                    if (data.success) {
+                        onSuccess(progressBarElement, progressBarMessageElement, data.result);
+                    } else {
+                        onError(progressBarElement, progressBarMessageElement, data.result);
+                    }
+                    if (data.result) {
+                        onResult(resultElement, data.result);
+                    }
+                }
+            });
+        });
+    }
+    return {
+        onSuccessDefault: onSuccessDefault,
+        onResultDefault: onResultDefault,
+        onErrorDefault: onErrorDefault,
+        onProgressDefault: onProgressDefault,
+        initProgressBar: updateProgress,  // just for api cleanliness
+    };
+})();
+
+
+</script>
+
+{% endblock %}
+
+
+
+      
+            
+    
+
+                
+            
+       
+    

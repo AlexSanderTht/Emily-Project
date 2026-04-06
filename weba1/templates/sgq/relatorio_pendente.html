@@ -1,0 +1,463 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <title>Responder RNC</title>
+    <link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.min.css' %}"/>
+    <script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.bundle.js' %}"></script>
+    <script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.js' %}"></script>
+</head>
+
+<style>
+    * {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .accordion {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #section_title {
+        width: 100%;
+    }
+
+    .cardBoard {
+        box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+        border-radius: 16px;
+        background: linear-gradient(to top, #f8f9fa, white);
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto 20px auto;
+        transition: all 0.3s ease;
+    }
+
+    .cardBoard:hover {
+        box-shadow: rgba(0, 0, 0, 0.15) 0 8px 24px;
+    }
+
+    .cardBoard div p {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .header {
+        background-color: #f8f9fa;
+        text-align: center;
+        padding: 1.5rem;
+        border-radius: 16px 16px 0 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .section-title {
+        background-color: #f0f2f5;
+        font-weight: bold;
+        text-align: center;
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+    }
+
+    .section-title h3, .section-title h4 {
+        margin: 0;
+        color: #343a40;
+    }
+
+    .highlighted-orange {
+        background-color: #ff9800;
+        font-weight: bold;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        color: white;
+    }
+
+    .highlighted-yellow {
+        background-color: #ffd600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+
+    .bordered {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-bottom: 1.25rem;
+    }
+
+    .table th, .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+    }
+
+    .inputs {
+        width: 100%;
+        max-width: 300px;
+        border: 1px solid rgba(128, 128, 128, 0.3);
+        border-radius: 8px;
+        padding: 0.625rem;
+        font-size: 1rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .inputs:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    select {
+        border: none;
+        background-color: #e8f5f0;
+        padding: 0.625rem;
+        border-radius: 8px;
+        margin: 0.375rem 0;
+        width: 100%;
+        max-width: 300px;
+        box-shadow: rgba(99, 99, 99, 0.1) 0 2px 8px 0;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    select:focus {
+        outline: none;
+        box-shadow: rgba(99, 99, 99, 0.2) 0 4px 12px 0;
+    }
+
+    .selects {
+        display: flex;
+        flex-direction: column;
+        padding: 0.625rem 0;
+    }
+
+    .areaInput {
+        width: 100%;
+        max-width: 350px;
+        height: 100px;
+        border-radius: 8px;
+        padding: 0.625rem;
+        border: 1px solid rgba(128, 128, 128, 0.3);
+        resize: vertical;
+    }
+
+    .add-evidence-button, .add-req-button {
+        background-color: #28a745;
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-left: 0.375rem;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+    }
+
+    .add-evidence-button:hover, .add-req-button:hover {
+        background-color: #218838;
+    }
+
+    .select-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.625rem;
+    }
+
+    .acaoContainer {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+    }
+
+    .acaoContainer div {
+        flex: 1;
+        min-width: 250px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .acaoContainer div textarea {
+        border: 1px solid rgba(128, 128, 128, 0.3);
+        border-radius: 8px;
+        padding: 0.625rem;
+        height: 100px;
+        resize: vertical;
+    }
+
+    .pq {
+        display: flex;
+        border-bottom: 1px solid #dee2e6;
+        padding: 1rem 0;
+        margin-bottom: 1rem;
+    }
+
+    .labelPQ {
+        width: 20%;
+        min-width: 150px;
+        font-weight: bold;
+        display: flex;
+        align-items: flex-start;
+        padding-top: 0.5rem;
+    }
+
+    .inputsPQ {
+        width: 80%;
+        flex-grow: 1;
+    }
+
+    .APQ {
+        margin-bottom: 0.75rem;
+    }
+
+    .APQ label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 0.375rem;
+        color: #495057;
+    }
+
+    .analise {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Text styling */
+    h5 {
+        color: #495057;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+    }
+
+    /* Container centralizado */
+    .d-flex.justify-content-center.row.p-5 {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    /* Ajuste para o container principal */
+    .container.mt-4 {
+        margin: 0 auto !important;
+        padding: 0 15px;
+        width: 100% !important;
+        max-width: 1200px !important;
+    }
+
+    /* Ajuste para o card principal */
+    .card.mb-4.cardBoard {
+        width: 100% !important;
+        padding: 30px;
+        margin: 0 auto;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .pq {
+            flex-direction: column;
+        }
+
+        .labelPQ {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .inputsPQ {
+            width: 100%;
+        }
+
+        .acaoContainer {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-5">
+    {% csrf_token %}
+
+    <div class="card mb-4 cardBoard"
+         style="width: 120rem; padding: 30px; display: flex; flex-direction: column; justify-content: center">
+        <div class="card-body col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Relatório de não conformidade</b></h2>
+        </div>
+        <div id="accordion" class="accordion">
+            <div class="container mt-4"
+                 style="margin: 0; width: 120rem; display: flex; flex-direction: column; justify-content: center">
+                <!-- Header -->
+                <div class="header py-3 cardBoard" style="padding: 20px">
+                    <div class="row">
+                        <div class="col-10 text-left">
+                            <img src="{% static 'img/logo.png' %}" style="height: 50px;">
+                            <span class="h5 ml-3">RNC - Relatório de Não Conformidade</span>
+                        </div>
+                        <div class="col-2 text-right">
+                            <div>RNC Nº: <span class="font-weight-bold" id="rncNumber">{{rnc}}</span></div>
+                            <div><p id="dataAtual" style="letter-spacing: 1px; font-weight: bold"></p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Characterization Section -->
+                <div class="bordered p-3 mt-2 cardBoard">
+                    <div class="section-title"><h3>Caracterização do Problema</h3></div>
+                    <div class="row">
+                        <div class="col-6">Origem:
+                            <h5>{{origem_nome}}</h5>
+                        </div>
+                        <div class="col-6">Solicitante:
+                            <span class="text-danger">
+                                <h5>{{solicitante_nome}}</h5>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row mt-2" style="display: flex;">
+                        <div class="unid/proc selects" style="width: 600px;">
+                            <div class="col-6">Unidade/Processo:</div>
+                            <h5>{{unidade_negocio_cod}}</h5>
+                            <h5>{{area_cod}}</h5>
+                            <h5>{{sub_area_nome}}</h5>
+                        </div>
+
+                        <div class="col-6">Responsável pela análise do RNC: <span class="text-danger">
+
+                                <h5>{{responsavel_nome}}</h5>
+                        </span></div>
+                    </div>
+                </div>
+
+                <!-- Description Section -->
+                <div class="bordered p-3 mt-2 cardBoard">
+                    <div class="section-title"><h3>Descrição</h3></div>
+                    <p><strong>Fato:</strong></p>
+                    <p id="fato">{{fato}}</p>
+                    <p><strong>Evidência:</strong></p>
+                    <p>{{evid_text}}</p>
+                    <p><strong>Requisito não atendido:</strong></p>
+                    <h5>{{requisitos}}</h5>
+                </div>
+
+                <div class="bordered p-3 mt-2 cardBoard">
+                    <div class="section-title"><h3>Ações Imediatas</h3></div>
+                    <div class="acaoContainer">
+                        <div class="acao">
+                            <div class="section-title"><h4>Ação</h4></div>
+                            <p>
+                                {% for acao in acoes_imediatas%}
+                                {{ acao.acao }}
+                                {% endfor %}
+                            </p>
+                        </div>
+                        <div class="respacao">
+                            <div class="section-title"><h4>Responsável</h4></div>
+                            <h5 class="text-danger">
+                                {% for acao in acoes_imediatas%}
+                                {{ acao.responsavel }}
+                                {% endfor %}
+                            </h5>
+                        </div>
+                        <div class="prazoacao">
+                            <div class="section-title"><h4>Prazo</h4></div>
+                            <p>
+                                <strong>
+                                    {% for acao in acoes_imediatas%}
+                                    {{ acao.prazo }}
+                                    {% endfor %}
+                                </strong>
+                            </p>
+                        </div>
+                        <div class="evidacao">
+                            <div class="section-title"><h4>Evidências</h4></div>
+                            <button id="addEvidenceButton" class="add-evidence-button">+</button>
+                            <input type="file" id="fileEvid" style="display: none" multiple onchange="DropFileImport()">
+                            <button id="uploadEvidenceButton" class="add-evidence-button">Fazer Upload</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bordered p-3 mt-2 cardBoard">
+                    <div class="section-title">
+                        <h3>Análise da Causa</h3>
+                    </div>
+                    <div class="analise">
+                        {% for analise in analises_causa %}
+                        <div class="pq">
+                            <div class="labelPQ">Perguntas</div>
+                            <div class="inputsPQ">
+                                <div class="APQ">
+                                    <label>Pergunta:</label>
+                                    <p id="pergunta1">{{ analise.pergunta }}</p> <!-- Aqui você mostra o fato -->
+                                </div>
+                                <div class="APQ">
+                                    <label>Resposta:</label>
+                                    <p>{{ analise.resposta }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="bordered p-3 mt-2 cardBoard">
+                    <div class="section-title"><h3>Ações Corretivas</h3></div>
+                    <div class="acaoContainer">
+                        <div class="acao">
+                            <div class="section-title"><h4>Ação</h4></div>
+                            {% for acao in acoes_corretivas %}
+                            {{ acao.acao }}
+                            {% endfor %}
+                        </div>
+                        <div class="respacao">
+                            <div class="section-title"><h4>Responsável</h4></div>
+                            <h5 class="text-danger">
+                                {% for acao in acoes_corretivas %}
+                                {{ acao.responsavel }}
+                                {% endfor %}
+                            </h5>
+                        </div>
+                        <div class="prazoacao">
+                            <div class="section-title"><h4>Prazo</h4></div>
+                            <p>
+                                <strong>
+                                    {% for acao in acoes_corretivas %}
+                                    {{ acao.prazo }}
+                                    {% endfor %}
+                                </strong>
+                            </p>
+                        </div>
+                        <div class="evidacao">
+                            <div class="section-title"><h4>Evidências</h4></div>
+                            <button id="addEvidenceButtonB" class="add-evidence-button">+</button>
+                            <input type="file" id="fileEvidB" style="display: none" multiple
+                                   onchange="DropFileImport()">
+                            <button id="uploadEvidenceButtonB" class="add-evidence-button">Fazer Upload</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+
+    <title>Sistema 3D Flex</title>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 0px;
+            text-align: center;
+        }
+        tr:nth-child(odd){
+            background-color: light-gray;
+        }
+
+        tr:nth-child(even) {
+            background-color: white;
+        }
+
+        .center {
+            align-content: center;
+        }
+
+        .webgl-content {
+            padding: 5px 75px;
+            text-align: center;
+            align-self: center;
+        }
+        table.dataTable tbody tr.selected {
+            color: black !important;
+            background-color: #ffff99 !important;
+
+        }
+        table.dataTable thead {background-color:#A1A1A1}
+        body { min-width: 1550px; }
+
+
+    </style>
+<script type="text/javascript" src="{% static 'js/a1flx/jq_3.6.0.min.js' %}"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/a1flx/jscolor.js' %}"></script>
+
+{% endblock %}
+{% block help %}
+
+{% endblock %}
+{% block main %}
+
+
+  <script>var  unityGame;</script>
+      <div class="Modelo3DView" id="Mod3D" style="width: 1200px; height: 750px; background-color: white; float:left;">
+           <div id="unityContainer" >
+           <canvas id="unity-canvas" style="width: 100%; height: 100%; background: #000000" width="1200px" height="750px"></canvas>
+     </div>
+       <script src="{% static 'js/a1flx/unity/Build/unity.loader.js' %}"></script>
+    <script>
+      unityGame = createUnityInstance(document.querySelector("#unity-canvas"), {
+        dataUrl: "{% static 'js/a1flx/unity/Build/unity.data' %}",
+        frameworkUrl: "{% static 'js/a1flx/unity/Build/unity.framework.js' %}",
+        codeUrl: "{% static 'js/a1flx/unity/Build/unity.wasm' %}",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "A1 Engenharia",
+        productName: "A1FLXWeb",
+        productVersion: "0.1",
+      }).then((unityInstance) => {
+      unityGame = unityInstance});
+    </script>
+      </div>
+      <div id="DadosLateraisMain" class="DadosLaterais" style="position: absolute; left: 1300px;float:left; width:300px;  text-align: center; overflow-y:auto; height: 750px; overflow-x: hidden;">
+          <div id="TituloTabelaDadosLaterais" style="border-style: single;background-color: #A1A1A1;  width:300px"></div>
+          <table id="TabelaDadosLaterais" class="display" style="padding: 0px; width:100%; font-size:75%; overflow-y: hidden;"></table>
+      </div>
+
+      <div class="DadosInferiores" style="background-color: #ababab; width: 1200px">
+          <div id="InferiorLateralEsq" style="border-style: double; width: 200px; height:300px;background-color: lightgray; float:left; overflow-y:auto" >
+            <!--      Preenchido por JS-->
+          </div>
+           <div id="InferiorLateralDir" style="border-style: double; width: 1000px; background-color: lightgray; float:right;font-size:75%; height: 300px; ">
+
+            <table id="TabelaDados" class="display compact" width="100%" style="padding: 0px"></table>
+           </div>
+      </div>
+
+    <script>
+    function AppCarregado()
+        {
+        var Objeto = { os: '{{InfoImports_records.os}}', sistema: '{{InfoImports_records.sistema}}', rev: '{{InfoImports_records.revisão}}', "host": window.location.href.split('/app')[0] };
+              var JsonStringRet = JSON.stringify(Objeto);
+              unityGame.SendMessage('JavaFuncoes', 'CriarModelo', JsonStringRet);
+              CarregarAbasInfo('{{InfoImports_records.os}}', '{{InfoImports_records.sistema}}', '{{InfoImports_records.revisão}}');
+        }
+        function PreencherBarraLateralBarras(BarraID, CasoCarga)
+        {
+            ConstruirDadosBarra(BarraID, CasoCarga);
+        }
+         function PreencherBarraLateralRestraint(Node, CasoCarga)
+        {
+            ConstruirDadosRestraint(Node, CasoCarga);
+        }
+         function PreencherBarraLateralWRC(WRCID, CasoCarga)
+        {
+           ConstruirDadosWRC(WRCID, CasoCarga);
+        }
+         function PreencherBarraLateralSifTee(SifTeeId, CasoCarga)
+        {
+            ConstruirDadosSIFTEE(SifTeeId, CasoCarga);
+        }
+          function PreencherBarraLateralHangers(HangerId, CasoCarga)
+        {
+            ConstruirDadosHanger(HangerId, CasoCarga);
+        }
+        function AdicionarCor(NomeLinha, Cores)
+        {
+            var Dados = Cores.split("¶");
+            AdicionarCorNaLista(NomeLinha, Dados[0], Dados[1], Dados[2]);
+        }
+           function AbrirAbaDeCores()
+        {
+            ConstuirTabelaCores();
+        }
+    </script>
+
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/carousel.js' %}"></script>
+    <script src="{% static 'js/a1flx/mostrar_modelo_3d_aux.js' %}"></script>
+
+    <script src="{% static 'js/a1flx/jstree.js' %}"></script>
+    <link rel="stylesheet" href='{% static "css/a1flx.css" %}'/>
+
+
+{%endblock%}

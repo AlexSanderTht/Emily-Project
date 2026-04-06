@@ -1,0 +1,1377 @@
+<!doctype html>
+<html lang="pt-br">
+   {% load static %}
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <title>A1Pro </title>
+      <!-- Dependencias com os .css (style's geral) -->
+      <link href="{% static 'vendor/bootstrap-4.1/bootstrap.min.css' %}" rel="stylesheet" media="all" />
+      <link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+      <link rel="stylesheet" href="{% static 'css/login.css' %}">
+      <link rel="stylesheet" href="{% static 'css/a1pro.css' %}">
+      <link rel="stylesheet" href="{% static 'css/a1pro_extracted.css' %}">
+      <!-- DataTables CSS -->
+      <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"/>
+      <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css"/>
+     <style>
+      /* ─── CSS VARS (paleta âmbar unificada) ─────────────────── */
+      :root {
+        --accent:        #f3b768;
+        --accent-hover:  #f6c783;
+        --accent-active:  #e7a64f;
+        --accent-dark:   #c8862a;
+        --glass-bg:      linear-gradient(145deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.10) 100%);
+        --glass-border:  rgba(255,255,255,.32);
+        --glass-radius:  22px;
+        --text-invert:   #ffffff;
+        --text-strong:   #1f1f1f;
+        --text-soft:     #404040;
+      }
+
+      /* ─── BODY override p/ app (login.css centra, aqui precisa scroll) ─── */
+      body {
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        padding: 28px !important;
+        overflow: auto;
+        min-height: 100vh;
+      }
+      body::before {
+        filter: blur(16px) brightness(0.30) saturate(0.58) !important;
+      }
+
+      /* ─── ESCALA DE TELA (equivalente a zoom 110%) ───────── */
+      .login-layout {
+         zoom: 1.1;
+      }
+      @supports not (zoom: 1) {
+         .login-layout {
+            transform: scale(1.1);
+            transform-origin: top left;
+            width: 90.9091%;
+         }
+      }
+
+      /* ── OVERLAY DE ENTRADA ─────────────────────────── */
+      #page-enter-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #0d0d0d;
+        opacity: 1;
+        pointer-events: none;
+        transition: opacity .55s cubic-bezier(.4,0,.2,1);
+      }
+      #page-enter-overlay.done { opacity: 0; }
+
+      /* ─── PANEL PRINCIPAL (seção de app) ─────────────────── */
+      .panel-login-a1 {
+        background: linear-gradient(145deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%);
+        border: 1px solid rgba(255,255,255,.20);
+        border-radius: 26px;
+        backdrop-filter: blur(22px) saturate(150%);
+        -webkit-backdrop-filter: blur(22px) saturate(150%);
+        box-shadow: 0 24px 72px -18px rgba(0,0,0,.60), 0 6px 24px -6px rgba(0,0,0,.35);
+        padding: 28px 30px;
+        position: relative;
+        overflow: visible;
+      }
+      .panel-login-a1::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 6% 3%, rgba(255,255,255,.18), transparent 45%);
+        pointer-events: none;
+        border-radius: 26px;
+      }
+
+      /* ─── A1PRO HEADER BRAND BAR ─────────────────────────── */
+      .a1pro-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 22px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(255,255,255,.12);
+      }
+      .a1pro-header-logo {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+        border-radius: 14px;
+        filter: drop-shadow(0 2px 10px rgba(243,183,104,.40));
+        background: transparent;
+      }
+      .a1pro-header-info { display: flex; flex-direction: column; }
+      .a1pro-header-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--accent);
+        letter-spacing: .02em;
+        text-shadow: 0 2px 10px rgba(0,0,0,.35);
+        margin: 0;
+        line-height: 1.2;
+      }
+      .a1pro-header-sub {
+        font-size: .70rem;
+        color: rgba(255,255,255,.50);
+        font-weight: 600;
+        margin: 3px 0 0;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+
+      /* ─── OS-GLASS PANELS ────────────────────────────────── */
+      .os-glass {
+        background: linear-gradient(155deg, rgba(255,255,255,0.36) 0%, rgba(255,255,255,0.16) 100%) !important;
+        border: 1px solid rgba(255,255,255,.48) !important;
+        border-radius: 20px !important;
+        backdrop-filter: blur(16px) saturate(140%);
+        -webkit-backdrop-filter: blur(16px) saturate(140%);
+        box-shadow: 0 8px 28px rgba(0,0,0,.10), 0 1px 4px rgba(0,0,0,.06);
+        transition: box-shadow .28s ease, border-color .28s ease;
+      }
+      .os-glass:hover {
+        box-shadow: 0 12px 36px rgba(0,0,0,.15), 0 2px 8px rgba(243,183,104,.06);
+        border-color: rgba(243,183,104,.30) !important;
+      }
+
+      /* ─── AMBER LABEL BADGES (override .bg-warning) ──────── */
+      .bg-warning {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%) !important;
+        color: #2d1a04 !important;
+        font-size: 0.70rem !important;
+        font-weight: 700 !important;
+        letter-spacing: .06em !important;
+        text-transform: uppercase !important;
+        padding: 4px 14px !important;
+        border-radius: 20px !important;
+        box-shadow: 0 2px 8px -2px rgba(200,134,42,.35);
+        display: inline-block;
+        border: none !important;
+      }
+
+      /* ─── FORM CONTROLS ─────────────────────────────────── */
+      .form-control {
+        background: rgba(255,255,255,.50) !important;
+        border: 1px solid rgba(255,255,255,.55) !important;
+        border-radius: 12px !important;
+        color: #1f1f1f !important;
+        font-size: .86rem;
+        padding: 10px 14px;
+        transition: background .2s, border-color .2s, box-shadow .2s;
+      }
+      .form-control:focus {
+        background: rgba(255,255,255,.70) !important;
+        border-color: rgba(243,183,104,.55) !important;
+        box-shadow: 0 0 0 3px rgba(243,183,104,.22) !important;
+        outline: none;
+      }
+      .form-control[readonly] {
+        background: rgba(255,255,255,.30) !important;
+        color: #444 !important;
+      }
+      select.form-control { appearance: auto; }
+      textarea.form-control { resize: none; }
+
+      /* ─── DROPDOWN TOOLBAR ──────────────────────────────── */
+      .btn-group.dropdown .btn-secondary {
+        background: linear-gradient(145deg, rgba(255,255,255,.15) 0%, rgba(255,255,255,.06) 100%) !important;
+        border: 1px solid rgba(255,255,255,.30) !important;
+        color: var(--text-invert) !important;
+        font-weight: 600;
+        font-size: .80rem;
+        letter-spacing: .02em;
+        border-radius: 14px !important;
+        padding: 10px 20px;
+        backdrop-filter: blur(10px);
+        transition: background .2s, border-color .2s, box-shadow .2s, transform .2s;
+        box-shadow: 0 3px 14px rgba(0,0,0,.15);
+      }
+      .btn-group.dropdown .btn-secondary:hover,
+      .btn-group.dropdown .btn-secondary:focus {
+        background: rgba(243,183,104,.16) !important;
+        border-color: rgba(243,183,104,.45) !important;
+        color: var(--accent) !important;
+        box-shadow: 0 6px 22px rgba(0,0,0,.20);
+        transform: translateY(-1px);
+      }
+
+      /* dropdown menu */
+      .btn-group.dropdown .dropdown-menu {
+        background: linear-gradient(160deg, rgba(28,22,14,.94) 0%, rgba(18,14,8,.97) 100%) !important;
+        border: 1px solid rgba(243,183,104,.22) !important;
+        border-radius: 16px !important;
+        backdrop-filter: blur(24px) saturate(160%);
+        box-shadow: 0 16px 52px rgba(0,0,0,.55), 0 4px 14px rgba(0,0,0,.30);
+        padding: 8px !important;
+        overflow: hidden;
+      }
+      .btn-group.dropdown .dropdown-item {
+        color: rgba(255,255,255,.78) !important;
+        font-size: .81rem !important;
+        padding: 10px 16px !important;
+        border-radius: 10px !important;
+        transition: background .15s, color .15s;
+        text-align: left !important;
+      }
+      .btn-group.dropdown .dropdown-item:hover {
+        background: rgba(243,183,104,.16) !important;
+        color: var(--accent) !important;
+      }
+
+      /* ─── AMBER ELLIPSIS BUTTONS (.btn-warning) ─────────── */
+      .btn-warning {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%) !important;
+        border: none !important;
+        color: #2d1a04 !important;
+        font-weight: 700;
+        box-shadow: 0 3px 12px -3px rgba(200,134,42,.40);
+        transition: filter .15s, transform .15s, box-shadow .15s;
+      }
+      .btn-warning:hover {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px -4px rgba(200,134,42,.50);
+      }
+
+      /* ─── BOTÃO VOLTAR ──────────────────────────────────── */
+      .btn-dark {
+        background: linear-gradient(145deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.04) 100%) !important;
+        border: 1px solid rgba(255,255,255,.28) !important;
+        color: var(--accent) !important;
+        font-weight: 600;
+        font-size: .84rem;
+        letter-spacing: .04em;
+        border-radius: 14px !important;
+        padding: 8px 26px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 14px rgba(0,0,0,.18);
+        transition: background .2s, border-color .2s, color .2s, transform .2s;
+      }
+      .btn-dark:hover {
+        background: rgba(243,183,104,.14) !important;
+        border-color: rgba(243,183,104,.40) !important;
+        color: var(--accent-hover) !important;
+        transform: translateY(-1px);
+      }
+
+      /* ─── BOTÕES PRIMARY/SECONDARY/DANGER nos modais ──── */
+      .modal .btn-primary {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%) !important;
+        border: none !important;
+        color: #2d1a04 !important;
+        font-weight: 600;
+        border-radius: 12px !important;
+        box-shadow: 0 3px 12px -3px rgba(200,134,42,.40);
+        transition: filter .15s, transform .15s;
+      }
+      .modal .btn-primary:hover {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+      }
+      .modal .btn-danger {
+        background: linear-gradient(135deg, #d9534f 0%, #e06b68 100%) !important;
+        border: none !important;
+        color: #fff !important;
+        font-weight: 600;
+        border-radius: 12px !important;
+      }
+      .modal .btn-secondary {
+        background: rgba(120,120,120,.20) !important;
+        border: 1px solid rgba(120,120,120,.30) !important;
+        color: #555 !important;
+        font-weight: 600;
+        border-radius: 12px !important;
+      }
+
+      /* ─── TASK TABLE ────────────────────────────────────── */
+      .minhas-tasks-container {
+        width: 100%;
+        overflow: hidden;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,.22);
+        background: rgba(255,255,255,.06);
+        box-shadow: 0 6px 20px rgba(0,0,0,.12);
+        backdrop-filter: blur(10px);
+      }
+      #minhas-tasks-table { margin: 0; border-collapse: separate; border-spacing: 0; }
+      #minhas-tasks-table thead th {
+        background: linear-gradient(135deg, rgba(243,183,104,.82) 0%, rgba(200,134,42,.88) 100%) !important;
+        color: #2d1a04 !important;
+        font-size: .73rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        border-bottom: 1px solid rgba(200,134,42,.45);
+        padding: 10px 12px;
+      }
+      #minhas-tasks-table tbody td {
+        border-top: 1px solid rgba(255,255,255,.06);
+        color: rgba(255,255,255,.78);
+        font-size: .79rem;
+        padding: 8px 12px;
+        background: transparent;
+      }
+      #minhas-tasks-table tbody tr:hover td {
+        background: rgba(243,183,104,.06);
+      }
+      .minhas-tasks-container .dataTables_scrollBody { border: none !important; }
+      .tasks-body-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(243,183,104,.55) rgba(0,0,0,.15);
+      }
+      .tasks-body-scroll::-webkit-scrollbar { width: 6px; }
+      .tasks-body-scroll::-webkit-scrollbar-track {
+        background: rgba(0,0,0,.15);
+        border-radius: 6px;
+        margin: 4px 0 14px 0;
+      }
+      .tasks-body-scroll::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, rgba(243,183,104,.6), rgba(200,134,42,.5));
+        border-radius: 6px;
+        border: 1px solid rgba(243,183,104,.15);
+      }
+      .tasks-body-scroll::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, rgba(243,183,104,.85), rgba(200,134,42,.7));
+      }
+      #minhas-tasks-table thead th.sorting:after,
+      #minhas-tasks-table thead th.sorting_asc:after,
+      #minhas-tasks-table thead th.sorting_desc:after {
+        display: none !important;
+        content: none !important;
+      }
+      #minhas-tasks-table thead th { cursor: default; }
+
+      /* ─── TASK DETAIL PANEL ───────────────────────────────── */
+      .task-detail-header {
+        background: transparent;
+        color: rgba(255,255,255,.55);
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        padding: 10px 14px 6px;
+        flex-shrink: 0;
+        border-bottom: 1px solid rgba(255,255,255,.12);
+      }
+      .task-detail-body {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 4px 2px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(243,183,104,.55) rgba(0,0,0,.15);
+      }
+      .task-detail-body::-webkit-scrollbar { width: 6px; }
+      .task-detail-body::-webkit-scrollbar-track {
+        background: rgba(0,0,0,.15);
+        border-radius: 6px;
+        margin: 4px 0 14px 0;
+      }
+      .task-detail-body::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, rgba(243,183,104,.6), rgba(200,134,42,.5));
+        border-radius: 6px;
+      }
+      .task-detail-body::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, rgba(243,183,104,.85), rgba(200,134,42,.7));
+      }
+      .task-detail-table { margin: 0; width: 100%; }
+      .task-detail-table td {
+        padding: 8px 12px !important;
+        font-size: .81rem;
+        border-top: 1px solid rgba(255,255,255,.08) !important;
+        color: #1f1f1f;
+        vertical-align: middle;
+      }
+      .task-detail-table td:first-child {
+        font-weight: 700;
+        color: #2d1a04;
+        white-space: nowrap;
+        width: 1%;
+      }
+      .task-detail-table td:last-child {
+        font-family: monospace;
+        font-size: .79rem;
+        color: var(--accent-dark);
+        word-break: break-all;
+      }
+      .task-detail-legend {
+        flex-shrink: 0;
+        padding: 10px 14px;
+        border-top: 1px solid rgba(255,255,255,.30);
+        font-size: .72rem;
+        line-height: 1.5;
+        color: #2d1a04;
+        background: rgba(255,255,255,.12);
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .task-detail-legend > div {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .legend-badge {
+        display: inline-block;
+        font-size: .65rem;
+        font-weight: 700;
+        padding: 1px 7px;
+        border-radius: 20px;
+        flex-shrink: 0;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        min-width: 44px;
+        text-align: center;
+      }
+      .legend-heavy { background: linear-gradient(135deg,#e05252,#c93b3b); color:#fff; }
+      .legend-light  { background: linear-gradient(135deg,#52b0e0,#3b8cc9); color:#fff; }
+
+      /* ─── MODAL ENHANCEMENTS ────────────────────────────── */
+      .modal-content {
+        background: linear-gradient(160deg, rgba(255,255,255,.96) 0%, rgba(255,255,255,.90) 100%) !important;
+        border: 1px solid rgba(255,255,255,.55) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 24px 72px rgba(0,0,0,.35), 0 6px 20px rgba(0,0,0,.20) !important;
+        backdrop-filter: blur(20px);
+        overflow: hidden;
+      }
+      .modal-header {
+        border-bottom: 1px solid rgba(243,183,104,.18) !important;
+        background: linear-gradient(135deg, rgba(243,183,104,.06) 0%, transparent 100%);
+      }
+      .modal-title { color: #2d1a04 !important; font-weight: 700; }
+      .modal-footer { border-top: 1px solid rgba(243,183,104,.12) !important; }
+
+      /* ─── SIDEBAR CONTAINERS (.container-fluid border) ─── */
+      .os-glass .container-fluid.border {
+        border-color: rgba(255,255,255,.30) !important;
+        border-radius: 14px !important;
+      }
+
+      /* ─── A1PRO CONTROL BTN ─────────────────────────────── */
+      .os-glass > .btn-secondary {
+        background: linear-gradient(145deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,.05) 100%) !important;
+        border: 1px solid rgba(255,255,255,.28) !important;
+        color: rgba(255,255,255,.80) !important;
+        font-weight: 600;
+        border-radius: 12px !important;
+        transition: background .2s, color .2s;
+        margin-bottom: 6px;
+      }
+      .os-glass > .btn-secondary:hover {
+        background: rgba(243,183,104,.14) !important;
+        color: var(--accent) !important;
+      }
+
+      /* ─── SCROLLBAR ─────────────────────────────────────── */
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-track { background: rgba(255,255,255,.04); border-radius: 8px; }
+      ::-webkit-scrollbar-thumb { background: rgba(243,183,104,.30); border-radius: 8px; }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(243,183,104,.50); }
+
+      /* ─── CUSTOM DATALIST (OS grid) ─────────────────────── */
+      .custom-datalist {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-auto-rows: 40px !important;
+        gap: 6px !important;
+        max-height: 600px !important;
+        overflow-y: auto !important;
+        padding: 8px 4px 8px 8px !important;
+        background: transparent !important;
+        flex: 1;
+        min-height: 0;
+        align-content: start;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(243,183,104,.55) rgba(0,0,0,.15);
+        scrollbar-gutter: stable;
+      }
+      .custom-datalist::-webkit-scrollbar { width: 6px; }
+      .custom-datalist::-webkit-scrollbar-track {
+        background: rgba(0,0,0,.15);
+        border-radius: 6px;
+        margin: 4px 0;
+      }
+      .custom-datalist::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, rgba(243,183,104,.6), rgba(200,134,42,.5));
+        border-radius: 6px;
+        border: 1px solid rgba(243,183,104,.15);
+      }
+      .custom-datalist::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, rgba(243,183,104,.85), rgba(200,134,42,.7));
+      }
+      #contentNotSelected {
+        display: flex !important;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+      /* elo quebrado: position-relative entre #contentNotSelected e .custom-datalist */
+      #contentNotSelected > .position-relative {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .custom-option-datalist {
+        background: rgba(255,255,255,.50) !important;
+        border: 1px solid rgba(255,255,255,.55) !important;
+        border-radius: 10px !important;
+        padding: 8px 6px !important;
+        font-size: .82rem !important;
+        font-weight: 600 !important;
+        color: #2d1a04 !important;
+        cursor: pointer;
+        transition: background .18s, border-color .18s, box-shadow .18s, transform .18s;
+        margin-top: 0 !important;
+      }
+      .custom-option-datalist:hover {
+        background: rgba(243,183,104,.22) !important;
+        border-color: rgba(243,183,104,.50) !important;
+        color: #2d1a04 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(200,134,42,.20);
+      }
+      .custom-option-datalist.os-selected {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%) !important;
+        border-color: var(--accent-dark) !important;
+        color: #2d1a04 !important;
+        box-shadow: 0 4px 16px -3px rgba(200,134,42,.45);
+        transform: scale(1.03);
+        font-weight: 700 !important;
+      }
+      #contentSelected { display: none !important; }
+     </style>
+   </head>
+   <body>
+   <!-- overlay de transição de entrada -->
+   <div id="page-enter-overlay" aria-hidden="true"></div>
+      {% load poll_extras %}
+      {% verify_tool as user_info %}
+      <!-- Dependencias com outros .js totalmente importante -->
+      <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+      <script src="{% static 'js/sweet_alert/sweetalert.min.js' %}"></script>
+      <script src="{% static 'js/popper-1.14.3.min.js' %}"></script>
+      <script src="{% static 'vendor/bootstrap-4.1/bootstrap.min.js' %}"></script>
+      <script src="{% static 'js/eletrica/A1Pro/a1pro_ctrl.js' %}"></script>
+      <script src="{% static 'js/eletrica/A1Pro/DefinesA1Pro.js' %}"></script>
+      <script src="{% static 'js/eletrica/A1Pro/a1procontrolusers.js' %}"></script>
+      <main class="login-layout" aria-labelledby="titulo-login">
+            <div class="d-flex" style="gap: 20px; align-items: stretch;">
+               <div class="os-glass" style="width:300px; position:relative; overflow:hidden; padding:0 !important;">
+                  <div style="position:absolute; inset:12px; display:flex; flex-direction:column; overflow:hidden;">
+                     <span class="bg-warning px-3 mt-2" style="border-radius: 10px; align-self: flex-start;">N° OS</span>
+                     <button id="OS-dropdown" class="btn btn-warning rounded-pill shadow-sm mt-2"
+                        data-toggle="modal" data-target="#cadastro"
+                        onclick="list_options('os-type', select=true)"><i class="fa-solid fa-ellipsis"></i>
+                     </button>   
+                     {% with id_input='test_datalist' name_func_change='changeOsValues' url_get='/app/eletrica/a1pro/datalist_in_os/' placeholder_input='Digite a OS' id_select_get_value_selected='pro-os' %}
+                     {% include 'geral/custom_datalist.html' %}
+                     {% endwith %}
+                     <script>
+                        // Override: manter lista visível e destacar OS selecionada
+                        (function(){
+                          var origSelect = window.selectValue;
+                          window.selectValue = function(paramId, paramName){
+                            // Setar o valor no select hidden
+                            var sel = document.getElementById('pro-os');
+                            if(sel) sel.value = paramId;
+                            // Atualizar input de pesquisa
+                            var inp = document.getElementById('test_datalist');
+                            if(inp) inp.value = paramName;
+                            // Manter ambos visíveis
+                            var cns = document.getElementById('contentNotSelected');
+                            var cs = document.getElementById('contentSelected');
+                            if(cns) cns.hidden = false;
+                            if(cs) cs.hidden = true;
+                            // Destacar item selecionado
+                            var items = document.querySelectorAll('.custom-option-datalist');
+                            items.forEach(function(el){
+                              el.classList.remove('os-selected');
+                              if(el.dataset.valueFill === paramName) el.classList.add('os-selected');
+                            });
+                          };
+                        })();
+                     </script>
+                     <button class="btn btn-warning" style="padding: 6px 12px; margin-top: auto;" onclick="window.location.href='/app/'">Voltar</button>
+                  </div>
+               </div>
+               <div class="stack-vertical">
+                  <div class="os-glass" style="width:auto; display:flex; flex-direction:column; min-height: 400px; justify-content: flex-start;">
+                     <div class="container-fluid px-0;">
+                        <!-- Linha 1: PROJETO / N° PROJETO / CLIENTE (tudo na mesma linha) -->
+                        <div class="row">
+                           <div class="col-12">
+                              <div class="d-flex align-items-start flex-nowrap" style="gap:12px; overflow:auto;">
+                                 <div class="container-fluid p-2" style="min-width:260px; border-radius:10px;">
+                                    <span class="bg-warning px-3 mt-2 d-inline-block" style="border-radius:10px;">PROJETO</span>
+                                    <div class="mt-2">
+                                       <input id="pro-os-project" class="form-control bg-white" type="text" placeholder="Projeto" readonly>
+                                    </div>
+                                 </div>
+                                 <div class="container-fluid p-2" style="min-width:240px; border-radius:10px;">
+                                    <span class="bg-warning px-3 mt-2 d-inline-block" style="border-radius:10px;">N° PROJETO</span>
+                                    <div class="mt-2">
+                                       <input id="pro-os-project-num" class="form-control bg-white" type="text" placeholder="N° Projeto" readonly>
+                                    </div>
+                                 </div>
+                                 <div class="container-fluid p-2" style="min-width:260px; border-radius:10px;">
+                                    <span class="bg-warning px-3 mt-2 d-inline-block" style="border-radius:10px;">CLIENTE</span>
+                                    <div class="mt-2">
+                                       <input id="pro-os-client" class="form-control bg-white" type="text" placeholder="Cliente" readonly>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- Linha 2: DESCRIÇÃO (full width) -->
+                        <div class="row">
+                           <div class="col-12">
+                              <div class="container-fluid p-2" style="border-radius: 10px;">
+                                 <span class="bg-warning px-3 mt-2 d-inline-block" style="border-radius: 10px;">DESCRIÇÃO</span>
+                                 <div class="row align-items-center mt-2">
+                                    <div class="col">
+                                       <input id="pro-os-desc" class="form-control bg-white" type="text" placeholder="Descrição" readonly>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- Linha 3: UNIDADE / CLIENTE -->
+                        <div class="row">
+                           <div class="col-12 col-md-6">
+                              <div class="container-fluid p-2" style="border-radius: 10px;">
+                                 <span class="bg-warning px-3 mt-2 d-inline-block" style="border-radius: 10px;">UNIDADE</span>
+                                 <div class="row align-items-center mt-2">
+                                    <div class="col">
+                                       <input id="pro-os-unid-fabril" class="form-control bg-white" type="text" placeholder="Unidade" readonly>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="col-12 col-md-6">
+                              <div class="container-fluid p-2" style="border-radius: 10px;">
+                                 <span class="bg-warning px-3 mt-2 d-inline-block" style="border-radius: 10px;">DESCRIÇÃO ÁREA</span>
+                                 <div class="row align-items-center mt-2">
+                                    <div class="col">
+                                       <textarea id="pro-area-desc" class="form-control bg-white" readonly
+                                          style="height:38px; padding-top:6px; padding-bottom:6px; resize: none;"></textarea>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="container-fluid p-2 d-flex flex-column align-items-center" style="border-radius: 10px; margin-top: 0px; margin-bottom: 0; margin-left: 0px;">
+                           <span class="bg-warning px-1 mt-2" style="border-radius: 10px;">ÁREA</span>
+                           <div class="mt-2 w-100 d-flex justify-content-center">
+                              <select class="form-control text-center" id="pro-area" onchange="cookies_area()" style="min-width:200px; width:auto;">
+                                 <option value="none">---</option>
+                              </select>
+                              <!-------------------- Inicio Botão cadastro de area -------------------->
+                              <button id="area-dropdown" class="subscribe btn btn-warning  rounded-pill shadow-sm" style="transform: translateX(10px);"
+                                 onclick="verify_os_scr_index()"><i class="fa-solid fa-ellipsis"></i>
+                              </button><!-------------------- Fim Botão cadastro de area -------------------->
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- elementos seguintes ficarão empilhados verticalmente aqui -->
+                  <div class ="os-glass" style=" width: auto;margin-top:1px; display:flex; gap:8px; flex-wrap:wrap;">
+                     <div class="btn-group dropdown z-top" role="group">
+                        <button
+                           type="button"
+                           class="btn btn-secondary dropdown-toggle"
+                           id="btnGroupDrop1"
+                           data-toggle="dropdown"          
+                           data-display="static"          
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                        Motores / Cargas
+                        </button>
+                        <div class="dropdown-menu mt-0" aria-labelledby="btnGroupDrop1" style="position: absolute; z-index: 2700;">
+                           <a class="dropdown-item" id="equipamentos-dropdown" onclick="check_os_and_area('eqps')">Equipamentos</a>
+                           <a class="dropdown-item" id="equipamentos-dropdown" onclick="renderEquips()">Equipamentos (dev)</a>
+                           <a class="dropdown-item" id="ligacoes-dropdown" onclick="check_os_and_area('cargas')">Ligações</a>
+                           <a class="dropdown-item" id="funcao-dropdown" onclick="FillFuncs()">Função</a>
+                           <a class="dropdown-item" id="tipo-ligacao-dropdown" onclick="ShowModalAndCreateSelectTiposLig();">Tipo de Alimentação</a>
+                           <a class="dropdown-item" id="tipo-partida-dropdown" onclick="printPartidas()">Tipo de Partida</a>
+                           <a class="dropdown-item" id="acessorios-dropdown" onclick="printAcessorio()">Acessorios</a>
+                           <a class="dropdown-item" id="sinais-dropdown" onclick="printSinais()">Sinais</a>
+                           <a class="dropdown-item" id="gav-cubs-dropdown" onclick="print_options_painel()">Gavetas/Cubículos</a>
+                           <a class="dropdown-item" id="motor-status-dropdown" onclick="print_options_search('MotorStatus/', 'tb_stt', '#motor-status-select', '#motorstatus', 'motor-status')">Motor status</a>
+                           <a hidden class="dropdown-item" id="resumo-tbr-dropdown" onclick="ResumoTBR()">TBR</a>
+                           <a class="dropdown-item" id="cadastro-bornes" onclick="RenderBornesConfigOs()">Bornes</a>
+                           <a class="dropdown-item" id="integracao-comos" onclick="ShowScreenIntegracaoComos()">Comos e Modelo 3D</a>
+                        </div>
+                     </div>
+                     <div class="btn-group dropdown" role="group">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                        Cabos
+                        </button>
+                        <div class="dropdown-menu mt-0" aria-labelledby="btnGroupDrop1" >
+                           <a class="dropdown-item" id="config-calc-cabos-dropdown" onclick="FillFuncsAndShowModalConfigCC()">Configuração Cálculo</a>
+                           <a class="dropdown-item" id="method-calc-dropdown" onclick="ShowDistMedia()">Distância Média</a>
+                           <a class="dropdown-item" id="codigos-a1mat-dropdown"  onclick="get_page_a1_mat()" >Códigos - A1MAT</a>
+                           <a class="dropdown-item" id="criterio-formacao-tag-dropdown" onclick="verify_selects_show_modal('criterios_tag'); working_with_nav_menu('crit-tag-alimentacao',['crit-tag-alimentacao', 'crit-tag-sinal', 'crit-tag-acessorio', 'crit-tag-neutro', 'crit-tag-terra']);FillFTagExistsInOs();">Formação TAG</a>
+                           <a class="dropdown-item" id="classe-isolacao-dropdown" onclick="fill_all_selects()">Classe de Isolação</a>
+                           <a class="dropdown-item" id="setup-sinais-acess-dropdown" data-toggle="modal" onclick="DataPageSetup()">Sinais e Acessórios</a>
+                           <a hidden class="dropdown-item" id="formacao-cabos-dropdown" onclick="fill_select_func_form_cabo()">Formação dos Cabos</a>
+                           <a class="dropdown-item" id="tipo-cabo-func" onclick="ShowModalTpcFunc()">Tipo de Função</a>
+                           <a class="dropdown-item" id="lista-de-cabos-dropdown" onclick="OpenScreenListaCabos()">Lista de Cabos</a>
+                           <a class="dropdown-item" id="bobinas-dropdown" onclick="window.open('/app/eletrica/a1pro/Bobinas/', '_self')">Bobinas</a>
+                           <a class="dropdown-item" id="integracao-calc_cabos" onclick="ShowScreenIntegracaoCalcCabos()">Integração Calc Cabos</a>
+                        </div>
+                     </div>
+                     <div class="btn-group dropdown" role="group">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" id="btnGroupDrop3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                        Controle de Detalhes Típicos
+                        </button>
+                        <div class="dropdown-menu mt-0" aria-labelledby="btnGroupDrop1" >
+                           <a hidden class="dropdown-item" id="gerenciar-tags-tipicos-dropdown" onclick="screenGerenciarTagsTipicos()">Gerenciar TAG's Típicos Sup. e Band.</a>
+                           <a class="dropdown-item" id="controle-tipicos-doc-dropdown" onclick="ScreenControleTipicos()">Suportes e Bandejas - Materiais</a>
+                           <a class="dropdown-item" id="gerenciar-talas-chumbs-os-dropdown" onclick="ShowScreenGerenciarTalasChumbs()">Suportes e Bandejas - Talas e Fixações</a>
+                           <a class="dropdown-item" id="controle-tipicos-forca-control-dropdown" onclick="ScreenControleTipicosForcaControle()">Alimentação de Cargas</a>
+                        </div>
+                     </div>
+                     <div class="btn-group dropdown" role="group">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                        Geração Documentos
+                        </button>
+                        <div class="dropdown-menu mt-0" aria-labelledby="btnGroupDrop1" >
+                           <a class="dropdown-item" id="gerar-tipicos-doc-dropdown" onclick="ScreenGerarTipicosDoc()">Detalhes Tipicos</a>
+                           <a class="dropdown-item" id="list-mat-doc-dropdown" onclick="ShowScreenListaMateriais()">Lista de Materiais</a>
+                           <a class="dropdown-item" id="list-cabos-doc-dropdown" onclick="list_all_consolidado_and_show_modal()">Lista de Cabos</a>
+                           <a class="dropdown-item" id="cad-plano-corte-dropdown" onclick="ShowScreenPlanoDeCorte()">Plano de corte</a>
+                           <a class="dropdown-item" id="list-mat-plano-corte-dropdown" onclick="ExportacaoListaMateriaisPlanoDeCorte()">Lista de Materiais Cabos e Terminais</a>
+                           <a class="dropdown-item" id="gera-memorial" onclick="$('#modal_export_memorial').modal('show')">Memorial de Cálculo</a>
+                           <a class="dropdown-item" id="gerar-diagrama-interligacao" onclick="ShowScreenGeraDiagInter()">Diagrama de Interligação</a>
+                           <a class="dropdown-item" id="gerar-lista-revit" onclick="ShowScreenGerarLMRevit()">Lista de Materiais Pelo Revit</a>
+                           {% if user_info.A1ProControl %}
+                           <div class="dropdown-divider" style="border-color:rgba(243,183,104,.18);"></div>
+                           <a class="dropdown-item" id="a1pro-control-dropdown" href="/app/eletrica/a1procontrol/">A1 Pro Control</a>
+                           {% endif %}
+                        </div>
+                     </div>
+                     <div class="modal" id="bookpdf" tabindex="-1" role="dialog" aria-labelledby="motoracessoriosLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                           <div class="modal-content" style="width: 700px; margin-top: 115px; ">
+                              <div class="w3-container modal-value">
+                                 {% include './gera_book_pdf.html' %}
+                                 {% block bookpdf %}
+                                 {% endblock %}
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="modal" id="bookexcel" tabindex="-1" role="dialog" aria-labelledby="motoracessoriosLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                           <div class="modal-content" style="width: 700px; margin-top: 115px; ">
+                              <div class="w3-container modal-value">
+                                 {% include './gera_book_excel_memorial.html' %}
+                                 {% block book_excel_memorial %}
+                                 {% endblock %}
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="modal" id="booklistamotores" tabindex="-1" role="dialog" aria-labelledby="motoracessoriosLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                           <div class="modal-content" style="width: 700px; margin-top: 115px; ">
+                              <div class="w3-container modal-value">
+                                 {% include './GeraBookListaMotores.html' %}
+                                 {% block book_lista_motores_memorial %}
+                                 {% endblock %}
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!--Inicio cadastro_os-->
+                     <div class="modal fade" id="cadastro" tabindex="-1" role="dialog" aria-labelledby="cadastroLabel"
+                        aria-hidden="true" data-backdrop="static">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <h5 class="modal-title" id="cadastroLabel">Cadastro de OS</h5>
+                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="document.location.reload(true)">
+                                 <span aria-hidden="true">&times;</span>
+                                 </button>
+                              </div>
+                              {% include './cadastro_os.html' %}
+                              {% block cadastro_os %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim  cadastra_os -->
+                  <!--Inicio area-->
+                  <div class="modal fade" id="area" tabindex="-1" role="dialog" aria-labelledby="areaLabel"
+                     aria-hidden="true" data-backdrop="static">
+                     <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                              <h5 class="modal-title" id="areaLabel">Área</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-backdrop='static' data-keyboard='false'>
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                           </div>
+                           {% include './cadastro_area.html' %}
+                           {% block cadastro_area %}
+                           {% endblock %}
+                        </div>
+                     </div>
+                  </div>
+                  <!-- AREA-->
+                  <div class="modal fade" id="subarea" tabindex="-1" role="dialog" aria-labelledby="subareaLabel" aria-hidden="true" >
+                     <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                              <h5 class="modal-title" id="subareaLabel">Sub-Área</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                           </div>
+                           <div class="modal-body"></div>
+                           <form>
+                              <div class="row">
+                                 <!-- dentro do sub_area-->
+                                 <div class="col-lg-6">
+                                    <div class="form-group">
+                                       <label for="sub-area-cod">Código</label>
+                                       <input type="text" required class="form-control" id="sub-area-cod">
+                                    </div>
+                                    <div class="form-group">
+                                       <label for="sub-area-desc">Descrição</label>
+                                       <input type="text" required class="form-control" id="sub-area-desc">
+                                    </div>
+                                 </div>
+                                 <div class="col-lg-6 border-left">
+                                    <div class="form-group">
+                                       <label for="sub-area-type">Sub-áreas Cadastradas</label>
+                                       <select id="sub-area-type" class="form-control"
+                                          onchange="exec_manipulation_forms_sub_area()">
+                                       </select>
+                                    </div>
+                                 </div>
+                              </div>
+                           </form>
+                        </div>
+                        <div class="modal-footer">
+                           <button type="button" class="btn btn-primary" onclick="verify_update_sub_area()">Adicionar/Alterar</button>
+                           <button type="button" class="btn btn-danger" onclick="exec_drop_sub_area()">Excluir</button>
+                           <button type="button" class="btn btn-warning" onclick="clean_forms_sub_area()">Limpar</button>
+                        </div>
+                     </div>
+                  </div>
+                  <!--inicio acessorios-->
+                  <div class="modal fade" id="acessorios" role="dialog" aria-labelledby="acessoriosLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 500px;  margin-left: 75px; margin-top: 140px;">
+                           <div class="w3-container modal-value" >
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="document.getElementById('cargas').style.display='block'">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './acessorios.html' %}
+                              {% block acessorios %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim  acessorios-->
+                  {% include './ModalListaCaboConsolidado.html' %}
+                  <!-- Modal de pergunta o metodo de calculo que vai ser utilizado na lista de cabos -->
+                  {% include './AskDistMedia.html' %}
+                  {% block ask_method_calc %}
+                  {% endblock %}
+                  <!-- Fim Modal de pergunta o metodo de calculo que vai ser utilizado na lista de cabos -->
+                  {% include './ConfigCalcCabos.html' %}
+                  {% block config_calc_cabos %}
+                  {% endblock %}
+                  {% include './ModalTipoCaboFuncao.html' %} 
+                  <!--inicio sinais-->
+                  <div class="modal fade" id="sinais_control" role="dialog" aria-labelledby="sinaisLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document" style="max-width: 44vw;  margin-right: 430px; margin-top: 140px;">
+                        <div class="modal-content"  >
+                           <div class="w3-container modal-value" style="align-items: center;">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './sinais_controle.html' %}
+                              {% block sinais_controle %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fimsinais-->
+                  <!--Inicio motor_status-->
+                  <div class="modal fade" id="motorstatus" tabindex="-1" role="dialog" aria-labelledby="motorstatusLabel" aria-hidden="true">
+                     <div class="modal-dialog rounded-9 " role="document">
+                        <div class="modal-content estl_modal border-0 ">
+                           <div class="w3-container modal-value">
+                              {% include './motor_status.html' %}
+                              {% block motor_status %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim motor_status-->
+                  <!--Inicio import-->
+                  <div class="modal fade aolado " id="statussmotor" tabindex="-1" role="dialog" aria-labelledby="motorstatusLabel" aria-hidden="true" >
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" >
+                           <div class="w3-container modal-value">
+                              {% include './import.html' %}
+                              {% block import %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim import-->
+                  <!-- Inicio tipo_partida-->
+                  <div class="modal fade bd-example-modal-lg" id="tipopartida" tabindex="-1" role="dialog" aria-labelledby="tipopartidaLabel" aria-hidden="true" >
+                     <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                           {% include './tipo_partida.html' %}
+                           {% block tipo_partida %}
+                           {% endblock %}
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim tipo_partida-->
+                  <!-- Inicio motor_acessorios-->
+                  <div class="modal fade" id="motoracessorios" tabindex="-1" role="dialog" aria-labelledby="motoracessoriosLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 700px; margin-top: 115px; ">
+                           <div class="w3-container modal-value">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './motor_acessorios.html' %}
+                              {% block motor_acessorios %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim motor_acessorios-->
+                  <!-- Inicio motor_acessorios-->
+                  <div class="modal fade" id="cadastrobornes" tabindex="-1" role="dialog" aria-labelledby="cadastrobornesLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 710px; hight: 700px;">
+                           <div class="w3-container modal-value">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './CadastroBornesDiagramaInterligacao.html' %}
+                              {% block CadastroBornesDiagramaInterligacao %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim motor_acessorios-->
+                  <!-- Inicio motor acessorios por OS-->
+                  <div class="modal fade" id="acessoriosOS" tabindex="-1" role="dialog" aria-labelledby="subareaLabel" aria-hidden="true" >
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 600px ; margin-left: 42px; margin-top: 125px;" >
+                           <div class="w3-container modal-value">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './AcessOS.html' %}
+                              {% block acessOS %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim motor acessorios por OS-->
+                  <!-- Inicio Função-->
+                  <div class="modal fade" id="funcao" tabindex="-1" role="dialog" aria-labelledby="motoracessoriosLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 700px; margin-top: 115px; ">
+                           {% include './funcao.html' %}
+                           {% block funcao %}
+                           {% endblock %}
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim Função-->
+                  <div class="modal fade" id="impex" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+                     <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content shadow-lg">
+                           <div class="modal-header">
+                              <h5 class="modal-title" id="ModalLabel">Importar/Exportar Função</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                           </div>
+                           <div class="modal-body">
+                              <div class="input-group mb-3">
+                                 <div class="custom-file">
+                                    <label class="custom-file-label" for="file_import_func" id="frase_arquivo_import_func">Selecione um arquivo</label>
+                                    <input type="file" class="custom-file-input" id="file_import_func" onchange="import_export()">
+                                 </div>
+                              </div>
+                              <div id="progress-box-funcao" hidden>
+                                 <div class='progress-wrapper'>
+                                    <div id='progress-bar-xd' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                                 </div>
+                                 <br>
+                                 <div id="progress-bar-message-xd" class="text-center">Aguardando a Inicialização da tarefa ...</div>
+                              </div>
+                           </div>
+                           <div class="col-lg-12" id="row_load_elements" hidden>
+                              <img src="{% static 'dashboards/lesma_skate.gif' %}">
+                              <div id="progress-bar-message" class="w-100 text-center"></div>
+                           </div>
+                           <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="limpaCampo()">Fechar</button>
+                              <button type="button" id="import_func_xd" class="btn btn-primary" onclick="receber_funcao()">Exportar</button>
+                              <form id='import_func' method="get">
+                              </form>
+                              <button type="button" class="btn btn-primary" onclick="enviar_funcao()">Importar</button>
+                              <form id="envia_log" method="post">
+                              </form>
+                              <button type="button" class="subscribe btn btn-success shadow" onclick="click_button_download()">Download Template</button>
+                              <form id='download_file_func' method="get">
+                              </form>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Inicio Função por OS-->
+                  <div class="modal fade" id="funcaoOS" tabindex="-1" role="dialog" aria-labelledby="subareaLabel" aria-hidden="true" >
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 600px ; margin-left: 42px; margin-top: 125px;" >
+                           <div class="w3-container modal-value">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './FuncaoOS.html' %}
+                              {% block funcaoOS %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim Função por OS-->
+                  <!-- Inicio Sinais-->
+                  <div class="modal fade" id="sinais" tabindex="-1" role="dialog" aria-labelledby="motoracessoriosLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 700px; margin-top: 115px; ">
+                           <div class="w3-container modal-value">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './sinais.html' %}
+                              {% block sinais %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim Sinais-->
+                  <!-- Inicio Sinais por OS-->
+                  <div class="modal fade" id="sinaisOS" tabindex="-1" role="dialog" aria-labelledby="subareaLabel" aria-hidden="true" >
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 600px ; margin-left: 42px; margin-top: 125px;" >
+                           <div class="w3-container modal-value">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './sinaisOS.html' %}
+                              {% block sinaisOS %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim Sinais por OS-->
+                  <!-- Inicio Gavetas/Cubiculos-->
+                  <div class="modal fade" id="gav-cub" tabindex="-1" role="dialog" aria-labelledby="painelLabel" aria-hidden="true">
+                     <div class="modal-dialog modal-xl" style="  width: 1250px; margin: auto;" role="document">
+                        <div class="modal-content" id="size-modal">
+                           <div class="w3-container modal-value">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btn-close-gavcubs">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './GavCub.html' %}
+                              {% block GavCub %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim Gavetas/Cubiculos-->
+                  <!--inicio setup-->
+                  <div class="modal hide fade" id="setup" tabindex="-1" role="dialog" aria-labelledby="setupLabel" aria-hidden="true" data-backdrop="static">
+                     <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                           {% include './setup.html' %}
+                           {% block setup %}
+                           {% endblock %}
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim setup-->
+                  <!--inicio isolacao-->
+                  <div class="modal fade" id="isolacao" tabindex="-1" role="dialog" aria-labelledby="isolacaoLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width:600px; margin-top: 115px; margin-left: 45px; ">
+                           <div class="w3-container modal-value">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './isolacao.html' %}
+                              {% block isolacao %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim isolacao-->
+                  <!--inicio formacao-->
+                  <div class="modal fade" id="formacao" tabindex="-1" role="dialog" aria-labelledby="formacaoLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content " style="width:600px;">
+                           {% include './formacao.html' %}
+                           {% block formacao %}
+                           {% endblock %}
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim formacao-->
+                  <!--inicio formacao-->
+                  <div class="modal fade" id="tipos-ligacao" tabindex="-1" role="dialog" aria-labelledby="tipos-ligacaoLabel" aria-hidden="true">
+                     <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                           {% include './TiposLigacao.html' %}
+                           {% block tipos_ligacao %}
+                           {% endblock %}
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim formacao-->
+                  <!--inicio criterios-->
+                  <div class="modal hidden" id="criterios_tag" tabindex="-1" role="dialog" aria-labelledby="criterios_tagLabel" data-backdrop="static">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" id="modal-formacao-content" style="width:600px;">
+                           {% include './criterios_tag.html' %}
+                           {% block criterios_tag %}
+                           {% endblock %}
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim criterios-->
+                  <!--inicio codigos-a1mat-->
+                  <div class="modal fade" id="tipocabo" tabindex="-1" role="dialog" aria-labelledby="tipocaboLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style=" width: 600px;margin-top:150px; margin-left: 80px;" >
+                           <div class="w3-container modal-value" >
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './tipocabo.html' %}
+                              {% block tipocabo %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim codigos-a1mat-->
+                  <!--inicio resumo-->
+                  <div class="modal fade" id="resumo" tabindex="-1" role="dialog" aria-labelledby="resumoLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 1000px; margin-left: -130px;" >
+                           <div class="w3-container modal-value" >
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './resumo.html' %}
+                              {% block resumo %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim resumo-->
+                  <!--inicio contagemcabos-->
+                  <div class="modal fade" id="contagemcabos" tabindex="-1" role="dialog" aria-labelledby="contagemcabosLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 1000px; margin-left: -130px;" >
+                           <div class="w3-container modal-value" >
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './contagemcabos.html' %}
+                              {% block contagemcabos %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim contagemcabos-->
+                  <!--inicio caracteristicaos-->
+                  <div class="modal fade" id="caracteristicaos" role="dialog" aria-labelledby="caracteristicaosLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 500px;  margin-left: 75px; margin-top: 140px;">
+                           <div class="w3-container modal-value" >
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="document.getElementById('cargas').style.display='block'">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                              {% include './caracteristicaos.html' %}
+                              {% block caracteristicaos %}
+                              {% endblock %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim  caracteristicaos-->
+                  <!-- Inicio modal verificação de exclusão cub -->
+                  <div class="modal fade" id="modal-del" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="left: 14%;width: 550px;">
+                           <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel">Verificação</h5>
+                              <button type="button" class="close" onclick="$('#modal-del').modal('hide')" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                           </div>
+                           <div class="modal-body" id="content-modal-del">
+                           </div>
+                           <div class="modal-footer">
+                              <button type="button" class="btn btn-warning" onclick="$('#modal-del').modal('hide')">Cancelar</button>
+                              <button type="button" class="btn btn-danger" onclick="del_cub()">Excluir</button>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim modal verificação de exclusão cub -->
+                  <!-- Inicio modal verificação de exclusão gav -->
+                  <div class="modal fade" id="modal-del-gav" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="left: 14%;width: 550px;">
+                           <div class="modal-header">
+                              <h5 class="modal-title">Verificação</h5>
+                              <button type="button" class="close" onclick="$('#modal-del-gav').modal('hide')" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                           </div>
+                           <div class="modal-body" id="content-modal-del-gav">
+                           </div>
+                           <div class="modal-footer">
+                              <button type="button" class="btn btn-warning" onclick="$('#modal-del-gav').modal('hide')">Cancelar</button>
+                              <button type="button" class="btn btn-danger" onclick="del_gav()">Excluir</button>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Fim modal verificação de exclusão gav -->
+                  <div class="modal fade" id="modal_export_memorial" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="left: 14%;width: 550px;">
+                           <div class="modal-header">
+                              <h5 class="modal-title">Exportação Memorial</h5>
+                              <button type="button" class="close" onclick="$('#modal_export_memorial').modal('hide')" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                           </div>
+                           <div class="modal-footer justify-content-center">
+                              <button type="button" class="btn btn-warning" onclick="$('#bookpdf').modal('show');$('#modal_export_memorial').modal('hide')">Memorial Cálculo PDF</button>
+                              <button type="button" class="btn btn-danger" onclick="MemorialBookExcel(document.getElementById('pro-os').value);$('#modal_export_memorial').modal('hide')">Memorial Cálculo Excel</button>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!------------------ inicio Campo modal duplicata Colaborador ------------------>
+                  <div class="modal fade" id="modal_loading_list_material">
+                     <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bordas">
+                           <div class="modal-header position-relative">
+                              <h4 class="modal-title text-center w-100 text-danger">Atenção</h4>
+                              <button type="button" class="close position-absolute" style="right: 5%" data-dismiss="modal"><span>×</span></button>
+                           </div>
+                           <div class="modal-body">
+                              <div id="progress-box-list-material-plan-corte" class="col-lg-12 d-flex flex-column mt-3 font_size_0_8 mb-3" hidden>
+                                 <div id="load-gif-list-material-plan-corte" style="width: 0%;height: 40px;">
+                                    <img id="gif-progress-list-material-plan-corte" class="float-right" style="height: 40px;" src="{% static 'img/run-sonic.gif' %}" alt="GIF progress-bar">
+                                    <img hidden id="gif-success-list-material-plan-corte" class="float-right" style="height: 40px;" src="{% static 'img/sonic-success.gif' %}" alt="GIF complete-progress-bar">
+                                 </div>
+                                 <div class='progress-wrapper text-center'>
+                                    <div id='progress-bar-list-material-plan-corte' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                                 </div>
+                                 <span id="progress-bar-message-list-material-plan-corte" class="text-center">Aguardando a Inicialização da tarefa ...</span>
+                              </div>
+                              <hr>
+                              <img src="{% static 'img/digitando.gif' %}" alt="digitando" style="width:460px;height:auto;display:block;">
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!------------------ Fim Campo modal duplicata Colaborador ------------------>
+                  <!----------------------------------------- PAINEL_DE_TAREFAS ----------------------------------------->
+                <div role="region" aria-label="Historico da OS" style="display:flex; flex-direction:column; justify-content:flex-start; align-items:stretch; height:275px; width:auto; position:relative; z-index:1; text-align:center;">
+                              {% include './fila-task.html' %}
+                  </div>
+               </div>
+               <div class="row" style="gap:10px;width: 400px; margin-left: 3px;">
+                  <div class="os-glass" role="region" aria-label="Detalhes da OS" style="display: flex; flex-direction: column; justify-content: flex-start;  height:200px; position: relative; z-index: 1;">
+                     <div style="margin-left:85px; display:none; flex-direction:column; gap:4px; align-items:flex-start;">
+                        <h2 class="os-title" style="margin:0;">LIDER</h2>
+                        <div id="pro-os-number" style="font-size:20px; font-weight:600;">&nbsp;</div>
+                     </div>
+                     <div class="kv"  style="display:none  ;margin-left:-37px">
+                        <span class="k"></span><span class="v">SUZANO</span>
+                     </div>
+                     <hr class="os-divider">
+                     <div class="d-flex justify-content-center align-items-center mb-2" style="display:none;margin-top: auto;">
+                        <a class="btn btn-secondary" id="config" aria-label="Configurações" title="Configurações" style="display: none;"
+                           href="/app/eletrica/a1pro/lider-os-config.html/" role="button">
+                        <i class="fa-solid fa-gear" aria-hidden="true" style="display: none;margin-right:6px;"></i>
+                        <span style="display:none;font-family:inherit;font-size:14px;font-weight:600;color:inherit;">Configuração</span>
+                        </a>
+                     </div>
+                  </div>
+                  <!-- A1PRO CONTROL + DEV buttons (hidden) -->
+                  <div hidden>
+                     <a class="btn btn-secondary" onclick="renderPainelDevTests()">DEV_TEST_1</a>
+                     <a class="btn btn-secondary" onclick="renderMaterialsList()">DEV_TEST_2_MATERIALS_LIST</a>
+                     <a class="btn btn-secondary" onclick="renderBornesConfigOs()">DEV_TEST_3_BORNES_CONFIG</a>
+                     <button hidden type="button" class="btn btn-warning" onclick="DebugA1Pro()">Debug A1Pro</button>
+                  </div>
+               </div>
+            </div>
+      </main>
+         <!-- DataTables JS (depends on jQuery already included) -->
+         <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+         <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+         <script src="{% static 'js/a1pro_extracted.js' %}"></script>
+         <script src="{% static 'js/minhas_tasks_loader.js' %}"></script>
+         <script>
+           /* ── transição de entrada ── */
+           (function(){
+             var overlay = document.getElementById('page-enter-overlay');
+             if(!overlay) return;
+             requestAnimationFrame(function(){
+               requestAnimationFrame(function(){
+                 overlay.classList.add('done');
+                 overlay.addEventListener('transitionend', function(){ overlay.remove(); }, { once: true });
+               });
+             });
+           })();
+         </script>
+   </body>
+</html>

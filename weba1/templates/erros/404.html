@@ -1,0 +1,21 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}"/>
+<link href="{% static 'css/error_pages.css' %} " rel="stylesheet" />
+
+<div class="page-404">
+    <div class="outer">
+        <div class="middle" style="position: relative;">
+
+            <div class="inner">
+                <img class="box-shadow" style=" width: 100%; height: 100%;position: absolute;top:50%; left: 50%; transform: translate(-50%, -50%); opacity : 0.7;" src="{% static 'img/erro-500.jpg'%}">
+                <!--BEGIN CONTENT-->
+
+                <div style="position:relative; opacity : 0.85;" class="inner-circle"><div class="fa fa-cogs spinner-grow"></div><span>404</span></div>
+
+                <span style="position:relative;" class="inner-status">Opps! Houve um problema com a requisição!</span>
+                <span style="position:relative;" class="inner-detail">Infelizmente estamos tendo um problema, a sua requisição foi recebida porém não conseguimos processa-la devido á algum erro. Por favor tente novamente ou contate a TI caso o problema persistir!</span>
+                <!--END CONTENT-->
+            </div>
+        </div>
+    </div>
+</div>

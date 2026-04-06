@@ -1,0 +1,19 @@
+{% extends 'english_platform/base.html' %}
+
+{% block title %}Entrar | Emily English Studio{% endblock %}
+
+{% block content %}
+<section class="auth-wrap">
+    <p class="eyebrow">Bem-vindo(a) de volta</p>
+    <h1>Entrar na plataforma</h1>
+    <p>Acesse seu painel para agendar aulas, revisar objetivos e acompanhar seu progresso de speaking.</p>
+
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-primary">Entrar</button>
+    </form>
+
+    <p class="small-link">Nao possui conta? <a href="{% url 'english_platform:register' %}">Criar cadastro</a></p>
+</section>
+{% endblock %}

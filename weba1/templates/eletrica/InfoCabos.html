@@ -1,0 +1,477 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Info Cabos</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<style>
+    .color_a1 {
+        color:#fa5c05;
+    }
+    .bg_customer_gray {
+        background-color: #dce3ea;
+    }
+    .focus {
+        background-color: #f5f5f5;
+    }
+    .cursor {
+        background-color: lightskyblue;
+        color: black !important;
+    }
+
+    .nav-scrollable {
+        overflow-x: auto;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+.nav-tabs {
+    display: inline-flex;
+}
+
+</style>
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+
+        // Fecha popovers ao abrir um novo
+        $('[data-toggle="popover"]').on('show.bs.popover', function () {
+            $('[data-toggle="popover"]').not(this).popover('hide');
+        });
+    })
+</script>
+
+<div class="container mt-5">
+    <!------------------ Cabeçalho da ferramenta Info Cabos ------------------>
+    <div class="row justify-content-center animate__animated animate__backInRight">
+        <div class="col-lg-12 text-center">
+            <h1>Info Cabos</h1>
+        </div>
+        <div class="col-lg-12 text-center text-secondary">
+            <h5>Esta ferramenta é dedicada ao cadastro de cabos e eletrodutos.</h5>
+        </div>
+    </div>
+    <!------------------ Fim do cabeçalho ------------------>
+
+    <!------------------ Início container conteúdo ------------------>
+    <div class="container position-relative mt-3 p-4 bg-white bordas border shadow animate__animated animate__pulse">
+        {% csrf_token %}
+        <div class="card mb-0">
+            <div class="card-header border-bottom-0 fundo_grad_1">
+                <nav class="d-flex">
+                    <a class="border btn btn-light text-primary" href="#nav-tab" data-slide="prev"><i class="fa-solid fa-caret-left"></i></a>
+                    <div class="nav-scrollable">
+                        <div class="nav nav-tabs flex-nowrap" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active border border-bottom-0" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">
+                            <i class="fa-solid fa-arrow-up-right-dots pr-3"></i>Diâmetro externo (mm)
+                        </a>
+                        <a class="nav-item nav-link border border-bottom-0" id="nav-area-tab" data-toggle="tab" href="#nav-area" role="tab" aria-controls="nav-home" aria-selected="true">
+                            <i class="fa-solid fa-up-down-left-right pr-3"></i>Área dos cabos (mm2)
+                        </a>
+                        <a class="nav-item nav-link border border-bottom-0" id="nav-eletroduct-tab" data-toggle="tab" href="#nav-eletroduct" role="tab" aria-controls="nav-home" aria-selected="true">
+                            <i class="fa-solid fa-circle-half-stroke pr-3"></i>Eletroduto
+                        </a>
+                        <a class="nav-item nav-link border border-bottom-0" id="nav-conector-tab" data-toggle="tab" href="#nav-eletroduct" role="tab" aria-controls="nav-home" aria-selected="true">
+                            <i class="fa-solid fa-circle-nodes pr-3"></i>Conectores
+                        </a>
+                        <a class="nav-item nav-link border border-bottom-0" id="nav-bucha-tab" data-toggle="tab" href="#nav-eletroduct" role="tab" aria-controls="nav-home" aria-selected="true">
+                            <i class="fa-solid fa-crosshairs pr-3"></i>Buchas
+                        </a>
+                        <a class="nav-item nav-link border border-bottom-0" id="nav-gramp-tab" data-toggle="tab" href="#nav-eletroduct" role="tab" aria-controls="nav-home" aria-selected="true">
+                            <i class="fa-solid fa-u pr-3"></i>Grampos
+                        </a>
+                        <a class="nav-item nav-link border border-bottom-0" id="nav-flex-tab" data-toggle="tab" href="#nav-eletroduct" role="tab" aria-controls="nav-home" aria-selected="true">
+                            <i class="fa-solid fa-up-right-and-down-left-from-center pr-3"></i>Flexíveis
+                        </a>
+                        <a class="nav-item nav-link border border-bottom-0" id="nav-caix-pass-tab" data-toggle="tab" href="#nav-eletroduct" role="tab" aria-controls="nav-home" aria-selected="true">
+                            <i class="fa-solid fa-cube pr-3"></i>Caixa de Passagem
+                        </a>
+                    </div>
+                    </div>
+                    <a class="border btn btn-light text-primary" href="#nav-tab" data-slide="next"><i class="fa-solid fa-caret-right"></i></a>
+                </nav>
+
+                <div class="tab-content border border-top-0 p-3 bg-white shadow">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <form>
+                            <div class="row justify-content-between mx-0">
+                                <!------------------ Início Options Secao ------------------>
+                                <div class="text-left col-md-12 col-lg-12 mb-3 px-0 d-flex justify-content-around">
+                                    <div class="input-group col-lg-3 mb-0">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fa-solid fa-up-down text-secondary"></i>
+                                            </span>
+                                        </div>
+                                        <select class="form-control border-left-0 input_info_cabos" id="secao_cabo">
+                                            <option value="0" selected>Seção (mm²)</option>
+                                            {% for v in Secao %}
+                                            <option value="{{v}}">{{v}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="input-group col-lg-3 mb-0">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fa-solid fa-arrows-to-dot text-secondary"></i>
+                                            </span>
+                                        </div>
+                                        <select class="form-control border-left-0 input_info_cabos" id="formacao_cabo">
+                                            <option value="0" class="px-2 rounded text-truncate" selected>Formação</option>
+                                            {% for s in Formacao %}
+                                            <option value="{{s}}" class="px-2 rounded text-truncate">{{s}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="input-group col-lg-3 mb-0">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fa-solid fa-pen-to-square text-secondary"></i>
+                                            </span>
+                                        </div>
+                                        <input required="required" type="text" onkeyup="this.value=this.value.replace('.', ',').replace(/[^\d,]/g, '')" inputmode="decimal" step="any" class="form-control border-left-0 input_info_cabos" id="value_input" placeholder="Atualizar valor...">
+                                    </div>
+                                    <div class="d-flex justify-content-center">
+                                        <a href="#" onclick="sendValuesToRegister()" class="mx-2 btn btn-primary rounded-pill"><i class="fa-solid fa-plus pr-2"></i>Cadastrar</a>
+                                    </div>
+                                </div><!------------------ Fim Options Secao ------------------>
+
+                                <!------------------ Início Diametro externo dos cabos ------------------>
+                                <div class="form-group text-left col-md-12 col-lg-12 mb-0">
+                                    <div class="row">
+                                        <table class="text-center table table-bordered table-sm table-hover font_size_0_8" id="table_diam_ext_cabo">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="text-secondary bg-light border-bottom-0" colspan="{{ len_Header }}}">DIÂMETRO EXTERNO DOS CABOS (mm)</th>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col" class="text-secondary align-middle bg-light border-bottom-0" colspan="1" rowspan="2">Formação</th>
+                                                    <th scope="col" class="text-secondary bg-light border-bottom-0" colspan="{{ Df_Diam_Ext_Header|length }}}"  rowspan="1">Seção (mm²)</th>
+                                                </tr>
+                                                <tr>
+                                                    {% for column in Df_Diam_Ext_Header %}
+                                                        <th scope="col" class="text-secondary border-white bg_customer_gray border-bottom-0" rowspan="1">{{ column }}</th>
+                                                    {% endfor %}
+                                                </tr>
+                                              </thead>
+                                            <tbody>
+                                            {% for key, row in Df_Diam_Ext.iterrows %}
+                                                <tr class="border">
+                                                    <td class="text-muted font-weight-bold" scope="row">{{key}}</td>
+                                                    {% for cell in row %}
+                                                    <td class="border text-muted">{{cell}}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        <small class="form-text text-muted">Obs.: Diâmetros extraídos do Catálogo Prysmian, Gsette e Gsette para inversor.</small>
+                                    </div>
+                                </div><!------------------ Fim Diametro externo dos cabos ------------------>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="nav-area" role="tabpanel" aria-labelledby="nav-area-tab">
+                        <form>
+                            <div class="row justify-content-between mx-0">
+                                <!------------------ Início Materiais referente a OS ------------------>
+                                <div class="form-group text-left col-md-12 col-lg-12 mb-0">
+                                    <div class="row">
+                                        <table class="text-center table table-bordered table-sm table-hover font_size_0_8" id="table_area_cabo">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="text-secondary bg-light border-bottom-0" colspan="{{ len_Header }}}">ÁREA DOS CABOS (mm²)</th>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col" class="text-secondary align-middle bg-light border-bottom-0" colspan="1" rowspan="2">Formação</th>
+                                                    <th scope="col" class="text-secondary bg-light border-bottom-0" colspan="{{ Df_Diam_Ext_Header|length }}}"  rowspan="1">Seção (mm²)</th>
+                                                </tr>
+                                                <tr>
+                                                    {% for column in Df_Diam_Ext_Header %}
+                                                        <th scope="col" class="text-secondary border-white bg_customer_gray border-bottom-0" rowspan="1">{{ column }}</th>
+                                                    {% endfor %}
+                                                </tr>
+                                              </thead>
+                                            <tbody>
+                                            {% for key, row in Df_Area_Cabos.iterrows %}
+                                                <tr class="border">
+                                                    <td class="text-muted font-weight-bold" scope="row">{{key}}</td>
+                                                    {% for cell in row %}
+                                                    <td class="border text-muted">{{cell}}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        <small class="form-text text-muted">Obs.: Diâmetros extraídos do Catálogo Prysmian, Gsette e Gsette para inversor.</small>
+                                    </div>
+                                </div><!------------------ Fim Materiais referente a OS ------------------>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="nav-eletroduct" role="tabpanel" aria-labelledby="nav-eletroduct-tab">
+                        <form>
+                            <div class="row justify-content-between mx-0">
+                                <!------------------ Início Options Secao ------------------>
+                                <div class="text-left col-md-12 col-lg-12 mb-3 px-0 d-flex justify-content-around">
+                                    <div class="input-group col-lg-3 mb-0">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fa-solid fa-up-down text-secondary"></i>
+                                            </span>
+                                        </div>
+                                        <select class="form-control border-left-0 input_info_cabos" id="secao_nominal">
+                                            <option value="0" selected>Seção Nominal</option>
+                                            {% for key, value in DiamNomial.items %}
+                                            <option value="{{key}}">{{value}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="input-group col-lg-3 mb-0">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fa-solid fa-circle-half-stroke text-secondary"></i>
+                                            </span>
+                                        </div>
+                                        <input required="required" type="text" onkeyup="this.value=this.value.replace('.', ',').replace(/[^\d,]/g, '')" inputmode="decimal" step="any" class="form-control border-left-0 input_info_cabos" id="value_input_ext" placeholder="Ø EXTERNO">
+                                    </div>
+                                    <div class="input-group col-lg-3 mb-0">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fa-regular fa-circle-dot text-secondary"></i>
+                                            </span>
+                                        </div>
+                                        <input required="required" type="text" onkeyup="this.value=this.value.replace('.', ',').replace(/[^\d,]/g, '')" inputmode="decimal" step="any" class="form-control border-left-0 input_info_cabos" id="value_input_int" placeholder="Ø INTERNO">
+                                    </div>
+                                    <div class="d-flex justify-content-center">
+                                        <a href="#" onclick="sendValuesToRegister()" class="mx-2 btn btn-primary rounded-pill"><i class="fa-solid fa-plus pr-2"></i>Cadastrar</a>
+                                    </div>
+                                </div><!------------------ Fim Options Secao ------------------>
+
+                                <!------------------ Início Materiais referente a OS ------------------>
+                                <div class="form-group text-left col-md-12 col-lg-12 mb-0">
+                                    <div class="row">
+                                        <table class="table table-bordered table-sm table-hover font_size_0_8" id="table_eletro_aco_carb">
+                                            <thead>
+                                                <tr>
+                                                    {% for column in Df_Elet_Aco_Carb.columns %}
+                                                        <th scope="col" class="text-secondary text-center border-white bg_customer_gray border-bottom-0" rowspan="1">{{ column }}</th>
+                                                    {% endfor %}
+                                                </tr>
+                                              </thead>
+                                            <tbody class="">
+                                            {% for key, row in Df_Elet_Aco_Carb.iterrows %}
+                                                <tr class="border" id="table_key_row_{{key}}">
+                                                    {% for cell in row %}
+                                                        <td class="border text-center text-muted">{{cell}}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        <small class="form-text text-muted">Obs.: Diâmetros extraídos do Catálogo Prysmian, Gsette e Gsette para inversor.</small>
+                                    </div>
+                                </div><!------------------ Fim Materiais referente a OS ------------------>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let prevButton = document.querySelector('[data-slide="prev"]');
+        let nextButton = document.querySelector('[data-slide="next"]');
+
+        prevButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            let activeTab = document.querySelector('.nav-tabs .nav-link.active');
+            let previousTab = activeTab.previousElementSibling;
+
+            if (previousTab) {
+                activeTab.classList.remove('active');
+                previousTab.classList.add('active');
+                previousTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+            }
+        });
+
+        nextButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            let activeTab = document.querySelector('.nav-tabs .nav-link.active');
+            let nextTab = activeTab.nextElementSibling;
+
+            if (nextTab) {
+                activeTab.classList.remove('active');
+                nextTab.classList.add('active');
+                nextTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+            }
+        });
+    });
+
+    // --------------------- Alert para notificar usuario ---------------------//
+    function swalAlert(titulo, texto, icone_img, btn){
+        swal({
+            title: titulo,
+            text: texto,
+            icon: icone_img,
+            button: btn,
+        })
+        $('div.swal-modal').addClass('bordas')
+        $('div.swal-title').addClass('h4')
+        $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+        $('div.swal-text').addClass('text-center')
+        $('div.swal-footer').addClass('d-flex justify-content-center')
+    }
+
+    //--------------------- Função ajax para cadastrar novo item ---------------------//
+    function sendValuesToRegister() {
+        let elements = document.querySelectorAll('div.tab-pane.active.show .input_info_cabos');
+        let dict_requet = {}
+        elements.forEach(function(element) {
+            if (element.value !== '' && element.value !== '0') {
+                if (element.tagName === 'INPUT') {
+                    dict_requet[element.id] = element.value
+                } else if (element.tagName === 'SELECT') {
+                    dict_requet[element.id] = element.selectedOptions[0].value
+                }
+            }
+        });
+        if (Object.keys(dict_requet).length === 3){
+            const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+            $.ajax({
+                url: "/app/eletrica/InfoCabos/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrf},
+                dataType: "json",
+                data: {'new_config': JSON.stringify(dict_requet)}, // Envia form pela solicitação do POST
+                success: function (data) {
+                    if ('success' in data['message']) {
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, data['message']['success'], 'success', false)
+                        setTimeout(()=>{swal.close();window.location.reload();}, 2000)
+                    } else {
+                        // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                        swalAlert(false, data['message']['error'], 'error', false)
+                    }
+                },
+                failure: function () {
+                    // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                    swalAlert(false, 'Algo deu errado ao buscar códigos! verifique e tente novamente.', 'error', false)
+                }
+            })
+        } else {
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Preencha todos os campos para continuar!.', 'error', false)
+        }
+    }
+
+    function setupTableFocus() {
+        var table = document.querySelector('div.tab-pane.active.show table');
+        var cells = table.querySelectorAll('td');
+        cells.forEach(function(cell) {
+            cell.addEventListener('click', function() {
+                // Pega o valor da primeira célula da linha
+                var row = cell.closest('tr');
+                var firstCellValue = row.querySelector('td:first-child').textContent;
+
+                // Pega o valor da célula <th> correspondente
+                var columnIndex = Array.prototype.indexOf.call(cell.parentNode.children, cell);
+                if (table.id === 'table_diam_ext_cabo') {
+                    if (columnIndex !== 0) {
+                        var columnHeader = table.querySelector('thead tr:nth-child(3)').querySelector('th:nth-child(' + columnIndex + ')').textContent;
+                    }
+
+                    // Pega o valor da 1° célula e substitui no input
+                    var inputSecao = document.getElementById('secao_cabo');
+                    inputSecao.value = columnHeader;
+
+                    // Pega o valor da 1° coluna e substitui no input
+                    var inputFormacao = document.getElementById('formacao_cabo');
+                    inputFormacao.value = firstCellValue;
+
+                    // Pega o valor da célula e substitui no input com o ID "input_valor"
+                    var cellValue = cell.textContent;
+                    var inputValor = document.getElementById('value_input');
+                    inputValor.value = cellValue;
+
+                    // Adicionar tooltip na célula
+                    cell.dataset.bsToggle = 'tooltip';
+                    cell.dataset.bsPlacement = 'top';
+                    cell.title = 'Input Preenchido';
+                    var tooltip = new bootstrap.Tooltip(cell);
+                    tooltip.show();
+                    setTimeout(()=>{tooltip.dispose()}, 500);
+                } else if (table.id === 'table_eletro_aco_carb') {
+                    var columnHeader2 = table.querySelector('th:nth-child(' + (columnIndex + 1) + ')').textContent;
+
+                    // Verifica se é diferente da área útil
+                    if (!columnHeader2.includes("ÚTIL")) {
+                        // Pega o valor da 1° coluna e substitui no input
+                        var inputNominal = document.getElementById('secao_nominal');
+                        inputNominal.value = cell.parentNode.rowIndex; // insere conforme o index da linha
+
+                        if (columnHeader2.includes("EXTERNO")) {
+                            // Pega o valor da célula e substitui no input
+                            var cellValue2 = cell.textContent;
+                            var inputValor2 = document.getElementById('value_input_ext');
+                            inputValor2.value = cellValue2;
+
+                        } else if (columnHeader2.includes("INTERNO")) {
+                            // Pega o valor da célula e substitui no input
+                            var cellValue3 = cell.textContent;
+                            var inputValor3 = document.getElementById('value_input_int');
+                            inputValor3.value = cellValue3;
+                        }
+
+                        // Adicionar tooltip na célula
+                        cell.dataset.bsToggle = 'tooltip';
+                        cell.dataset.bsPlacement = 'top';
+                        cell.title = 'Input Preenchido';
+                        var tooltip = new bootstrap.Tooltip(cell);
+                        tooltip.show();
+                        setTimeout(()=>{tooltip.dispose()}, 500);
+                    }
+                }
+            });
+            cell.addEventListener('mouseenter', function() {
+                var columnIndex = Array.prototype.indexOf.call(cell.parentNode.children, cell);
+                var cellsInColumn = table.querySelectorAll('td:nth-child(' + (columnIndex + 1) + ')');
+                cellsInColumn.forEach(function(cellInColumn) {
+                    cellInColumn.classList.add('focus');
+                });
+
+                // Adiciona a classe "cursor" à célula central onde está o cursor
+                cell.classList.add('cursor');
+            });
+            cell.addEventListener('mouseleave', function() {
+                table.querySelectorAll('.focus').forEach(function(cellInColumn) {
+                    cellInColumn.classList.remove('focus');
+                });
+
+                // Remover a classe "cursor" de todas as células da tabela
+                cell.classList.remove('cursor');
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        setupTableFocus(); // Chama a função para configurar a tabela inicialmente
+
+        // Observa as alterações na classe das tabs
+        var tabPanes = document.querySelectorAll('.tab-pane');
+        var observer = new MutationObserver(function() {
+            setupTableFocus(); // Chama a função sempre que a classe da tab é alterada
+        });
+
+        tabPanes.forEach(function(tabPane) {
+            observer.observe(tabPane, { attributes: true, attributeFilter: ['class'] });
+        });
+    });
+
+</script>
+
+{% endblock %}

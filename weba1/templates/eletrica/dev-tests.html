@@ -1,0 +1,43 @@
+{% extends '../base_plano.html' %}
+{% load static %}
+{% block head %}
+{% csrf_token %}
+<title>A1Pro | TESTES DEV</title>
+{% endblock %}
+
+{% block main %}
+<script type="text/javascript" src="{% static 'js/eletrica/dev-tests.js' %}"></script>
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+
+<div class="container-fluid h-100">
+    <div class="text-justify m-3">
+        <button class="btn btn-primary btn-warning" onclick="window.history.go(-1)">Voltar</button>
+    </div>
+    <div class="row d-flex justify-content-center mt-2">
+        <h3>TESTES DE DESENVOLVIMENTO</h3>
+    </div>
+</div>
+
+<div class="container-fluid d-flex justify-content-center">
+    <div class="container-fluid d-flex justify-content-center">
+        <div class="bg-white shadow content-gerar-tipicos-doc mt-4 p-4 d-flex justify-content-center align-items-center">
+            <button type="button"
+                    class="btn btn-success rounded-pill px-4"
+                    data-url="{% url 'eletrica:PanelDevTests' %}"
+                    onclick="ajaxTestsMinimalAPI(this)">
+            REQUEST API ASP.NET
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+{% include './ModalLoadCelery.html' %}
+{% endblock %}

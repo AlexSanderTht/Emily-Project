@@ -1,0 +1,39 @@
+{% load static %}
+<div class="modal fade" id="modal_template_convert" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Conversor de Template</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group mb-3">
+            <p class="mb-1">Selecione o arquivo excel preenchido</p>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Arquivo</span>
+                </div>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="file_convert_template" aria-describedby="inputGroupFileAddon01" required onchange="ChangeFileConvertTemplate()">
+                    <label class="custom-file-label" id="label_file_convert_template">Selecione um arquivo</label>
+                    <input hidden type="text" name="NomeDoArquivo" id="name_file_convert_template" required>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div id="progress-bar-ct" class="progress-bar"></div>
+                <div id="progress-bar-message-ct"></div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="subscribe btn btn-info shadow" onclick="ShowModalTable()">Tabela</button>
+          <button type="button" class="btn btn-success" onclick="DownloadTemplateConvert()">Template</button>
+          <button type="button" class="btn btn-primary" onclick="ClearInputFileConvertTemplate()">Limpar</button>
+          <button type="button" class="btn btn-dark" onclick="SendFileConvertTemplate()">Enviar</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>

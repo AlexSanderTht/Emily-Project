@@ -1,0 +1,258 @@
+{% load static %}
+{% block acessOS %}
+<div class="modal-header">
+    <h5 class="modal-title" id="subareaLabel">Motor Acessórios por OS</h5>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div>
+            <div class="col-sm-6" style="float: left;">
+                <div class="form-group mb-5">
+                    <td data-toggle="tooltip" title="Inserir codigo ">Acessórios(Geral)
+                        <div class="divBuscaAcess">
+                            <input type="search" class="txtBuscaAcess" placeholder="Buscar..." id="acess-general-search" title="Pesquise aqui seu Motor Acessório geral" onclick="search_all_acess();clean_forms_funcOS_bs(print_all_acess_in_os, 'acess-general-search', `#select-all-acess`)"/>
+                        </div>
+                        <br>
+                        <select id="select-all-acess" required class="form-control " multiple style="height: 180px; width: 120px;">
+                        </select>
+                    </td>
+                </div>
+            </div>
+
+            <div class="col-sm-6" style="float: right;">
+                <div class="form-group mb-5">
+                    <td data-toggle="tooltip">Acessórios OS
+                        <div class="divBuscaAcess">
+                            <input type="search" class="txtBuscaAcess" placeholder="Buscar..." id="acess-os-search" title="Pesquise aqui seu Motor Acessório por OS" onclick="search_acess_os(); clean_forms_funcOS_bs(print_all_acess_per_os, 'acess-os-search', `#select-all-acess-os`)"/>
+                        </div>
+                      <br>
+                      <select id="select-all-acess-os" required class="form-control " multiple style="height: 180px; width: 120px;" ondragover="changecolor(event,'gray', 'select-all-acess-os')" ondrop="drop_acess(event)" ondragleave="changecolor(event,'white', 'select-all-acess-os')">
+                      </select>
+                    </td>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="col-sm-12" >
+                <div class="form-group mb-5">
+                    <td  for="area-type">
+                        Código
+                        <input type="text" id="acessOS-cdg" class="form-control" readonly>
+                    </td>
+                    <br>
+                    <td  for="area-type">
+                        Descrição
+                        <input type="text" id="acessOS-desc" class="form-control" readonly>
+                    </td>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+    <button type="button" class="btn btn-secondary" style="margin-left:53%; bottom: 11%; position: absolute" id="btn_del_aOS" ondragover="hover_aos(event)" ondragleave="changecolor(event, 'gray', 'btn_del_aOS')" ondrop="drop_aos(event)" title="Arraste a função por OS até aqui para exclui-la." onclick="drop_acess_with_2_clicks()">🗑️</button>
+<script>
+    var acess_for_os = {}
+    var all_acess_for_os = {}
+
+    async function print_all_acess_in_os(){
+        var options_acess='';
+        await $.ajax({
+              type: "GET",
+              url: "AllAcess/",
+              dataType: 'json',
+              success: function (data){
+                  for (i in data){
+                      options_acess += `<option value=${data[i]['tb_acess_id']} onclick="selectAcessInOs(${data[i]['tb_acess_id']}); disable_selects('#select-all-acess-os')" draggable="true" ondragstart="drag_acess(event, ${data[i]['tb_acess_id']})">${data[i]['tb_acess_nome']}</option>`
+                      acess_for_os['Nome'] = data[i]['tb_acess_nome']
+                      acess_for_os['Desc'] = data[i]['tb_acess_desc']
+                      all_acess_for_os[data[i]['tb_acess_id']] = acess_for_os
+                      acess_for_os = {}
+                  }
+                  $('#select-all-acess').html(options_acess)
+
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+        })
+        return options_acess
+    }
+
+    function selectAcessInOs(id){
+        document.getElementById('acessOS-cdg').value = all_acess_for_os[id]['Nome']
+        document.getElementById('acessOS-desc').value = all_acess_for_os[id]['Desc']
+    }
+
+    function print_all_acess_per_os(){
+        var datas_return = {}
+        var all_ids_acs = {}
+        var num_os = document.getElementById('pro-os').value
+        var options_acess_os='';
+        $.ajax({
+              type: "GET",
+              url: "AllAcessOS/" + num_os,
+              dataType: 'json',
+              success: function (data){
+                  for (i in data){
+                      options_acess_os += `<option value="${data[i]['tb_acess_os_id']}" onclick="selectAcessInOs(${data[i]['tb_acess_os_id_acess']}); disable_selects('#select-all-acess')" draggable="true" ondragstart="drag_aos(event, ${data[i]['tb_acess_os_id']})">${all_acess_for_os[data[i]['tb_acess_os_id_acess']]['Nome']}</option>`
+                      all_ids_acs[data[i]['tb_acess_os_id']] = data[i]['tb_acess_os_id_acess']
+                  }
+                  $(`#select-all-acess-os`).html(options_acess_os)
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+        })
+        datas_return['options'] = options_acess_os
+        datas_return['ids_acs'] = all_ids_acs
+        return datas_return
+    }
+
+    function drag_acess(event, id) {
+        event.dataTransfer.setData("id_acess", id)
+    }
+
+    function drop_acess(event){
+        event.preventDefault()
+        const id = event.dataTransfer.getData("id_acess")
+        var num_os = document.getElementById('pro-os').value
+        $.ajax({
+              type: "POST",
+              url: "AllAcessOS/" + num_os,
+              dataType: 'json',
+              data: { 'id': id },
+              success: function (data){
+                  if (data['sucess']){
+                      print_all_acess_per_os()
+                      return alert(data['sucess'])
+                  }
+                  else{
+                      return alert(data['erro'])
+                  }
+              },
+              failure: function(error){
+                  return alert("erro")
+              },
+        })
+        changecolor(event, 'white', 'select-all-acess-os')
+    }
+
+    function drag_aos(event, id) {
+        event.dataTransfer.setData('id_aos', id)
+    }
+
+    function hover_aos(event) {
+        if (event.dataTransfer.getData('id_aos') === ""){
+            document.getElementById('btn_del_aOS').draggable=false
+        }
+        else{
+            changecolor(event, 'white', 'btn_del_aOS')
+        }
+    }
+
+    function drop_aos(event) {
+        event.preventDefault()
+        const id_aos = event.dataTransfer.getData('id_aos')
+        $.ajax({
+              type: "DELETE",
+              url: "ManipulingAcessOS/" + id_aos,
+              dataType: 'json',
+              success: function (data){
+                  if (data['sucess']){
+                      print_all_acess_per_os()
+                      return alert(data['sucess'])
+                  }
+                  else {
+                      return alert(data['erro'])
+                  }
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+        })
+        changecolor(event, 'gray', 'btn_del_aOS')
+
+    }
+
+    function drop_acess_with_2_clicks() {
+        var ids_acs = $('#select-all-acess-os').val();
+        if ($('#select-all-acess').val().length > 0 ){
+            return alert("Motor Acessório não pode ser excluido por aqui")
+        }
+        if (ids_acs.length == 0){
+            return alert("Selecione um Motor Acessório por OS para poder excluir ou arraste a mesma até aqui!!")
+        }
+        ids_acs.forEach(function (id){
+            $.ajax({
+              type: "DELETE",
+              url: "ManipulingAcessOS/" + id,
+              dataType: 'json',
+              success: function (data){
+                  if (data['sucess']){
+                      print_all_acess_per_os()
+                      return alert(data['sucess'])
+                  }
+                  else {
+                      return alert(data['erro'])
+                  }
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+            })
+        })
+    }
+
+    function search_all_acess() {
+        const search = document.getElementById('acess-general-search')
+        search.addEventListener('keydown', function (event) {
+            const key = event.key; // const {key} = event; ES6+
+            if (key === "Enter") {
+                var acs = document.getElementById('acess-general-search').value
+                if (acs.length == 0) {
+                    return $(`#select-all-acess`).html(print_all_acess_in_os())
+                }
+                var options = '';
+                $(`#select-all-acess`).html(options)
+                for (keys in all_acess_for_os) {
+                    var name_caps = all_acess_for_os[keys]['Nome'].toUpperCase()
+                    if (name_caps.includes(acs.toUpperCase())) {
+                        options += `<option value=${keys} onclick="selectAcessInOs(${keys}); disable_selects('#select-all-acess-os')" draggable="true" ondragstart="drag_acess(event, ${keys})">${all_acess_for_os[keys]['Nome']}</option>`
+                    }
+                }
+                $(`#select-all-acess`).html(options)
+            }
+        });
+    }
+
+    function search_acess_os(){
+        var ids_acs = print_all_acess_per_os()['ids_acs']
+        const search = document.getElementById('acess-os-search')
+        search.addEventListener('keydown', function (event) {
+            const key = event.key; // const {key} = event; ES6+
+            if (key === "Enter") {
+                var acsOS = document.getElementById('acess-os-search').value
+                if (acsOS.length == 0) {
+                    return $(`#select-all-acess-os`).html(print_all_acess_per_os())
+                }
+                var options = '';
+                $(`#select-all-acess-os`).html(options)
+                for (keys in ids_acs) {
+                    var name_caps = all_acess_for_os[ids_acs[keys]]['Nome'].toUpperCase()
+                    if (name_caps.includes(acsOS.toUpperCase())) {
+                        options += `<option value=${keys} onclick="selectAcessInOs(${ids_acs[keys]}); disable_selects('#select-all-acess')" draggable="true" ondragstart="drag_aos(event, ${keys})">${all_acess_for_os[ids_acs[keys]]['Nome']}</option>`
+                    }
+                }
+                $(`#select-all-acess-os`).html(options)
+        }
+        })
+    }
+
+    async function OnclickButtonAcessOs(){
+        await print_all_acess_in_os();
+        print_all_acess_per_os()
+    }
+</script>
+{% endblock acessOS %}

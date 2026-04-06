@@ -1,0 +1,96 @@
+{%extends 'geral/base.html'%}
+
+{% load static %}
+
+
+{%block head %}
+<title>Carregar Report 3D</title>
+<script type="text/javascript" src="{% static 'js/a1flx/jq_3.6.0.min.js' %}"></script>
+
+{%endblock%}
+
+{%block main %}
+
+
+<div id="image-box"></div>
+<div class="col-lg-7 mx-auto">
+    <div class="bg-white rounded-lg shadow-sm p-5">
+        <div class="tab-content">
+            <div id="nav-tab-card" class="tab-pane fade show active">
+                <div>
+                    <div class="dochead">
+                        <span class="dhead" style="width:100px">Upload de Modelo de Cálculo</span>
+                    </div>
+                    <br/>
+
+                    <div class="nav-tab-card" style="background-color: #DDDADA">
+                        <div class="docheadFilho">
+                            <span class="dheadFilho">Carregar Arquivo</span>
+                        </div>
+                        <div class="dcontent">
+                            <div id="alert-box">
+
+
+                            </div>
+                            Carregar arquivo de cálculo do Caesar II para o banco de dados
+                            <br/>
+                            </br>
+                            <form id="upload-form" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+
+                                {{form.as_p}}
+
+                                {% if erro %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ erro }}
+                                    <br/>
+                                    <input type="submit" class="subscribe btn btn-warning  rounded-pill shadow-sm"
+                                           name="substituir" value="Sim">
+                                    <input type="submit" class="subscribe btn btn-warning  rounded-pill shadow-sm"
+                                           name="substituir" value="Não">
+                                </div>
+                                {% elif errovinculo %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ errovinculo }}
+                                    <br/>
+                                </div>
+                                {% else %}
+                                <input id="EnviarModelo" type="submit"
+                                       class="subscribe btn btn-warning  rounded-pill shadow-sm" value="Enviar">
+                                {% endif %}
+
+
+                            </form>
+                            </br>
+
+                        </div>
+                        <div id="progress-box" class="not-visible">progress</div>
+                        <div id="cancel-box" class="not-visible">
+                            <button id="cancel-btn" class="btn btn-danger">Cancelar</button>
+                        </div>
+
+
+                        <div class='progress-wrapper'>
+                            <div id='progress-bar' class='progress-bar' style="background-color: #68a9ef; width: 0%;">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div id="progress-bar-message"></div>
+
+                        </br>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+</script>
+<script src="{% static 'js/celery_progress.js' %}"></script>
+<script src="{% static 'js/a1flx/upload_arquivo_mdb.js' %}"></script>
+<link rel="stylesheet" href="{% static " css/a1flx.css" %}"/>
+{%endblock%}

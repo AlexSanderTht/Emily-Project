@@ -1,0 +1,111 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+
+<title>ProjectControlCalcCabos</title>
+{% endblock %}
+
+{% block main %}
+{% csrf_token %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<style>
+    tr:nth-child(even) {
+        background-color: #eff3f8;
+        border-radius: 10px 10px 10px 10px;
+    }
+    tr:nth-child(odd) {
+        background-color: #f6f6f6;
+        border-radius: 10px 10px 10px 10px;
+    }
+    .color_gray {
+        background: #bec3c9;
+        /*background: #949ba3;*/
+    }
+
+</style>
+    <div class="container mt-5">
+
+        <!-- Cabeçalho da ferramenta de calculo de Cabos -->
+        <div class="row justify-content-center animate__animated animate__backInRight">
+            <div class="col-lg-12 text-center">
+                <h1>ProjectControlCalcCabos</h1>
+            </div>
+            <div class="col-lg-12 text-center">
+                <h5>Ambiente para controle de projetos do CalcCabos.</h5>
+            </div>
+        </div>
+
+        <div class="container mt-3 py-3 bg-white  bordas border shadow position-relative animate__animated animate__pulse">
+            <table class="text-center table table-sm" id="TableProjectCalc">
+               <div class="row position-relative">
+                    <div class="col-lg-12 input-group bordas">
+                        <div class="borda_filtros border border-right-0">
+                            <button class="btn" type="button"><i class="fa-solid fa-magnifying-glass text-secondary"></i></button>
+                        </div>
+                         <input type="text" class="border border_left border-left-0" id="inputAddress" placeholder="Pesquisar projeto ..." onkeyup="FilterProjProjectControl(this.value)">
+                    <button type="button" class="ml-2 btn btn-outline-primary rounded-pill" onclick="ShowModalCreateNewProj()"><i class="fa-solid fa-plus"></i> Novo Projeto</button>
+                    </div>
+                </div>
+              <thead>
+                <tr class="d-flex">
+                  <th scope="col" class="bg-light text-secondary col-3 borda_filtros">Criação</th>
+                  <th scope="col" class="bg-light text-secondary col-3">Projeto</th>
+                  <th scope="col" class="bg-light text-secondary col-1">Editar</th>
+                  <th scope="col" class="bg-light text-secondary col-1">Remover</th>
+                  <th scope="col" class="bg-light text-secondary col-1">Copiar</th>
+                  <th scope="col" class="bg-light text-secondary col-1">Colar</th>
+                  <th scope="col" class="bg-light text-secondary col-1">Ocultar</th>
+                  <th scope="col" class="bg-light text-secondary col-1 borda_lateral">Config.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for criacao_proj, id_proj, nome_proj, proj_ocultar in all_projects %}
+                    {% if proj_ocultar == 'SIM' %}
+                        <tr class="d-flex-without-important mb-1" id="{{id_proj}}">
+                              <td class="col-3 border border-white color_gray text-muted">{{criacao_proj}}</td>
+                              <td class="col-3 border border-white text-truncate color_gray search_name_proj text-muted">{{nome_proj}}</td>
+                              <td class="col-1 border border-white color_gray"><i class="fa-regular fa-pen-to-square muda_cursor_hover" onclick="ShowModalEditProj({{id_proj}}, '{{nome_proj}}')"></i></td>
+                              <td class="col-1 border border-white color_gray"><i class="fa-solid fa-trash-can text-secondary"></i></td>
+                              <td class="col-1 border border-white color_gray"><i class="fa-solid fa-clipboard text-secondary"></i></td>
+                              <td class="col-1 border border-white color_gray"><i class="fa-solid fa-paste text-secondary"></i></td>
+                              <td class="col-1 text-center border border-white color_gray">
+                                  <input type="checkbox" id="inlineCheckbox2" value="{{id_proj}}" onchange="OcultarProj({{id_proj}})" name="checkbox_selecao_proj_ocult" checked>
+                              </td>
+                              <td class="col-1 text-center border border-white color_gray">
+                                  <i class="fa-solid fa-gear muda_cursor_hover text-secondary"></i>
+                              </td>
+                        </tr>
+                    {% endif %}
+                    {% if proj_ocultar != 'SIM' %}
+                        <tr class="d-flex-without-important mb-1" id="{{id_proj}}">
+                              <td class="col-3 border border-white">{{criacao_proj}}</td>
+                              <td class="col-3 border border-white text-truncate search_name_proj" title="{{nome_proj}}">{{nome_proj}}</td>
+                              <td class="col-1 border border-white"><i class="fa-regular fa-pen-to-square muda_cursor_hover" onclick="ShowModalEditProj({{id_proj}}, '{{nome_proj}}')"></i></td>
+                              <td class="col-1 border border-white"><i class="fa-regular fa-trash-can muda_cursor_hover text-danger" onclick="DeleteProject({{id_proj}})"></i></td>
+                              <td class="col-1 border border-white">
+                                  <i class="fa-regular fa-clipboard muda_cursor_hover text-secondary" onclick="CopyProj({{id_proj}})"></i>
+                              </td>
+                              <td class="col-1 border border-white">
+                                  <i class="fa-regular fa-paste text-secondary muda_cursor_hover" onclick="PasteProj({{id_proj}})" ></i>
+                              </td>
+                              <td class="col-1 text-center border border-white">
+                                  <input type="checkbox" id="inlineCheckbox2" value="{{id_proj}}" onchange="OcultarProj({{id_proj}})" name="checkbox_selecao_proj_ocult">
+                              </td>
+                              <td class="col-1 text-center border border-white">
+                                  <i class="fa-solid fa-gear muda_cursor_hover text-secondary" onclick="ShowModalConfigProj({{id_proj}})"></i>
+                              </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
+            <input class="form-check-input" type="checkbox" id="transf_datas_proj" hidden>
+        </div>
+    </div>
+{% include "./ConfigCalcBtMt.html" %}
+{% include "./ModalCreateNewProject.html" %}
+{% include "./ModalEditProj.html" %}
+{% include "eletrica/modal_warning.html" %}
+<script src="{% static 'js/calc_cabos/projectcontrol.js' %}"></script>
+<script src="{% static 'js/eletrica/A1Pro/a1pro_ctrl.js' %}"></script>
+{% endblock %}

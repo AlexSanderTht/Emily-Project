@@ -1,0 +1,146 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/documentacao/documentacao.js' %}"></script>
+    <link href="{% static 'js/bootstrap.min.css' %}">
+</head>
+
+<style>
+
+    .tab_cont {
+        width: 50%;
+        display: inline-block;
+        float: left;
+    }
+
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center row p-5">
+    {% csrf_token %}
+    <div class="card mb-4">
+        <div class="card-body  col-lg-8 mx-auto text-center">
+            <h2 class="display-4"><b>Controle de Disciplinas</b></h2>
+        </div>
+        <div class="card-body container mx-auto">
+            <div class="tab_cont p-3">
+                <table class="table table-bordered rounded" id="table">
+                    <thead>
+                    <tr>
+                        <th hidden>ID</th>
+                        <th scope="col">Disciplina PT</th>
+                        <th scope="col">Disciplina EN</th>
+                        <th scope="col">Aprovação</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for id, desc_pt, desc_en, apr in RegistrosDisc %}
+                    <tr>
+                        <td hidden>{{id}}</td>
+                        <td>{{desc_pt}}</td>
+                        <td>{{desc_en}}</td>
+                        <td>{{apr}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class=" tab_cont p-3">
+                <div class="form-row">
+                    <div class="form-group col-md-4" hidden>
+                        <label for="doc_disc_id">ID</label>
+                        <input id="doc_disc_id" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_disc_pt">Disciplina PT</label>
+                        <input id="doc_disc_pt" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_disc_en">Disciplina EN</label>
+                        <input id="doc_disc_en" class="form-control ">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="doc_aprov">Aprovação</label>
+                        <input id="doc_aprov" class="form-control ">
+                    </div>
+                </div>
+                <div>
+                    <button type="button" class="btn butof" onclick="InsertEditDisciplina()">Adicionar\Editar</button>
+                    <button type="button" class="btn btn-primary" onclick="Clear_disciplina()">Limpar</button>
+                    <button type="button" class="btn bg-danger" onclick="DeleteDisciplina()">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+
+<script>
+    const csrf = document.getElementsByName("csrfmiddlewaretoken")
+    $("#table tbody tr").click(function () {
+        $(this).addClass('selected table-primary').siblings().removeClass('selected table-primary');
+        Fill_disciplina($(this).find('td:nth-child(1)').html(), $(this).find('td:nth-child(2)').html(), $(this).find('td:nth-child(3)').html(), $(this).find('td:nth-child(4)').html())
+
+    });
+    function Fill_disciplina(id, desc_pt, desc_en, nome_aprovador){
+        document.getElementById('doc_disc_id').value = id
+        document.getElementById('doc_disc_pt').value = desc_pt
+        document.getElementById('doc_disc_en').value = desc_en
+        document.getElementById('doc_aprov').value = nome_aprovador
+    }
+    function Clear_disciplina(){
+        Fill_disciplina('','','','')
+        $("#table tbody tr").removeClass('selected table-primary')
+    }
+    function InsertEditDisciplina(){
+        let id = document.getElementById('doc_disc_id').value
+        let desc_pt = document.getElementById('doc_disc_pt').value
+        let desc_en = document.getElementById('doc_disc_en').value
+        let nome_aprovador =document.getElementById('doc_aprov').value
+        $.ajax({
+            url: "", // the endpoint
+            type: "POST", // http method
+            dataType: "json",
+            data: {
+                "id": id,
+                "desc_pt": desc_pt,
+                "desc_en": desc_en,
+                "nome_aprovador": nome_aprovador,
+                'csrfmiddlewaretoken': csrf[0].value
+            } // data sent with the post request
+        }).done(function (data){
+                swalAlert_DOC('Inserir Registro', data['data'],'warning', false)
+                Clear_disciplina()
+        });
+        }
+
+    function DeleteDisciplina(){
+        let id = document.getElementById('doc_disc_id').value
+        if(isNaN(parseInt(id))){
+            swalAlert_DOC('Deletar Registro', 'NÃO foi possivel realizar a deleção, necessário selecionar um registro a ser deletado na tabela!','error', false)
+            Clear_disciplina()
+        }else{
+            $.ajax({
+                url: "", // the endpoint
+                type: "DELETE", // http method
+                headers: {'X-CSRFToken': csrf[0].value},
+                dataType: "json",
+                data: {
+                    "id": id,
+                    'csrfmiddlewaretoken': csrf[0].value
+                 } // data sent with the post request
+        }).done(function (data) {
+            swalAlert_DOC('Deletar Registro', data['data'],'warning', 'Fechar')
+            Clear_disciplina()
+        });
+        }
+    }
+</script>
+{% endblock %}

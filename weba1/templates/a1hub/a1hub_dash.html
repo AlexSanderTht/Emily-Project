@@ -1,0 +1,159 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>Acompanhar Workloads</title>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+<link src="{% static 'css/apexcharts.css' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style type="text/css">
+  .sortable li {
+      display: flex;
+      float: left;
+      width: 240px;
+      height: 75px;
+      overflow:hidden;
+      margin:5px;
+      justify-content: left;
+      align-items: center;
+      background: #eeeeee;
+  }
+</style>
+{% endblock %}
+{% block help %}
+<h7>Essa ferramenta permite visualizar as fichas-tempo lançadas pelos seus suboordinados e o comparativo entre esses dados e os workloads definidos nesses períodos</h7>
+<br><br>
+<h7>Botão <strong>"Consultar"</strong>, Realiza consulta ao banco de dados e retorna a relação de horas apontadas pelos subordinados no primeiro gráfico, os workloads no segundo e o comparativo em horas realizadas com as previstas no último gráfico</h7>
+<br><br>
+<h7>Se sentir falta de algum subordinado no gráfico, pode significar que: <br>1. Ele(a) não lançou horas no período selecionado; <br>2. O cadastro não está correto no RH; <br>3. A pessoa em questão não está cadastrada ou não está com o contrato ativo, favor consultar o setor de RH. </h7>
+{% endblock %}
+{% block main %}
+<div class="container" style="max-width: 1540px;padding-right: 100px;padding-left: 100px;">
+  <center> <h1 class="display-4"><b>Visualizar Workload</b></h1></center>
+  <br>
+  <form id="formulario" action="{% url 'a1hub_dash' %}" method="POST" enctype="multipart/form-data" style="border-radius: 25px; box-shadow: rgba(184, 184, 184, 0.705) 0 0 27px 7px;">
+    {% csrf_token %}
+    <div class="card mb-4" style="background: #f5f5f5; alignment: center; border: none">
+      <div class="row">
+        <div class="col" style="alignment: center">
+            <div class="form-group mb-4" style= "align-items: center; text-align: center;">
+              <label for="dia-inicial">Data Inicial:</label><br>
+              <input type="date" id="dia-inicial" name="dia_inicial" style="width: 120px; margin-left: 1px">
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="form-group" style= "align-items: center; text-align: center">
+              <label for="dia-final">Data Final:</label><br>
+              <input type="date" id="dia-final" name="dia_final" style="width: 120px; margin-left: 1px">
+            </div>
+        </div>
+        <br>
+
+        <div class="col">
+          <br>
+          <div class="form-group" style="alignment: center">
+            <center>
+            <button type="submit" style="background-color:#F58C32; color: #ffff; alignment: center" id="bot-anterior" class=" btn ">Consultar</button>
+            </center>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+{% block end %}
+
+
+<script type="text/javascript">
+  let user = {{ usr|safe }};
+  let serie_dt = {{ serie|safe }};
+  let cat_dt = {{ pessoas|safe }};
+  let serie_wl = {{ wl|safe }};
+  let cat_wl = {{ wl_p|safe }};
+  let wl_os = {{ wl_os|safe }};
+  let nomes = {{ rel_nome|safe }};
+  let form = document.getElementById('formulario');
+  let all_col = ['#46f0f0', '#05fa66', '#ffe119', '#74bdcb', '#f58231','#911eb4', '#4afbaa', '#ffa384', '#bcf60c',
+                  '#fa00be', '#008080', '#d2b06e', '#9a6324', '#afaa20', '#0CC', '#e6194b','#3cb44b', '#ff5819',
+                  '#8c7752', '#808080', '#aa82ff', '#FF6699'];
+
+  function form_graph(serie, categ, id_graph, desc, heig) {
+
+    let options = {
+      series: serie,
+      chart: {
+      type: 'bar',
+      height: heig,
+      stacked: true,
+      //stackType: '100%',
+    },
+    plotOptions: {
+      bar: {
+        borderRadius: 8,
+        horizontal: true,
+      },
+    },
+    stroke: {
+      width: 1,
+      colors: ['#fff']
+    },
+    colors: all_col,
+    title: {
+      text: desc,
+      position: 'Center',
+    },
+    xaxis: {
+      categories: categ, // Lista com todas as OS
+      labels: {
+        formatter: function (val) {
+          return val + " Horas"
+        }
+      }
+    },
+    yaxis: {
+      title: {
+        text: undefined
+      },
+    },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+          return val + " Horas"
+        }
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    legend: {
+      position: 'top',
+      horizontalAlign: 'left',
+      offsetX: 40
+    }
+    };
+
+    form.insertAdjacentHTML('afterend', `<div id = ${id_graph}></div>`);
+
+    var chart = new ApexCharts(document.querySelector('#'+id_graph), options);
+    chart.render();
+
+  }
+
+  if (user[0]) { //Se variável de controle de usuário for verdadeira (significa que é gestor)
+    form_graph(serie_dt,cat_dt,"Grafico_ft",'Lançamento de Fichas Tempo da equipe por OS',650); //Gráfico do que foi lançado
+    form_graph(serie_wl,cat_wl,"Grafico_wl",'Workload planejado para a equipe no período selecionado',650); //Gráfico do workload
+
+    for (nome in wl_os) { //VARRE A LISTA DE PESSOAS NO DICIONÁRIO
+      form_graph(wl_os[nome],['Ficha Tempo','Planejado'],`graph_${nomes[nome]}`,`Workload de ${nome}`,180);
+    }
+  } else { //Sabe-se que é um colaborador e não gestor
+    for (nome in wl_os) { //VARRE A LISTA DE PESSOAS NO DICIONÁRIO
+      if (nomes[nome] == user[1]){ //Exibe apenas o item cujo nome é o mesmo do usuário
+        form_graph(wl_os[nome],['Ficha Tempo','Planejado'],`graph_${nomes[nome]}`,`Olá ${nome}, esse é seu workload`,300);
+      }
+    }
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% load static %}
+{% block adc_tipo_eqp %}
+
+<div class="modal fade" id="ModalAdcTipoAli" tabindex="-1" role="dialog" aria-labelledby="TituloModalLongoExemplo" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="TituloModalLongoExemplo">Tipos de Alimentação no Equipamento</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <label for="append-types-ali" class="ml-3">Adicione:</label>
+          <div class="container d-flex justify-content-center">
+            <div class="add-tipos-ali" id="append-types-ali">
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-2">
+          <label for="delete-types-ali" class="ml-3">Exclua:</label>
+          <div class="container d-flex justify-content-center">
+            <div class="add-tipos-ali" id="delete-types-ali">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="$('#ModalAdcTipoAli').modal('hide')">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

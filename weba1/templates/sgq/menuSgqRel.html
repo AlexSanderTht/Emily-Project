@@ -1,0 +1,458 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.min.css' %}"/>
+    <script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.bundle.js' %}"></script>
+    <script src="{% static 'bootstrap-5.3.3-dist/js/bootstrap.js' %}"></script>
+</head>
+
+<style>
+    * {
+        font-family: -apple-system, system-ui, BlinkMacSystemFont;
+    }
+
+    .pageContainer {
+        display: flex;
+        justify-content: space-evenly;
+        width: 100%;
+    }
+
+    .listContainer {
+        width: 100%;
+        max-width: 1400px;
+    }
+
+    .buttonsContainer {
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .userInfo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background-color: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 15px;
+        box-shadow: rgba(128, 128, 128, 0.15) 0 0 15px 1px;
+    }
+
+    .userInfo h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .listRel {
+        box-shadow: rgba(128, 128, 128, 0.2) 0 0 20px 1px;
+        width: 100%;
+        height: 750px;
+        border-radius: 20px;
+        padding: 30px;
+        overflow-y: auto;
+        background-color: #ffffff;
+        transition: all 0.3s ease;
+    }
+
+    .relatoriosPen {
+        box-shadow: rgba(128, 128, 128, 0.2) 0 0 20px 1px;
+        width: 600px;
+        height: 750px;
+        border-radius: 20px;
+        padding: 30px;
+        background-color: #ffffff;
+    }
+
+    button {
+        background-color: #98fcc7;
+        color: black;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: rgba(128, 128, 128, 0.2) 0 0 15px 1px;
+        height: auto;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: rgba(128, 128, 128, 0.3) 0 0 20px 2px;
+    }
+
+    .btn-responder {
+        background-color: #ffcc52;
+    }
+
+    .btn-visualizar {
+        background-color: #64a7ff;
+    }
+
+    input {
+        box-shadow: rgba(128, 128, 128, 0.2) 0 0 15px 1px;
+        border-radius: 10px;
+        border: 1px solid #e0e0e0;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+    }
+
+    input:focus {
+        outline: none;
+        box-shadow: rgba(128, 128, 128, 0.3) 0 0 20px 2px;
+        border-color: #98fcc7;
+    }
+
+    .inputCheck {
+        box-shadow: none;
+        cursor: pointer;
+    }
+
+    .checkDiv {
+        padding: 20px;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    .list-item {
+        box-shadow: rgba(128, 128, 128, 0.15) 0 5px 15px 1px;
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+        background-color: #fafafa;
+    }
+
+    .list-item:hover {
+        transform: translateY(-3px);
+        box-shadow: rgba(128, 128, 128, 0.25) 0 8px 20px 2px;
+    }
+
+    .list-item p {
+        margin-bottom: 8px;
+    }
+
+    .list-item p:last-child {
+        margin-bottom: 0;
+    }
+
+    .options {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .status {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        box-shadow: rgba(128, 128, 128, 0.3) 0 0 7px 2px;
+        transition: all 0.3s ease;
+    }
+
+    .yellow {
+        background-color: #FFD700;
+    }
+
+    .green {
+        background-color: #6dfd6d;
+    }
+
+    .default {
+        background-color: #ff6c6c;
+    }
+
+    .orange {
+        background-color: #FFA500;
+    }
+
+    .tabs-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .tab {
+        padding: 12px 25px;
+        background-color: white;
+        box-shadow: rgba(128, 128, 128, 0.15) 0 5px 15px 1px;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .tab:hover {
+        background-color: #e8fbf2;
+        transform: translateY(-2px);
+    }
+
+    .tab.active {
+        background-color: #98fcc7;
+        font-weight: bold;
+        color: #333;
+        transform: translateY(-3px);
+        box-shadow: rgba(128, 128, 128, 0.25) 0 8px 20px 2px;
+    }
+
+    .pagination {
+        width: 100%;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Título e subtítulos */
+    .report-title {
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: 600;
+        color: #555;
+    }
+
+    /* Estilo para mensagem vazia */
+    .empty-message {
+        text-align: center;
+        padding: 40px;
+        color: #777;
+        background-color: #f9f9f9;
+        border-radius: 15px;
+        margin: 20px 0;
+    }
+
+    /* Scrollbar personalizada */
+    .listRel::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .listRel::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .listRel::-webkit-scrollbar-thumb {
+        background: #98fcc7;
+        border-radius: 10px;
+    }
+
+    .listRel::-webkit-scrollbar-thumb:hover {
+        background: #7ad6a8;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+{% csrf_token %}
+<div class="d-flex justify-content-center row p-4">
+    <div class="pageContainer">
+        <div class="listContainer">
+            <div class="buttonsContainer">
+                <div class="userInfo">
+                    <img src="/static/img/user.png" alt="Logo" style="height: 40px;">
+                    <h5>{{ person }}</h5>
+                </div>
+                <div class="d-flex gap-3 align-items-center">
+                    <input type="text" id="filtrarLista" class="filtrarRel" style="width: 280px;"
+                           placeholder="Filtrar por responsável ou solicitante...">
+                    <button type="button" class="btn-criar" data-bs-toggle="modal" data-bs-target="#solicitacaoModal">
+                        <i class="fas fa-plus-circle me-2"></i> Nova Solicitação
+                    </button>
+                </div>
+            </div>
+
+            <!-- Adicione este modal no final do arquivo, antes do script -->
+            <div class="modal fade" id="solicitacaoModal" tabindex="-1" aria-labelledby="solicitacaoModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="solicitacaoModalLabel">Nova Solicitação</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="solicitacaoForm" method="post" action="{% url 'criar_solicitacao' %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="solicitante" class="form-label">Solicitante</label>
+                                    <select class="form-select" id="solicitante" name="solicitante" required>
+                                        <option value="" selected disabled>Selecione o solicitante</option>
+                                        {% for person in pessoas %}
+                                        <option value="{{ person.tb_per_id }}">{{ person.tb_per_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="responsavel" class="form-label">Responsável</label>
+                                    <select class="form-select" id="responsavel" name="responsavel" required>
+                                        <option value="" selected disabled>Selecione o responsável</option>
+                                        {% for person in pessoas %}
+                                        <option value="{{ person.tb_per_id }}">{{ person.tb_per_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="fato" class="form-label">Fato</label>
+                                    <textarea class="form-control" id="fato" name="fato" rows="4" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="requisito" class="form-label">Requisito</label>
+                                    <select class="form-select" id="requisito" name="requisito" required onchange="toggleOutrosInput(this)">
+                                        <option value="" selected disabled>Selecione o requisito</option>
+                                        {% for req in requisitos %}
+                                        <option value="{{ req.tb_req_id }}">{{ req.tb_req_nome }}</option>
+                                        {% endfor %}
+                                        <option value="Outro">Outro</option> <!-- Nova opção -->
+                                    </select>
+                                    <input type="text"
+                                           id="outrosRequisito"
+                                           name="outrosRequisito"
+                                           class="form-control mt-2"
+                                           placeholder="Especifique o requisito"
+                                           style="display: none;">
+                                </div>
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">
+                                        Cancelar
+                                    </button>
+                                    <button type="submit" class="btn"
+                                            style="background-color: #98fcc7; font-weight: bold;">Criar Solicitação
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="report-title">Relatórios de Não Conformidade</h4>
+
+            <div class="tabs-container">
+                <div class="tab {% if status == 'TODOS' or not status %}active{% endif %}"
+                     onclick="filterStatus('TODOS')">TODOS
+                </div>
+                <div class="tab {% if status == 'PENDENTE' %}active{% endif %}" onclick="filterStatus('PENDENTE')">
+                    PENDENTES
+                </div>
+                <div class="tab {% if status == 'ABERTO' %}active{% endif %}" onclick="filterStatus('ABERTO')">ABERTOS
+                </div>
+                <div class="tab {% if status == 'FECHADO' %}active{% endif %}" onclick="filterStatus('FECHADO')">
+                    FECHADOS
+                </div>
+            </div>
+            <div class="listRel" id="listaRel">
+                {% for item in lista_relatorios %}
+                <div class="list-item" data-status="{{ item.status_class }}" id="list-item-{{ item.rnc_num }}">
+                    <div class="items">
+                        <p><strong>ID da RNC:</strong> {{ item.rnc_num }} / {{ item.rnc_ano }}</p>
+                        <p><strong>Responsável:</strong> {{ item.responsavel }}</p>
+                        <p><strong>Solicitante:</strong> {{ item.solicitante }}</p>
+                    </div>
+                    <div class="options">
+                        {% if item.status == 'ABERTO' %}
+                        <button
+                                onclick="window.location.href='{% url 'relatorio_responsavel' rnc_num=item.rnc_num %}'"
+                                class="btn-responder"
+                        ><i class="fas fa-reply me-1"></i> Responder
+                        </button>
+                        <button onclick="window.location.href='{% url 'relatorio_aberto' rnc_num=item.rnc_num %}'"
+                                class="btn-visualizar">
+                            <i class="fas fa-eye me-1"></i> Visualizar
+                        </button>
+                        {% elif item.status == 'PENDENTE' %}
+                        <button onclick="window.location.href='{% url 'relatorio_pendente' rnc_num=item.rnc_num %}'"
+                                class="btn-visualizar">
+                            <i class="fas fa-eye me-1"></i> Visualizar
+                        </button>
+                        {% else %}
+                        <button onclick="window.location.href='{% url 'relatorio_finalizado' rnc_num=item.rnc_num %}'"
+                                class="btn-visualizar">
+                            <i class="fas fa-eye me-1"></i> Visualizar
+                        </button>
+                        {% endif %}
+                        <div class="status {{ item.status_class }}" title="{{ item.status }}"></div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-message">
+                    <i class="fas fa-file-alt fa-3x mb-3"></i>
+                    <h5>Nenhum relatório encontrado.</h5>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function transferCriar() {
+        window.location.href = '/app/sgq/index/'
+    }
+
+    // Filtrar relatórios pelo status
+    function filterStatus(status) {
+        // Atualiza a URL com o status selecionado
+        window.location.href = `?status=${status}`;
+    }
+
+    // Garante que a aba correta esteja ativa ao carregar a página
+    document.addEventListener('DOMContentLoaded', function () {
+        // Pega o status da URL se existir
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status') || 'TODOS';
+
+        // Atualiza as classes das abas
+        document.querySelectorAll('.tab').forEach(function (tab) {
+            tab.classList.remove('active');
+        });
+
+        const activeTab = document.querySelector(`.tab[onclick="filterStatus('${status}')"]`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+        }
+    });
+
+    // Função para filtrar os relatórios pelo texto digitado
+    function filterReports() {
+        let input = document.getElementById('filtrarLista').value.toLowerCase();
+        let reports = document.querySelectorAll('.list-item');
+
+        reports.forEach(function (report) {
+            let responsavel = report.querySelector('p:nth-child(2)').textContent.toLowerCase();
+            let solicitante = report.querySelector('p:nth-child(3)').textContent.toLowerCase();
+
+            // Verifica se o texto digitado corresponde ao Responsável ou Solicitante
+            if (responsavel.includes(input) || solicitante.includes(input)) {
+                report.style.display = '';  // Exibe o item
+            } else {
+                report.style.display = 'none';  // Oculta o item
+            }
+        });
+    }
+
+    // Adiciona o evento de digitação para filtrar
+    document.getElementById('filtrarLista').addEventListener('input', filterReports);
+
+
+     function toggleOutrosInput(select) {
+        const outrosInput = document.getElementById('outrosRequisito');
+        if (select.value === 'Outro') {
+            outrosInput.style.display = 'block';
+            outrosInput.required = true;
+        } else {
+            outrosInput.style.display = 'none';
+            outrosInput.required = false;
+        }
+    }
+</script>
+{% endblock %}

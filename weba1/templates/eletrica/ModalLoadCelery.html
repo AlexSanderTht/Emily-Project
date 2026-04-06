@@ -1,0 +1,23 @@
+{% load static %}
+<div class="modal fade" id="modal_load_celery" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" >
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+             </button>
+             <div class="d-flex justify-content-center">
+                 <img class="w-75" src="{% static 'img/load_2.gif' %}">
+             </div>
+            <div class="modal-body text-center">
+                <div class="col-12 row">
+                    <div class='progress-wrapper w-100'>
+                        <div id='progress-bar' class='bordas progress-bar progress-bar-striped progress-bar-animated' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                    </div>
+                </div>
+                <div class="col-12 row">
+                    <div id="progress-bar-message"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

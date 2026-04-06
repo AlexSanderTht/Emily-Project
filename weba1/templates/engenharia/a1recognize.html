@@ -1,0 +1,1918 @@
+{% extends 'geral/base.html' %}
+{% load static %}
+{% block head %}
+<title>A1Recognize</title>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{% static 'font_awesome_6_1/css/all.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/cropper.css' %}">
+<link rel="stylesheet" href="{% static 'css/main_crop.css' %}" type="text/css"/>
+
+
+<style>
+    /* Estilos globais */
+body {
+    font-family: 'Open Sans', Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Camada de desfoque */
+.blur-layer {
+    background-image: url({% static 'models/Layout - Piso inferior.jpg' %});
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    filter: blur(3px); /* Ajuste o valor do desfoque conforme necessário */
+}
+
+/* Grid Snap */
+.grid-snap {
+    position: relative;
+    padding: 5px;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 0.6em;
+    touch-action: none;
+    z-index: 10;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.grid-snap:hover,
+.grid-snap:hover span {
+    transform: scale(1.2);
+    background-color: #0a246a !important;
+}
+
+/* Profile Card */
+.profile-card {
+    font-family: 'Open Sans', Arial, sans-serif;
+    position: relative;
+    float: left;
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 0;
+    text-align: center;
+    min-height: 300px;
+    border: none;
+}
+
+.profile-card .background-block {
+    float: left;
+    width: 100%;
+    height: 100px;
+    overflow: hidden;
+}
+
+.profile-card .background-block .background {
+    width: 100%;
+}
+
+.profile-card .card-content {
+    width: 100%;
+    padding-top: 3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    display: flex;
+    color: #232323;
+    float: left;
+    height: 50%;
+    border-radius: 0 0 5px 5px;
+    position: relative;
+    z-index: 9999;
+}
+
+.profile-card .card-content span {
+    font-weight: bold;
+}
+
+.profile-card .profile {
+    border-radius: 50%;
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    opacity: 1;
+    box-shadow: 3px 3px 20px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 1);
+    transform: translate(-50%, 0%);
+    z-index: 99999;
+    transition: transform 0.3s ease, border 0.3s ease;
+}
+
+.profile-card .profile:hover {
+    border: 0;
+}
+
+.profile-card .profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+    transition: transform 0.5s;
+}
+
+.profile-card .profile:hover img {
+    transform: scale(2);
+}
+
+.profile-card h6 {
+    margin: 0 0 5px;
+    font-weight: 600;
+}
+
+.profile-card h6 small {
+    display: block;
+    font-size: 15px;
+}
+
+/* Input Placeholder Custom */
+.input-placeholder-custom,
+.input-placeholder-custom::placeholder {
+    text-align: center;
+}
+
+/* Container Nav */
+#container_nav {
+    margin-top: 15px;
+    margin-left: 15px;
+    width: 60px;
+    font-size: 12px;
+    overflow: hidden;
+    transition: width 0.1s linear;
+    border: 1px solid gray;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+#container_nav.collapsed {
+    width: 330px;
+    opacity: 1;
+}
+
+#container_nav.collapsed #card_text_info {
+    display: none;
+    opacity: 0;
+}
+
+#container_nav.collapsed #card_form {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#card_text_info {
+    margin-top: auto;
+}
+
+.vertical-text {
+    writing-mode: vertical-rl;
+    transform: rotate(270deg);
+    transform-origin: bottom;
+}
+
+/* Card Form */
+#card_form .card .card-statistic .card-icon-large .fas,
+#card_form .card .card-statistic .card-icon-large .far,
+#card_form .card .card-statistic .card-icon-large .fab,
+#card_form .card .card-statistic .card-icon-large .fal {
+    font-size: 110px;
+}
+
+#card_form .card .card-statistic .card-icon {
+    text-align: center;
+    line-height: 50px;
+    margin-left: 15px;
+    color: #000;
+    position: absolute;
+    right: -5px;
+    top: 20px;
+    opacity: 0.1;
+}
+
+#card_form .l-bg-blue {
+    color: #4099ff;
+}
+
+.font-poppins {
+    font-family: 'Poppins', sans-serif;
+}
+
+.filter-gray {
+    filter: brightness(0.94);
+}
+
+/* Info New Card */
+#info_new_card {
+    position: absolute;
+    z-index: 9999;
+    left: 15px;
+    bottom: 15px;
+    height: 75px;
+    width: 150px;
+}
+
+/* Menu Horizontal Card */
+.menu-horizontalCard {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    justify-content: space-between;
+}
+
+.hiddenDiv {
+    display: flex;
+    align-items: center;
+    padding-right: 10px;
+    padding-left: 30px;
+}
+
+.hiddenCard {
+    display: flex;
+    text-align: center;
+    line-height: 90px;
+    justify-content: space-evenly;
+    width: 860px;
+    height: 79px;
+    margin: 0;
+    left: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+.buttonCards {
+    font-size: 10pt;
+    width: 156.95px;
+    height: 48px;
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    border: 1px solid black;
+    padding: 2px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.buttonCards:hover {
+    background-color: #0a246a;
+    color: white;
+}
+
+.btnzin {
+    padding: 7px;
+    text-align: center;
+    height: 35px;
+    font-size: 10pt;
+    background-color: #00a9d4;
+    color: white;
+    font-weight: bold;
+    border: 1px solid deepskyblue;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btnzin:hover {
+    background-color: #008fb3;
+}
+
+</style>
+<!--<link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.min.css">-->
+
+<!--<script src="https://unpkg.com/interactjs/dist/interact.min.js"></script>-->
+
+
+<div class="container mt-5" style="max-width: 2000px">
+    <!------------------ Cabeçalho da ferramenta de gerar tipicos ------------------>
+    <div class="row justify-content-center  animate__animated animate__backInRight">
+        <div class="col-lg-12 text-center">
+            <h1>A1 Layout - Piso: {{piso}} </h1>
+        </div>
+
+    </div>
+    <!------------------ Fim do cabeçalho ------------------>
+
+    <!------------------ Início container conteúdo ------------------>
+    <div class="d-inline-block position-relative mt-3 p-4 bg-white bordas border shadow animate__animated animate__pulse">
+        {% csrf_token %}
+        <div class="card mb-0">
+            <div>
+                <button type="button" class="btn {% if piso == 2 %} btn-secondary {% else %} btn-warning {% endif %} btn-primary col-2" onclick="ChangeNivel('1')">Piso 1</button>
+                <button type="button" class="btn  {% if piso == 1 %} btn-secondary {% else %} btn-warning {% endif %} col-2" onclick="ChangeNivel('2')">Piso 2</button>
+                <button type="button" class="btn btn-warning col-2" onclick="ChangeNivel('3')">Piso 3 (SP)</button>
+                <button type="button" class="btn btn-warning col-2" onclick="ChangeNivel('4')">Piso 4 (SP)</button>
+                <button type="button" class="btnzin" onclick="capturarDiv()">Baixar Layout</button>
+            </div>
+            <div class="card-header border-bottom-0">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist" style="align-items: center">
+                        <a class="nav-item nav-link active" id="nav-position-tab" data-toggle="tab" href="#nav-position" role="tab" aria-controls="nav-position" aria-selected="true"><i class="fa-solid fa-folder-open pr-3"></i>Posicionamento de cards</a>
+                        <a {% if type_acess != 'ADMIN' %} hidden {% endif %} class="nav-item nav-link" id="nav-profile-tab" onclick="this.click();" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false"><i class="fa-solid fa-gear pr-3"></i>Configurações</a>
+                        <div id="card_form" hidden class="nav-menu text-left d-flex flex-column" style=" align-items: center">
+                                    <ul class="nav nav-pills flex-nowrap mb-3" id="painel-level-tab" role="tablist">
+                                        <li hidden class="nav-item">
+                                            <a class="nav-link border active" data-level-plant-a1="1" onclick="updateImageAndCardPositions('1')" data-toggle="pill" href="#" role="tab" aria-selected="true">
+                                                <i class="fa-solid fa-layer-group fa-md pr-2"></i>Nível 01</a>
+                                        </li>
+                                        <li hidden class="nav-item ml-1">
+                                            <a class="nav-link border" data-level-plant-a1="2" onclick="updateImageAndCardPositions('2')" data-toggle="pill" href="#" role="tab" aria-selected="false">
+                                                <i class="fa-solid fa-layer-group fa-md pr-2"></i>Nível 02</a>
+                                        </li>
+                                    </ul>
+
+                            {% if type_acess == 'GESTOR' or type_acess == 'OPERACIONAL' %}
+
+                            <!---------- Hidden de Estatísticas de Registros ------------>
+                                                <div class="hiddenDiv">
+                                                    <button id="toggleButton" class="buttonCards">Estatisticas de Registros</button>
+                                                    <div id="statsMenu" class="menu-horizontalCard hidden" style="height: 79px">
+                                                        <div class="d-flex tab-content hiddenCard" >
+                                                           <div class=" card border-info mb-2"  style="width: 200px; height: 79px">
+                                                               <div class="card-statistic px-3 py-1">
+                                                                   <div class="my-1 text-info">
+                                                                       <h6 class="card-title mb-0">Preenchido</h6>
+                                                                   </div>
+                                                                   <div class="row align-items-center mb-2 d-flex">
+                                                                            <div class="col-8">
+                                                                                <h5 id="card_statistic_preenchido" class="d-flex align-items-center mb-0">{{ total_preenchido }}</h5>
+                                                                            </div>
+                                                                            <div class=" d-flex col-4 text-right">
+                                                                                <span id="card_statistic_percent_preenchido" style="line-height: 0">{{ percent_preenchido }}%</span>
+                                                                            </div>
+                                                                   </div>
+                                                                   <div class="progress my-1" data-height="8" style="height: 8px;">
+                                                                            <div id="progress_preenchido" class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ int_preenchido }}%;"></div>
+                                                                   </div>
+                                                               </div>
+                                                           </div>
+                                                                <div class="card border-danger mb-2" style="width: 200px; height: 79px">
+                                                                    <div class="card-statistic px-3 py-1">
+                                                                        <div class="my-1 l-bg-pink">
+                                                                            <h6 class="card-title mb-0">Não preenchidos</h6>
+                                                                        </div>
+                                                                        <div class="row align-items-center mb-2 d-flex">
+                                                                            <div class="col-8">
+                                                                                <h5 id="card_statistic_sem_preencher" class="d-flex align-items-center mb-0">{{ total_sem_preencher }}</h5>
+                                                                            </div>
+                                                                            <div class="d-flex col-4 text-right">
+                                                                                <span id="card_statistic_percent_sem_preencher" style="line-height: 0">{{ percent_sem_preencher }}%</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="progress my-1" data-height="8" style="height: 8px;">
+                                                                            <div id="progress_sem_preencher" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ int_sem_preencher }}%;"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="card border-info mb-2" style="width: 200px; height: 79px">
+                                                                    <div class="card-statistic px-3 py-1">
+                                                                        <div class="my-1 text-info">
+                                                                            <h6 class="card-title mb-0">Reservado</h6>
+                                                                        </div>
+                                                                        <div class="row align-items-center mb-2 d-flex">
+                                                                            <div class="col-8">
+                                                                                <h5 id="card_statistic_reservado" class="d-flex align-items-center mb-0">{{ total_reservado }}</h5>
+                                                                            </div>
+                                                                            <div class="d-flex col-4 text-right">
+                                                                                <span id="card_statistic_percent_reservado" style="line-height: 0">{{ percent_reservado }}%</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="progress my-1" data-height="8" style="height: 8px;">
+                                                                            <div id="progress_reservado" class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ int_reservado }}%;"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="card border-info mb-2" style="width: 200px; height: 79px">
+                                                                    <div class="card-statistic px-3 py-1">
+                                                                        <div class="my-1 text-info">
+                                                                            <h6 class="card-title mb-0">Terceiro</h6>
+                                                                        </div>
+                                                                        <div class="row align-items-center mb-2 d-flex">
+                                                                            <div class="col-8">
+                                                                                <h5 id="card_statistic_terceiros" class="d-flex align-items-center mb-0">{{ total_terceiro }}</h5>
+                                                                            </div>
+                                                                            <div class="d-flex col-4 text-right">
+                                                                                <span id="card_statistic_percent_terceiros" style="line-height: 0">{{ percent_terceiro }}%</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="progress my-1" data-height="8" style="height: 8px;">
+                                                                            <div id="progress_terceiro" class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ int_terceiro }}%;"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                    </div>
+                                    <!--------- Fim do Hidden ----------->
+
+                            {% endif %}
+
+                        {% if type_acess == 'ADMIN'  %}
+                                    <!---------- Hidden de Estatísticas de Registros ------------>
+                                                <div class="hiddenDiv">
+                                                    <button id="toggleButton" class="buttonCards">Estatisticas de Registros</button>
+                                                    <div id="statsMenu" class="menu-horizontalCard hidden" style="height: 79px">
+                                                        <div class="d-flex tab-content hiddenCard" >
+                                                           <div class=" card border-info mb-2"  style="width: 200px; height: 79px">
+                                                               <div class="card-statistic px-3 py-1">
+                                                                   <div class="my-1 text-info">
+                                                                       <h6 class="card-title mb-0">Preenchido</h6>
+                                                                   </div>
+                                                                   <div class="row align-items-center mb-2 d-flex">
+                                                                            <div class="col-8">
+                                                                                <h5 id="card_statistic_preenchido" class="d-flex align-items-center mb-0">{{ total_preenchido }}</h5>
+                                                                            </div>
+                                                                            <div class=" d-flex col-4 text-right">
+                                                                                <span id="card_statistic_percent_preenchido" style="line-height: 0">{{ percent_preenchido }}%</span>
+                                                                            </div>
+                                                                   </div>
+                                                                   <div class="progress my-1" data-height="8" style="height: 8px;">
+                                                                            <div id="progress_preenchido" class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ int_preenchido }}%;"></div>
+                                                                   </div>
+                                                               </div>
+                                                           </div>
+                                                                <div class="card border-danger mb-2" style="width: 200px; height: 79px">
+                                                                    <div class="card-statistic px-3 py-1">
+                                                                        <div class="my-1 l-bg-pink">
+                                                                            <h6 class="card-title mb-0">Não preenchidos</h6>
+                                                                        </div>
+                                                                        <div class="row align-items-center mb-2 d-flex">
+                                                                            <div class="col-8">
+                                                                                <h5 id="card_statistic_sem_preencher" class="d-flex align-items-center mb-0">{{ total_sem_preencher }}</h5>
+                                                                            </div>
+                                                                            <div class="d-flex col-4 text-right">
+                                                                                <span id="card_statistic_percent_sem_preencher" style="line-height: 0">{{ percent_sem_preencher }}%</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="progress my-1" data-height="8" style="height: 8px;">
+                                                                            <div id="progress_sem_preencher" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ int_sem_preencher }}%;"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="card border-info mb-2" style="width: 200px; height: 79px">
+                                                                    <div class="card-statistic px-3 py-1">
+                                                                        <div class="my-1 text-info">
+                                                                            <h6 class="card-title mb-0">Reservado</h6>
+                                                                        </div>
+                                                                        <div class="row align-items-center mb-2 d-flex">
+                                                                            <div class="col-8">
+                                                                                <h5 id="card_statistic_reservado" class="d-flex align-items-center mb-0">{{ total_reservado }}</h5>
+                                                                            </div>
+                                                                            <div class="d-flex col-4 text-right">
+                                                                                <span id="card_statistic_percent_reservado" style="line-height: 0">{{ percent_reservado }}%</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="progress my-1" data-height="8" style="height: 8px;">
+                                                                            <div id="progress_reservado" class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ int_reservado }}%;"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="card border-info mb-2" style="width: 200px; height: 79px">
+                                                                    <div class="card-statistic px-3 py-1">
+                                                                        <div class="my-1 text-info">
+                                                                            <h6 class="card-title mb-0">Terceiro</h6>
+                                                                        </div>
+                                                                        <div class="row align-items-center mb-2 d-flex">
+                                                                            <div class="col-8">
+                                                                                <h5 id="card_statistic_terceiros" class="d-flex align-items-center mb-0">{{ total_terceiro }}</h5>
+                                                                            </div>
+                                                                            <div class="d-flex col-4 text-right">
+                                                                                <span id="card_statistic_percent_terceiros" style="line-height: 0">{{ percent_terceiro }}%</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="progress my-1" data-height="8" style="height: 8px;">
+                                                                            <div id="progress_terceiro" class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ int_terceiro }}%;"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                    </div>
+                                    <!--------- Fim do Hidden ----------->
+
+                                    <button type="button" style="height: 40px" class="btn btn-primary rounded-pill mt-2 mr-2" onclick="createDraggableElement()">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                    <div id="input_new_card_px">
+                                        <div class="input-group input-group-sm pb-1">
+                                            <span class="input-group-prepend">
+                                                <label class="input-group-text" for="labelNewCardX">X</label>
+                                            </span>
+                                            <input readonly type="text" class="form-control bg-white" id="labelNewCardX" placeholder="x">
+                                        </div>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-prepend">
+                                                <label class="input-group-text" for="labelNewCardY">Y</label>
+                                            </span>
+                                            <input readonly type="text" class="form-control bg-white" id="labelNewCardY" placeholder="y">
+                                        </div>
+                                    </div>
+                            {% endif %}
+                    </div>
+                </nav>
+                <div class="tab-content border border-top-0 p-3 bg-white shadow">
+                    <div class="tab-pane fade show active" id="nav-position" role="tabpanel" aria-labelledby="nav-position-tab">
+                        <div id="toll_view_user" class="row position-absolute w-25" style="z-index: 1000; right: 2rem; top: 4.5rem;">
+                            <div class="container row justify-content-center animate__animated animate__pulse">
+                                <div class="col-sm-12 bordas font_size_0_8 p-0">
+                                    <div id="card_new_user"  data-id-number-loc="" hidden class="card bordas profile-card shadow animate__animated">
+                                        <button onclick="this.parentNode.hidden=true" title="Ocultar"
+                                                class="btn btn-outline-info text-light rounded-pill px-2 border-0 position-absolute" type="button"
+                                                style="right: 0px; top: 5px; z-index: 1;">
+                                            <i class="fa-regular fa-circle-xmark fa-xl"></i>
+                                        </button>
+                                            <button onclick="deleteElementOfPlant(this.parentNode.dataset.idNumberLoc, 'remove')" title="Desassociar"
+                                                    class="btn btn-outline-info text-light rounded-pill px-2 border-0 position-absolute" type="button"
+                                                    style="right: 40px; top: 5px; z-index: 1;">
+                                                <i class="fa-solid fa-ban fa-xl"></i>
+                                            </button>
+
+                                            <button {% if type_acess != 'ADMIN' %} hidden {% endif %} onclick="deleteElementOfPlant(this.parentNode.dataset.idNumberLoc, 'delete')" title="Deletar"
+                                                    class="btn btn-outline-danger text-light rounded-pill px-2 border-0 position-absolute" type="button"
+                                                    style="right: 80px; top: 5px; z-index: 1;">
+                                                <i class="fa-regular  fa fa-snowflake-o  fa-xl"></i>
+                                            </button>
+                                        <div class="background-block">
+                                            <img src="{% static 'img/Espaço Inovação.jpg' %}" alt="profile-sample1" class="background"/>
+                                        </div>
+                                        <div class="profile-thumb-block">
+                                            <label class="profile">
+                                                <img onclick="selectImage('fileInputImageNewUser')" src="{% static 'img/user_2.png' %}" alt="profile-image" id="img_new_profile"/>
+                                            </label>
+                                            <input type="file" id="fileInputImageNewUser" style="display: none" accept="image/*" onchange="handleImageChange('fileInputImageNewUser', 'img_new_profile')"/>
+                                        </div>
+
+                                        <div class="card-content flex-column">
+                                            <select data-filter-ctrl="Colaborador" id="select_reservado_terceiro" class="form-control border-0 bg-transparent text-center font-weight-bold" onchange="ChangeClassBG(this)">
+                                                <option value="0" selected>RESERVA/TERCEIRO</option>
+                                                <option class="bg-warning" value="RESERVADO">RESERVADO</option>
+                                                <option class="bg-success" value="TERCEIRO">TERCEIRO</option>
+                                            </select>
+                                            <select data-filter-ctrl="Colaborador" id="select_new_user" class="form-control border-0 bg-transparent text-center font-weight-bold" onclick="selectLdapUser(this.selectedOptions[0])" onchange="selectLdapUser(this.selectedOptions[0])">
+                                                <option value="---" selected>Selecione o colaborador</option>
+                                                {% for us in users %}
+                                                <option value="{{us.tb_per_id_cg}}" data-ldap="{{us.tb_per_id_ldap}}">{{us.tb_per_name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input data-filter-ctrl="Usuário" id="input_new_user_ldap" type="text" onkeyup="this.value=this.value.toLowerCase()" class="form-control pt-0 input-placeholder-custom bg-transparent border-0" placeholder="Usuário">
+                                            <input data-filter-ctrl="Máquina" id="input_machine_new_user" type="text" onkeyup="this.value=this.value.toUpperCase()" class="form-control input-placeholder-custom bg-transparent border-0" placeholder="Máquina">
+                                            <div class="mx-auto pl-2 border border-warning rounded-pill text-warning d-flex align-items-center">
+                                                <i class="fa-solid fa-desktop"></i>
+                                                <select id="select_status_new_user" onchange="toggleClassStatus(this, this.value)" class="shadow-none form-control form-control-sm font-weight-bold py-0 rounded-pill border-0 bg-transparent text-warning" style="height: calc(1rem + 2px)">
+                                                    <option value="PRESENTE" selected>Presente</option>
+                                                    <option value="HOME-OFFICE">Home-office</option>
+                                                </select>
+                                            </div>
+                                            <button onclick="saveOrUpdateStatusCard()" type="button" class="btn btn-dark rounded-pill my-3">
+                                                <i class="fa-solid fa-circle-check pr-2"></i>Adicionar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="position-relative" id="locals_elements">
+                            {% if piso == 1 %}
+                            <img id="view_plant_a1" class="filter-gray" src="{% static 'models/1.png' %}" style="width: 100%;height: auto;" alt="Card image cap">
+                            {% elif piso == 2 %}
+                            <img id="view_plant_a1" class="filter-gray" src="{% static 'models/2.png' %}" style="width: 100%;height: auto;" alt="Card image cap">
+                            {% elif piso == 3 %}
+                            <img id="view_plant_a1" class="filter-gray" src="{% static 'models/3.png' %}" style="width: 100%;height: auto;" alt="Card image cap">
+                            {% else %}
+                            <img id="view_plant_a1" class="filter-gray" src="{% static 'models/4.png' %}" style="width: 100%;height: auto;" alt="Card image cap">
+                            {% endif %}
+                            {% for loc in locais %}
+
+                                {% if type_acess == 'ADMIN' %}
+                                    {% if loc.tb_local_map_type == 'new' %}
+                                        <div data-size-card-user="{{ loc.tb_local_map_pos_x}};{{ loc.tb_local_map_pos_y }};{{loc.tb_local_map_main_width}};{{loc.tb_local_map_main_height}}"
+                                             style="width: {{ loc.tb_local_map_width}}px; height: {{ loc.tb_local_map_height }}px;"
+                                             class="position-absolute bg-light text-primary border border-primary d-flex justify-content-center align-items-center grid-snap _hoverPlus"
+                                             title="Vazio"
+                                            onclick="toggleCardUser({{ loc.tb_local_map_count}});ChageReservaTerceiro('NA')">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                        </div>
+
+                                    {% elif loc.tb_local_map_type == 'reservado' %}
+                                        <div data-size-card-user="{{ loc.tb_local_map_pos_x}};{{ loc.tb_local_map_pos_y }};{{loc.tb_local_map_main_width}};{{loc.tb_local_map_main_height}}"
+                                             style="width:  {{ loc.tb_local_map_width}}px; height: {{ loc.tb_local_map_height }}px;"
+                                             class="position-absolute bg-warning text-primary border border-primary d-flex justify-content-center align-items-center grid-snap"
+                                             title="Reservado"
+                                             onclick="toggleCardUser({{ loc.tb_local_map_count}}); ChageReservaTerceiro('RESERVADO')">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                        </div>
+                                    {% elif loc.tb_local_map_type == 'terceiro' %}
+                                        <div data-size-card-user="{{ loc.tb_local_map_pos_x}};{{ loc.tb_local_map_pos_y }};{{loc.tb_local_map_main_width}};{{loc.tb_local_map_main_height}}"
+                                             style="width:  {{ loc.tb_local_map_width}}px; height: {{ loc.tb_local_map_height }}px;"
+                                             class="position-absolute bg-success text-primary border border-primary d-flex justify-content-center align-items-center grid-snap"
+                                             title="Terceiro"
+                                             onclick="toggleCardUser({{ loc.tb_local_map_count}});ChageReservaTerceiro('TERCEIRO')">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                        </div>
+                                    {% else %}
+                                        <div data-size-card-user="{{ loc.tb_local_map_pos_x}};{{ loc.tb_local_map_pos_y }};{{loc.tb_local_map_main_width}};{{loc.tb_local_map_main_height}}"
+                                             style="width:  {{ loc.tb_local_map_width}}px; height: {{ loc.tb_local_map_height }}px;"
+                                             class="position-absolute bg-primary border border-light text-light d-flex justify-content-center align-items-center grid-snap"
+                                             title="{{ loc.tb_local_map_user_ldap}}"
+                                             onclick="toggleCardUser({{ loc.tb_local_map_count}});ChageReservaTerceiro('NA')">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                            <span class="position-absolute bg-primary border border-light px-2 rounded-pill" style="top: -15px">{{ loc.last_name }}</span>
+                                            <span class="position-absolute bg-primary border border-light px-2 rounded-pill" style="top: -30px">{{ loc.first_name }}</span>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if type_acess == 'GESTOR' or type_acess == 'OPERACIONAL' %}
+                                    {% if loc.tb_local_map_type == 'new' %}
+                                        <div data-size-card-user="{{ loc.tb_local_map_pos_x}};{{ loc.tb_local_map_pos_y }};{{loc.tb_local_map_main_width}};{{loc.tb_local_map_main_height}}"
+                                             style="width: {{ loc.tb_local_map_width}}px; height: {{ loc.tb_local_map_height }}px;"
+                                             class="position-absolute bg-light text-primary border border-primary d-flex justify-content-center align-items-center grid-snap _hoverPlus"
+                                             title="Vazio"
+                                            onclick="toggleCardUser({{ loc.tb_local_map_count}});ChageReservaTerceiro('NA')">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                        </div>
+
+                                    {% elif loc.tb_local_map_type == 'reservado' %}
+                                        <div data-size-card-user="{{ loc.tb_local_map_pos_x}};{{ loc.tb_local_map_pos_y }};{{loc.tb_local_map_main_width}};{{loc.tb_local_map_main_height}}"
+                                             style="width:  {{ loc.tb_local_map_width}}px; height: {{ loc.tb_local_map_height }}px;"
+                                             class="position-absolute bg-warning text-primary border border-primary d-flex justify-content-center align-items-center grid-snap"
+                                             title="Reservado"
+                                             onclick="toggleCardUser({{ loc.tb_local_map_count}}); ChageReservaTerceiro('RESERVADO')">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                        </div>
+                                    {% elif loc.tb_local_map_type == 'terceiro' %}
+                                        <div data-size-card-user="{{ loc.tb_local_map_pos_x}};{{ loc.tb_local_map_pos_y }};{{loc.tb_local_map_main_width}};{{loc.tb_local_map_main_height}}"
+                                             style="width:  {{ loc.tb_local_map_width}}px; height: {{ loc.tb_local_map_height }}px;"
+                                             class="position-absolute bg-success text-primary border border-primary d-flex justify-content-center align-items-center grid-snap"
+                                             title="Terceiro"
+                                             onclick="toggleCardUser({{ loc.tb_local_map_count}});ChageReservaTerceiro('TERCEIRO')">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                        </div>
+                                    {% else %}
+                                        <div data-size-card-user="{{ loc.tb_local_map_pos_x}};{{ loc.tb_local_map_pos_y }};{{loc.tb_local_map_main_width}};{{loc.tb_local_map_main_height}}"
+                                             style="width:  {{ loc.tb_local_map_width}}px; height: {{ loc.tb_local_map_height }}px;"
+                                             class="position-absolute bg-primary border border-light text-light d-flex justify-content-center align-items-center grid-snap"
+                                             title="{{ loc.tb_local_map_user_ldap}}"
+                                             onclick="toggleCardUser({{ loc.tb_local_map_count}});ChageReservaTerceiro('NA')">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                            <span class="position-absolute bg-primary border border-light px-2 rounded-pill" style="top: -15px">{{ loc.last_name }}</span>
+                                            <span class="position-absolute bg-primary border border-light px-2 rounded-pill" style="top: -30px">{{ loc.first_name }}</span>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if type_acess == 'GUEST' %}
+                                    {% if loc.tb_local_map_type == 'new' %}
+                                        <div data-size-card-user="{{ loc.tb_local_map_pos_x}};{{ loc.tb_local_map_pos_y }};{{loc.tb_local_map_main_width}};{{loc.tb_local_map_main_height}}"
+                                             style="width: {{ loc.tb_local_map_width}}px; height: {{ loc.tb_local_map_height }}px;"
+                                             class="position-absolute bg-light text-primary border border-primary d-flex justify-content-center align-items-center grid-snap _hoverPlus"
+                                             title="Vazio">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                        </div>
+
+                                    {% elif loc.tb_local_map_type == 'reservado' %}
+                                        <div data-size-card-user="{{ loc.tb_local_map_pos_x}};{{ loc.tb_local_map_pos_y }};{{loc.tb_local_map_main_width}};{{loc.tb_local_map_main_height}}"
+                                             style="width:  {{ loc.tb_local_map_width}}px; height: {{ loc.tb_local_map_height }}px;"
+                                             class="position-absolute bg-warning text-primary border border-primary d-flex justify-content-center align-items-center grid-snap"
+                                             title="Reservado"
+                                             onclick="ChageReservaTerceiro('RESERVADO')">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                        </div>
+                                    {% elif loc.tb_local_map_type == 'terceiro' %}
+                                        <div data-size-card-user="{{ loc.tb_local_map_pos_x}};{{ loc.tb_local_map_pos_y }};{{loc.tb_local_map_main_width}};{{loc.tb_local_map_main_height}}"
+                                             style="width:  {{ loc.tb_local_map_width}}px; height: {{ loc.tb_local_map_height }}px;"
+                                             class="position-absolute bg-success text-primary border border-primary d-flex justify-content-center align-items-center grid-snap"
+                                             title="Terceiro"
+                                             onclick="ChageReservaTerceiro('TERCEIRO')">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                        </div>
+                                    {% else %}
+                                        <div data-size-card-user="{{ loc.tb_local_map_pos_x}};{{ loc.tb_local_map_pos_y }};{{loc.tb_local_map_main_width}};{{loc.tb_local_map_main_height}}"
+                                             style="width:  {{ loc.tb_local_map_width}}px; height: {{ loc.tb_local_map_height }}px;"
+                                             class="position-absolute bg-primary border border-light text-light d-flex justify-content-center align-items-center grid-snap"
+                                             title="{{ loc.tb_local_map_user_ldap}}"
+                                             onclick="ChageReservaTerceiro('NA')">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                            <span class="position-absolute bg-primary border border-light px-2 rounded-pill" style="top: -15px">{{ loc.last_name }}</span>
+                                            <span class="position-absolute bg-primary border border-light px-2 rounded-pill" style="top: -30px">{{ loc.first_name }}</span>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="tab-pane fade " id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <form>
+                            <div id="toll_drop_card" class="row position-absolute w-25" style="z-index: 1000; right: 2rem; top: 4.5rem;">
+                                <div class="container row justify-content-center animate__animated animate__pulse">
+                                    <div class="col-sm-12 bordas font_size_0_8 py-3 bg-white border shadow">
+                                        <!------------------ Inicio Dropzone ------------------>
+                                        <div class="col-lg-12" id="form">
+                                            {% csrf_token %}
+                                            <div class="form-row mb-3">
+                                                <!------------------ Inicio Dropzone TXT ------------------>
+                                                <div class="col-sm-12 col-md-12 col-lg-12 card_dropzone_blue bg-transparent row align-items-center py-3 ml-0 px-0" id="drop-plant">
+                                                    <div class="text-center w-100 my-3" id="crop_selected" style="z-index: 1000;">
+                                                        <!------------------ Inicio Message ------------------>
+                                                        <span class="font-italic text-black font-weight-bold">Selecione e recorte </span><br>
+                                                        <span class="font-italic text-black font-weight-bold">a imagem correspondente.</span><br>
+                                                        <!------------------ Fim Message ------------------>
+                                                        {% for img in img_save %}
+                                                            <div class="bordas d-inline-block bg-white border w-auto shadow animate__animated animate__zoomInDown position-relative">
+                                                                <button onclick="this.parentNode.remove()" title="Remove arquivo" class="btn btn-outline-danger rounded-pill px-2 border-0 position-absolute" type="button" style="right: 0px; top: 0px; z-index: 1;">
+                                                                    <i class="fas fa-times-circle fa-xl"></i>
+                                                                </button>
+                                                                <img src="data:image/png;base64,{{img}}" width="60" class="border rounded m-2">
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="blur-layer"></div>
+                                                </div><!------------------ Fim Dropzone TXT ------------------>
+                                            </div>
+                                        </div><!------------------ Fim Dropzone ------------------>
+                                        <div class="docs-data">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-prepend">
+                                                    <label class="input-group-text bg-primary border-primary text-white" for="Limiar">Limiar</label>
+                                                </span>
+                                                <input type="number" class="form-control" id="Limiar" value="0.8" step="0.1" min="0.1" max="1.0">
+                                            </div>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-prepend">
+                                                    <label class="input-group-text" for="dataX">X</label>
+                                                </span>
+                                                <input type="text" class="form-control" id="dataX" placeholder="x">
+                                                <span class="input-group-append">
+                                                    <span class="input-group-text">px</span>
+                                                </span>
+                                            </div>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-prepend">
+                                                    <label class="input-group-text" for="dataY">Y</label>
+                                                </span>
+                                                <input type="text" class="form-control" id="dataY" placeholder="y">
+                                                <span class="input-group-append">
+                                                    <span class="input-group-text">px</span>
+                                                </span>
+                                            </div>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-prepend">
+                                                    <label class="input-group-text" for="dataWidth">Width</label>
+                                                </span>
+                                                <input type="text" class="form-control" id="dataWidth" placeholder="width">
+                                                <span class="input-group-append">
+                                                    <span class="input-group-text">px</span>
+                                                </span>
+                                            </div>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-prepend">
+                                                    <label class="input-group-text" for="dataHeight">Height</label>
+                                                </span>
+                                                <input type="text" class="form-control" id="dataHeight" placeholder="height">
+                                                <span class="input-group-append">
+                                                    <span class="input-group-text">px</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row" id="actions">
+                                            <div class="col-md-12 d-flex flex-wrap docs-buttons">
+                                                <!-- <h3>Toolbar:</h3> -->
+                                                <div class="btn-group">
+                                                  <button type="button" class="btn btn-primary" data-method="setDragMode" data-option="move" title="Move">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.setDragMode(&quot;move&quot;)">
+                                                      <span class="fa fa-arrows-alt"></span>
+                                                    </span>
+                                                  </button>
+                                                  <button type="button" class="btn btn-primary" data-method="setDragMode" data-option="crop" title="Crop">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.setDragMode(&quot;crop&quot;)">
+                                                      <span class="fa fa-crop-alt"></span>
+                                                    </span>
+                                                  </button>
+                                                </div>
+
+                                                <div class="btn-group">
+                                                  <button type="button" class="btn btn-primary" data-method="zoom" data-option="0.1" title="Zoom In">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.zoom(0.1)">
+                                                      <span class="fa fa-search-plus"></span>
+                                                    </span>
+                                                  </button>
+                                                  <button type="button" class="btn btn-primary" data-method="zoom" data-option="-0.1" title="Zoom Out">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.zoom(-0.1)">
+                                                      <span class="fa fa-search-minus"></span>
+                                                    </span>
+                                                  </button>
+                                                </div>
+
+                                                <div class="btn-group">
+                                                  <button type="button" class="btn btn-primary" data-method="reset" title="Reset">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.reset()">
+                                                      <span class="fa fa-sync-alt"></span>
+                                                    </span>
+                                                  </button>
+                                                  <label class="btn btn-primary btn-upload" for="inputImage" title="Upload image file">
+                                                    <input type="file" class="sr-only" id="inputImage" name="file" accept="image/*">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="Import image with Blob URLs">
+                                                      <span class="fa fa-upload"></span>
+                                                    </span>
+                                                  </label>
+                                                  <button type="button" class="btn btn-primary" data-method="destroy" title="Destroy">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.destroy()">
+                                                      <span class="fa fa-power-off"></span>
+                                                    </span>
+                                                  </button>
+                                                </div>
+
+                                                <div class="btn-group">
+                                                  <button type="button" class="btn btn-primary" data-method="disable" title="Disable">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.disable()">
+                                                      <span class="fa fa-lock"></span>
+                                                    </span>
+                                                  </button>
+                                                  <button type="button" class="btn btn-primary" data-method="enable" title="Enable">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.enable()">
+                                                      <span class="fa fa-unlock"></span>
+                                                    </span>
+                                                  </button>
+                                                </div>
+
+                                                <div class="btn-group">
+                                                  <button type="button" class="btn btn-primary" data-method="rotate" data-option="-45" title="Rotate Left">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.rotate(-45)">
+                                                      <span class="fa fa-undo-alt"></span>
+                                                    </span>
+                                                  </button>
+                                                  <button type="button" class="btn btn-primary" data-method="rotate" data-option="45" title="Rotate Right">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.rotate(45)">
+                                                      <span class="fa fa-redo-alt"></span>
+                                                    </span>
+                                                  </button>
+                                                </div>
+
+                                                <div class="btn-group">
+                                                  <button type="button" class="btn btn-primary" data-method="scaleX" data-option="-1" title="Flip Horizontal">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.scaleX(-1)">
+                                                      <span class="fa fa-arrows-alt-h"></span>
+                                                    </span>
+                                                  </button>
+                                                  <button type="button" class="btn btn-primary" data-method="scaleY" data-option="-1" title="Flip Vertical">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.scaleY(-1)">
+                                                      <span class="fa fa-arrows-alt-v"></span>
+                                                    </span>
+                                                  </button>
+                                                </div>
+
+                                                <div class="btn-group">
+                                                  <button type="button" class="btn btn-primary" data-method="crop" title="Crop">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.crop()">
+                                                      <span class="fa fa-check"></span>
+                                                    </span>
+                                                  </button>
+                                                  <button type="button" class="btn btn-primary" data-method="clear" title="Clear">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.clear()">
+                                                      <span class="fa fa-times"></span>
+                                                    </span>
+                                                  </button>
+                                                </div>
+
+                                                <div class="btn-group">
+                                                  <button type="button" class="btn btn-primary" data-method="move" data-option="-10" data-second-option="0" title="Move Left">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.move(-10, 0)">
+                                                      <span class="fa fa-arrow-left"></span>
+                                                    </span>
+                                                  </button>
+                                                  <button type="button" class="btn btn-primary" data-method="move" data-option="10" data-second-option="0" title="Move Right">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.move(10, 0)">
+                                                      <span class="fa fa-arrow-right"></span>
+                                                    </span>
+                                                  </button>
+                                                  <button type="button" class="btn btn-primary" data-method="move" data-option="0" data-second-option="-10" title="Move Up">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.move(0, -10)">
+                                                      <span class="fa fa-arrow-up"></span>
+                                                    </span>
+                                                  </button>
+                                                  <button type="button" class="btn btn-primary" data-method="move" data-option="0" data-second-option="10" title="Move Down">
+                                                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.move(0, 10)">
+                                                      <span class="fa fa-arrow-down"></span>
+                                                    </span>
+                                                  </button>
+                                                </div>
+
+                                                <div class="docs-toggles">
+                                                    <!-- <h3>Toggles:</h3> -->
+                                                    <div class="dropdown dropup docs-options">
+                                                      <button type="button" class="btn btn-primary dropdown-toggle" id="toggleOptions" data-toggle="dropdown" aria-expanded="true">
+                                                        Toggle Options
+                                                        <span class="caret"></span>
+                                                      </button>
+                                                      <ul class="dropdown-menu" role="menu" aria-labelledby="toggleOptions">
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="responsive" type="checkbox" name="responsive" checked>
+                                                            <label class="form-check-label" for="responsive">responsive</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="restore" type="checkbox" name="restore" checked>
+                                                            <label class="form-check-label" for="restore">restore</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="checkCrossOrigin" type="checkbox" name="checkCrossOrigin" checked>
+                                                            <label class="form-check-label" for="checkCrossOrigin">checkCrossOrigin</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="checkOrientation" type="checkbox" name="checkOrientation" checked>
+                                                            <label class="form-check-label" for="checkOrientation">checkOrientation</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="modal" type="checkbox" name="modal" checked>
+                                                            <label class="form-check-label" for="modal">modal</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="guides" type="checkbox" name="guides" checked>
+                                                            <label class="form-check-label" for="guides">guides</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="center" type="checkbox" name="center" checked>
+                                                            <label class="form-check-label" for="center">center</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="highlight" type="checkbox" name="highlight" checked>
+                                                            <label class="form-check-label" for="highlight">highlight</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="background" type="checkbox" name="background" checked>
+                                                            <label class="form-check-label" for="background">background</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="autoCrop" type="checkbox" name="autoCrop" checked>
+                                                            <label class="form-check-label" for="autoCrop">autoCrop</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="movable" type="checkbox" name="movable" checked>
+                                                            <label class="form-check-label" for="movable">movable</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="rotatable" type="checkbox" name="rotatable" checked>
+                                                            <label class="form-check-label" for="rotatable">rotatable</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="scalable" type="checkbox" name="scalable" checked>
+                                                            <label class="form-check-label" for="scalable">scalable</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="zoomable" type="checkbox" name="zoomable" checked>
+                                                            <label class="form-check-label" for="zoomable">zoomable</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="zoomOnTouch" type="checkbox" name="zoomOnTouch" checked>
+                                                            <label class="form-check-label" for="zoomOnTouch">zoomOnTouch</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="zoomOnWheel" type="checkbox" name="zoomOnWheel" checked>
+                                                            <label class="form-check-label" for="zoomOnWheel">zoomOnWheel</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="cropBoxMovable" type="checkbox" name="cropBoxMovable" checked>
+                                                            <label class="form-check-label" for="cropBoxMovable">cropBoxMovable</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="cropBoxResizable" type="checkbox" name="cropBoxResizable" checked>
+                                                            <label class="form-check-label" for="cropBoxResizable">cropBoxResizable</label>
+                                                          </div>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" id="toggleDragModeOnDblclick" type="checkbox" name="toggleDragModeOnDblclick" checked>
+                                                            <label class="form-check-label" for="toggleDragModeOnDblclick">toggleDragModeOnDblclick</label>
+                                                          </div>
+                                                        </li>
+                                                      </ul>
+                                                    </div><!-- /.dropdown -->
+                                                </div>
+
+                                                <div class="d-flex mb-3 w-100">
+                                                    <ul class="nav nav-pills flex-nowrap w-100" role="tablist" id="level-select-plant-a1">
+                                                        <li class="nav-item">
+                                                            <a class="nav-link border active" id="register-level-1" data-level-a1="1" data-toggle="pill" href="#" role="tab" aria-selected="true"><i class="fa-solid fa-layer-group fa-md pr-2"></i>Nível 01</a>
+                                                        </li>
+                                                        <li class="nav-item ml-1">
+                                                            <a class="nav-link border" id="register-level-2" data-level-a1="2" data-toggle="pill" href="#" role="tab" aria-selected="false"><i class="fa-solid fa-layer-group fa-md pr-2"></i>Nível 02</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="d-flex justify-content-between w-100">
+                                                    <button id="salvarBtn" type="button" class="btn btn-secondary rounded-pill my-auto mx-4 d-flex justify-content-center align-items-center" data-method="croppedImageSelected" data-option="{ &quot;maxWidth&quot;: 4096, &quot;maxHeight&quot;: 4096 }">
+                                                        <i class="fa-solid fa-camera pr-2"></i>
+                                                        <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="cropper.getCroppedCanvas({ maxWidth: 4096, maxHeight: 4096 })">
+                                                          Recortar
+                                                        </span>
+                                                    </button>
+
+                                                    <button type="button" onclick="createFormData()" class="btn btn-dark rounded-pill my-auto mx-4">
+                                                        <i class="fa-solid fa-circle-check pr-2"></i>Buscar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="docs-demo w-100">
+<!--                                        <div class="h-100 img-container" style="max-width:1700px !important;">-->
+                                        <div class="h-100 img-container d-inline-block">
+                                            <img id="imagem_proj" style="width: 100%;height: auto;" src="{% static 'models/1.png' %}" alt="Card image cap">
+                                        </div>
+                                    </div>
+                                    <div class="docs-preview clearfix position-absolute rounded border shadow-lg" style="z-index: 1000; left: 2rem; bottom: 2rem;">
+                                        <div class="img-preview preview-md mr-0 mb-0 rounded" style="width: 192px; height: 108px;">
+                                            <img id="img-preview-now" src="{% static 'models/1.png' %}" alt="Picture" style="display: block; width: 160px; height: 90px; min-width: 0px !important; min-height: 0px !important; max-width: none !important; max-height: none !important; transform: translateX(-16px) translateY(-9px);">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Show the cropped image in modal -->
+<div class="modal fade docs-cropped" id="getCroppedCanvasModal" role="dialog" aria-hidden="true" aria-labelledby="getCroppedCanvasTitle" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="getCroppedCanvasTitle">Cropped</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <a class="btn btn-primary" id="download" href="javascript:void(0);" download="cropped.jpg">Download</a>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+<script src="{% static 'js/main_cropper_2.js' %}"></script>
+<script src="{% static 'js/cropper_2.min.js' %}"></script>
+<script src="{% static 'js/jQuery.dragmove.js' %}"></script>
+
+<script>
+    $('#toll_view_user').dragmove();
+    $('#toll_drop_card').dragmove();
+    $('#container_nav').dragmove();
+    $('#info_new_card').dragmove();
+
+    let formFileCodesPrimario = new FormData();
+
+    // Chama a função ao carregar a página
+    window.addEventListener('load', atualizarPosicoes);
+
+    // Chama a função ao mudar o tamanho da janela (zoom)
+    window.addEventListener('resize', atualizarPosicoes);
+
+    //Teste para Hidden Menu
+
+    document.getElementById('toggleButton').addEventListener('click', function() {
+            var statsMenu = document.getElementById('statsMenu');
+            if (statsMenu.classList.contains('hidden')) {
+                statsMenu.classList.remove('hidden');
+            } else {
+                statsMenu.classList.add('hidden');
+            }
+        });
+
+    //Fim do teste
+
+
+    //----------- Função para aplicar o collapsed -----------//
+    function toggleControlPainel() {
+        const nav = document.querySelector('#container_nav');
+        const iconExpand = nav.querySelector('div button i');
+        const isCollapsed = nav.classList.toggle('collapsed');
+
+        iconExpand.classList.toggle('animate__flipInY', isCollapsed);
+    }
+
+    let isDragging = false;
+
+    function createDraggableElement() {
+        const element = document.createElement('div');
+        const labelNewCardX = document.getElementById('labelNewCardX');
+        const labelNewCardY = document.getElementById('labelNewCardY');
+        const localsElement = document.getElementById('locals_elements');
+        const view_plant_a1 = document.getElementById('view_plant_a1');
+        element.id = "new-card-grid-snap";
+        element.className = "position-absolute bg-dark text-light border d-flex justify-content-center align-items-center grid-snap";
+        element.innerHTML = '<i class="fa-solid fa-user px-1"></i>' +
+            '<button type="button" title="Fixar card?" onclick="ajaxRegisterNewCard()" class="position-absolute btn btn-sm btn-success rounded-pill p-1" style="top: -30px; width: 29px; height: 28px"><i class="fa-solid fa-circle-check fa-lg"></i></button>';
+        const anyGrid = localsElement.querySelector('div.grid-snap');
+        const defaultWidth = anyGrid ? anyGrid.style.width : '40px';
+        const defaultHeight = anyGrid ? anyGrid.style.height : '40px';
+        element.style.width = defaultWidth;
+        element.style.height = defaultHeight;
+        element.style.bottom = '95px';
+        element.style.left = '23px';
+
+        element.addEventListener('mousedown', (event) => {
+            isDragging = true;
+
+            const containerRect = localsElement.getBoundingClientRect();
+            const elementRect = element.getBoundingClientRect();
+            const shiftX = event.clientX - elementRect.left;
+            const shiftY = event.clientY - elementRect.top;
+
+            function handleDrag(e) {
+                if (!isDragging) return;
+                const newLeft = e.clientX - containerRect.left - shiftX;
+                const newTop = e.clientY - containerRect.top - shiftY;
+                element.style.left = newLeft + 'px';
+                element.style.top = newTop + 'px';
+                labelNewCardX.value = parseInt(newLeft) + 'px';
+                labelNewCardY.value = parseInt(newTop) + 'px';
+            }
+
+            document.addEventListener('mousemove', handleDrag);
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                document.removeEventListener('mousemove', handleDrag);
+            }, { once: true });
+        });
+
+        localsElement.appendChild(element);
+    }
+
+    function ajaxRegisterNewCard() {
+        let element = document.getElementById('new-card-grid-snap');
+        let image_container = document.getElementById('view_plant_a1');
+        let level_select = document.getElementById('level-select-plant-a1').querySelector('.active').dataset.levelA1;
+        let larguraImagem = image_container.clientWidth;
+        let alturaImagem = image_container.clientHeight;
+        let widthMainPixel = image_container.naturalWidth;
+        let heightMainPixel = image_container.naturalHeight;
+
+        // Converte os valores para a escala da imagem
+        let posicaoXPercent = parseInt(parseInt(element.style.left) * (widthMainPixel / larguraImagem));
+        let posicaoYPercent = parseInt(parseInt(element.style.top) * (heightMainPixel / alturaImagem));
+        let dict_request = {
+            'level_select': 'N' + level_select,
+            'x': posicaoXPercent,
+            'y': posicaoYPercent,
+            'width': element.offsetWidth,
+            'height': element.offsetHeight,
+            'main_width': image_container.naturalWidth,
+            'main_height': image_container.naturalHeight,
+        }
+        console.log(dict_request)
+
+        $.ajax({
+            url: "/app/engenharia/a1recognize/save_locals_manual/{{piso}}", // Caminho do Ajax
+            type: "GET", // http method
+            dataType: 'json',
+            data: {'dict_request': JSON.stringify(dict_request)},
+            success: function (data) {
+                let chave = Object.keys(data)[0];
+                let value = data[chave];
+
+                // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                swalAlert(false, value, chave, false);
+
+                // Recarrega a página após deletar
+                setTimeout(()=>{
+                    if (chave === 'success') {
+                        window.location.reload(true);
+                    }
+                }, 1500)
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        });
+    }
+
+    function saveOrUpdateStatusCard() {
+        let reserva_terceiro = document.getElementById('select_reservado_terceiro').selectedOptions[0].value !== '0'
+        if (reserva_terceiro){
+            return swalAlert('Atenção','Há uma reserva ou Terceiro cadastrado!', 'error', false)
+        }
+
+        var select_new_user = document.getElementById('select_new_user');
+        var input_new_user_ldap = document.getElementById('input_new_user_ldap');
+        var input_machine_new_user = document.getElementById('input_machine_new_user');
+        var select_status_new_user = document.getElementById('select_status_new_user');
+        var card_new_user = document.getElementById('card_new_user').dataset.idNumberLoc;
+        var painel_level_tab = document.getElementById('painel-level-tab').querySelector('.active').dataset.levelPlantA1;
+        select_new_user = select_new_user.selectedOptions[0].value
+        select_status_new_user = select_status_new_user.selectedOptions[0].value
+        input_new_user_ldap = input_new_user_ldap.value
+        input_machine_new_user = input_machine_new_user.value
+
+        // Cria lista de ids e caracteres
+        let list_ids = ['select_new_user', 'input_new_user_ldap', 'input_machine_new_user'];
+        let list_campos_tamanho = [select_new_user, input_new_user_ldap, input_machine_new_user]
+        let dict_values = {
+            'painel_level_tab': painel_level_tab,
+            'card_new_user': card_new_user,
+            'select_new_user': select_new_user,
+            'select_status_new_user': select_status_new_user,
+            'input_machine_new_user': input_machine_new_user}
+        let list = []
+        list_campos_tamanho.map((x) => {x.length >= 2 ? list.push(1): list.push(0)})
+
+        // Verifica se todos os elementos estão preenchidos corretamente
+        if (!list.includes(0)){
+            // Cria um objeto FormData
+            var formData = new FormData();
+
+            // Pega a imagem do usuário selecionada
+            var imageNewUser = document.getElementById('fileInputImageNewUser').files[0];
+            formData.append('image_user', imageNewUser);
+            formData.append('dict_values', JSON.stringify(dict_values));
+            const csrf = document.getElementsByName("csrfmiddlewaretoken")[0].value
+
+            $.ajax({
+                url: "/app/engenharia/a1recognize/save_locals/{{piso}}/", // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrf},
+                dataType: 'json',
+                data: formData, // Envia form pela solicitação do POST
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                    swalAlert(false, data['result'], 'success', false);
+
+                    setTimeout(()=>{
+
+                    }, 1500)
+                },
+                failure: function () {
+                    alert('Algo deu errado! verifique e tente novamente.')
+                }
+            });
+        } else {
+            // Usa map para criar um novo array contendo os índices onde o valor é 0
+            var indicesZeros = list.map(function(valor, indice) {
+                if (valor === 0) {
+                    return indice;
+                }
+            });
+
+            // Filtra os valores undefined (índices onde o valor não é 0)
+            indicesZeros = indicesZeros.filter(function(indice) {
+              return indice !== undefined;
+            });
+
+            // Pega o campo através do index
+            indicesZeros = indicesZeros.map(function(indice) {
+                return document.getElementById(list_ids[indice]).dataset.filterCtrl;
+            });
+
+            // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+            swalAlert(false, 'Preencha todos os campos! '+ indicesZeros.join(', ') + ' não preenchido(s)', 'error', false);
+        }
+
+    }
+
+    async function toggleCardUser(id_count) {
+        var data_id_card = document.querySelectorAll('.profile-card')
+        var card_new_user = document.getElementById('card_new_user');
+
+        // Itera sobre cada elemento no NodeList
+        data_id_card.forEach(function(elemento) {
+            // Atualiza o valor do atributo 'data-id-user' para 3
+            elemento.dataset.idNumberLoc = id_count;
+        });
+
+        // Preenche card de usuário
+        await fillCardUser(id_count)
+
+        card_new_user.classList.add('animate__zoomIn');
+        card_new_user.hidden = false;
+        card_new_user.addEventListener('animationend', function () {
+            card_new_user.classList.remove('animate__zoomIn');
+        });
+    }
+
+    function fillCardUser(id_count) {
+        var painel_level_tab = document.getElementById('painel-level-tab').querySelector('.active').dataset.levelPlantA1;
+        var dict_values = {'painel_level_tab': painel_level_tab, 'card_new_user': id_count}
+
+        $.ajax({
+            url: "/app/engenharia/a1recognize/delete_or_find/{{piso}}/", // Caminho do Ajax
+            type: "GET", // http method
+            dataType: 'json',
+            data: {'dict_values': JSON.stringify(dict_values)},
+            success: function (data) {
+                var result = data['response']
+                var image_user = document.getElementById('img_new_profile')
+                var input_ldap = document.getElementById('input_new_user_ldap')
+                var input_machine = document.getElementById('input_machine_new_user')
+
+                // Verifica se o objeto está vazio
+                if (Object.keys(result).length === 0) {
+                    image_user.src = '/static/img/user_2.png'
+                    $('#select_new_user').val('---');
+                    input_ldap.value = '';
+                    input_machine.value = '';
+                    $('#select_status_new_user').val('PRESENTE');
+                } else {
+                    image_user.src = "data:image/png;base64," + result['tb_local_user_image']
+                    $('#select_new_user').val(result['tb_local_user_id_per']);
+                    input_ldap.value = result['tb_per_id_ldap'];
+                    input_machine.value = result['tb_local_user_computer'];
+                    $('#select_status_new_user').val(result['tb_local_user_status']);
+                }
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        });
+    }
+
+    function deleteElementOfPlant(element, type) {
+        var text_swal = type === 'delete' ? `<p>Deseja realmente <b>excluir</b> este <b>objeto</b>?</p>`: `<p>Deseja realmente <b>desassociar</b> esta <b>pessoa</b>?</p>`
+
+        swal({
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Sim",
+                    value: "Sim",
+                    className: "swal-button swal-button--confirm bg-danger"
+                },
+                cancel: "Não",
+            },
+            content: {
+                element: "span",
+                attributes: {
+                    innerHTML: text_swal,
+                },
+            },
+        }).then((value) => {
+            if (value === 'Sim') {
+                ajaxDeleteElementOfPlant(element, type)
+            }
+        });
+    }
+
+    function ajaxDeleteElementOfPlant(element, type) {
+        const csrf = document.getElementsByName("csrfmiddlewaretoken")[0].value
+        $.ajax({
+            url: "/app/engenharia/a1recognize/delete_or_find/{{piso}}/", // Caminho do Ajax
+            headers:{'X-CSRFToken':csrf},
+            type: "POST", // http method
+            dataType: "json",
+            data: {'element': element, 'action': type},
+            success: function (data) {
+                let chave = Object.keys(data)[0];
+                let value = data[chave];
+
+                // Chama o swal passando os seguintes parametros swalAlert(titulo, texto, icone, btn)
+                swalAlert(false, value, chave, false);
+
+                // Recarrega a página após deletar
+                setTimeout(()=>{
+                    if (chave === 'success') {
+                        window.location.reload(true);
+                    }
+                }, 1500)
+            },
+            failure: function () {
+                swalAlert(false, 'Algo deu errado ao deletar o objeto! verifique e tente novamente.', 'error', false);
+            }
+        })
+    }
+
+    async function selectLdapUser(element_option) {
+        await findMachineLdap(element_option.dataset.ldap)
+        if (element_option.value !== '---') {
+            document.getElementById('input_new_user_ldap').value = element_option.dataset.ldap;
+        } else {
+            document.getElementById('input_new_user_ldap').value = '';
+        }
+    }
+
+    function findMachineLdap(element) {
+        $.ajax({
+            url: "/app/engenharia/a1recognize/save_locals/{{piso}}", // Caminho do Ajax
+            type: "GET", // http method
+            dataType: 'json',
+            data: {'user': element},
+            success: function (data) {
+                document.getElementById('input_machine_new_user').value = data['response']
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        });
+    }
+
+    function selectImage(id) {
+        document.getElementById(id).click();
+    }
+
+    function handleImageChange(id_element, id_img) {
+        var fileInput = document.getElementById(id_element);
+        var profileImage = document.getElementById(id_img);
+
+        var selectedFile = fileInput.files[0];
+
+        if (selectedFile) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                // Atualiza o src da imagem com a imagem carregada
+                profileImage.src = e.target.result;
+            };
+
+            reader.readAsDataURL(selectedFile);
+        }
+    }
+
+    function toggleClassStatus(selectContainer, selectedValue) {
+        // Remove classes existentes
+        selectContainer.previousElementSibling.classList.remove('fa-user', 'fa-desktop');
+        selectContainer.classList.remove('border-primary', 'text-primary', 'border-warning', 'text-warning');
+        selectContainer.parentNode.classList.remove('border-primary', 'text-primary', 'border-warning', 'text-warning');
+
+        // Adiciona as classes conforme a opção selecionada
+        if (selectedValue === 'PRESENTE') {
+            selectContainer.previousElementSibling.classList.add('fa-user');
+            selectContainer.classList.add('border-warning', 'text-warning');
+            selectContainer.parentNode.classList.add('border-warning', 'text-warning');
+        } else {
+            selectContainer.previousElementSibling.classList.add('fa-desktop');
+            selectContainer.classList.add('border-primary', 'text-primary');
+            selectContainer.parentNode.classList.add('border-primary', 'text-primary');
+        }
+    }
+
+    // Função para atualizar as posições ao carregar a página e ao mudar o zoom
+    function atualizarPosicoes() {
+        // Obtém a referência para a imagem
+        var imagem = document.getElementById('view_plant_a1');
+
+        // Obtém as dimensões da imagem
+        var larguraImagem = imagem.clientWidth;
+        var alturaImagem = imagem.clientHeight;
+
+        // Itera sobre elementos com a classe 'grid-snap'
+        var elementos = document.getElementsByClassName('grid-snap');
+        for (var i = 0; i < elementos.length; i++) {
+            var elemento = elementos[i];
+            var dimensionElemento = elemento.dataset.sizeCardUser.split(';')
+
+            // Dimensões do objeto
+            var posicaoXPixel = parseInt(dimensionElemento[0]);
+            var posicaoYPixel = parseInt(dimensionElemento[1]);
+            var widthMainPixel = parseInt(dimensionElemento[2]);
+            var heightMainPixel = parseInt(dimensionElemento[3]);
+
+            // Converte os valores para a escala da imagem
+            var posicaoXPercent = parseInt(posicaoXPixel * (larguraImagem / widthMainPixel));
+            var posicaoYPercent = parseInt(posicaoYPixel * (alturaImagem / heightMainPixel));
+
+            // Aplica os valores convertidos aos estilos
+            elemento.style.top = posicaoYPercent + 'px';
+            elemento.style.left = posicaoXPercent + 'px';
+        }
+    }
+
+    function addNewCardManual() {
+        let firstElement = document.getElementById('locals_elements').querySelector('div.grid-snap');
+
+    }
+
+    function updateImageAndCardPositions(level) {
+        var imgPositionPlant = document.getElementById('view_plant_a1');
+        imgPositionPlant.src = '/static/models/' + level + '.png';
+
+        const csrf = document.getElementsByName("csrfmiddlewaretoken")[0].value
+        $.ajax({
+            url: "/app/engenharia/a1recognize/find_images/", // Caminho do Ajax
+            headers:{'X-CSRFToken':csrf},
+            type: "POST", // http method
+            dataType: "json",
+            data: {'level': level},
+            success: function (data) {
+                // Pega as localizações
+                var locais = data['response']
+
+                // Container onde as tags serão adicionadas
+                var container = document.getElementById('locals_elements');
+                $('#locals_elements').find('div.grid-snap').remove();
+
+                // Loop sobre a lista de locais
+                for (var i = 0; i < locais.length; i++) {
+                    var loc = locais[i];
+                    var tagString = '';
+
+                    if (loc.tb_local_map_type === 'new') {
+                        // Constroi a string da tag HTML
+                        tagString = `<div data-size-card-user="${loc.tb_local_map_pos_x};${loc.tb_local_map_pos_y};${loc.tb_local_map_main_width};${loc.tb_local_map_main_height}"
+                                             style="width: ${loc.tb_local_map_width}px; height: ${loc.tb_local_map_height}px;"
+                                             class="position-absolute bg-light text-primary border border-primary d-flex justify-content-center align-items-center grid-snap"
+                                             title="N° ${loc.tb_local_map_count}"
+                                             onclick="toggleCardUser(${loc.tb_local_map_count})">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                        </div>`;
+                    } else {
+                        // Constroi a string da tag HTML
+                        tagString = `<div data-size-card-user="${loc.tb_local_map_pos_x};${loc.tb_local_map_pos_y};${loc.tb_local_map_main_width};${loc.tb_local_map_main_height}"
+                                             style="width: ${loc.tb_local_map_width}px; height: ${loc.tb_local_map_height}px;"
+                                             class="position-absolute bg-primary border border-light text-light d-flex justify-content-center align-items-center grid-snap"
+                                             title="N° ${loc.tb_local_map_count}"
+                                             onclick="toggleCardUser(${loc.tb_local_map_count})">
+                                            <i class="fa-solid fa-user px-1"></i>
+                                            <span class="position-absolute bg-primary border border-light px-2 rounded-pill" style="top: -15px">${loc.tb_local_map_user_ldap}</span>
+                                        </div>`;
+                    }
+
+                    // Adicionar a tag ao contêiner
+                    container.innerHTML += tagString;
+                }
+
+                // Atualiza as posições dos cards
+                atualizarPosicoes()
+
+                // Atualiza cards de estatisticas e movimentação
+                document.getElementById('card_statistic_preenchido').innerText = data['info_aux']['total_preenchido'];
+                document.getElementById('card_statistic_percent_preenchido').innerText = data['info_aux']['percent_preenchido'] + '%';
+                document.getElementById('progress_preenchido').style.width = data['info_aux']['percent_preenchido'] + '%';
+                document.getElementById('card_statistic_sem_preencher').innerText = data['info_aux']['total_sem_preencher'];
+                document.getElementById('card_statistic_percent_sem_preencher').innerText = data['info_aux']['percent_sem_preencher'] + '%';
+                document.getElementById('progress_sem_preencher').style.width = data['info_aux']['percent_sem_preencher'] + '%';
+                $('#container_nav').dragmove();
+                $('#toll_view_user').dragmove();
+            },
+            failure: function () {
+                swalAlert(false, 'Algo deu errado ao deletar o objeto! verifique e tente novamente.', 'error', false);
+            }
+        })
+    }
+    function ChangeNivel(num_nivel){
+        window.location.href = `/app/engenharia/a1recognize/${num_nivel}`
+
+    }
+    async function createFormData() {
+        var text_swal = `<p>Deseja realmente buscar <b>Todos</b> os objetos? os elementos anteriores serão removidos e o posicionamento de usuários desfeito.</p>`
+
+        // Encontra o elemento com o id 'crop_selected'
+        var cropSelectedElement = document.getElementById('crop_selected');
+
+        // Encontra o elemento com o id 'imagem_proj'
+        var imagemProjElement = document.getElementById('imagem_proj');
+
+        // Cria um objeto FormData
+        var formData = new FormData();
+
+        // Obtem todas as imagens dentro do elemento 'crop_selected'
+        var images = cropSelectedElement.querySelectorAll('img');
+
+        // Adiciona cada imagem ao FormData
+        images.forEach(function (image, index) {
+            // Adiciona a imagem ao FormData com um nome único, como 'image_1', 'image_2', etc.
+            formData.append('image_' + (index + 1), dataURItoBlob(image.src));
+        });
+
+        // Adicionar a imagem do elemento 'imagem_proj' ao FormData
+        var imagemProjBlob = await fetch(imagemProjElement.src).then(response => response.blob());
+        formData.append('imagem_proj', imagemProjBlob);
+
+        // Pega o Nível/ Andar selecionado
+        var levelSelect = document.getElementById('level-select-plant-a1').querySelector('.active').dataset.levelA1;
+        formData.append('level_select', levelSelect);
+
+        swal({
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Sim",
+                    value: "Sim",
+                    className: "swal-button swal-button--confirm bg-danger"
+                },
+                cancel: "Não",
+            },
+            content: {
+                element: "span",
+                attributes: {
+                    innerHTML: text_swal,
+                },
+            },
+        }).then((value) => {
+            if (value === 'Sim') {
+                SendValuesToRegistration(formData)
+            }
+        });
+    }
+
+    // Função auxiliar para converter uma URI de dados em um Blob
+    function dataURItoBlob(dataURI) {
+        var byteString = atob(dataURI.split(',')[1]);
+        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+        var ab = new ArrayBuffer(byteString.length);
+        var ia = new Uint8Array(ab);
+
+        for (var i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+
+        return new Blob([ab], { type: mimeString });
+    }
+
+
+    // --------------------- Função envia os dados para função de cadastro no backend ---------------------//
+    function SendValuesToRegistration(formData) {
+        const csrf = document.getElementsByName("csrfmiddlewaretoken")[0].value
+        const limiar = document.getElementById('Limiar').value
+        formData.append('Limiar', limiar)
+
+        $.ajax({
+            url: `/app/engenharia/a1recognize/${formData.getAll('level_select')[0]}/`, // Caminho do Ajax
+            type: "POST", // http method
+            headers:{'X-CSRFToken':csrf},
+            dataType: "json",
+            data: formData, // Envia form pela solicitação do POST
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                // Cria um novo elemento de imagem
+                var imgElement = document.createElement('img');
+
+                // Atribui o base64 como a fonte da imagem
+                imgElement.src = 'data:image/png;base64,' + data['response']; // Certifique-se de incluir o tipo de imagem correto
+
+                // Cria um novo elemento de canvas
+                var canvasElement = document.createElement('canvas');
+                var ctx = canvasElement.getContext('2d');
+
+                // Adiciona um evento de carga à imagem
+                imgElement.addEventListener('load', function() {
+                    // Define as dimensões do canvas com base nas dimensões da imagem
+                    canvasElement.width = imgElement.width;
+                    canvasElement.height = imgElement.height;
+
+                    // Desenha a imagem no canvas
+                    ctx.drawImage(imgElement, 0, 0);
+
+                    // Seleciona o elemento modal-dialog dentro de #getCroppedCanvasModal e aplica o estilo
+                    $('#getCroppedCanvasModal .modal-dialog').css('max-width', '1600px');
+
+                    // Adiciona o canvas ao DOM (substitua 'imageContainer' pelo ID ou classe do elemento onde você deseja adicionar o canvas)
+                    $('#getCroppedCanvasModal').modal().find('.modal-body').html(canvasElement);
+
+                    // Seta a imagem base64 para download
+                    var downloadButton = document.getElementById('download');
+                    downloadButton.addEventListener('click', function() {
+                        var dataURL = canvasElement.toDataURL('image/png');
+                        downloadButton.download = 'cropped.jpg';
+                        downloadButton.href = dataURL;
+                    });
+                });
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        })
+
+    }
+
+    // --------------------- Função para converter o tamanho para bytes ---------------------//
+    function FormatNumberToBytes(bytes, decimal = 2) {
+        if (!+bytes) return '0 Bytes'
+        const k = 1024
+        const dm = decimal < 0 ? 0 : decimal
+        const tamanho = ['Bytes', 'KB', 'MB', 'GB']
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${tamanho[i]}`
+    }
+
+    // --------------------- Função adiciona campo visual nos dropzones ---------------------//
+    function DropArquivo(id_input,id_drop,campo,arquivo) {
+        let drop_container = document.getElementById(campo);
+        let file = document.getElementById(id_input);
+        let list_extensions = ['png', 'jpeg', 'jpg']
+        let form;
+        let name_file;
+        let drop = '';
+        let itens = $('#'+id_drop)[0].children
+
+        // Caso não seja dropado o arquivo é recebido via id
+        if (arquivo !== null) {
+            form = arquivo.files;
+        } else {
+            form = file.files;
+        }
+
+        for (let i = 0; i <form.length;i++){
+            name_file = form[i].name
+            let extension = name_file.split('.').pop();
+            if (list_extensions.includes(extension)){
+                if (itens.length === 1) {
+                    let tamanho = FormatNumberToBytes(form[i].size) //Recebe o tamanho para o formato em bytes
+                    if (name_file.split(' ').length <= 1){
+                        name_file = name_file.match(/.{1,18}/g).join(' ') //Caso o nome do arquivo seja maior que 18 caracteres a string é quebrada
+                    }
+
+                    formFileCodesPrimario.append('fileIMG', form[i]);
+                    drop = `<div class="col-6 bordas mx-auto my-1 input-group border input-group-sm bg-white shadow px-1 animate__animated animate__zoomInDown position-relative">
+                        <button onclick="window.location.reload(true)" title="Remove arquivo" class="btn btn-outline-danger rounded-pill px-2 border-0 position-absolute" type="button" style="right:0px;top:0px;z-index: 1;">
+                            <i class="fas fa-times-circle fa-xl"></i>
+                        </button>
+                        <img class="my-2 w-50 mx-auto" src="{% static 'img/image_icon.png' %}" alt="Image Icon">
+                        <span type="text" title="${name_file}" class="py-2 w-100 text-center border-bottom font-weight-bold">${tamanho}</span>
+                        <span type="text" title="${name_file}" class="py-2 mx-2 w-100 text-center">${name_file}</span>
+                        <button onclick="SendValuesToRegistration()" type="button" class="btn btn-primary rounded-pill my-2 mx-auto w-75">
+                            <i class="fa-solid fa-paper-plane pr-2"></i>Enviar
+                        </button>
+                    </div>`
+
+                    drop_container.innerHTML = drop;
+                }
+            } else {
+                swal({
+                    title: "Extensão do campo diferente de (.*.png, *.jpeg, *.jpg)!",
+                    icon: "error",
+                    button: 'Fechar'
+                })
+                $('div.swal-modal').addClass('bordas')
+                $('div.swal-title').addClass('h5')
+                $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+                $('div.swal-text').addClass('text-center')
+                $('div.swal-footer').addClass('d-flex justify-content-center')
+            }
+        }
+    }
+
+    // --------------------- Alert para notificar usuario ---------------------//
+    function swalAlert(titulo, texto, icone_img, btn){
+        swal({
+            title: titulo,
+            text: texto,
+            icon: icone_img,
+            button: btn,
+        })
+        $('div.swal-modal').addClass('bordas')
+        $('div.swal-title').addClass('h4')
+        $('button.swal-button').addClass('btn btn-primary px-5 rounded-pill')
+        $('div.swal-text').addClass('text-center')
+        $('div.swal-footer').addClass('d-flex justify-content-center')
+    }
+
+    jQuery(document).ready(function($) {
+        // Ao arrastar o cursor com arquivo sobre o campo dropzone as bordas aumentam
+        $('#drop-image').on('dragover', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).addClass('upload-hover-blue');
+        })
+
+        // Ao retirar o cursor com arquivo sobre o campo dropzone as bordas diminuem
+        $('#drop-image').on('dragleave', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+        })
+
+        // Ao soltar o arquivo sobre o campo chama a função DropArquivo passando os parâmetros
+        $('#drop-image').on('drop', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          $(this).removeClass('upload-hover-blue');
+          let file_txt = event.originalEvent.dataTransfer;
+          // A função abaixo altera o conteudo do campo dropdown
+          DropArquivo('arquivo_image','drop-image','jpg',file_txt)
+        })
+    });
+
+    function ChangeClassBG(obj_option){
+        obj_option.classList.remove('bg-transparent')
+        obj_option.classList.remove('bg-warning')
+        obj_option.classList.remove('bg-success')
+        let opt = obj_option.selectedOptions[0].value
+        if (opt === 'RESERVADO'){
+            SaveReservaUser('RESERVADO')
+            obj_option.classList.add("bg-warning")
+        }else if(opt === 'TERCEIRO'){
+            SaveReservaUser('TERCEIRO')
+            obj_option.classList.add("bg-success")
+        }else{
+            SaveReservaUser('NA')
+            obj_option.classList.add("bg-transparent")
+        }
+    }
+
+    function ChageReservaTerceiro(opt){
+
+        let obj_option = document.getElementById('select_reservado_terceiro')
+        obj_option.classList.remove('bg-transparent')
+        obj_option.classList.remove('bg-warning')
+        obj_option.classList.remove('bg-success')
+        if (opt === 'RESERVADO'){
+            obj_option.value = 'RESERVADO'
+            obj_option.classList.add("bg-warning")
+        }else if(opt === 'TERCEIRO'){
+            obj_option.value = 'TERCEIRO'
+            obj_option.classList.add("bg-success")
+        }else{
+            obj_option.classList.add("bg-transparent")
+            obj_option.value = '0'
+        }
+    }
+
+    function SaveReservaUser(type_reserva){
+        if(document.getElementById('select_new_user').value !== '---'){
+            return swalAlert('Ação não é possivel', 'Não é possivel marcar um reservar um assento que já possui um usuário adicionado', 'error', false)
+        }
+        let numer_card = document.getElementById('card_new_user').dataset.idNumberLoc
+        $.ajax({
+            url: `/app/engenharia/a1recognize/reserva_terceiro/${numer_card}/`, // Caminho do Ajax
+            type: "GET", // http method
+            dataType: 'json',
+            data: {'type_reserva': type_reserva},
+            success: function (data) {
+                document.getElementById('input_machine_new_user').value = data['response']
+            },
+            failure: function () {
+                alert('Algo deu errado! verifique e tente novamente.')
+            }
+        });
+    }
+
+    //----BAIXAR MAPA
+    function capturarDiv() {
+    // Selecionar a div que será capturada
+    const div = document.getElementById('locals_elements');
+
+    // Verificar se a div existe antes de tentar capturá-la
+    if (div) {
+      // Usar o html2canvas para capturar a div
+      html2canvas(div).then(function(canvas) {
+        // Converter o canvas para imagem em base64
+        const dataUrl = canvas.toDataURL('image/png');
+
+        // Criar um link para download
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = 'captura-div.png'; // Nome do arquivo
+        link.click(); // Disparar o download
+      }).catch(function(error) {
+        console.error('Erro ao capturar a div:', error);
+      });
+    } else {
+      console.error('A div não foi encontrada!');
+    }
+  }
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+{% endblock %}

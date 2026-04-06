@@ -1,0 +1,20 @@
+{% load static %}
+{% block search_bar_sinais %}
+<div class="col-sm-9" xmlns="http://www.w3.org/1999/html">
+    <div class="form-group mb-4">
+        <td  for="tipo_os">
+            Pesquisa
+            <div class="divBuscaAcess">
+                <input type="search" class="txtBuscaAcess" placeholder="Buscar..." id="sinais-search" title="Pesquise aqui seu Sinal" onclick="clean_form_search_sinais()"/>
+                <img src="{% static 'img/search3.png' %}" id="btnBuscaAcess" alt="Buscar" onclick="filterBarSearchSinais()" style="width:20px;height:20px;object-fit:contain;cursor:pointer;"/>
+            </div>
+            <br>
+            <select id="sinais-select" required class="form-control" multiple>
+            </select>
+            <datalist id="sinais-type-list">
+            </datalist>
+        </td>
+    </div>
+</div>
+<script></script>
+{% endblock search_bar_sinais %}

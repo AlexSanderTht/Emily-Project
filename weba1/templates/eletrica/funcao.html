@@ -1,0 +1,600 @@
+{% load static %}
+{% block funcao %}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<div class="modal-header">
+    <h5 class="modal-title" id="motoracessoriosLabel">Função</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<br>
+<!--Inicio da Interface -->
+<div class="modal-body row">
+    <!--Inicio da barra central -->
+    <div style="border-right: 2px solid rgb(161, 158, 158); width: 52%; ">
+        <div class="container">
+            <div class="row justify-content-start">
+                <!-- Inicio do campo Código-->
+                <div class="col-sm-4">
+                    <div class="form-group mb-4">
+                        <td data-toggle="tooltip" title="Inserir codigo ">Código
+                            <input type="text" required class="form-control" id="func-cod" >
+                        </td>
+                    </div>
+                </div>
+                <!-- Fim do campo Código-->
+                <!--Inicio do botão Função por OS-->
+                <br>
+                <div class="col-4">
+                    <button name="bot" type="button" style="background-color:#ffbe47; margin-top: 20px; " class="subscribe btn  rounded-pill shadow-sm" data-target="#funcaoOS" data-toggle="modal" onclick="OnclickButtonFuncOs();">Função por OS</button>
+                </div>
+                <!--Fim do botão Função por OS-->
+            </div>
+        </div>
+
+        <!--Inicio do campo Descrição-->
+        <div class="col-sm-11">
+            <div class="form-group mb-4">
+                <td placeholder="Digite aqui"  data-toggle="tooltip"  title="Inserir a descrição">Descrição
+                    <input type="text"  required class="form-control" id="func-desc" >
+                </td>
+            </div>
+        </div>
+       <!--Fim do campo Descrição-->
+
+        <!--Inicio do campo Tipo de Cabo-->
+        <div class="col-sm-11">
+            <div class="form-group mb-4">
+                <td  for="func-tensao">
+                    Tensão
+                    <input type="text" list="func-tensao-list" id="func-tensao" class="form-control">
+                    <datalist id="func-tensao-list"></datalist>
+                </td>
+            </div>
+        </div>
+        <!--Fim do campo Tipo de Cabo-->
+
+        <!--Inicio do campo Tipo-->
+        <div class="col-sm-11">
+            <div class="form-group mb-4">
+                <td  for="func-type">
+                    Tipo
+                    <select class="form-control" id="func-type">
+                    </select>
+                </td>
+            </div>
+        </div>
+
+        <div class="col-sm-11">
+            <div class="form-group mb-4">
+                <td  for="func-type">
+                    Tipo Cabo
+                    <select class="form-control" id="func-type-cabo">
+                    </select>
+                </td>
+            </div>
+        </div>
+        <!--Fim do campo Tipo-->
+    </div>
+    <!--Fim da barra central -->
+
+    <!-- Inicio do campo Pesquisa -->
+    <div style="width: 47%; position: absolute; right: 1%;">
+        {% include "./SearchBarFunc.html" %}
+    </div>
+
+</div>
+<div class="modal-footer">
+    <div class="row w-100">
+        <div class="col-lg-6">
+            <div class="col-sm">
+        <button type="button" class="btn btn-success" onclick="registerFunc()">Adicionar</button>
+        <button type="button" class="btn btn-primary ml-2" onclick="updateFunc()">Alterar</button>
+    </div>
+            <form id="envia_logs" method="post"></form>
+        </div>
+        <div class="col-lg-6">
+            <button type="button" class="btn btn-dark" onclick="$('#impex').modal('show')">Import/Export</button>
+            <button type="button" class="btn btn-warning" onclick="clean_all_forms_func()">Limpar</button>
+            <button type="button" class="btn btn-danger" onclick="deleteFunc()">Excluir</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var form_funcao_a1pro = new FormData()
+    var form_exporta_funcao_a1pro = new FormData()
+    var id_func = ""
+
+    function FillFuncs(){
+        if ($(`#pro-os`).val() == 'none'){
+            return alert("Selecione uma OS")
+        }
+        $.ajax({
+              type: "GET",
+              url: `/app/eletrica/a1pro/AllFuncs/`,
+              dataType: 'json',
+              success: function (data){
+                  FillSelectAllFuncs(data['all_funcs'], 'func-select')
+                  FillSelectTiposFunc(data['tipos_func'])
+                  FillSelectTipoCabo(data['tipos_cabo_func'])
+                  $('#funcao').modal('show')
+              },
+              failure: function(error){
+                  alert("erro")
+              },
+        })
+    }
+
+    function FillSelectAllFuncs(datas_funcs, id_select){
+        var options_func = ``
+        for(let id_func in datas_funcs){
+            options_func += `<option value="${id_func}" onclick="OnclickFunc(${id_func})" onmouseleave="selectFuncSearch()">${datas_funcs[id_func]}</option>`
+        }
+        $('#'+id_select).html(options_func)
+    }
+
+    function FillSelectTiposFunc(list_tipos_func){
+        var options_tipo_func = `<option value="none">Selecione o tipo da função</option>`
+        for(let i=0; i< list_tipos_func.length ;i++){
+            options_tipo_func += `<option value="${list_tipos_func[i]}">${list_tipos_func[i]}</option>`
+        }
+        $('#func-type').html(options_tipo_func)
+    }
+
+    function FillSelectTipoCabo(datas_tipos_cabo){
+        var options_tipos_cabo = `<option value="none">Selecione o tipo de cabo</option>`
+        for(let id_tipo_cabo in datas_tipos_cabo){
+            options_tipos_cabo += `<option value="${id_tipo_cabo}">${datas_tipos_cabo[id_tipo_cabo]}</option>`
+        }
+        $('#func-type-cabo').html(options_tipos_cabo)
+    }
+
+    function OnclickFunc(id_func){
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+              type: "GET",
+              headers:{'X-CSRFToken':csrftoken},
+              url: "DatasFuncSelected/" + id_func + '/',
+              dataType: 'json',
+              data: {},
+              success: function(data){
+                  FillDatasFuncSelected(data['datas_func'])
+              },
+              error: function(error){
+                  alert("Houve um erro ao selecionar a função")
+              }
+
+          });
+    }
+
+    function FillDatasFuncSelected(datas_func){
+        document.getElementById('func-cod').value = datas_func['nome_func']
+        document.getElementById('func-desc').value = datas_func['desc_func']
+        document.getElementById('func-tensao').value = datas_func['tensao_func']
+        $('#func-type').val(datas_func['tipo_func'])
+        $('#func-type-cabo').val(datas_func['tipo_cabo_func'])
+    }
+
+    function GetDatasFunc(){
+        let func_selected = $('#func-select').val()[0] !== undefined ? $('#func-select').val()[0]:null
+        let cod = document.getElementById('func-cod').value
+        let desc = document.getElementById('func-desc').value.length > 0 ? document.getElementById('func-desc').value : null
+        let tensao = document.getElementById('func-tensao').value
+        let tipo_func = $('#func-type').val()
+        let tipo_cabo = $('#func-type-cabo').val()
+        let fields_error = []
+
+        if(cod.length === 0 || cod.length > 100){
+            fields_error.push('Código')
+        }
+        if(desc !== null){
+            if(desc.length > 100){
+                fields_error.push('Descrição')
+            }
+        }
+        if(tensao.length > 0){
+            if(isNaN(Number(tensao))){
+                fields_error.push('Tensão')
+            }
+        }
+        else{
+            fields_error.push('Tensão')
+        }
+
+        if(tipo_func === "none"){
+            fields_error.push('Tipo')
+        }
+
+        if(tipo_cabo === "none"){
+            fields_error.push('Tipo Cabo')
+        }
+
+        if(fields_error.length > 0){
+            return fields_error.join(', ')
+        }
+        else{
+            return {
+                'func_selected': func_selected,
+                'cod': cod,
+                'desc': desc,
+                'tensao': tensao,
+                'tipo_func': tipo_func,
+                'tipo_cabo': tipo_cabo
+            }
+        }
+
+
+    }
+
+    function registerFunc(){
+        let datas_func = GetDatasFunc()
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        var func_search = document.getElementById('func-select').value
+        var cdg = document.getElementById('func-cod').value
+        var desc = document.getElementById('func-desc').value
+        var tensao = document.getElementById('func-tensao').value
+        var tipo_func = document.getElementById('func-type').value
+        var tipo_cabo = document.getElementById('func-type-cabo').value
+        if(typeof datas_func === "string"){
+            return swal({
+                          title: "Atenção!",
+                          text: "Campos invalidos: " + datas_func,
+                          icon: "warning",
+                          button: "Clique Aqui!",
+                        })
+        }
+        $.ajax({
+              type: "POST",
+              headers:{'X-CSRFToken':csrftoken},
+              url: "AllFuncs/",
+              dataType: 'json',
+              data: { 'tb_fg_nome': cdg,
+                      'tb_fg_desc': desc,
+                      'tb_fg_tensao': tensao,
+                      'tb_fg_tipo': tipo_func,
+                      'tb_fg_id_tc': tipo_cabo },
+              success: function(data){
+                  if (data['success'] == true){
+                    // envia_logs()
+                    clean_all_forms_func()
+                    FillFuncs()
+                    return swalAlert(false, 'Cadastrado com sucesso!', 'success', false)
+                  }
+                  else{
+                          return swalAlert(false, 'Já existe um Função com este código!', 'error', false)
+                      }
+              },
+              error: function(error){
+                  return swalAlert(false, 'Houve um erro ao cadastrar!', 'error', false)
+              }
+
+          });
+    }
+
+
+    function updateFunc(){
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        var func_search = document.getElementById('func-select').value
+        var cdg = document.getElementById('func-cod').value
+        var desc = document.getElementById('func-desc').value
+        var tensao = document.getElementById('func-tensao').value
+        var tipo_func = document.getElementById('func-type').value
+        var tipo_cabo = document.getElementById('func-type-cabo').value
+
+        if (func_search === "" || document.getElementById('func-select').value === ""){
+            return swalAlert(false, 'Por favor, selecione uma função para ser alterado!', 'warning', false)
+        }
+
+        if (cdg.length > 30){
+            return swalAlert(false, 'O campo Código aceita no maximo 30 caracteres!', 'warning', false)
+            }
+
+        if (desc.length > 100){
+            return swalAlert(false, 'O campo Descrição aceita no maximo 100 caracteres!', 'warning', false)
+            }
+
+        if (tensao.length > 100){
+            return swalAlert(false, 'O campo Tensão aceita no maximo 100 caracteres!', 'warning', false)
+            }
+
+        if (tipo_func.length > 100){
+            return swalAlert(false, 'O campo Tipo aceita no maximo 100 caracteres!', 'warning', false)
+            }
+
+        if (tipo_cabo.length > 100){
+            return swalAlert(false, 'O campo Tipo Cabo aceita no maximo 100 caracteres!', 'warning', false)
+            }
+
+        $.ajax({
+              type: "PUT",
+              headers:{'X-CSRFToken':csrftoken},
+              url: "ManipulingFuncs/" + func_search + "/",
+              dataType: 'json',
+              data: { 'tb_fg_nome': cdg,
+                      'tb_fg_desc': desc,
+                      'tb_fg_tensao': tensao,
+                      'tb_fg_tipo': tipo_func,
+                      'tb_fg_id_tc': tipo_cabo },
+              success: function(data){
+                  if (data['success'] == true) {
+                      envia_logs()
+                      clean_all_forms_func()
+                      FillFuncs()
+                      return swalAlert(false, 'Atualizado com sucesso!', 'success', false)
+                  }
+                  else{
+                      clean_all_forms_func()
+                      return swalAlert(false, 'Ocorreu um erro ao alterar pois já existe uma Função com este código ou os campos continuaram iguais.', 'error', false)
+                  }
+              },
+              error: function () {
+                  clean_all_forms_func()
+                  return swalAlert(false, 'Já existe uma Função com este código!', 'error', false)
+              }
+          });
+    }
+
+
+    function deleteFunc(){
+        let id_fg = $('#func-select').val()[0]
+        if (id_fg === undefined){
+            return alert("Escolha uma Função para poder excluir!!!!")
+        }
+        $.ajax({
+              type: "DELETE",
+              url: "ManipulingFuncs/" + id_fg + "/",
+              dataType: 'json',
+              success: function(data){
+                    clean_all_forms_func()
+                    alert("Excluido com sucesso")
+                    FillFuncs()
+              },
+              error: function () {
+                  alert('Houve um erro ao excluir a Função!!\nTemos uma Função por OS vinculada a essa Função')
+              }
+
+          });
+    }
+
+    function FilterFuncaoGeral(value){
+        let options_func = document.getElementById('func-select').options
+        for(let i=0; i< options_func.length ;i++){
+            if(options_func[i].innerHTML.toUpperCase().includes(value.toUpperCase())){
+                options_func[i].hidden = false
+            }
+            else{
+                options_func[i].hidden = true
+            }
+        }
+    }
+
+    function import_export() {
+        let inputNome = document.getElementById('file_import_func');
+        form_funcao_a1pro.append('arquivo', inputNome.files[0])
+        document.getElementById('frase_arquivo_import_func').innerHTML = inputNome.files[0].name
+    }
+
+    function limpaCampo() {
+        $("#file_import_func").val('');
+        document.getElementById('frase_arquivo_import_func').innerHTML = 'Selecione um arquivo';
+        $('#impex').modal('hide')
+    }
+
+    function enviar_funcao() {
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        if ($('#file_import_func')[0].value !== '') {
+            $.ajax({
+                url: '/app/eletrica/a1pro/import_export_a1pro/', // Caminho do Ajax
+                type: "POST", // http method
+                headers:{'X-CSRFToken':csrftoken},
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                data: form_funcao_a1pro, // Envia dados pela solicitação do POST
+                beforeSend: function(){
+                    document.getElementById("row_load_elements").hidden = false;
+                },
+                success: function (data) {
+                    var progressUrl = `/celery-progress/${data["task_id"]}/`
+                    CeleryProgressBarXD.initProgressBar(progressUrl, {
+                        onSuccess: customSucess,
+                        onError: customError,
+                        onProgress: onProgressCustom
+                    })
+
+                    function onProgressCustom(progressBarElement, progressBarMessageElement, progress) {
+                        progressBarElement.style.backgroundColor = '#68a9ef';
+                        progressBarMessageElement.innerHTML = progress.description || "";
+                        progressBarElement.style.width = progress.percent + "%";
+                    }
+
+                    function customSucess(progressBarElement, progressBarMessageElement, result) {
+                        progressBarElement.style.backgroundColor = '#76ce60';
+                        progressBarMessageElement.textContent = "Importado com successo!";
+                        limpaCampo();
+                        swalAlert(false, 'Atualizado com sucesso!', 'success', false)
+                        setTimeout(()=>{
+                            swal.close()
+                            document.getElementById("progress-box-funcao").hidden = true
+                            document.getElementById("row_load_elements").hidden = true;
+                        },2000)
+                    }
+
+                    function customError(progressBarElement, progressBarMessageElement, excMessage) {
+                        progressBarMessageElement.innerHTML = "Houve um erro inesperado: " + excMessage;
+                        progressBarElement.style.backgroundColor = '#dc4f63';
+
+                        swal({
+                            text: "Problema com o envio!",
+                            icon: "error",
+                            button: false,
+                        });
+                        setTimeout(()=>{swal.close()}, 2000)
+                        setTimeout(HideRowLoadElements,10000, true)
+                        document.getElementById("row_load_elements").hidden = true;
+                    }
+                },
+
+                failure: function (error) {
+                    document.getElementById("row_load_elements").hidden = true;
+                    alert('Algo deu errado! verifique e tente novamente.')
+                }
+            });
+        }
+        else {
+            swal({
+            text: "Selecione um arquivo!",
+            icon: "error",
+            });
+        }
+    }
+
+    function receber_funcao() {
+        const csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        $.ajax({
+            url: '/app/eletrica/a1pro/import_export_a1pro/', // Caminho do Ajax
+            type: "GET", // http method
+            headers: {'X-CSRFToken': csrftoken},
+            dataType: "json",
+            processData: false,
+            contentType: false,
+            data: form_exporta_funcao_a1pro, // Envia dados pela solicitação do POST
+            beforeSend: function(){
+                document.getElementById("progress-box-funcao").hidden = false;
+            },
+            success: function (data) {
+                var progressUrl = `/celery-progress/${data["task_id"]}/`
+                CeleryProgressBarXD.initProgressBar(progressUrl, {
+                    onSuccess: customSucess,
+                    onError: customError,
+                    onProgress: onProgressCustom
+                })
+
+                function onProgressCustom(progressBarElement, progressBarMessageElement, progress) {
+                    progressBarElement.style.backgroundColor = '#68a9ef';
+                    progressBarMessageElement.innerHTML = progress.description || "";
+                    progressBarElement.style.width = progress.percent + "%";
+                }
+
+                function customSucess(progressBarElement, progressBarMessageElement, result) {
+                    progressBarElement.style.backgroundColor = '#76ce60';
+                    progressBarMessageElement.textContent = "Exportado com successo!";
+                    let url_download = '/app/eletrica/a1pro/excelexportado_a1pro/' + data['task_id']
+                    document.getElementById('import_func').action = url_download
+                    document.getElementById('import_func').submit()
+                    setTimeout( ()=>{document.getElementById("progress-box-funcao").hidden = true},1500)
+                    }
+
+                function customError(progressBarElement, progressBarMessageElement, excMessage) {
+                    progressBarMessageElement.innerHTML = "Houve um erro inesperado:" + excMessage;
+                    progressBarElement.style.backgroundColor = '#dc4f63';
+                    setTimeout(HideRowLoadElements,10000, true)
+                }
+
+            },
+        })
+    }
+
+    function click_button_download() {
+        document.getElementById('download_file_func').action = '/app/eletrica/a1pro/download_template_a1pro/'
+        document.getElementById('download_file_func').submit()
+    }
+    let CeleryProgressBarXD = (function () {
+        function onSuccessDefault(progressBarElement, progressBarMessageElement, result) {
+            progressBarElement.style.backgroundColor = '#76ce60';
+            progressBarMessageElement.innerHTML = "Success!";
+        }
+
+        function onResultDefault(resultElement, result) {
+            if (resultElement) {
+                resultElement.innerHTML = result;
+            }
+        }
+
+        function onErrorDefault(progressBarElement, progressBarMessageElement, excMessage) {
+            progressBarElement.style.backgroundColor = '#dc4f63';
+            progressBarMessageElement.innerHTML = "Uh-Oh, something went wrong! " + excMessage;
+        }
+
+        function onProgressDefault(progressBarElement, progressBarMessageElement, progress) {
+            progressBarElement.style.backgroundColor = '#68a9ef';
+            progressBarElement.style.width = progress.percent + "%";
+            var description = progress.description || "";
+            progressBarMessageElement.innerHTML = progress.current + ' de ' + progress.total + ' processado. ' + description;
+        }
+
+        function updateProgress (progressUrl, options) {
+            options = options || {};
+            var progressBarId = options.progressBarId || 'progress-bar-xd';
+            var progressBarMessage = options.progressBarMessageId || 'progress-bar-message-xd';
+            var progressBarElement = options.progressBarElement || document.getElementById(progressBarId);
+            var progressBarMessageElement = options.progressBarMessageElement || document.getElementById(progressBarMessage);
+            var onProgress = options.onProgress || onProgressDefault;
+            var onSuccess = options.onSuccess || onSuccessDefault;
+            var onError = options.onError || onErrorDefault;
+            var pollInterval = options.pollInterval || 500;
+            var resultElementId = options.resultElementId || 'celery-result';
+            var resultElement = options.resultElement || document.getElementById(resultElementId);
+            var onResult = options.onResult || onResultDefault;
+
+
+            fetch(progressUrl).then(function(response) {
+                response.json().then(function(data) {
+                    if (data.progress) {
+                        onProgress(progressBarElement, progressBarMessageElement, data.progress);
+                    }
+                    if (!data.complete) {
+                        setTimeout(updateProgress, pollInterval, progressUrl, options);
+                    } else {
+                        if (data.success) {
+                            onSuccess(progressBarElement, progressBarMessageElement, data.result);
+                        } else {
+                            onError(progressBarElement, progressBarMessageElement, data.result);
+                        }
+                        if (data.result) {
+                            onResult(resultElement, data.result);
+                        }
+                    }
+                });
+            });
+        }
+        return {
+            onSuccessDefault: onSuccessDefault,
+            onResultDefault: onResultDefault,
+            onErrorDefault: onErrorDefault,
+            onProgressDefault: onProgressDefault,
+            // updateProgress: updateProgress,
+            initProgressBar: updateProgress,  // just for api cleanliness
+        };
+    })();
+
+
+    function download_template_motor() {
+        document.getElementById('download_file_func_motor').action = '/app/eletrica/a1pro/download_template_motor/'
+        document.getElementById('download_file_func_motor').submit()
+    }
+
+    function envia_logs() {
+        const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value
+        let funcao_select = document.getElementById('func-select').selectedOptions[0].value
+        $.ajax({
+          type: "POST",
+          headers: {'X-CSRFToken': csrf},
+          url: '/app/eletrica/a1pro/log_funcoes/',
+          dataType: 'json',
+          data: {'funcao': funcao_select},
+          // success: function(data){
+          //   console.log(data)
+          //   },
+        })
+    }
+
+    function selectFuncSearch() {
+        document.getElementById('func-search').value = document.getElementById('func-cod').value
+    }
+
+</script>
+<!--Fim da Interface -->
+{% endblock funcao %}

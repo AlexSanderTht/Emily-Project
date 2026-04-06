@@ -1,0 +1,331 @@
+{%extends 'geral/base.html'%}
+
+{% load static %}
+
+{%block head%}<title> Integração</title>{%endblock%}
+
+{%block main %}
+<style>
+
+
+        label
+        {
+            margin-bottom: 0px;
+        }
+        .loader {
+  border: 8px solid #A1A1A1;
+  border-top: 8px solid #f6801e;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+   display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.input-group-text{
+    background-color: gray;// #343A40;
+    color: white;
+}
+.flex {
+  display: flex;
+  justify-content: center;
+    margin-top: 10px;
+}
+
+.flex-item + .flex-item {
+  margin-left: 10px;
+}
+
+.button {
+  margin-top: 15px;
+  background-color: #0066FF;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+</style>
+{% load poll_extras %}
+{% verify_tool as user_info %}
+{% if user_info.A1CIVAtividades %}
+
+
+<p hidden id="IDAtiv">{{ IDAtividade.id }}</p>
+
+
+
+
+<button type="button" style="margin: 10px 10px;" class="subscribe btn btn-warning  rounded-pill shadow-sm" onclick="window.location='/app/civil/DetalhesAtividade/{{ IDAtividade.id }}'">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+        <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1z"/>
+    </svg>Voltar para Atividade
+</button>
+
+
+<div class="mx-auto">
+           <div class="bg-white rounded-lg shadow-sm p-5" style="margin-left:50px; margin-right:50px; margin-top: 50px; ">
+                <div class="tab-content" style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important;">
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+                    {% csrf_token %}
+
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.OSAtiv.id_for_label }}">{{IntegracaoForm.OSAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="OSAtiv" name="{{ IntegracaoForm.OSAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.OSAtiv.value %}
+                                   value="{{IntegracaoForm.OSAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.OSAtiv.id_for_label }}">
+                            <div class="input-group-prepend">
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.CodigoDocumentoAtiv.id_for_label }}">{{IntegracaoForm.CodigoDocumentoAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="CodigoDocumentoAtiv" name="{{ IntegracaoForm.CodigoDocumentoAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.CodigoDocumentoAtiv.value %}
+                                   value="{{IntegracaoForm.CodigoDocumentoAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.CodigoDocumentoAtiv.id_for_label }}">
+
+
+
+
+                            <div class="input-group-prepend">
+                                <span style="height:34px" class="input-group-text" id="{{ IntegracaoForm.RevisaoAtiv.id_for_label }}">{{IntegracaoForm.RevisaoAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="RevisaoAtiv" name="{{ IntegracaoForm.RevisaoAtiv.html_name }}" class="form-control"
+                                   {% if IntegracaoForm.RevisaoAtiv.value %} value="{{IntegracaoForm.RevisaoAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.RevisaoAtiv.id_for_label }}">
+
+
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.DisciplinaAtiv.id_for_label }}">{{IntegracaoForm.DisciplinaAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="DisciplinaAtiv" name="{{ IntegracaoForm.DisciplinaAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.DisciplinaAtiv.value %}
+                                   value="{{IntegracaoForm.DisciplinaAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.DisciplinaAtiv.id_for_label }}">
+                            <div class="input-group-prepend">
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.TipoDocumentoAtiv.id_for_label }}">{{IntegracaoForm.TipoDocumentoAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="TipoDocumentoAtiv" name="{{ IntegracaoForm.TipoDocumentoAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.TipoDocumentoAtiv.value %}
+                                   value="{{IntegracaoForm.TipoDocumentoAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.TipoDocumentoAtiv.id_for_label }}">
+
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.TagAtiv.id_for_label }}">{{IntegracaoForm.TagAtiv.label_tag}}</span>
+
+                            <input readonly type="text" id="TagAtiv" name="{{ IntegracaoForm.TagAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.TagAtiv.value %}
+                                   value="{{IntegracaoForm.TagAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.TagAtiv.id_for_label }}">
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.AreaCorrespondenteAtiv.id_for_label }}">{{IntegracaoForm.AreaCorrespondenteAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="AreaCorrespondenteAtiv" name="{{ IntegracaoForm.AreaCorrespondenteAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.AreaCorrespondenteAtiv.value %}
+                                   value="{{IntegracaoForm.AreaCorrespondenteAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.AreaCorrespondenteAtiv.id_for_label }}">
+                            <div class="input-group-prepend">
+                            <span style="height:34px" class="input-group-text"
+                                  id="{{ IntegracaoForm.FinalidadeAtiv.id_for_label }}">{{IntegracaoForm.FinalidadeAtiv.label_tag}}</span>
+                            </div>
+                            <input readonly type="text" id="FinalidadeAtiv" name="{{ IntegracaoForm.FinalidadeAtiv.html_name }}"
+                                   class="form-control" {% if IntegracaoForm.FinalidadeAtiv.value %}
+                                   value="{{IntegracaoForm.FinalidadeAtiv.value }}" {%endif%}
+                                   aria-describedby="{{ IntegracaoForm.FinalidadeAtiv.id_for_label }}">
+
+                        </div>
+
+                    </div>
+                         <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Descrição</span>
+                                </div>
+                                <textarea readonly class="form-control" aria-label="With textarea">{{IntegracaoForm.DescricaoAtiv.value }}</textarea>
+                            </div>
+
+
+
+
+                    <div class="jumbotron">
+                        <h1 class="display-4">Integrações</h1>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text" for="SelectIntegracoes">Selecione uma Integração:</label>
+                            </div>
+                            <select class="custom-select" id="SelectIntegracoes">
+                            </select>
+                            <button disabled type="button" id="BotaoRemoverIntegracao" class=" shadow-sm btn btn-danger btn-sm" style="float: right; padding: 2px; width: 34px; Color: white !important;" onclick="RemoverIntegracaoModal()" title="Remover Integração"> [R]</button>
+                        </div>
+                        <div class="loader" id="loaderCriacaoIntegracao" style="height: 50px; width:50px"></div>
+                        <hr class="my-4">
+
+                        <div id="Integracoes">
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div aria-hidden="true" aria-labelledby="ModalLabel" class="modal fade" id="ConfirmacaoApagarIntegracao" role="dialog"
+             tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmação Remoção</h5>
+                        <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <div id="PreenchimentoCadastroPreenchimento">
+
+                            </div>
+
+                        </div>
+                            <div class="modal-footer">
+                                <button type="button" class="subscribe btn btn-secondary  rounded-pill"
+                                        data-dismiss="modal">Não
+                                </button>
+                                <button type="button" class="subscribe btn btn-warning  rounded-pill"
+                                        onclick="ApagarIntegracao()">Sim
+                                </button>
+                                <div class="loader" id="loaderConfirmacaoApagarIntegracao"
+                                     style="height: 40px; width:40px; display: none"></div>
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+        </div>
+<div class="modal fade" id="AdicionarArquivoModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <form method="post" enctype="multipart/form-data">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Adicionar Arquivo à Integração</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Arquivo</span>
+                            </div>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" name="ArquivoUpload"
+                                       id="ArquivoUploadInput" aria-describedby="inputGroupFileAddon01" required>
+                                <label class="custom-file-label" name="NomeDoArquivolbl" id="id_NomeDoArquivolbl">Selecione um arquivo</label>
+                                <input hidden type="text" name="NomeDoArquivo" id="id_NomeDoArquivo" required>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Descrição</span>
+                                </div>
+                                <textarea required class="form-control" id="DescricaoArquivo" aria-label="With textarea"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer" >
+                            <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm"
+                                    style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important" data-dismiss="modal">Cancelar
+                            </button>
+                            <button type="button" class="subscribe btn btn-warning  rounded-pill shadow-sm"
+                                    onclick="EnviarArquivo()">Enviar
+                            </button>
+                            <div class="loader" id="loaderUploadArquivo" style="height: 50px; width:50px; display: none"></div>
+                        </div>
+
+                    </div>
+                </div>
+                  <div id="progress-box"></div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal fade" id="ConfirmarExcluirArquivoModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+    <form method="post" enctype="multipart/form-data">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmação de Exclusão de Arquivo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    {% csrf_token %}
+
+
+                        <p> Tem certeza que deseja excluir o arquivo?</p>
+                        <br/>
+                        <p hidden id="IDArquivoExcluir"></p>
+                        <div class="modal-footer" >
+                             <div class="loader" id="loaderExcluirArquivo" style="height: 50px; width:50px; display: none"></div>
+                            <button type="button" class="subscribe btn btn-secondary  rounded-pill shadow-sm"
+                                    style="box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.9) !important" data-dismiss="modal">Não
+                            </button>
+                            <button type="button" class="subscribe btn btn-warning  rounded-pill shadow-sm"
+                                    onclick="ExcluirArquivoConfirmado()">Sim
+                            </button>
+
+                        </div>
+
+
+
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+{% else %}
+<h1> Acesso não permitido </h1>
+{% endif %}
+
+<script src="{% static 'js/civil/ScriptsIntegracao.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/civil/jquery.dataTables.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/a1civ.css' %}"/>
+<script src="{% static 'js/civil/scriptsGerais.js' %}"></script>
+
+
+
+{%endblock%}

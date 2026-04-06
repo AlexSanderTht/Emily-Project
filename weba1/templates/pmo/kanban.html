@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="kanban.css">
+        <title>Kanban A1</title>
+    </head>
+    <body>
+        <div class="container">
+
+            <div class="kanban-board">
+                <div class="kanban-block" id="add" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <strong></strong>
+                    <hr>
+                    <div class="task-button-block">
+                        <img onclick="createTask()" src="img/outline_add_black_24dp.png" style="width: 30px;">
+                    </div>
+                </div>
+                <div class="kanban-block" id="todo" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <strong>To-Do</strong><br><br>
+                </div>
+                <div class="kanban-block" id="inprogress" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <strong>In Progress</strong><br><br>
+                </div>
+                <div class="kanban-block" id="done" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <strong>Done</strong><br><br>
+                </div>
+                
+                <div class="create-new-task-block" id="create-new-task-block">
+                    <strong>Nova tarefa</strong>
+                    <span class="form-row">
+                        <input class="form-row-input" type="text" name="task-name" id="task-name" placeholder="ID">
+                        <input class="form-row-input" type="text" name="name" id="name" placeholder="Nome da Tarefa">
+                        <textarea class="form-row-input" type="text" id="descricao" placeholder="Descrição"></textarea>
+                     
+                        <div class="tesy">
+                            
+                            <input class="form-row-input" type="date" id= "date-inico" placeholder=" Data de Início">
+                           
+                            <input class="form-row-input" type="date" id= "date-fim" placeholder=" Data de Fim">
+                        </div>
+                    </span>
+                    
+                    <span class="form-row-buttons">
+                        
+                        <button id="save-button" class="efeito-1" onclick="saveTask()">Adicionar </span>
+                        <button id="cancel-button" class="efeito-2" onclick="createTask()">Fechar</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <script src="kanban.js"></script>
+    </body>
+</html>
