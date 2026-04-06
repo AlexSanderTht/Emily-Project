@@ -1,0 +1,74 @@
+# Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+Temp/
+tmp*/
+*.tmp
+*.temp
+
+# Django
+*.sqlite3
+*.sqlite
+db.sqlite3
+/media/
+/staticfiles/
+
+# Node (se houver frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDE Specific
+.vscode/settings.json
+.vscode/launch.json
